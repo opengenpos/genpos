@@ -4,6 +4,8 @@ source code for the GenPOS point of sale application owned by Georgia Southern U
 This is the updated and extended version of the original NeighborhoodPOS point of sale software that ran on
 the NCR 2170 point of sale terminal and was then upgraded for the NCR 7448 point of sale terminal.
 
+## Recent history of NHPOS and GenPOS
+
 In 2002 NCR donated version 1.4 of the NeighborhoodPOS product and source code which ran on the NCR 7448 terminal
 to Georgia Southern University along with equipment to continue development. Georgia Southern, supported by grants from the
 University System’s Intellectual Capital Partnership Program (ICAPP)
