@@ -40,8 +40,7 @@ There was some propietary information in the source code in the areas of electro
 sign-in. As part of making the source code open source, those portions of the source code were eliminated in cooperation
 with those vendors.
 
-
-**Removal of proprietary information**
+## Removal of proprietary information
 
 This version of the source code is based on Release 2.3.2 of GenPOS which includes support for:
   - 64 bit totals
