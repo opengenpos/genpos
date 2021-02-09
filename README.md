@@ -40,17 +40,55 @@ There was some propietary information in the source code in the areas of electro
 sign-in. As part of making the source code open source, those portions of the source code were eliminated in cooperation
 with those vendors.
 
-## Removal of proprietary information
+## Base source code version of GenPOS
 
-This version of the source code is based on Release 2.3.2 of GenPOS which includes support for:
-  - 64 bit totals
+This version of the source code is based on Release 2.3.2 of GenPOS. This was the final version of the source code however
+this version was never released into the field. Release 2.3.2 was based on Rel 2.3.1 which was released into the field
+however it does contain one large change 64 bit totals. This change means that Third Party applications for Release 2.3.1
+will probably not work correctly.
+
+Relase 2.0.0 of NHPOS, since rebranded as GenPOS, contained the following major changes from Release 1.4 of NHPOS.
+
+  - use of OPOS controls for peripherials such as receipt printers
+  - support for touchscreen terminals as well as keyboards
+  - Layout Manager screen design utility for customized screen design
+  - support for Asian languages as well as increases in number of characters in mnemonics
+  - auto coupons to automatically present possible coupons based on PLUs in transaction
+
+Release 2.3.1 includes support for:
+
   - LAN kitchen printers
+  - USB devices such as scales
+  - 500 Thousand PLUs
   - changes and improvements to the PEP utility and PCSample utility
   - Out of Scope Datacap electronic payment to eliminate need for PCI-DSS assessments
-  - use of OPOS controls for peripherials such as receipt printers
-  - Layout Manager screen design utility
+  - support for Out of Scope EMV card processing using the Datacap electronic payment control
+ 
+ Release 2.3.2 added support for 64 bit totals along with some improvements in the PEP and PCSample utilities.
+ 
+ The source code base in this GitHub repository contains additional changes from the code base of Release 2.3.2
+ in order to eliminate proprietary information as well as to eliminate no longer needed source code. Over the years
+ some functionality was added which made some existing functionality obsolete however the source code remained. With
+ the initial version of the source code uploaded to this repository, the source for that functionality is being
+ removed in order to make the source code smaller and easier to understand.
+ 
+  - using Datacap Out of Scope software components
+  - storage of account holder information for Preauth as well as Store and Forward
+  - Journal printing replaced by Electronic Journal
   
-As part of reaching agreement for making GenPOS open source, some proprietary information was removed.
+  Due to the age of some of the functionality that has gone unused and not been reviewed and updated, some features
+  may not be compatible with more recent devices.
+  
+   - beverage dispensers for bars
+   - scales
+   - kitchen display systems
+ 
+ ## Removal of proprietary information
+
+As part of reaching agreement for making GenPOS open source, some proprietary information was removed from the
+source code before putting the source up into this GitHub repository at the request of the owners. To use
+these software components, a development agency must arrange a licensing agreement with the suppliers in
+order to access the necessary components and documentation.
   - Datacap electronic payment interfaces
   - DigitalPersona biometrics interfaces
   
