@@ -92,3 +92,20 @@ order to access the necessary components and documentation.
   - Datacap electronic payment interfaces
   - DigitalPersona biometrics interfaces
   
+## Other changes
+
+### PLU Totals database engine
+
+NHPOS and GenPOS both used the Microsoft SQL Server Express database engine for the PLU totals database
+since Rel 2.0.0 and moving off of the NCR 7448 terminal with Windows CE. SQL Server was used for the
+database engine even though the same kind of builtin, default database engine available in Windows CE was
+also available in Windows NT/2000. Changing the ADO ODBC logic for the PLU totals from Windows CE to
+support the new SQL Server interface was straigntforward.
+
+With OpenGenPOS we desire to move away from SQL Server and to SQLite in order use an open source database engine
+which could be embedded into OpenGenPOS and eliminate the need for additional software to be installed. We also
+want to have all of the files used by OpenGenPOS within the same folder in order to make device backups easier
+and by using SQL Server we have the issue of the SQL Server databases being within the SQL Server file directory
+hierarchy rather than the OpenGenPOS hierarchy.
+
+As a first step we are using the SQLite ODBC driver from http://www.ch-werner.de/sqliteodbc/
