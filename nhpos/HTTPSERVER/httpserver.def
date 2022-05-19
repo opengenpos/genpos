@@ -1,0 +1,15 @@
+; httpserver.def : Declares the module parameters for the DLL.
+
+LIBRARY      "httpserver"
+
+EXPORTS
+    ; Explicit exports can go here
+	StartThread			@1
+	StopThread			@2
+	IssueRequest		@3
+	ProvideCallBack		@4
+	ProvideWinHandle	@5
+	WaitOnConnection	@6
+	ReadRequest			@7
+	ParsePayLoadXML     @8
+	IssueFilePointerRequest   @9

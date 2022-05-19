@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{a2377dc1-c29d-4375-bb13-1cfda548994c}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d4e77e15-e758-427d-a512-5f93ef0023f7}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="csetkbak.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csleadst.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbbak.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbcas.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbcom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbcpm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbdfl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbej.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSSTBEPT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbetk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbgcf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbkps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbopr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbpar.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbplu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbshr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbstb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csstbttl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="csstubin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

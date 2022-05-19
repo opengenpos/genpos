@@ -1,0 +1,156 @@
+LIBRARY	PIF
+
+EXPORTS
+	PifAbort				@1
+	PifBeginThread				@2
+	PifEndThread				@3
+	PifGetProcessId				@4
+	PifGetThreadId				@5
+	PifCreateSemNew				@6
+	PifDeleteSem				@7
+	PifRequestSem				@8
+	PifReleaseSem				@9
+	PifCreateQueue				@10
+	PifDeleteQueue				@11
+	PifWriteQueue				@12
+	PifReadQueue				@13
+	PifSleep				@14
+	PifGetDateTime				@15
+	PifSetDateTime				@16
+	PifOpenFileNew				@17
+	PifReadFileNew				@18
+	PifWriteFileNew				@19
+	PifSeekFileNew				@20
+	PifCloseFile			@21
+	PifDeleteFile				@22
+	PifOpenCom				@23
+	PifReadCom				@24
+	PifWriteCom				@25
+	PifControlCom				@26
+	PifCloseCom				@27
+	PifNetOpen				@28
+	PifNetSend				@29
+	PifNetReceive				@30
+	PifNetControl				@31
+	PifNetClose				@32
+	PifGetChar				@33
+	PifControlKeyboard			@34
+	PifGetKeyLock				@35
+	PifGetWaiter				@36
+	PifDisplayString			@37
+	PifDisplayAttr				@38
+	PifLightDescr				@39
+	PifOpenDrawer				@40
+	PifDrawerStatus				@41
+	PifBeep					@42
+	PifPlayStanza				@43
+	PifToneVolume				@44
+	PifSysConfig				@45
+	PifLog					@46
+	PifTrackKey				@47
+	PifLoadFarData				@48
+	PifSaveFarData				@49
+	PifControl				@50
+	PifRestart				@51
+	PifTurnOffPower				@52
+	PifOpenMsr				@53
+	PifReadMsr				@54
+	PifCloseMsr				@55
+	PifVioStrAttr				@56
+	PifVioStr				@57
+	PifVioCurOnOff				@58
+	PifVioCurType				@59
+	PifVioGetCurPos				@60
+	PifVioSetCurPos				@61
+	PifVioScrollUp				@62
+	PifVioScrollDown			@63
+	PifVioMode				@64
+	PifVioBackLight				@65
+	PifVioActivePage			@66
+	PifVioLoadCG				@67
+
+	PifPlayStanza2				@68
+
+	PifDisable					@69
+	PifRestore					@70
+
+	PifGetThreadHandle			@71
+    PifClearTaskTable			@72
+	PifNetOpenEx				@73
+	PifSetModemStrings       	@74
+
+	PifCreatePowerSem			@75
+	PifDeletePowerSem			@76
+	PifRequestPowerSem			@77
+	PifReleasePowerSem			@78
+
+	PifGetLocalHostName			@79
+	PifGetHostsAddress			@80
+	PifSetHostsAddress			@81
+	PifRemoveHostsAddress		@82
+	PifSetServicesPortNo		@83
+	PifTurnOffPowerEx			@84
+    PifGetActiveDevice          @85
+    PifGetSystemVersion         @86
+    PifGetVersion               @87
+
+	PifCreateAbortSem			@88
+	PifDeleteAbortSem			@89
+	PifRequestAbortSem			@90
+	PifReleaseAbortSem			@91
+
+	PifControlPowerSwitch		@92
+
+	PifGetTickCount				@93
+
+	PifMoveFile					@94
+	PifGetFileSize				@95
+	PifWriteFileEx				@96
+    PifGetFileSizeEx            @97
+    PifGetDiskFreeSpace         @98
+	PifDeleteFileEx				@99
+
+	PifLogAbort				@100
+
+	PifSetKeyboardType		@101
+	PifShutdown				@102
+	PifSetWindowHandle		@103
+	PifGetWindowHandle		@104
+    PifSeekWriteFileNew        @105
+	PifNetSystemInfo		@106
+	PifGetHostAddrByName	@107
+	PifDebugDump			@108
+	PifDebugFileCleanUp		@109
+	PifOpenTimeTracker		@110
+	PifStartTimeTracker		@111
+	PifEndTimeTracker		@112
+	PifTimeTrackerGetDiff	@113
+	PifCloseTimeTracker		@114
+	PifHighLowSem   		@115
+	PifFileToFile			@116
+	PifNetAddJoin			@117
+	PifNetUpdateMasterBackup	@118
+	PifLogNoAbort				@119
+	PifSetTimeoutSem			@120
+	PifRetrieveValueSem         @121
+	PifOpenSnapShotFile			@122
+	PifWriteSnapShotFile		@123
+	PifCloseSnapShotFile		@124
+	PifSetEndOfFile				@125
+	PifNetRemoveJoin			@126
+	PifDeleteFileNew			@127
+	PifRequestSemNew			@128
+	PifReleaseSemNew			@129
+	PifLogExtended				@130
+	PifTransactionLog			@131
+	PifSnapShotTables			@132
+	PifOverrideHostName			@133
+	PifNetDiscoverNet			@134
+	PifAbortExtended			@135
+	PifGetFileAttribs           @136
+	PifOpenNetComIoEx			@137
+	PifReadNetComIoEx			@138
+	PifWriteNetComIoEx			@139
+	PifControlNetComIoEx		@140
+	PifCloseNetComIoEx			@141
+	PifGetFilePath				@142

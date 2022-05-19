@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{47e523ec-a431-4f21-82c2-6b8b20b4e2e1}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{bd3c64b8-67ef-4754-894e-80adda66f6f9}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="rfl3to4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RFLBCD.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflbser.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflcalc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflcd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflcmp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflfmem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflform.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflfstr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflgetit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflhalo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RFLLABEL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RFLPLU.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflrandm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflround.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflRSSVAR.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rflstr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rfltax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rflform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rflin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RFLLABEL.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

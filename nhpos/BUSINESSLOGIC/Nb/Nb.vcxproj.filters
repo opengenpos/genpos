@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{80d62e62-55d5-44e5-80ca-109ffe855fc5}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{69079124-936c-4c8a-b9f2-fd209b905dbe}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NBDESC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nbgetmdc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nbmain.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Nbnet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nbsub.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nbuif.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="nbcom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

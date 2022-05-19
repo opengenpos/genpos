@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ac04cb59-f2a5-4066-a485-6b717f45d32c}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1c7e2e6d-c764-41f4-b1dd-6e1c44f5534e}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PRSAGE_.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsbcas_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prscas_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prscmnvl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prscom_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prscpm_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prscpn_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prscprp_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prscstr_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prscwrp_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsdata_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsdept_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsderp_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsderps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsdmeu_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsdrvt_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsdsps_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsemp_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prserr_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsetk_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsetkf_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsetkfs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsetks.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsfc_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PRSFEED_.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsflex_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsfsc_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsgcf_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsgcfc_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsgcfs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsgcno_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prshorp_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prshour_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prskctl_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prskds_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prslp_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsmdc_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsmenp_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsmenps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsmne_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsopst_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prspamt_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PRSPIG_.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsplrp_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsplrps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsplu_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsplus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PRSPMEU_.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsppi_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsregf_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PRSREST_.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsrnd_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsserv_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prsslvl_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prssto_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prstare_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prstly_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PRSTOD_.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prstrn_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prstxrt_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prstxtb_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prswcls_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

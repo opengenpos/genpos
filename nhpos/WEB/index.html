@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<link rel='stylesheet' href='standard.css' type='text/css' />
+<title>Welcome to NeighborhoodPOS Web Server</title>
+</head>
+<body>
+<h1>Welcome to the NeighborhoodPOS Web Server</h1>
+
+<p>This web server is a small web server built into the NeighborhoodPOS terminal
+to provide a platform allowing Third Party Vendors to develop applications that
+use the web services supplied by the NeighborhoodPOS Web Server.  The web services
+provide a mechanism to access the data and the provisioning information of the
+NeighborhoodPOS terminal.</p>
+
+<p>The NeighborhoodPOS Web Server is designed to allow the use of most modern
+web interfaces including the use of CSS stylesheets, Javascript files, and XML.
+The web server has a set of web services that it offers.  The number and types
+of services offered will expand in the near future.</p>
+
+<h3>Current Web Services Offerings</h3>
+<ul><h3>Status Reports</h3>
+<li><a href="/systemstatus.html">/systemstatus.sys</a> -> returns the system status as a text file similar to the AC888 report</li>
+</ul>
+<ul><h3>AC21 Totals Reports</h3>
+<li><a href="/databasequery.sys?ac21dailycur">/databasequery.sys?ac21dailycur</a> -> returns the AC21 Current Daily report</li>
+<li><a href="/databasequery.sys?ac21dailysav">/databasequery.sys?ac21dailysav</a> -> returns the AC21 Saved Daily report</li>
+<li><a href="/databasequery.sys?ac21ptdcur">/databasequery.sys?ac21ptdcur</a> -> returns the AC21 Current Period to Date report</li>
+<li><a href="/databasequery.sys?ac21ptdsave">/databasequery.sys?ac21ptdsav</a> -> returns the AC21 Saved Period to Date report</li>
+</ul>
+<ul><h3>AC23 Totals Reports</h3>
+<li><a href="/databasequery.sys?ac23dailycur">/databasequery.sys?ac23dailycur</a> -> returns the AC23 Current Daily report</li>
+<li><a href="/databasequery.sys?ac23dailysav">/databasequery.sys?ac23dailysav</a> -> returns the AC23 Saved Daily report</li>
+<li><a href="/databasequery.sys?ac23ptdcur">/databasequery.sys?ac23ptdcur</a> -> returns the AC23 Current Period to Date report</li>
+<li><a href="/databasequery.sys?ac23ptdsave">/databasequery.sys?ac23ptdsav</a> -> returns the AC23 Saved Period to Date report</li>
+</ul>
+
+<h2>Sample Reports Available</h2>
+<p><a href="./storeforward.html">Store and Forward Status</a></p>
+<p><a href="./preauth.html">Preauth Status</a></p>
+<p><a href="./ac21dailysaved.html">AC21 Operator Daily Totals</a></p>
+<p><a href="./ac23dailysaved.html">AC23 Financial Daily Totals</a></p>
+
+</body>
+</html>

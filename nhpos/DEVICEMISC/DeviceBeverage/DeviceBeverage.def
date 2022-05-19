@@ -1,0 +1,7 @@
+; DeviceBeverage.def : Declares the module parameters for the DLL.
+
+;LIBRARY      "DEVICEBEVERAGE"
+;DESCRIPTION  'DEVICEBEVERAGE Windows CE Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here

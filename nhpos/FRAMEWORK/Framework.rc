@@ -1,0 +1,505 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#include "versioninfo.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\Framework.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Framework.ico"
+IDI_ICON1               ICON                    "res\\icon1.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_FRAMEWORK_DIALOG DIALOGEX 0, 0, 129, 64
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE
+EXSTYLE WS_EX_APPWINDOW | 0x80000000L
+FONT 14, "Arial", 0, 0, 0x1
+BEGIN
+    CTEXT           "OpenGenPOS POS",IDC_STATIC,7,7,115,15
+    CONTROL         "Progress1",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,7,39,115,18
+    CTEXT           "Version",IDC_STATIC_VERSION,7,24,115,12
+END
+
+IDD_BASE_DIALOG DIALOG  0, 0, 199, 70
+STYLE DS_SETFONT | WS_POPUP | WS_THICKFRAME
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "",IDC_CASHDRAWER1,
+                    "{CCB90042-B81E-11D2-AB74-0040054C3719}",NOT WS_VISIBLE,1,35,30,23
+    CONTROL         "",IDC_POSPRINTER1,
+                    "{CCB90152-B81E-11D2-AB74-0040054C3719}",NOT WS_VISIBLE,75,35,30,23
+    CONTROL         "",IDC_CASHDRAWER2,
+                    "{CCB90042-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,38,35,30,23
+    CONTROL         "",IDC_KEYLOCK1,"{CCB90092-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,151,5,30,23
+    CONTROL         "",IDC_COINDISPENSER1,
+                    "{CCB90062-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,113,5,30,23
+    CONTROL         "",IDC_MSR1,"{CCB90122-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,75,5,30,23
+    CONTROL         "",IDC_MSR2,"{CCB90122-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,39,5,30,23
+    CONTROL         "",IDC_LINEDISPLAY1,
+                    "{CCB90102-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,1,5,30,23
+    CONTROL         "",IDC_SIGCAP1,"{CCB90192-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,112,35,30,23
+    CONTROL         "",IDC_PINPAD1,"{CCB90132-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,151,35,30,23
+END
+
+IDD_CONTROLDIALOG DIALOG  0, 0, 146, 118
+STYLE DS_SETFONT | WS_POPUP | WS_THICKFRAME
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+IDD_NHPOSNAGSCREEN DIALOG  0, 0, 421, 246
+STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Registration Required!"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,183,225,50,14
+    LTEXT           "eng",IDC_NAG_TEXT_ENG,7,7,407,200
+    LTEXT           "Version",IDC_STATIC_VERSION,7,223,146,16
+END
+
+IDD_VBODIALOG DIALOG  0, 0, 49, 41
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "",IDC_LOCKIT1,"{25C91092-1613-11D3-AA3C-00E0291E4D4F}",0x0,7,7,35,28
+END
+
+IDD_DIALOG_MESSAGE DIALOG  0, 0, 246, 90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Message"
+FONT 12, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,189,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,189,24,50,14
+    EDITTEXT        IDC_EDIT_DIALOG_MESSAGE,7,7,174,76,ES_CENTER | ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY
+END
+
+IDD_DIALOG_MESSAGEBOX DIALOG  0, 0, 145, 80
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Message"
+FONT 12, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,5,64,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,77,64,50,14
+    EDITTEXT        IDC_EDIT_DIALOG_MESSAGE,5,21,137,39,ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | ES_WANTRETURN | NOT WS_BORDER
+    ICON            IDI_ICON1,IDC_STATIC_ICON,2,2,20,20
+    EDITTEXT        IDC_EDIT1_LINE,26,7,116,12,ES_AUTOHSCROLL | ES_MULTILINE | ES_WANTRETURN | ES_READONLY | NOT WS_BORDER
+END
+
+IDD_DIALOG_MESSAGEBOX_2 DIALOG  0, 0, 145, 100
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Message"
+FONT 12, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,5,84,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,77,84,50,14
+    EDITTEXT        IDC_EDIT_DIALOG_MESSAGE,5,21,137,62,ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | ES_WANTRETURN | NOT WS_BORDER
+    ICON            IDI_ICON1,IDC_STATIC_ICON,2,2,20,20
+    EDITTEXT        IDC_EDIT1_LINE,26,7,116,12,ES_AUTOHSCROLL | ES_MULTILINE | ES_WANTRETURN | ES_READONLY | NOT WS_BORDER
+    LTEXT           "MessageBox_2",IDC_DIALOG_MESSAGEBOX_2,7,223,146,16
+END
+
+IDD_DIALOG_MESSAGEBOX_3 DIALOG  0, 0, 145, 100
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Message"
+FONT 12, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,5,84,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,77,84,50,14
+    EDITTEXT        IDC_EDIT_DIALOG_MESSAGE,5,21,137,62,ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | ES_WANTRETURN | NOT WS_BORDER
+    ICON            IDI_ICON1,IDC_STATIC_ICON,2,2,20,20
+    EDITTEXT        IDC_EDIT1_LINE,26,7,116,12,ES_AUTOHSCROLL | ES_MULTILINE | ES_WANTRETURN | ES_READONLY | NOT WS_BORDER
+    LTEXT           "MessageBox_3",IDC_DIALOG_MESSAGEBOX_3,7,223,146,16
+END
+
+IDD_DIALOG_MESSAGEBOX_4 DIALOG  0, 0, 145, 100
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Message"
+FONT 12, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,5,84,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,77,84,50,14
+    EDITTEXT        IDC_EDIT_DIALOG_MESSAGE,5,21,137,62,ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | ES_WANTRETURN | NOT WS_BORDER
+    ICON            IDI_ICON1,IDC_STATIC_ICON,2,2,20,20
+    EDITTEXT        IDC_EDIT1_LINE,26,7,116,12,ES_AUTOHSCROLL | ES_MULTILINE | ES_WANTRETURN | ES_READONLY | NOT WS_BORDER
+    LTEXT           "MessageBox_4",IDC_DIALOG_MESSAGEBOX_4,7,223,146,16
+END
+
+IDD_DIALOG_MESSAGEBOX2 DIALOG  0, 0, 145, 80
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_VISIBLE
+CAPTION "Message"
+FONT 12, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,5,63,50,14
+    EDITTEXT        IDC_EDIT_DIALOG_MESSAGE,5,21,137,39,ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | ES_WANTRETURN | NOT WS_BORDER
+    ICON            IDI_ICON1,IDC_STATIC_ICON,2,2,20,20
+    EDITTEXT        IDC_EDIT1_LINE,26,7,116,12,ES_AUTOHSCROLL | ES_MULTILINE | ES_WANTRETURN | ES_READONLY | NOT WS_BORDER
+END
+
+IDD_DISPLAYBITMAP DIALOG  0, 0, 186, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,16
+    PUSHBUTTON      "Cancel",IDCANCEL,129,26,50,16
+END
+
+IDD_DIALOG1 DIALOGEX 0, 0, 399, 175
+STYLE DS_SYSMODAL | DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOPMOST
+CAPTION "Signature Image"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,303,7,89,27
+    CONTROL         "",IDC_BITMAPAREA,"Static",SS_BITMAP,7,47,15,13
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION ALL_N_VERSIONINFO
+PRODUCTVERSION ALL_N_VERSIONINFO
+FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+			VALUE "CompanyName", ALL_Q_COMPANYNAME
+			VALUE "FileVersion", ALL_M_VERSIONINFO
+			VALUE "ProductVersion", ALL_M_VERSIONINFO
+			VALUE "LegalCopyright", ALL_Q_COPYRIGHT
+			VALUE "LegalTrademarks", ALL_Q_TRADEMARKS
+			VALUE "PrivateBuild", ALL_Q_PRIVATEBUILD
+			VALUE "Comments", "OpenGenPOS General POS Framework"
+            VALUE "FileDescription", "Entry point for OpenGenPOS General POS software application."
+			VALUE "InternalName", "Framework"
+            VALUE "OriginalFilename", "Framework.EXE"
+            VALUE "ProductName", "OpenGenPOS General POS Application Software."
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_FRAMEWORK_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 122
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 57
+    END
+
+    IDD_BASE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 1
+        RIGHTMARGIN, 192
+        TOPMARGIN, 5
+        BOTTOMMARGIN, 64
+    END
+
+    IDD_CONTROLDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 139
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 111
+    END
+
+    IDD_NHPOSNAGSCREEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 414
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 239
+    END
+
+    IDD_VBODIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 42
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 34
+    END
+
+    IDD_DIALOG_MESSAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 239
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_DIALOG_MESSAGEBOX, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 71
+    END
+
+    IDD_DIALOG_MESSAGEBOX_2, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 71
+    END
+
+    IDD_DIALOG_MESSAGEBOX_3, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 71
+    END
+
+    IDD_DIALOG_MESSAGEBOX_4, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 71
+    END
+
+    IDD_DIALOG_MESSAGEBOX2, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 71
+    END
+
+    IDD_DISPLAYBITMAP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 392
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 168
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_BASE_DIALOG DLGINIT
+BEGIN
+    IDC_CASHDRAWER1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    IDC_POSPRINTER1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    IDC_CASHDRAWER2, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    IDC_KEYLOCK1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    IDC_COINDISPENSER1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    IDC_MSR1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    IDC_MSR2, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    IDC_LINEDISPLAY1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    IDC_SIGCAP1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    IDC_PINPAD1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x04a7, 0x0000, 0x03d3, 0x0000, 
+    0
+END
+
+IDD_CONTROLDIALOG DLGINIT
+BEGIN
+    1022, 0x376, 405, 0
+0x0000, 0x0000, 0x5054, 0x3046, 0x5407, 0x6f4c, 0x6b63, 0x7449, 0x4c06, 
+0x636f, 0x496b, 0x0474, 0x654c, 0x7466, 0xf203, 0x0300, 0x6f54, 0x0370, 
+0x00e0, 0x5705, 0x6469, 0x6874, 0x3502, 0x4806, 0x6965, 0x6867, 0x0274, 
+0x152e, 0x6f48, 0x7a72, 0x6353, 0x6f72, 0x6c6c, 0x6142, 0x2e72, 0x6956, 
+0x6973, 0x6c62, 0x0865, 0x5615, 0x7265, 0x5374, 0x7263, 0x6c6f, 0x426c, 
+0x7261, 0x562e, 0x7369, 0x6269, 0x656c, 0x0708, 0x6e41, 0x6863, 0x726f, 
+0x0b73, 0x0500, 0x6f43, 0x6f6c, 0x0772, 0x6309, 0x426c, 0x6e74, 0x6146, 
+0x6563, 0x4315, 0x6e6f, 0x7473, 0x6172, 0x6e69, 0x7374, 0x4d2e, 0x7861, 
+0x6548, 0x6769, 0x7468, 0x2e02, 0x4314, 0x6e6f, 0x7473, 0x6172, 0x6e69, 
+0x7374, 0x4d2e, 0x7861, 0x6957, 0x7464, 0x0268, 0x157b, 0x6f43, 0x736e, 
+0x7274, 0x6961, 0x746e, 0x2e73, 0x694d, 0x486e, 0x6965, 0x6867, 0x0274, 
+0x142d, 0x6f43, 0x736e, 0x7274, 0x6961, 0x746e, 0x2e73, 0x694d, 0x576e, 
+0x6469, 0x6874, 0x3502, 0x460c, 0x6e6f, 0x2e74, 0x6843, 0x7261, 0x6573, 
+0x0774, 0x440f, 0x4645, 0x5541, 0x544c, 0x435f, 0x4148, 0x5352, 0x5445, 
+0x460a, 0x6e6f, 0x2e74, 0x6f43, 0x6f6c, 0x0772, 0x630c, 0x576c, 0x6e69, 
+0x6f64, 0x5477, 0x7865, 0x0b74, 0x6f46, 0x746e, 0x482e, 0x6965, 0x6867, 
+0x0274, 0x09f5, 0x6f46, 0x746e, 0x4e2e, 0x6d61, 0x0665, 0x4d0d, 0x2053, 
+0x6153, 0x736e, 0x5320, 0x7265, 0x6669, 0x460a, 0x6e6f, 0x2e74, 0x7453, 
+0x6c79, 0x0b65, 0x0e00, 0x6c4f, 0x4364, 0x6572, 0x7461, 0x4f65, 0x6472, 
+0x7265, 0x0608, 0x6353, 0x6c61, 0x6465, 0x0808, 0x6e4f, 0x7243, 0x6165, 
+0x6574, 0x0a07, 0x6f46, 0x6d72, 0x7243, 0x6165, 0x6574, 0x500d, 0x7869, 
+0x6c65, 0x5073, 0x7265, 0x6e49, 0x6863, 0x6002, 0x540a, 0x7865, 0x4874, 
+0x6965, 0x6867, 0x0274, 0x000d, "\000" 
+    0
+END
+
+IDD_VBODIALOG DLGINIT
+BEGIN
+    IDC_LOCKIT1, 0x376, 405, 0
+0x0000, 0x0000, 0x5054, 0x3046, 0x5407, 0x6f4c, 0x6b63, 0x7449, 0x4c06, 
+0x636f, 0x496b, 0x0474, 0x654c, 0x7466, 0xf203, 0x0300, 0x6f54, 0x0370, 
+0x00e0, 0x5705, 0x6469, 0x6874, 0x3502, 0x4806, 0x6965, 0x6867, 0x0274, 
+0x152e, 0x6f48, 0x7a72, 0x6353, 0x6f72, 0x6c6c, 0x6142, 0x2e72, 0x6956, 
+0x6973, 0x6c62, 0x0865, 0x5615, 0x7265, 0x5374, 0x7263, 0x6c6f, 0x426c, 
+0x7261, 0x562e, 0x7369, 0x6269, 0x656c, 0x0708, 0x6e41, 0x6863, 0x726f, 
+0x0b73, 0x0500, 0x6f43, 0x6f6c, 0x0772, 0x6309, 0x426c, 0x6e74, 0x6146, 
+0x6563, 0x4315, 0x6e6f, 0x7473, 0x6172, 0x6e69, 0x7374, 0x4d2e, 0x7861, 
+0x6548, 0x6769, 0x7468, 0x2e02, 0x4314, 0x6e6f, 0x7473, 0x6172, 0x6e69, 
+0x7374, 0x4d2e, 0x7861, 0x6957, 0x7464, 0x0268, 0x157b, 0x6f43, 0x736e, 
+0x7274, 0x6961, 0x746e, 0x2e73, 0x694d, 0x486e, 0x6965, 0x6867, 0x0274, 
+0x142d, 0x6f43, 0x736e, 0x7274, 0x6961, 0x746e, 0x2e73, 0x694d, 0x576e, 
+0x6469, 0x6874, 0x3502, 0x460c, 0x6e6f, 0x2e74, 0x6843, 0x7261, 0x6573, 
+0x0774, 0x440f, 0x4645, 0x5541, 0x544c, 0x435f, 0x4148, 0x5352, 0x5445, 
+0x460a, 0x6e6f, 0x2e74, 0x6f43, 0x6f6c, 0x0772, 0x630c, 0x576c, 0x6e69, 
+0x6f64, 0x5477, 0x7865, 0x0b74, 0x6f46, 0x746e, 0x482e, 0x6965, 0x6867, 
+0x0274, 0x09f5, 0x6f46, 0x746e, 0x4e2e, 0x6d61, 0x0665, 0x4d0d, 0x2053, 
+0x6153, 0x736e, 0x5320, 0x7265, 0x6669, 0x460a, 0x6e6f, 0x2e74, 0x7453, 
+0x6c79, 0x0b65, 0x0e00, 0x6c4f, 0x4364, 0x6572, 0x7461, 0x4f65, 0x6472, 
+0x7265, 0x0608, 0x6353, 0x6c61, 0x6465, 0x0808, 0x6e4f, 0x7243, 0x6165, 
+0x6574, 0x0a07, 0x6f46, 0x6d72, 0x7243, 0x6165, 0x6574, 0x500d, 0x7869, 
+0x6c65, 0x5073, 0x7265, 0x6e49, 0x6863, 0x6002, 0x540a, 0x7865, 0x4874, 
+0x6965, 0x6867, 0x0274, 0x000d, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP                  "res\\bitmap1.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_STRING1             "/"
+    IDS_SPACE               "Space"
+    IDS_NAG_STRING_ENG      "The software registration procedure for this NCR General POS Software Application is incomplete.  Please contact your NCR Authorized Partner or whoever installed this software for further information or to obtain a software unlock code.\r\rYou have %2d days to complete the procedure before the software will become inoperable.\r\rRegistration Number is %s"
+    IDS_NAG_STRING_CHI      "The software registration procedure for this NCR General POS Software Application is incomplete.  Please contact your NCR Authorized Partner or whoever installed this software for further information or to obtain a software unlock code.\r\rYou have %2d days to complete the procedure before the software will become inoperable.\r\rRegistration Number is %s"
+    IDS_NAG_STRING_FRE      "The software registration procedure for this NCR General POS Software Application is incomplete.  Please contact your NCR Authorized Partner or whoever installed this software for further information or to obtain a software unlock code.\r\rYou have %2d days to complete the procedure before the software will become inoperable.\r\rRegistration Number is %s"
+    IDS_NAG_STRING_GER      "The software registration procedure for this NCR General POS Software Application is incomplete.  Please contact your NCR Authorized Partner or whoever installed this software for further information or to obtain a software unlock code.\r\rYou have %2d days to complete the procedure before the software will become inoperable.\r\rRegistration Number is %s"
+    IDS_NAG_STRING_SPA      "The software registration procedure for this NCR General POS Software Application is incomplete.  Please contact your NCR Authorized Partner or whoever installed this software for further information or to obtain a software unlock code.\r\rYou have %2d days to complete the procedure before the software will become inoperable.\r\rRegistration Number is %s"
+    FILE_ID_VER             ALL_O_VERSIONINFO      // FILEVERSION
+    IDS_DEVICE_CONFIG_OPEN  "Device Config is running, please close Device Config and restart NCR General POS."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\Framework.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,293 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4b04549a-a5cc-41c1-b49f-b2074d5f1e25}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{6f9e21c3-5f1e-471a-aad7-cd3edfdf3178}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="uifac1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFAC10.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac100.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac102.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac103.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFAC11.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac111.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac114.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac115.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac116.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac119.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac122.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac123.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac124.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac125.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac126.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac127.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFAC128.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac129.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac130.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac131.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac132.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac133.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac135.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac136.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac137.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac15.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac150.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac151.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac152.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac153.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac154.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac160.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac161.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac162.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac169.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac17.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Uifac170.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac175.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac176.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac18.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac19.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac194.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFAC208.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac21.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac223.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac23.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac233.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac24.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac26.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac275.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac276.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac29.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac30.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac31.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac33.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac39.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFAC4.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac40.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac42.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac444.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac50.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac6.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac63.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac64.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac66.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac68.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac7.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac70.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac71.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac72.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac75.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac777.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac78.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac82.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac84.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac85.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac86.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac87.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac88.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac888.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac89.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac97.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac985.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac99.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifac999.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifacmod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="uifsupex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

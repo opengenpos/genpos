@@ -1,0 +1,128 @@
+# PARAMINI file located in the Database folder with various directives
+# to be run when GenPOS first starts up.  This is a template to show
+# the various directives available.
+#
+#  Version:  .08
+#  Date:     08/01/2017
+#
+#  Update log
+# 08/06/2014  R. Chambers updates for GenPOS Rel 2.2.1.132
+# 12/09/2014  R. Chambers eliminating duplicate versions and updating repository GenPOS Rel 2.2.1.142.
+# 01/09/2015  R. Chambers added rel_21_stylesettings flag in customersettings section for Rel 2.1 behavior
+# 07/28/2016  R. Chambers added mercurypaymenttest flag in customersettings section for Mercury Payments testing
+# 10/25/2016  R. Chambers added historicalfolder section for Supervisor Reports to special folder.
+# 08/01/2017  R. Chambers added notallowpartialauth flag in customersettings section disable allowing Partial Authorization for EPT
+
+# Specify a delay in seconds before processing will start.
+# Default delay is 5 seconds.
+# This directive should be the first directive in the file.
+<inidelay>3</inidelay>
+
+#  List of processes (tasks) to startup and monitor to do restart if it terminates.
+#  Directives in this section processed by function ProcessXmlFileStartUpProcessRules().
+<startupprocess>
+
+#  Startup process and monitor to restart it if it terminates.
+# The exe-monitor directive provides the path to an executable file for argument to CreateProcess().
+# The exe-monitor directive uses one thread per directive to start the executable and to wait for it to exit.
+# If the process exits (WaitForSingleObject() is used) then it is restarted.
+#  Only .exe files can be specified.
+#  Use quotes to specify a path such as "C:\Flashdisk\notepad.exe".
+#  Otherwise executable must be in Database folder.
+#<filename>POSConfig.exe<filename>
+#<exe-monitor>"C:\Program Files\NCR\NeighborhoodPOS\Connector\GPOSConnector.exe"</exe-monitor>
+#<exe-monitor>"C:\flashdisk\ncr\saratoga\amtrakbatchfiles\GetGPS.exe"</exe-monitor>
+
+# The filename directive provides a file name for argument to ShellExecute().  The process is not monitored.
+#<filename>send_operators.lnk<filename>>
+#<filename>GenPOSFocus.lnk<filename>
+#<filename>TRAINID.lnk<filename>
+</startupprocess>
+
+# directives needed with Zebra printers for use with logo printing.
+# addlogoext will add the specified logo to the logo bit map files before starting a download.
+# logoloaddelay is the number of milliseconds after starting
+# a bit map download to delay before starting the next bit map download
+# From our testing .bmp extension works for both Zebra and NCR printers.
+#<addlogoext>bmp</addlogoext>
+#<logoloaddelay>250</logoloaddelay>
+
+# historical reports folder is a folder where copies of reports created by some
+# actions are placed. this functionality is typically used with some type of
+# cloud storage client such as DropBox, Microsoft OneDrive, or Google Drive.
+# several output formats are available: csv (Comma Separated Values), report (text).
+# the output may use the provisioned mnemonics or standard identifiers. these
+# are the identifiers for the various data fields such as transaction mnemonics.
+# directives processed by function ProcessXmlFileHistoricalFolder().
+#<historicalfolder>
+#<historicalreportsfolder>C:\OneDrive\GenPOS</historicalreportsfolder>
+#<output>csv</output>
+#<mnemonics>0</mnemonics>
+#</historicalfolder>
+
+# directives that provide settings for bar code printing on receipts.
+<barcode>
+# code indicates the bar code symbology: code39, code128, code128c, codeean128.
+#<code></code>
+# halign is horizontal alignment of the bar code: left, center, or right
+#<halign></halign>
+# text indicates where bar code text is placed in relation to the bar code: above, below, or none.
+#<text></text>
+</barcode>
+
+# settings and parameters for the receipt printer
+<receiptprinter>
+# initstring hex is \xhh where hh are two hex digits (0-9,A-F), octal is \0nnn where nnn are three octal digits (0-7)
+# \n, \t, \r are also recognized.
+#<initstring>\x1b|3fT</initstring>
+</receiptprinter>
+
+# customer specific flags and settings specified in the following section these
+# enable/disable customer specific behavior.  An ASSRTLOG is generated if enabled.
+# If Amtrak or US Customs setting are turned on then Cash, Check, and Foreign Tender will not print on split tender no matter what the tender key setting is on tender page 6.
+# However, if Amtrak and US Customs setting are turned off then whether the tender key will generate a receipt will depend on the tender key page 6 setting. 
+# The US Customes DataCap NETePay server depended on a nine digit OperatorID composed of 2 digit terminalid,
+# 4 digit store number, and 3 digit cashier id in order to process the OperatorID for the 2 digit terminal id.
+# Some Rel 2.1 customers want to see the total amount when Account Number Entry is requested.
+<customersettings>
+
+# turn on/off Amtrak specific behaviors - SYSCONFIG_CUSTOMER_ENABLE_AMTRAK
+<amtraksettings>0</amtraksettings>
+
+# turn on/off US Customs specific behaviors - SYSCONFIG_CUSTOMER_ENABLE_USCBP
+<uscbpsettings>0</uscbpsettings>
+
+# turn on/off Rel 2.1 and Earlier specific behaviors - SYSCONFIG_CUSTOMER_ENABLE_REL_21_STYLE
+#  - display total at Enter Number with EPT
+#  - tender key specific Merchant Id for Electronic Payment
+# following behaviors no longer apply due to source code changes
+#  - no check on entry of account number or reference number with Paid Out or Receive On Account
+#    . the change to check entry of account number is commented out.
+<rel_21_stylesettings>0</rel_21_stylesettings>
+
+# turn on/off Mercury Payments Electronic Payment Test behaviors - SYSCONFIG_CUSTOMER_ENABLE_MERCURYPAYTEST
+#  - used only when testing Mercury Payments electronic payments interface using test servers.
+# NOTE: per conversation with Paul Stewart, Vantiv/WorldPay/Mercury this is no longer necessary for testing.
+#       Richard Chambers, May-23-2018
+<mercurypaymenttest>0</mercurypaymenttest>
+
+# turn on/off allowing Partial Authorization Electronic Payment Test behaviors - SYSCONFIG_CUSTOMER_ENABLE_NO_PARTIAL_AUTH
+#  - used only when customer wants to not allow a Partial Authorization in their particular environment.
+# normally Partial Authorization is required by a Merchant Card agreement however there may be cases where a
+# customer wants to disable Partial Authorization for a particular site due to circumstances at that site.
+# this is turned on automatically when amtraksettings is turned on. however amtraksettings turns on additional behaviors.
+<notallowpartialauth>0</notallowpartialauth>
+</customersettings>
+
+# a file containing Connection Engine Interface XML commands for Framework
+# and windows that is processed at startup of GenPOS.  See function ProcessXmlFileStartUpFrameworkXml()
+<frameworkxml>
+#<filename>winchng.xml</filename>
+</frameworkxml>
+
+# rules for turning on and turning off various kinds of logs.
+# normally these are enabled for helping with field issues.
+<loggingrules>
+# following rule enables transaction logging which generates a file, TRANSLOG, logging transactions
+<transactions>0</transactions>
+</loggingrules>

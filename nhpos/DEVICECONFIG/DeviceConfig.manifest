@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- NOTE: with Visual Studio 2005 manifest compiler, we are seeing the following warning which appears innocous -->
+<!-- manifest authoring warning 81010002: Unrecognized Element "requestedPrivileges" in namespace "urn:schemas-microsoft-com:asm.v3".-->
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+      <security>
+         <requestedPrivileges>
+           <!-- We must run DeviceConfig as Adminstrator under Windows 7 in order to allow changes in HKEY_LOCAL_MACHINE. -->
+           <!-- For debugging you may need to change level to "asInvoker" and change it back to "requireAdministrator" -->
+           <!-- Be warned that "asInvoker" may modify a shadow of HKEY_LOCAL_MACHINE in HKEY_CURRENT_USER instead -->
+           <!-- Also "asInvoker" may be required for testing Drag and Drop of license files. See notes file dragdropDlg.cpp -->
+           <requestedExecutionLevel level="requireAdministrator" />
+         </requestedPrivileges>
+      </security>
+   </trustInfo>
+</assembly>

@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{61e55f4f-2fe5-4de7-bf9b-a8264817b468}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{29160d2d-ab62-4305-b172-8253398e9dd8}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="mldadd1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldadd2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldcasi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldcncl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldcpn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldctax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mlddept.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mlddisc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldftnd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldhead.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldimod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldirdi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mlditem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldmisc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldmltl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldmltp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldmodd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldmul.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldmulc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldmulp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldnchk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldntnd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldoopn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldopen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldreod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldrgcom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldsale.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldsevt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldsign.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldtax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldtend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldtip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldtotl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldtray.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldttl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldutax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldvat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,11 @@
+; BusinessLogic.def : Declares the module parameters for the DLL.
+
+LIBRARY      "BusinessLogic"
+
+;DESCRIPTION  'BusinessLogic Windows CE Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here
+	BlNotifyData		@10
+	BlSetFrameworkFunc	@11
+;	BlInterface			@12

@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{66605DBC-26D3-45D9-BEDC-3D771E4C6820}</ProjectGuid>
+    <RootNamespace>NHPOS_Includes</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <SccProjectName>Svn</SccProjectName>
+    <SccAuxPath>Svn</SccAuxPath>
+    <SccLocalPath>Svn</SccLocalPath>
+    <SccProvider>SubversionScc</SccProvider>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="bl.h" />
+    <ClInclude Include="DeviceIO.H" />
+    <ClInclude Include="DeviceIOCashDrawer.h" />
+    <ClInclude Include="DeviceIOCoin.h" />
+    <ClInclude Include="DeviceIODisplay.h" />
+    <ClInclude Include="DeviceIOKeylock.h" />
+    <ClInclude Include="DeviceIOMSR.h" />
+    <ClInclude Include="DeviceIOPcif.h" />
+    <ClInclude Include="DeviceIOPrinter.h" />
+    <ClInclude Include="DeviceIOScale.h" />
+    <ClInclude Include="DeviceIOScanner.h" />
+    <ClInclude Include="DeviceIOServerLock.h" />
+    <ClInclude Include="ECR.H" />
+    <ClInclude Include="EEptTrans.h" />
+    <ClInclude Include="Evs.h" />
+    <ClInclude Include="FILE.H" />
+    <ClInclude Include="FrameworkIO.h" />
+    <ClInclude Include="LOG.H" />
+    <ClInclude Include="NCRKLOCK.h" />
+    <ClInclude Include="NCRPOWER.h" />
+    <ClInclude Include="NCRSCOMM.h" />
+    <ClInclude Include="NCRSERAL.h" />
+    <ClInclude Include="NCRSLOCK.h" />
+    <ClInclude Include="NCRSPKER.h" />
+    <ClInclude Include="PIF.H" />
+    <ClInclude Include="PIFCTL.H" />
+    <ClInclude Include="PIFNET.H" />
+    <ClInclude Include="PIFTABLE.H" />
+    <ClInclude Include="plulog.h" />
+    <ClInclude Include="PluTtlD.H" />
+    <ClInclude Include="pmg.h" />
+    <ClInclude Include="PrinterCaps.h" />
+    <ClInclude Include="rfl.h" />
+    <ClInclude Include="SCF.H" />
+    <ClInclude Include="security.h" />
+    <ClInclude Include="ServerProc.h" />
+    <ClInclude Include="TALLY.H" />
+    <ClInclude Include="termcfg.h" />
+    <ClInclude Include="unicodeFixes.h" />
+    <ClInclude Include="versioninfo.h" />
+    <ClInclude Include="vos.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

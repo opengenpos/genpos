@@ -1,0 +1,979 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#include "versioninfo.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\DeviceConfig.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\DeviceConfig.ico"
+IDI_CLSFOLD             ICON                    "res\\folder.ico"
+IDI_BLANK               ICON                    "res\\device_blank.ico"
+IDI_FLOPPY              ICON                    "res\\device_floppy.ico"
+IDI_DRIVE               ICON                    "res\\device_drive.ico"
+IDI_CDDRIVE             ICON                    "res\\device_cd.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DEVICECONFIG_DIALOG DIALOGEX 0, 0, 530, 337
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Device Configuration Utility"
+MENU IDR_MENU1
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CONTROL         "List1",IDC_LIST_DEVICES,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,6,111,517,218
+    LTEXT           "Version Number:",IDC_STATIC,6,8,61,8
+    LTEXT           "Computer Name:",IDC_STATIC,6,18,61,8
+    LTEXT           "Logical Terminal Number: ",IDC_STATIC,6,28,100,8
+    LTEXT           "IP Address: ",IDC_STATIC,6,38,93,8
+    LTEXT           "",IDC_VERSIONNUMBER_TF,116,8,75,8
+    LTEXT           "",IDC_COMPNAME_TF,116,18,65,8
+    LTEXT           "",IDC_TERMNUM_ERR_TF,116,28,65,8
+    LTEXT           "x",IDC_IPADDR_TF,116,38,65,8
+    DEFPUSHBUTTON   "OK",IDOK,473,9,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,473,25,50,14
+    PUSHBUTTON      "Change Port Settings",IDC_BUTTON_SETTINGS,285,7,74,21
+    PUSHBUTTON      "Change Assigned To",IDC_BUTTON_CHANGE_DEVICE,209,7,73,21
+    CONTROL         "Run NCR General POS at Windows start up",IDC_NHPOS_STARTUP,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,273,37,155,10
+    PUSHBUTTON      "Change Options",IDC_CHANGE_OPTIONS,363,7,65,21
+    CONTROL         "Enable HTTP Server component",IDC_NHPOS_HTTPSERVER,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,273,54,119,10
+    CONTROL         "Terminal is Mobile Register",IDC_NHPOS_DISCONNECTED_SAT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,80,126,10
+    CONTROL         "Mobile Register is Joined",IDC_NHPOS_DISCONNECTED_SAT_JOINED,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,93,121,10
+    PUSHBUTTON      "Satellite Override and Mobile Register Setup",IDC_BUTTON_DISCONNECTED_SAT_PARAMS,149,64,90,40,BS_MULTILINE
+    CONTROL         "Enable Connected Engine component",IDC_NHPOS_CONNENGINE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,273,68,143,10
+    EDITTEXT        IDC_EDIT_CONNENGINE_PORT,420,68,24,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_NHPOS_HTTPSERVER_PORT,419,53,24,12,ES_AUTOHSCROLL
+    LTEXT           "Serial Number:",IDC_STATIC9,7,49,56,11
+    LTEXT           "s",IDC_STATIC_SERIALNUMBER,116,48,102,10
+    CONTROL         "Terminal is Satellite Register Override",IDC_RADIO_DISCONNECTED_OVERRIDE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,66,135,10
+END
+
+IDD_DIALOG_DEVICELIST DIALOG 0, 0, 375, 189
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "List of Devices"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,318,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,318,24,50,14
+    CONTROL         "List1",IDC_LIST_DEVICES,"SysListView32",LVS_REPORT | LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,7,41,361,141
+END
+
+IDD_DIALOG_PORT_SETTINGS DIALOGEX 0, 0, 276, 273
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Port Settings"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,219,7,50,22
+    PUSHBUTTON      "Cancel",IDCANCEL,219,41,50,23
+    COMBOBOX        IDC_COMBO_PORT,87,121,78,106,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_BAUD,87,149,76,63,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_CHARBITS,85,172,71,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_PARITY,83,192,75,54,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_STOPBITS,84,218,85,59,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_HANDSHAKE,83,240,89,69,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Port:",IDC_STATIC_PORT,7,121,72,13
+    RTEXT           "Baud:",IDC_STATIC_BAUD,7,148,75,12
+    RTEXT           "Char Bits:",IDC_STATIC_CHARBITS,7,173,70,12
+    RTEXT           "Parity:",IDC_STATIC_PARITY,7,192,68,13
+    RTEXT           "Stop Bits:",IDC_STATIC_STOPBITS,7,218,73,13
+    RTEXT           "Handshake:",IDC_STATIC_HANDSHAKE,7,243,72,12
+    RTEXT           "IP Address:",IDC_STATIC_IP_ADDR,7,28,74,12
+    RTEXT           "IP Port:",IDC_STATIC_IP_PORT,9,49,74,12
+    EDITTEXT        IDC_EDIT_IP_PORT,97,50,42,14,ES_RIGHT | ES_AUTOHSCROLL
+    CONTROL         "IPAddress1",IDC_IPADDRESS,"SysIPAddress32",WS_TABSTOP,95,28,84,15
+    GROUPBOX        "COM Port Properties",IDC_STATIC_FRAME_COMM,7,107,200,154
+    GROUPBOX        "IP Address Properties",IDC_STATIC_FRAME_IP,7,7,193,66
+    CONTROL         "Use IP Address Properties (remote device)",IDC_CHECK_IP_PORT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,84,186,13
+END
+
+IDD_DIALOG_INITIAL_RESET DIALOG 0, 0, 175, 106
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Initial Reset"
+FONT 12, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Exit",IDC_INITRESET_EXIT,57,80,58,14
+    LTEXT           "Select Item",IDC_STATIC,14,17,36,8
+    COMBOBOX        IDC_INITRESET_SELECT,68,17,100,115,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Clear",IDC_INITRESET_CLEAR,57,44,58,14
+    LTEXT           "Status",IDC_STATIC_INITRESET_STATUS,27,62,140,12
+END
+
+IDD_DIALOG_SECRET_NUMBER DIALOGEX 0, 0, 156, 155
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Secret Number"
+FONT 10, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_SECRETNUM_SECRETNUM_EDIT,7,20,80,14,ES_PASSWORD | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,99,7,50,22
+    PUSHBUTTON      "Cancel",IDCANCEL,99,32,50,18
+    LTEXT           "Enter Secret Number",IDC_SECRETNUM_SECRETNUM_STR,7,7,82,10
+    PUSHBUTTON      "0",IDC_BUTTON0,11,128,36,20
+    PUSHBUTTON      "1",IDC_BUTTON1,11,106,36,20
+    PUSHBUTTON      "2",IDC_BUTTON2,52,106,36,20
+    PUSHBUTTON      "3",IDC_BUTTON3,91,106,36,20
+    PUSHBUTTON      "4",IDC_BUTTON4,11,84,36,20
+    PUSHBUTTON      "5",IDC_BUTTON5,52,84,36,20
+    PUSHBUTTON      "6",IDC_BUTTON6,91,84,36,20
+    PUSHBUTTON      "7",IDC_BUTTON7,12,62,36,20
+    PUSHBUTTON      "8",IDC_BUTTON8,52,62,36,20
+    PUSHBUTTON      "9",IDC_BUTTON9,91,62,36,20
+END
+
+IDD_DIALOG_EPT_SETTINGS DIALOGEX 0, 0, 480, 415
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "EPT Configuration"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "Type of EPT",IDC_STATIC_TYPE_OF_EPT,17,15,91,41
+    LTEXT           "DataCap EPT",IDC_STATIC_DATACAP_DISPLAY,23,30,80,20,NOT WS_GROUP
+    GROUPBOX        "Merchant ID",IDC_STATIC_MERCHANT_GROUP,123,15,178,42
+    LTEXT           "Merchant ID:",IDC_STATIC_MERCHANT_ID,133,33,44,16
+    EDITTEXT        IDC_MERCHANT_ID,181,31,108,14,ES_AUTOHSCROLL
+    GROUPBOX        "DataCap Options",IDC_STATIC_DATACAP,7,67,195,53
+    LTEXT           "Name Server or IP Address:",IDC_STATIC_DATACAP_NAMESERVER,30,78,46,17
+    EDITTEXT        IDC_DATACAP_NAMESERVER_IP,84,78,110,15,ES_AUTOHSCROLL
+    GROUPBOX        "Server Host/IP",IDC_STATIC_MERCURY,211,67,213,53
+    EDITTEXT        IDC_MERCURY_NAMESERVER1,286,78,110,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MERCURY_NAMESERVER2,286,100,110,15,ES_AUTOHSCROLL
+    LTEXT           "Name Server 1:",IDC_STATIC_NAMESERVER1,223,81,60,11
+    LTEXT           "Name Server 2:",IDC_STATIC_NAMESERVER2,223,103,60,11
+    GROUPBOX        "Gift Card Server",IDC_STATIC_GIFT_SERVER,7,124,417,32
+    LTEXT           "Name Server 1:",IDC_STATIC_NAMESERVER3,24,137,58,11
+    EDITTEXT        IDC_GIFTCARD_NAMESERVER1,84,135,110,15
+    LTEXT           "Name Server 2:",IDC_STATIC_NAMESERVER4,223,137,60,11
+    EDITTEXT        IDC_GIFTCARD_NAMESERVER2,286,135,110,15
+    GROUPBOX        "PIN Pad Options",IDC_STATIC,7,233,466,111
+    COMBOBOX        IDC_COMBO_PINPAD,82,246,96,61,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "PIN Pad Device:",IDC_STATIC,15,247,59,9
+    RTEXT           "Comm Port:",IDC_STATIC_COMM_PORT,87,270,63,10
+    EDITTEXT        IDC_DATACAP_COMM_PORT,157,266,19,17,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Pad Idle Prompt:",IDC_STATIC,309,314,65,10
+    EDITTEXT        IDC_IDLEPROMPT_ID,381,313,76,12,ES_UPPERCASE
+    RTEXT           "Key Management Type (0, 1, 2):",IDC_STATIC,266,246,106,11
+    EDITTEXT        IDC_KEYMANAGETYPE_ID,379,244,13,12
+    RTEXT           "Master Key Index (0-9):",IDC_STATIC,270,263,103,11
+    EDITTEXT        IDC_MASTERKEYINDEX_ID,381,261,13,12
+    RTEXT           "Working Key:",IDC_STATIC,317,280,56,11
+    EDITTEXT        IDC_WORKINGKEY_ID,381,278,78,12,ES_UPPERCASE
+    RTEXT           "Should Rotate (0,1):",IDC_STATIC,292,297,82,11
+    EDITTEXT        IDC_SHOULDROTATE_ID,382,295,13,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,423,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,423,24,50,14
+    CONTROL         "Uses PDC:",IDC_PDC_CHECK,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,411,297,52,10
+    GROUPBOX        "PDC Settings",IDC_STATIC_PDC,7,352,466,51,WS_GROUP
+    COMBOBOX        IDC_MAGREADCOMBO,124,364,48,60,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    LTEXT           "Magnetic Reader Type:",IDC_MAG_READ_TYPE,45,366,76,8
+    LTEXT           "Mag Reader Timeout (sec):",IDC_MAG_READ_TIMEOUT,34,385,87,8
+    EDITTEXT        IDC_MAGREADEDIT,124,383,40,14,ES_AUTOHSCROLL | WS_GROUP
+    COMBOBOX        IDC_CHECKREADCOMBO,310,364,48,56,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    LTEXT           "Check Reader Type:",IDC_CHECK_READ_TYPE,237,366,67,8
+    LTEXT           "Check Reader Timeout (sec):",IDC_CHECK_READ_TIMEOUT,212,385,94,8
+    EDITTEXT        IDC_CHECKREADEDIT,310,383,40,14,ES_AUTOHSCROLL | WS_GROUP
+    GROUPBOX        "Employee Payroll Deduction Server",IDC_STATIC_EPD_SERVER,7,159,417,33
+    LTEXT           "Name Server 1:",IDC_STATIC_NAMESERVER5,24,175,58,11
+    EDITTEXT        IDC_EPD_NAMESERVER1,84,172,110,15
+    LTEXT           "Name Server 2:",IDC_STATIC_NAMESERVER6,223,175,60,11
+    EDITTEXT        IDC_EPD_NAMESERVER2,286,172,110,15
+    GROUPBOX        "Bad Check Server",IDC_STATIC_BC_SERVER,7,193,418,33
+    LTEXT           "Name Server 1:",IDC_STATIC_NAMESERVER7,24,209,58,11
+    EDITTEXT        IDC_BC_NAMESERVER1,84,206,110,15
+    LTEXT           "Name Server 2:",IDC_STATIC_NAMESERVER8,223,209,60,11
+    EDITTEXT        IDC_BC_NAMESERVER2,286,206,110,15
+    RTEXT           "Processor TerminalID:",IDC_STATIC,139,321,78,10
+    EDITTEXT        IDC_EDIT_TERMINALID_EMV,221,319,66,15
+    CONTROL         "dsiPDCX Available",IDC_CHECK_DSIPDCX,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,311,15,88,14
+    CONTROL         "dsiEMVUS Available",IDC_CHECK_DSIEMVUS,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,311,31,88,14
+    CTEXT           "dsiPDCX Secure Device",IDC_STATIC,21,289,94,10
+    COMBOBOX        IDC_COMBO_DATACAPSECURE,12,302,119,81,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_DATACAPSECURE_PAD,13,321,119,81,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "EMV Secure Device",IDC_STATIC,163,290,94,10
+    COMBOBOX        IDC_COMBO_DATACAPSECURE_EMV,148,302,138,78,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_LIST_DIALOG DIALOGEX 0, 0, 362, 186
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Open"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_AUTOARRANGE | WS_BORDER | WS_TABSTOP,6,37,351,113,WS_EX_STATICEDGE
+    CONTROL         "",IDC_STATIC_ADDRESS,"Static",SS_LEFTNOWORDWRAP | SS_CENTERIMAGE | SS_SUNKEN | WS_BORDER | WS_GROUP,6,19,351,16
+    PUSHBUTTON      "Back",IDC_BACK_BUTTON,142,3,38,14
+    COMBOBOX        IDC_DRIVE_COMBO,41,4,97,187,CBS_DROPDOWNLIST | CBS_SORT | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Look In",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | SS_CENTERIMAGE | WS_GROUP,13,4,25,15
+    EDITTEXT        IDC_FILE_NAME_BOX,48,159,229,15,ES_AUTOHSCROLL
+    CTEXT           "File Name",IDC_FILE_NAME_TXT,9,159,35,13,SS_CENTERIMAGE
+    PUSHBUTTON      "Copy",IDOK,291,152,50,14
+    DEFPUSHBUTTON   "Cancel",IDCANCEL,292,169,50,14
+END
+
+IDD_DIALOG_TEST DIALOGEX 0, 0, 300, 159
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Environment Setup"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,73,140,55,14
+    GROUPBOX        "OPOS Environment",IDC_STATIC,8,8,193,57
+    LTEXT           "OPOS Components:",IDC_OPOS_PRINTER,14,18,64,8
+    LTEXT           "",IDC_OPOS_PRINTER_VERSION,13,30,182,28
+    LTEXT           "",IDC_OPOS_PRINTER_TF,121,18,65,8
+    GROUPBOX        "EPT Payments",IDC_STATIC,8,70,193,60
+    LTEXT           "DataCap DSI Client-X:",IDC_STATIC,11,84,61,8
+    LTEXT           "xx",IDC_DATACAP_DSICLIENTX,121,84,65,8
+    LTEXT           "Data Cap Encrypt:",IDC_STATIC,11,94,74,8
+    LTEXT           "xx",IDC_DATACAP_ENCRYPT_TF,121,94,65,8
+    LTEXT           "DataCap DSI PDCX:",IDC_STATIC,11,104,74,8
+    LTEXT           "xx",IDC_DATACAP_DSIPDCX,121,104,65,8
+    LTEXT           "DataCap DSI EMVUS:",IDC_STATIC,12,115,74,8
+    LTEXT           "xx",IDC_DSIEMVXCTRL1,122,115,65,8
+    GROUPBOX        "PIN Pad Devices",IDC_STATIC,208,8,87,58
+    LTEXT           "Everest",IDC_STATIC,231,20,53,8
+    LTEXT           "x",IDC_IND_EVERESTMULTIPAYXCTRL,212,20,9,8
+    LTEXT           "1000",IDC_STATIC,231,30,53,8
+    LTEXT           "x",IDC_IND_VER1000XCTRL,212,30,9,8
+    LTEXT           "2000",IDC_STATIC,231,40,53,8
+    LTEXT           "x",IDC_IND_VER2000XCTRL,212,40,9,8
+    LTEXT           "PDC",IDC_STATIC,231,50,53,8
+    LTEXT           "x",IDC_IND_PDCXCTRL1,212,50,9,8
+    LTEXT           "Master IP",IDC_STATIC_MASTER_IP,228,78,65,10
+    LTEXT           "x",IDC_IND_MASTER_IP,212,78,9,8
+    DEFPUSHBUTTON   "Ping Test",IDC_PING_TEST,213,92,55,14
+END
+
+IDD_DIALOG_OPOS_TEST DIALOG 0, 0, 92, 66
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "OPOS Test"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "",IDC_CASHDRAWER1,
+                    "{CCB90042-B81E-11D2-AB74-0040054C3719}",NOT WS_VISIBLE,1,38,22,19
+    CONTROL         "",IDC_POSPRINTER1,
+                    "{CCB90152-B81E-11D2-AB74-0040054C3719}",NOT WS_VISIBLE,44,38,22,19
+    CONTROL         "",IDC_CASHDRAWER2,
+                    "{CCB90042-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,23,38,20,19
+    CONTROL         "",IDC_LINEDISPLAY1,
+                    "{CCB90102-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,0,0,21,21
+    CONTROL         "",IDC_MSR1,"{CCB90122-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,21,0,22,20
+    CONTROL         "",IDC_COINDISPENSER1,
+                    "{CCB90062-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,43,0,20,20
+    CONTROL         "",IDC_KEYLOCK1,"{CCB90092-B81E-11D2-AB74-0040054C3719}",WS_TABSTOP,64,0,21,21
+END
+
+
+IDD_DIALOG_NETWORK_PORT DIALOG 0, 0, 186, 94
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Network Port"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    LTEXT           "Network Port (default 2172):",IDC_STATIC,7,7,95,11
+    EDITTEXT        IDC_EDIT_NETWORK_PORT,27,20,25,14,ES_NUMBER
+    LTEXT           "Set the network port to use for LAN communications within the cluster and MWS/PEP.  Default is 2172.",IDC_STATIC,7,59,128,28
+END
+
+IDD_DIALOG_OPTION DIALOG 0, 0, 555, 356
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,498,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,498,24,50,14
+    CONTROL         "List1",IDC_LIST_OPTIONS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,7,50,541,299
+    PUSHBUTTON      "Change",IDC_OPTION_CHANGE,41,17,50,14
+END
+
+IDD_OPTION_VALUE DIALOG 0, 0, 186, 49
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Option Value"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    EDITTEXT        IDC_EDIT_OPTIONS,17,14,106,14,ES_AUTOHSCROLL
+END
+
+IDD_NHPOS_UNLOCK DIALOG 0, 0, 345, 141
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Terminal Registration"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,237,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,237,25,50,14
+    LTEXT           "Status:",IDC_STATIC_STATUS,7,14,150,14
+    LTEXT           "Days Left",IDC_STATIC_DAYSLEFT,7,30,82,14
+    EDITTEXT        IDC_STATIC_SOFTWARESERIALNO,7,46,150,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Terminal Serial No:",IDC_STATIC_TERMINALSERIALNO,7,74,134,14
+    LTEXT           "Unlock Code:",IDC_STATIC_UNLOCKCODE,7,92,150,14
+    LTEXT           "System Class:",IDC_STATIC_SYSTEMCLASS,7,110,150,14
+    LTEXT           "Unlock Code:",IDC_STATIC,173,62,48,11
+    LTEXT           "User Name:",IDC_STATIC,172,89,48,11
+    GROUPBOX        "Unlock",IDC_STATIC,165,43,177,93
+    EDITTEXT        IDC_EDIT_UNLOCKNUMBER,223,59,114,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_USERNAME,223,84,114,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Unlock",IDC_BUTTON_REGISTER_UNLOCK,179,116,50,14
+END
+
+IDD_DIALOG_DISCONNECTED_SAT_PARAMS DIALOGEX 0, 0, 284, 98
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Disconnected Satellite Parameters"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,227,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,227,24,50,14
+    CONTROL         "Regular Register",IDC_RADIO_STANDARD_SATELLITE,"Button",BS_AUTORADIOBUTTON,7,9,112,12
+    CONTROL         "Mobile Register",IDC_RADIO_DISCONNECTED_SATELLITE,
+                    "Button",BS_AUTORADIOBUTTON,7,37,112,12
+    CONTROL         "Mobile Register is Joined",IDC_NHPOS_DISCONNECTED_SAT_JOINED,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,53,119,10
+    LTEXT           "Name of Last Joined Master Terminal",IDC_STATIC_TERM_LABEL,104,73,148,13
+    EDITTEXT        IDC_EDIT_DISCONNECTED_SAT_MASTER,7,71,86,13,ES_AUTOHSCROLL
+    CONTROL         "Satelite Register Override",IDC_RADIO_DISCONNECTED_OVERRIDE,
+                    "Button",BS_AUTORADIOBUTTON,7,22,112,12
+END
+
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About DeviceConfig"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           ALL_Q_COPYRIGHT,IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+    LTEXT           ALL_P_VERSIONINFO,IDC_STATIC,40,10,119,8,SS_NOPREFIX
+END
+
+IDD_DIALOG_OPOS_PINPAD DIALOGEX 0, 0, 437, 103
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "PIN Pad Options"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,380,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,380,27,50,14
+    RTEXT           "Comm Port:",IDC_STATIC_COMM_PORT,30,20,67,10
+    EDITTEXT        IDC_DATACAP_COMM_PORT,104,17,14,13,ES_AUTOHSCROLL
+    RTEXT           "Pad Idle Prompt:",IDC_STATIC,18,38,79,10
+    EDITTEXT        IDC_IDLEPROMPT_ID,104,37,76,12,ES_UPPERCASE
+    RTEXT           "Key Management Type (0, 1, 2):",IDC_STATIC,198,19,106,11
+    EDITTEXT        IDC_KEYMANAGETYPE_ID,311,18,13,12
+    RTEXT           "Master Key Index (0-9):",IDC_STATIC,200,36,103,11
+    EDITTEXT        IDC_MASTERKEYINDEX_ID,311,34,13,12
+    RTEXT           "Working Key:",IDC_STATIC,221,53,82,11
+    EDITTEXT        IDC_WORKINGKEY_ID,311,52,78,12,ES_UPPERCASE
+    RTEXT           "Should Rotate (0,1):",IDC_STATIC,222,72,82,11
+    EDITTEXT        IDC_SHOULDROTATE_ID,312,71,13,12,ES_AUTOHSCROLL
+END
+
+IDD_DRAGDROP_DIALOG DIALOGEX 0, 0, 249, 278
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Terminal unlock"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,192,7,50,16
+    PUSHBUTTON      "Cancel",IDCANCEL,192,25,50,16
+    LTEXT           "Serial No.:",IDC_STATIC,22,112,65,12
+    LTEXT           "serial",IDC_STATIC_SERIALNUMBER1,91,112,110,12
+    LTEXT           "Reseller Id:",IDC_STATIC_RESELLER_ID_LABEL,21,122,65,12
+    LTEXT           "reseller",IDC_STATIC_RESELLER_ID,91,122,108,12
+    LTEXT           "Serial No.:",IDC_STATIC,10,28,65,12
+    LTEXT           "serial",IDC_STATIC_SERIALNUMBER2,80,28,94,12
+    LTEXT           "Reseller Id:",IDC_STATIC,10,39,65,12
+    LTEXT           "reseller",IDC_STATIC_RESELLER_ID2,79,39,97,12
+    LTEXT           "Terminal Provisioning",IDC_STATIC,33,98,78,12
+    LTEXT           "License File",IDC_STATIC_NAME,21,14,78,12
+    GROUPBOX        "License Key",IDC_STATIC,7,3,180,63
+    PUSHBUTTON      "Set License",IDC_BUTTON_GENERATE,23,71,57,18
+    EDITTEXT        IDC_EDIT_NEW_RESELLER_ID,55,162,99,14,ES_AUTOHSCROLL
+    LTEXT           "Reseller Id:",IDC_STATIC_RESELLER_LABEL,10,164,39,12
+    PUSHBUTTON      "Set Reseller Id",IDC_BUTTON_SET_RESELLER_ID,10,187,65,23
+    PUSHBUTTON      "Set Terminal Serial",IDC_BUTTON_SET_SERIAL_NO,10,210,65,23
+    LTEXT           "validate",IDC_STATIC_VALIDATE_GEN,95,74,102,11
+    LTEXT           "validate",IDC_STATIC_VALIDATE_DROP,29,50,129,11
+    PUSHBUTTON      "7",IDC_BUTTON7,105,181,30,17
+    PUSHBUTTON      "8",IDC_BUTTON8,141,181,30,17
+    PUSHBUTTON      "9",IDC_BUTTON9,176,181,30,17
+    PUSHBUTTON      "4",IDC_BUTTON4,105,201,30,17
+    PUSHBUTTON      "5",IDC_BUTTON5,141,201,30,17
+    PUSHBUTTON      "6",IDC_BUTTON6,175,201,30,17
+    PUSHBUTTON      "1",IDC_BUTTON1,105,221,30,17
+    PUSHBUTTON      "2",IDC_BUTTON2,141,221,30,17
+    PUSHBUTTON      "3",IDC_BUTTON3,176,221,30,17
+    PUSHBUTTON      "0",IDC_BUTTON0,141,241,30,17
+    PUSHBUTTON      "-",IDC_BUTTONDASH,176,241,30,17
+    PUSHBUTTON      "Clear",IDC_BUTTON_CLEAR,161,162,38,15
+    PUSHBUTTON      "Fetch",IDC_BUTTON_FETCH,20,134,42,16
+    LTEXT           "https://georgiasouthern.edu/",IDC_STATIC_PORTAL_URL,10,264,200,11
+END
+
+IDD_DIALOG_USERSCRIPT DIALOGEX 0, 0, 171, 163
+STYLE DS_ABSALIGN | DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "User Setup Scripts"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,114,100,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,114,119,50,14
+    EDITTEXT        IDC_EDIT1,76,59,68,14,ES_AUTOHSCROLL
+    RTEXT           "User Group:",IDC_STATIC,7,60,60,14
+    PUSHBUTTON      "Abort",IDABORT,114,140,50,14
+    RTEXT           "Abort script generation",IDC_STATIC,7,141,98,13
+    RTEXT           "Generate scripts only.",IDC_STATIC,7,120,97,13
+    RTEXT           "Generate and execute scripts.",IDC_STATIC,10,102,97,13
+    LTEXT           "WARNING: This must be Run as Administrator user.  USB Start change requires Restart.",IDC_STATIC,7,7,157,19
+    CONTROL         "USB Start",IDC_CHECK_USBSTOR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,142,15
+    CONTROL         "Add USB Store permissions",IDC_CHECK_ADD_USB_PERM,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,57,79,103,12
+END
+
+IDD_DIALOG_DSIEMVUS DIALOGEX 0, 0, 186, 93
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    CONTROL         "",IDC_DSIEMVXCTRL1,
+                    "{F17CF553-1802-4450-92E1-469A0544FD63}",WS_TABSTOP,0,0,60,25
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION ALL_N_VERSIONINFO
+ PRODUCTVERSION ALL_N_VERSIONINFO
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+			VALUE "CompanyName", ALL_Q_COMPANYNAME
+			VALUE "FileVersion", ALL_M_VERSIONINFO
+            VALUE "ProductVersion", ALL_M_VERSIONINFO
+			VALUE "LegalCopyright", ALL_Q_COPYRIGHT
+			VALUE "LegalTrademarks", ALL_Q_TRADEMARKS
+			VALUE "PrivateBuild", ALL_Q_PRIVATEBUILD
+			VALUE "Comments", "DeviceConfig is used to configure the OpenGenPOS operating environment.\0"
+			VALUE "FileDescription", "DeviceConfig Application to configure OpenGenPOS General POS peripherials."
+			VALUE "InternalName", "DeviceConfig"
+            VALUE "OriginalFilename", "DeviceConfig.EXE"
+			VALUE "ProductName", "OpenGenPOS DeviceConfig Application"
+		END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DEVICECONFIG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 523
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 329
+    END
+
+    IDD_DIALOG_DEVICELIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 368
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 182
+    END
+
+    IDD_DIALOG_PORT_SETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 269
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 266
+    END
+
+    IDD_DIALOG_INITIAL_RESET, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 168
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 99
+    END
+
+    IDD_DIALOG_SECRET_NUMBER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 148
+    END
+
+    IDD_DIALOG_EPT_SETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 473
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 409
+    END
+
+    IDD_DIALOG_TEST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        VERTGUIDE, 201
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 154
+        HORZGUIDE, 43
+    END
+
+    IDD_DIALOG_OPOS_TEST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 85
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 59
+    END
+
+    IDD_DIALOG_NETWORK_PORT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 87
+    END
+
+    IDD_DIALOG_OPTION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 548
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 349
+    END
+
+    IDD_OPTION_VALUE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 42
+    END
+
+    IDD_NHPOS_UNLOCK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 316
+        TOPMARGIN, 7
+    END
+
+    IDD_DIALOG_DISCONNECTED_SAT_PARAMS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 277
+        TOPMARGIN, 7
+    END
+
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_DIALOG_OPOS_PINPAD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 430
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 96
+    END
+
+    IDD_DRAGDROP_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 242
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 258
+    END
+
+    IDD_DIALOG_USERSCRIPT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 156
+    END
+
+    IDD_DIALOG_DSIEMVUS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 86
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DIALOG_PORT_SETTINGS DLGINIT
+BEGIN
+    IDC_COMBO_PORT, 0x403, 5, 0
+0x4f43, 0x314d, "\000" 
+    IDC_COMBO_PORT, 0x403, 5, 0
+0x4f43, 0x324d, "\000" 
+    IDC_COMBO_PORT, 0x403, 5, 0
+0x4f43, 0x334d, "\000" 
+    IDC_COMBO_PORT, 0x403, 5, 0
+0x4f43, 0x344d, "\000" 
+    IDC_COMBO_PORT, 0x403, 5, 0
+0x4f43, 0x354d, "\000" 
+    IDC_COMBO_PORT, 0x403, 5, 0
+0x4f43, 0x364d, "\000" 
+    IDC_COMBO_PORT, 0x403, 5, 0
+0x4f43, 0x374d, "\000" 
+    IDC_COMBO_PORT, 0x403, 5, 0
+0x4f43, 0x384d, "\000" 
+    IDC_COMBO_PORT, 0x403, 5, 0
+0x4f43, 0x394d, "\000" 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0030, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0031, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0032, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0033, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0034, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0035, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0036, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0037, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0038, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x314d, 0x0039, 
+    IDC_COMBO_PORT, 0x403, 6, 0
+0x4f43, 0x324d, 0x0030, 
+    IDC_COMBO_BAUD, 0x403, 5, 0
+0x3231, 0x3030, "\000" 
+    IDC_COMBO_BAUD, 0x403, 5, 0
+0x3432, 0x3030, "\000" 
+    IDC_COMBO_BAUD, 0x403, 5, 0
+0x3834, 0x3030, "\000" 
+    IDC_COMBO_BAUD, 0x403, 5, 0
+0x3639, 0x3030, "\000" 
+    IDC_COMBO_BAUD, 0x403, 6, 0
+0x3931, 0x3032, 0x0030, 
+    IDC_COMBO_BAUD, 0x403, 6, 0
+0x3833, 0x3034, 0x0030, 
+    IDC_COMBO_BAUD, 0x403, 6, 0
+0x3735, 0x3036, 0x0030, 
+    IDC_COMBO_BAUD, 0x403, 7, 0
+0x3131, 0x3235, 0x3030, "\000" 
+    IDC_COMBO_CHARBITS, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_CHARBITS, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_PARITY, 0x403, 5, 0
+0x4f4e, 0x454e, "\000" 
+    IDC_COMBO_PARITY, 0x403, 5, 0
+0x5645, 0x4e45, "\000" 
+    IDC_COMBO_PARITY, 0x403, 4, 0
+0x444f, 0x0044, 
+    IDC_COMBO_PARITY, 0x403, 5, 0
+0x414d, 0x4b52, "\000" 
+    IDC_COMBO_PARITY, 0x403, 6, 0
+0x5053, 0x4341, 0x0045, 
+    IDC_COMBO_STOPBITS, 0x403, 2, 0
+0x0031, 
+    IDC_COMBO_STOPBITS, 0x403, 2, 0
+0x0032, 
+    IDC_COMBO_HANDSHAKE, 0x403, 5, 0
+0x4f4e, 0x454e, "\000" 
+    IDC_COMBO_HANDSHAKE, 0x403, 4, 0
+0x5452, 0x0053, 
+    IDC_COMBO_HANDSHAKE, 0x403, 4, 0
+0x5443, 0x0053, 
+    IDC_COMBO_HANDSHAKE, 0x403, 8, 0
+0x5452, 0x2f53, 0x5443, 0x0053, 
+    IDC_COMBO_HANDSHAKE, 0x403, 9, 0
+0x4f58, 0x2f4e, 0x4f58, 0x4646, "\000" 
+    IDC_COMBO_HANDSHAKE, 0x403, 8, 0
+0x5444, 0x2f52, 0x5344, 0x0052, 
+    0
+END
+
+IDD_DIALOG_OPOS_TEST DLGINIT
+BEGIN
+    IDC_CASHDRAWER1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x0369, 0x0000, 0x0334, 0x0000, 
+    IDC_POSPRINTER1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x0369, 0x0000, 0x0334, 0x0000, 
+    IDC_CASHDRAWER2, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x031a, 0x0000, 0x0334, 0x0000, 
+    IDC_LINEDISPLAY1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x034f, 0x0000, 0x0384, 0x0000, 
+    IDC_MSR1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x0369, 0x0000, 0x0369, 0x0000, 
+    IDC_COINDISPENSER1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x031a, 0x0000, 0x0369, 0x0000, 
+    IDC_KEYLOCK1, 0x376, 16, 0
+0x0000, 0x0000, 0x0300, 0x0000, 0x034f, 0x0000, 0x0384, 0x0000, 
+    0
+END
+
+27 DLGINIT
+BEGIN
+    IDC_DRIVE_COMBO, 0x403, 8, 0
+0x6544, 0x6b73, 0x6f74, 0x0070, 
+    IDC_DRIVE_COMBO, 0x403, 12, 0
+0x794d, 0x4320, 0x6d6f, 0x7570, 0x6574, 0x0072, 
+    0
+END
+
+IDD_LIST_DIALOG DLGINIT
+BEGIN
+    IDC_DRIVE_COMBO, 0x403, 8, 0
+0x6544, 0x6b73, 0x6f74, 0x0070, 
+    IDC_DRIVE_COMBO, 0x403, 12, 0
+0x794d, 0x4320, 0x6d6f, 0x7570, 0x6574, 0x0072, 
+    0
+END
+
+IDD_NHPOS_UNLOCK DLGINIT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "Terminal &Utilities"
+    BEGIN
+        MENUITEM "Test &Environment",           IDM_TEST_ENVIRONMENT
+        MENUITEM SEPARATOR
+        MENUITEM "Initial &Reset",              IDM_INITIAL_RESET
+        MENUITEM "Network Port",                IDS_NETWORK_PORT
+        MENUITEM SEPARATOR
+        MENUITEM "Terminal Unlock ...",         IDM_NHPOS_UNLOCK
+        MENUITEM SEPARATOR
+        MENUITEM "Import Icons",                IDS_IMPORT_ICONS
+        MENUITEM "Export Icons",                IDS_EXPORT_ICONS
+        MENUITEM SEPARATOR
+        MENUITEM "Import Active Settings ...",  ID_TERMINALUTILITIES_IMPORTACTIVESETTINGS
+        MENUITEM "Export Active Settings ...",  ID_TERMINALUTILITIES_EXPORTACTIVESETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "Generate Windows User ...",   ID_TERMINALUTILITIES_USER_SETUP_SCRIPT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About DeviceConfig..."
+    IDS_CONTROL_TYPE_IGNORE "Ignore"
+    IDS_CONTROL_TYPE_DIRECT "Direct To COMM"
+    IDS_CONTROL_TYPE_OPOS   "OPOS Control"
+    IDS_CONTROL_TYPE_ETHERNET "Ethernet"
+    IDS_CONTROL_TYPE_NOTE   "Noted"
+    IDS_HEADING_1           "Peripheral                               "
+    IDS_HEADING_2           "Assigned To                   "
+    IDS_HEADING_3           "Device Type                 "
+    IDS_HEADING_4           "Port             "
+    IDS_HEADING_5           "Port Settings                                         "
+END
+
+STRINGTABLE
+BEGIN
+    IDS_HEADING_6           "Interface Type                "
+    IDS_CONTROL_TYPE_DLL    "DLL Control"
+    IDS_CONTROL_TYPE_SPECIAL "Special"
+    IDS_CONTROL_TYPE_WEDGE  "Keyboard Wedge"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_HEADING_9           "Type"
+    IDS_HEADING_7           "Option"
+    IDS_HEADING_8           "Value"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_CONTROL_INT_DIRECT  "DIRECT"
+    IDS_CONTROL_INT_OPOS    "OPOS"
+    IDS_CONTROL_INT_ETHERNET "ETHERNET"
+    IDS_CONTROL_INT_NOTE    "NOTE"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_CONTROL_INT_DLL     "DLL"
+    IDS_CONTROL_INT_SPECIAL "SPECIAL"
+    IDS_CONTROL_INT_WEDGE   "WEDGE"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_INITRESET__WARNING  "WARNING: This action can not be undone"
+    IDS_INITRESET_PERFORM_RESET "Clear all"
+    IDS_INITRESET_PERFORM_NOLAY "Clear all except layouts"
+    IDS_INITRESET_PERFORM_TOTAL "Clear totals only"
+    IDS_INITRESET_PERFORM_GCF "Clear GCF/SR Only"
+    IDS_INITRESET_PERFORM_PLU "Clear PLU totals only"
+    IDS_INITRESET_PERFORM_TOTALUPD "Clear Totals Update File"
+    IDS_INITRESET_PERFORM_EEPTSTO "Clear Store and Forward File"
+    IDS_ENTSECNO_ERR_MSG    "Password Error"
+    IDS_INITRESET_ERR_MSG   "Error occured while performing request"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_NETWORK_PORT        "Set the port number for network communications (default 2172)."
+END
+
+STRINGTABLE
+BEGIN
+    IDM_NHPOS_UNLOCK        "Display terminal unlock status and unlock NCR General POS."
+    ID_TERMINALUTILITIES_EXPORTACTIVESETTINGS 
+                            "Export current Active Device settings to an export file."
+    ID_TERMINALUTILITIES_IMPORTACTIVESETTINGS 
+                            "Import Active Device provisioning from an export file."
+    ID_TERMINALUTILITIES_USER_SETUP_SCRIPT 
+                            "Generate and run Windows User group privileges script."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\DeviceConfig.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

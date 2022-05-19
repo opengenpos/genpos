@@ -1,0 +1,15 @@
+; SystemConfig.def : Declares the module parameters for the DLL.
+
+LIBRARY      "NCRSC"
+;DESCRIPTION  'SYSTEMCONFIG Windows CE Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here
+
+	ScfSetActiveDevice		@1
+	ScfGetActiveDevice		@2
+	ScfGetParameter			@3
+	ScfSetParameter			@4
+
+	ScfConvertBit2String		@101
+	ScfConvertString2Bit		@102

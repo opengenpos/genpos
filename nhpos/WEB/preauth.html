@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<title>Preauth Status</title>
+</head>
+
+<body>
+<h2>Preauth Status</h2>
+
+<p id="poster">init</p>
+
+<script type='text/javascript'>
+$.getJSON('databasequery.json?preauthbatch json details',function(json){
+console.log(json);
+var index;
+var para = "File Count: "+json.preauthbatch.preauthfilecount+"<br />";
+para += "Stored File Count:"+json.preauthbatch.storedfilecount+"<br />";
+para += "Stored Preauth: "+json.preauthbatch.storedpreauth+"<br />";
+para += "Stored Capture: "+json.preauthbatch.storedpreauthcapture;
+$('#poster').html(para);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+; DeviceEpt.def : Declares the module parameters for the DLL.
+
+;LIBRARY      "DEVICEEPT"
+;DESCRIPTION  'DEVICEEPT Windows CE Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here

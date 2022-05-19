@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{f5f29f29-24f0-4cb8-892f-17dce854ec39}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{0949c61b-b152-429e-943c-bf902be9f092}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{5eb1db37-d49c-4313-b452-0f4636fb65ff}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NET_APIS.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net_body.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NET_ECHO.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NETMEMRY.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NETQUEUE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="netsem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NETSYSTM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pifnet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PifNet.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="netmodul.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="netsem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="piftypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="pifnet.def">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

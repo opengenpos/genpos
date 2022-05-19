@@ -1,0 +1,6 @@
+; EEptInterface.def : Declares the module parameters for the DLL.
+
+LIBRARY      "EEptInterface"
+
+EXPORTS
+    ; Explicit exports can go here

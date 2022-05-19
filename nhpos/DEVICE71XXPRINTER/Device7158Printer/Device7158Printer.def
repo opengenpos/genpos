@@ -1,0 +1,17 @@
+; Device7158Printer.def : Declares the module parameters for the DLL.
+
+;LIBRARY      "NCR7158"
+;DESCRIPTION  'DEVICE7158PRINTER Windows CE Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here
+	Open				@1
+	Close				@2
+	Write				@3
+	Read				@4
+	IoControl			@5
+
+	GetDeviceName		@101
+	GetDeviceCapability	@102
+	GetParameter		@103
+	SetParameter		@104

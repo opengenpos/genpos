@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4f8c13f0-2ee4-445f-9125-6db64334dcbb}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{ab308d44-7ae9-4da2-bb0e-0aae25131256}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DbTest\dbtest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TtlPlu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TtlPluBk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TtlPlusb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TtlPluUp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DbTest\TtlPluUp_TEST.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

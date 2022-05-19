@@ -1,0 +1,520 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Demo Release|Win32">
+      <Configuration>Demo Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6FFA6D69-394A-4399-A1C1-4B315D183EF8}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\..\bin\Release\</OutDir>
+    <IntDir>.\HEM_Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)Include;$(IncludePath)</IncludePath>
+    <TargetName>BusinessLogic</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\..\bin\Debug\</OutDir>
+    <IntDir>.\HEM_Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)Include;$(IncludePath)</IncludePath>
+    <TargetName>BusinessLogic</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">
+    <OutDir>.\..\bin\DemoRelease\</OutDir>
+    <IntDir>.\HEM_DemoRelease\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)Include;$(IncludePath)</IncludePath>
+    <TargetName>BusinessLogic</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\bin\Release/HEM.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\CONNENGINEMFC;.\include;..\include;.\Sa\UIE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_WINDOWS;_USRDLL;HEM_EXPORTS;NDEBUG;XP_PORT;TOUCHSCREEN;WIN32;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\HEM_Release/HEM.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\HEM_Release/</AssemblerListingLocation>
+      <ObjectFileName>.\HEM_Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\HEM_Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>None</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>http.lib;odbc32.lib;odbccp32.lib;NCRSC.lib;2kWrappers.lib;pif.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\bin\Release/BusinessLogic.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>.\Item\Lib\Release;.\Lib\Release;..\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>.\BusinessLogic.def</ModuleDefinitionFile>
+      <ImportLibrary>..\lib\Release/BusinessLogic.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ProgramDatabaseFile />
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\bin\Release/HEM.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\bin\Debug/HEM.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\CONNENGINEMFC;.\include;..\include;.\Sa\UIE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDOWS;_USRDLL;HEM_EXPORTS;UNICODE;_DEBUG;XP_PORT;TOUCHSCREEN;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeaderOutputFile>.\HEM_Debug/HEM.pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <AssemblerListingLocation>.\HEM_Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\HEM_Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\HEM_Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>http.lib;odbc32.lib;odbccp32.lib;NCRSC.lib;2kWrappers.lib;security.lib;pif.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\bin\Debug/BusinessLogic.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>.\Item\Lib\Debug;.\Lib\Debug;..\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>.\BusinessLogic.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\..\bin\Debug/BusinessLogic.pdb</ProgramDatabaseFile>
+      <ImportLibrary>..\lib\Debug/BusinessLogic.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\bin\Debug/HEM.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\bin\DemoRelease/HEM.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>.\include;$(NHPOSINCLUDE);$(NHPOS)\BusinessLogic\Sa\UIE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEMO_VERSION;_WINDOWS;_USRDLL;HEM_EXPORTS;XP_PORT;TOUCHSCREEN;UNICODE;NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\HEM_DemoRelease/HEM.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\HEM_DemoRelease/</AssemblerListingLocation>
+      <ObjectFileName>.\HEM_DemoRelease/</ObjectFileName>
+      <ProgramDataBaseFileName>.\HEM_DemoRelease/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>DEMO_VERSION;NDEBUG;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>http.lib;odbc32.lib;odbccp32.lib;NCRSC.lib;2kWrappers.lib;pif.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\bin\DemoRelease/BusinessLogic.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>.\Item\Lib\DemoRelease;.\Lib\DemoRelease;$(NHPOSLib)\DemoRelease;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>.\BusinessLogic.def</ModuleDefinitionFile>
+      <ImportLibrary>..\lib\DemoRelease/BusinessLogic.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\bin\DemoRelease/HEM.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="BusinessLogic.c" />
+    <ClCompile Include="ConnEngineObjectIf.c" />
+    <ClCompile Include="DataQuery.c" />
+    <ClCompile Include="FrameworkIf.c" />
+    <ClCompile Include="ObjectMaker.c" />
+    <ClCompile Include="pifmain.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="BusinessLogic.def">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <None Include="PARAMIMG" />
+    <None Include="PARAMINI" />
+    <None Include="PARAMTDR" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BusinessLogic.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\INCLUDE\bl.h" />
+    <ClInclude Include="ObjectMaker.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="bitmap1.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CONNENGINEMFC\ConnEngineMfcNHPOS.vcxproj">
+      <Project>{f5644fff-4645-4679-bc23-0cde2e13d49d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\2KWRAPPERS\2kWrappers.vcxproj">
+      <Project>{ff42442b-e76d-40c1-ac84-a8161d36edbf}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\DEVICEMISC\DeviceKitchenCrt.vcxproj">
+      <Project>{cc6e58f6-fac8-4cc4-949d-6b40e3fc2de9}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\DEVICEMISC\DeviceKitchenPrinter.vcxproj">
+      <Project>{dcfb7384-2555-444b-b032-516db432aff1}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\EEptInterface\EEptInterface.vcxproj">
+      <Project>{10a953ed-5fbb-4294-b016-35e721765ce0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\EVENTSUBSYSTEM\EventSubSystem.vcxproj">
+      <Project>{71693fda-e7a1-477c-844b-bae846fac63c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\HTTPSERVER\httpserver.vcxproj">
+      <Project>{c791d2ec-5125-4e9a-aa86-03943cccad7b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\INCLUDE\NHPOS_Includes.vcxproj">
+      <Project>{66605dbc-26d3-45d9-bedc-3d771e4c6820}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\PIFNET\PifNet.vcxproj">
+      <Project>{1d52aa8b-879c-4364-af54-06342deca0b5}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\PIF\pif.vcxproj">
+      <Project>{d54da8c8-b0df-4277-9106-bc839eb0f911}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\PLUTOTAL\PluTotal.vcxproj">
+      <Project>{2ca1ea6e-1cbc-4717-9d37-f0182cca0a47}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\SYSTEMCONFIG\SystemConfigNT.vcxproj">
+      <Project>{ce6f5409-620b-4252-8bb9-94316b00e35e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Caswai\Cashier\Cashier.vcxproj">
+      <Project>{55b0f7d2-282f-4520-97d8-2329d86424e9}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Caswai\Etk\Etk.vcxproj">
+      <Project>{97266a05-a7e9-4f75-95e1-a556ab18b124}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Client\Client.vcxproj">
+      <Project>{4f1729ed-c9f5-4804-95cb-5c302ac47bb1}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Display\Disp20.vcxproj">
+      <Project>{5bbbd378-8de8-492c-bd34-aa45b0f26445}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Display\Displcd.vcxproj">
+      <Project>{e9eaea38-5007-481c-bca2-a903ab72fdba}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Dspfly\Dspfly.vcxproj">
+      <Project>{6bc67ccc-48d7-4fe8-8b43-ef9a4811002d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Ej\Ej.vcxproj">
+      <Project>{7fc0c3fe-e4d9-4f10-a6bd-c9a937405d47}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Enhkds\Enhkds.vcxproj">
+      <Project>{7753fb48-2ce0-43c3-a90b-2f20afb8d62a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Fdt\Fdt.vcxproj">
+      <Project>{c9dfb2e2-29c3-4402-9bdb-f238b08a2d7d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Gcf\Gcf.vcxproj">
+      <Project>{4e4d3287-45b2-4fbc-882b-367ef1857727}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="HTTP\http.vcxproj">
+      <Project>{4ddc5d3f-2411-4e0e-a906-77528209098a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="INCLUDE\BL_Includes.vcxproj">
+      <Project>{a827b253-e5b7-45e0-80f0-bad7faf7a16d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Isp\Isp.vcxproj">
+      <Project>{2562001f-82a7-4f8d-9669-dbe11f68299b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Common\Common.vcxproj">
+      <Project>{813803a9-ea96-48b9-9117-899df063da48}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Coupon\Coupon.vcxproj">
+      <Project>{853d9b67-5b6a-4803-ad8d-453db4e1069f}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Discount\Disc.vcxproj">
+      <Project>{f767cab3-eca6-4407-a153-bdda6cb43a14}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Misc\Misc.vcxproj">
+      <Project>{5016ba15-5ef4-4798-8006-4768bf413563}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Modein\Modein.vcxproj">
+      <Project>{07547869-55b3-473a-a4fa-191f2a67796c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Modifier\Modif.vcxproj">
+      <Project>{b469d077-3b72-48c3-98f6-47e133afaea0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Opeclose\Opeclose.vcxproj">
+      <Project>{c63b8839-046e-4b08-a392-185f7f8b4bd4}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Opeopen\Opeopen.vcxproj">
+      <Project>{7e8279eb-5056-45ee-857f-a2c2cb59ba4e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Other\Other.vcxproj">
+      <Project>{b463b524-e3a0-4030-b2c0-11854e65a807}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Sales\Sales.vcxproj">
+      <Project>{7967c6b4-e238-4cb6-93b0-b7605a65e602}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Tender\Tender.vcxproj">
+      <Project>{847ffb9a-39f1-4ebd-8ff6-56a767ebe53c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Totalkey\Ttlkey.vcxproj">
+      <Project>{5fc2d028-f827-4c15-a4df-01b9452a05f1}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Item\Tranopen\Tranopen.vcxproj">
+      <Project>{175a4ab2-e769-487d-85c5-28419b365e6d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Kitprnt\Kitprnt.vcxproj">
+      <Project>{b80fd226-7a26-4059-890a-87948a36d5d5}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Maint\Maint.vcxproj">
+      <Project>{8ab6fbec-9192-4c34-b768-123171ec7a01}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Mld\DISPLAY\Mlddisp.vcxproj">
+      <Project>{8a009e5e-53e6-40e1-a4ce-de1ae716437a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Mld\DISPSUP\Mldsup.vcxproj">
+      <Project>{993058ca-7931-4125-a987-74f2c7222802}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Mld\MldMain\MldMain.vcxproj">
+      <Project>{c637c7a7-8d03-4688-a950-44228046e08c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Mld\VOSIF\Mldvosif.vcxproj">
+      <Project>{841abe4d-94db-4388-9376-1acd20680bcd}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Nb\Nb.vcxproj">
+      <Project>{22dc6afb-231a-44d1-9d0e-fc755d69f412}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Opepara\Opepara.vcxproj">
+      <Project>{c0b8757c-87ce-45a3-b577-a366c84b127c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Para\Para.vcxproj">
+      <Project>{84d6a6da-6605-419a-af11-096ff1165d1c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PLU\PLU.vcxproj">
+      <Project>{da84a0f4-a826-4342-9d00-cdd14c50ef80}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Print\prtmain\prtMain.vcxproj">
+      <Project>{69634db2-8e19-477c-a7e3-3cb7c4415b8e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Print\Thermreg\thermreg.vcxproj">
+      <Project>{33db7451-0426-4218-8f7b-7612811834c7}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Print\Thermsup\Thermsup.vcxproj">
+      <Project>{d19c7305-0090-4ae5-adf6-aa9efa306d49}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Progrpt\Progrpt.vcxproj">
+      <Project>{3e83fa54-141b-423c-a9dc-eb2f17f3d8a3}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Report\Rpt.vcxproj">
+      <Project>{c3c86b10-c0d6-402a-bbec-4870a6c987d9}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Rfl\Rfl.vcxproj">
+      <Project>{a8ff2291-f99d-4a48-bd18-1b7a9e5edc53}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Sa\Pmg\Pmg.vcxproj">
+      <Project>{d543e9b6-aed7-441d-8b6f-570303c84721}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Sa\UIE\Uiefunc.vcxproj">
+      <Project>{af989d46-aa0a-426f-b8cc-3cd52717982b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Sa\UIE\Uieio.vcxproj">
+      <Project>{a0f855be-69f2-4b1b-b3f7-355f41ecabeb}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Security\Security.vcxproj">
+      <Project>{6ce35c95-3fd2-4604-8c62-1155738152ec}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Server\Server.vcxproj">
+      <Project>{4eba9ccd-9f09-4b4e-a7ae-8f612ef2621b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Share\Share.vcxproj">
+      <Project>{f3036bc2-dc7e-4e1e-b79f-53742fa54e79}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Total\TOTALFL\Ttl.vcxproj">
+      <Project>{1bb1356c-2992-4da7-847b-9c154904123e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Total\TotalPlu\TotalPlu.vcxproj">
+      <Project>{e9d4d097-803f-4884-ad83-3238f28006ee}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Total\TOTALUM\Tum.vcxproj">
+      <Project>{ec737904-a4b5-4790-9f2d-4664e1688f40}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Trans\Trans.vcxproj">
+      <Project>{0ff8847d-3245-407d-a8c6-9c2289b2f4d6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Uic\Uic.vcxproj">
+      <Project>{9ac39fcf-6d94-4e66-8ba3-d2c4cb8bf442}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Uifprog\Uifprog.vcxproj">
+      <Project>{62c783d7-506b-47f9-954f-ab47f53e2261}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Uifreg\Uifreg.vcxproj">
+      <Project>{d22648e5-edc0-42a3-b33d-6ba0a1512792}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Uifsup\Uifsup.vcxproj">
+      <Project>{c74604d3-8b3d-4146-a5e3-36f09dcf628a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,438 @@
+
+Notes on Rework and refactoring needed.
+
+ 1. Look at uses of the function ItemPreviousItem() to determine where those uses can be eliminated.
+    The function ItemPreviousItem() is really for ITEMSALES and ITEMDISC data yet it is being used for
+    other types of data as well such as ITEMTOTAL.
+
+ 2. Look at uses of the MLDTRANSDATA struct and the functions using it to determine how to simplify
+    the display code. as part of this is also the use of the various usScroll values (MLD_SCROLL_1, etc.)
+    Also look into uchMldSystem and the defines such as MLD_DRIVE_THROUGH_3SCROLL which control the
+    output format for the display. See also functions MldScrollWrite() and MldScrollFileWrite().
+
+    See also function ItemTendDispSpl() as well as usage of functions MldPutTransToScroll() and MldDispSubTotal().
+
+ 3. What is the meaning of the different DISP_SAVE_TYPE defines? See use of Disp.fbSaveControl
+    and the defines such as DISP_SAVE_TYPE_4 which is part of the REGDISPMSG struct initialization
+    before calling the function DispWrite().
+
+ 4. What is the purpose of the global ULONG variables flDispRegDescrControl and flDispRegKeepControl.
+    The following code snippet is a candidate for turning into a function. In some cases there is a
+    similar snippet of code except it uses the function ItemCommonTaxSystem() and does not set the
+    global variable flDispRegKeepControl. Not sure why there is a difference. In other cases there is
+    a check ( (WorkQual.fsCurStatus & CURQUAL_OPEMASK ) != CURQUAL_CASHIER ) as well which seems to be
+    check if whether the New Check or other key was pressed or not.
+        if ( TranModeQualPtr->fsModeStatus & MODEQUAL_CANADIAN ) {          /* R3.1 */
+            if ( TranGCFQualPtr->fsGCFStatus & GCFQUAL_GSTEXEMPT            /* GST exempt */
+                || TranGCFQualPtr->fsGCFStatus & GCFQUAL_PSTEXEMPT ) {      /* PST exempt */
+                flDispRegDescrControl |= TAXEXMPT_CNTRL;            /* tax exempt */
+                flDispRegKeepControl |= TAXEXMPT_CNTRL;             /* tax exempt */
+            }
+        } else {
+            if ( TranGCFQualPtr->fsGCFStatus & GCFQUAL_USEXEMPT ) {
+                flDispRegDescrControl |= TAXEXMPT_CNTRL;            /* tax exempt */
+                flDispRegKeepControl |= TAXEXMPT_CNTRL;             /* tax exempt */
+            }
+        }
+
+ 5. Create new function for check on Total Key status to see if total key has been pressed. Something like.
+    Add new function into trnbody.c near definition of function TranCurQualTotalStatusClear().
+        // check to see if a Total Key has been pressed and there is a Total Key Status to process.
+        BOOL   TranCurQualTotalStatusExist (VOID)
+        {
+	        return (TranCurQualPtr->auchTotalStatus[0] != 0);
+        }
+
+		**  DONE Jun 18, 2020.  Also created new defines in transact.h to work with auchTotalStatus[] array.
+
+ 6. Create new function for menu page setting from repeated use code snippet as follows. There is already
+    a function ItemSalesSetDefltPage() which checks ODD_MDC_BIT1 of the same MDC address which has a
+    special function that it does as well, calling function ItemCommonShiftPage().
+      if (CliParaMDCCheck(MDC_MENU_ADR, ODD_MDC_BIT0) != 0) {
+		ITEMSALESLOCAL  *pWorkSales = ItemSalesGetLocalPointer();
+
+		uchDispCurrMenuPage = pWorkSales->uchMenuShift;
+        if (pWorkSales->uchAdjKeyShift == 0) {                       /* not use adj. shift key */
+            pWorkSales->uchAdjCurShift = pWorkSales->uchAdjDefShift; /* set default adjective, 2172 */
+        }
+      }
+
+
+ 7. Transaction mnemonic for Total Key #9, TRN_TTL9_ADR, seems to be used as the standard Food Stamp Total
+    mnemonic for display.  See function ItemTotalFSItem() and a couple other functions that do this.
+    
+    Investigation:  Total Key #9 is the food stamp total key.
+
+ 8. Regularize and encapsulate using of ItemCommonLocal and the storing of various transaction items into
+    the union there. There are several members that are manipulated at various points with ITEMSALES and
+    ITEMTOTAL, ITEMDISC, and other data is moved into and out of that area. Also some places where the
+    union is cleared and the associated variables are cleared as well.
+            if (ItemCommonLocal.uItemSalesHeader.uchMajorClass != 0) {
+				// commit the pending item to prepare for this item to put into working buffer.
+                TrnItemSpl(&ItemCommonLocal.ItemSales, sSplType);
+                ItemCommonLocal.uchItemNo--;
+            }
+            sSize = RflGetStorageItemClassLen(pItem);           /* Saratoga */
+            memcpy(&ItemCommonLocal.ItemSales, pItem, sSize);
+            ItemCommonLocal.uchItemNo++;
+
+    as well as the more common clearing operation which has several different variations.
+    	/* decrement no. of buffered Item and clear the coupon data */
+    	ItemCommonL->uchItemNo --;
+    	memset(&ItemCommonL->ItemSales, 0 , sizeof(ITEMSALES));
+    	ItemCommonL->usSalesBuffSize = 0;
+
+
+ 9. Check use of function ItemPreviousItem() and ItemPreviousItemSpl() and the error checking using them
+    with ItemCommonCheckSize(). There have been changes over the years and we need to recheck that error
+    handling is being done properly especially for Buffer Full.
+
+    It also looks like the function TrnCheckSize() does nothing with the second argument, usSize, so how is
+    the function used with ItemCommonCheckSize() to do a proper check for buffer full?
+    It looks like the expectation is that the additional usSize argument of ItemCommonCheckSize() is supposed
+    to indicate an additional amount of memory over and above the type of the Item being passed in.
+
+    There is also the question of compressed versus uncompressed size with ItemCommonCheckSize() and the ItemSales
+    union of ItemCommonLocal memory resident data. It looks like when ItemPreviousItem() is called the usTempBuffSize
+    argument is the compressed size as calculated by function ItemCommonCheckSize() which returns the compressed size
+    as calculated by function TrnCheckSize().
+ 
+
+10. Flexible drive thru and terminal type. Looks like there are a lot of places where only the terminal type is wanted
+    but the function ItemCommonFDTPara() is used to pull a lot of information. What about a helper function to just
+    retrieve specific data such as terminal type.
+	ITEMFDTPARA     WorkFDT;
+
+	if ( TranModeQualPtr->ulWaiterID ) {                                /* waiter */
+            return( LDT_SEQERR_ADR );
+        }
+        ItemCommonFDTPara(&WorkFDT);
+        if (WorkFDT.uchTypeTerm == FX_DRIVE_DELIV_1 || WorkFDT.uchTypeTerm == FX_DRIVE_DELIV_2) {
+	    NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION: Incorrect Term Type. ");
+	    return(LDT_SEQERR_ADR);
+	}
+
+	*Done: Discovered that there were two functions, FDTParameter() and ItemCommonFDTPara(), that did the same thing.
+	       They also used the same defines and returned two different structs, FDTPARA and ITEMFDTPARA, which contained
+		   the same data. Have eliminated the use of ItemCommonFDTPara() in favor of using only FDTParameter() along
+		   with its struct FDTPARA which required moving definitions from fdtlocal.h to fdt.h.
+
+11. Look into differences and uses of function MldPutSplitTransToScroll() versus function MldPutTransToScroll() as well
+    as use of function ItemTendDispSpl(). See also function ItemTendDispSpl(). Can we replace MldPutTransToScroll() with
+    MldPutSplitTransToScroll() by specifying MLD_SCROLL_1 as the device? MldPutSplitTransToScroll() does do a check on
+    the global variable uchMldSystem so there may need to be a change to work with MLD_DRIVE_THROUGH_1SCROLL or
+    MLD_PRECHECK_SYSTEM.
+
+
+12. Look for switch (*(UCHAR *)pData) where pData is a VOID * and replace the switch condition with use of ITEMSTORAGENONPTR()
+    as in switch(ITEMSTORAGENONPTR(pItem)->uchMajorClass).
+
+
+13. How many functions whose prototypes are in itmlocal.h can be made static, file only scope, and whose arguments can be
+    declared as const because the arguments do not appear on the left side of an assignment?  Or functions that are simple
+    one line functions that are used in a single place such as ItemCommonSubTotalVoid().
+
+14: How many functions whose prototypes are in trans.h can have argument list modified to be const? See TrnItemSales() for
+    instance.
+
+15. Places where ItemCommonLocal.ItemSales is sent to the KDS and written to the display, does it need to be stored and
+    cleared as well? See use of functions ItemSendKds() and MldScrollWrite() with &WorkCommon->ItemSales as an argument.
+
+16. Should the check on whether we are near Buffer Full or not be put into a function that returns a struct with an error
+    status and also the size as reported by ItemCommonCheckSize()? The code snippet used in a lot of places is something
+    like the following:
+    	usSize = ItemCommonLocalPtr->usSalesBuffSize + ItemCommonLocalPtr->usDiscBuffSize;
+    	if ( ( sStatus = ItemCommonCheckSize( ItemTender, usSize ) ) < 0 ) {   /* storage full */
+		TRANGCFQUAL     *WorkGCF = TrnGetGCFQualPtr();
+
+		WorkGCF->fsGCFStatus |= GCFQUAL_BUFFER_FULL;                 /* storage status */
+    		return( LDT_TAKETL_ADR);                                
+    	} else {
+        	return( ITM_SUCCESS );
+    	}
+
+17. Create new tax system function, RflCheckTaxSystem() which will return a value indicating the tax system based on the MDC
+    settings. Replace the existing several variants - ItemCommonTaxSystem(), PrtCheckTaxSystem(), TrnTaxSystem() - with a
+    single unified version. Have it return a bit map so that multiple checks may be done simultaneously. Put the defines for
+    these bit maps into rfl.h along with the prototype.
+
+    See also function ItemCurPrintStatus() which performs initialization of TrnInformation.TranCurQual memory resident data struct.
+
+18. Create new system type function which will return a value indicating the system type as reported by flPrintStatus of the
+    TrnInformation.TranCurQual memory resident data struct.
+
+    See also function ItemCurPrintStatus() which performs initialization of TrnInformation.TranCurQual memory resident data struct.
+    	USHORT   TranCurQualSystemType (VOID)
+    	{
+    		USHORT  usSysType = 0;
+
+    		switch (TrnInformation.TranCurQual.flPrintStatus & CURQUAL_GC_SYS_MASK) {
+    			case CURQUAL_PRE_BUFFER:     /* precheck/buffering, FLEX_PRECHK_BUFFER */
+    	    			usSysType = 0x01;
+    				break;
+    			case CURQUAL_PRE_UNBUFFER:   /* precheck/unbuffering, FLEX_PRECHK_UNBUFFER */
+    				usSysType = 0x02;
+    				break;
+    			case CURQUAL_POSTCHECK:      /* postcheck, FLEX_POST_CHK, may be used to check for not a Precheck system */
+    				usSysType = 0x04;
+    				break;
+    			case CURQUAL_STORE_RECALL:   /* store/recall, FLEX_STORE_RECALL*/
+    				usSysType = 0x08;
+    				break;
+    		}
+
+    		return usSysType;
+    	}
+
+19. Modify the ITEMTENDERLOCAL struct, the fbTenderStatus[3] array, to change from an array to a single ULONG. Change the various
+    defines for indicator flags such as TENDER_FS_PARTIAL so that the values are a bit map within a ULONG. The objective is to get
+    rid of having to know which array element to look at for a particular indicator.
+
+    The fbTenderStatus[] array is used in quite a few files so those locations will need to be changed as well.
+
+20. Modify the ITEMCOUPON struct, the fbStatus[2] array, to change from an array to a single USHORT or ULONG. Change the various
+    defines for the indicator flags such as ITM_COUPON_AFFECT_DISC1 so that the values are a bit map within a single variable. The
+    objective is to get rid of having to know which array element to look at for a particular indicator.
+
+21. Eliminate use of Dummy variables (DummyTender, DummyPlu, etc) when used with functions such as ItemPreviousItemSpl(), ItemPreviousItem(),
+    and other functions. Make sure that the interface to these functions do a check for a NULL pointer and perform the same action as if
+    they were called with a zero filled Dummy type data struct.
+
+22. Canadian Tax calculations that should be have been modified to handle the new tax bucket added by James years ago has a number of places
+    with problems due to the various itemizer arrays being incorrectly indexed. James added the new tax bucket as array subscript 9 and it
+    has introduced errors that were seen at Tim Horton's in Canada in which the tax calculation would suddenly get blown up with incorrect
+    values. It appears this was due to not all the places that needed a change to handle the inserted array subscript were modified.
+
+    Previous to James' changes array subscript 9 was used for a different tax bucket, Tax Limitable (TRANCANADA_LIMITABLE), but with the
+    new tax, Special Baked Goods, the five tax buckets (TRANCANADA_LIMITABLE, TRANCANADA_TAXONTAX, TRANCANADA_GST, TRANCANADA_PST1LIMIT,
+    and TRANCANADA_PST1TOT) were also moved down. Before the change they began at array subscript 9 but after the change began at array
+    subscript 10.
+
+23. Look into where function ItemTendDispIn() is used to prepare a RegDispBack structure for use by function DispWriteSpecial().
+    There are a number of different uchMinorClass codes which are shared between the display functionality and the UIF functionality.
+    Is there some way to simplify some of this perhaps with a function that takes has a argument prototype such as:
+      func (UCHAR uchMajorClass, UCHAR uchMinorClass, TCHAR *tcsMnemonic, USHORT usTranAdrs, DCURRENCY lAmount);
+    and this function would contain code something like:
+        {
+            REGDISPMSG  RegDispMsgD = {0}, RegDispBack = {0};
+            RegDispMsgD.uchMajorClass = uchMajorClass;
+            RegDispMsgD.uchMinorClass = uchMinorClass;
+            RegDispMsgD.lAmount = lAmount;
+            if (tcsMnemonic)
+                _tcsncpy (RegDispMsgD.aszMnemonic, tcsMnemonic, STD_TRANSMNEM_LEN);
+            else
+                RflGetTranMnem (RegDispMsgD.aszMnemonic, usTranAdrs);
+            RegDispMsgD.fbSaveControl = DISP_SAVE_TYPE_2; /* set type2 */
+            ItemTendDispIn(&RegDispBack);
+            DispWriteSpecial( &RegDispMsgD, &RegDispBack);
+        }
+      we now have four functions for dealing with display logic. The purpose of these functions is to replace several lines of code in which
+      a data struct is created then initialized and then the DispWrite() function is called to a single function call. The four functions are:
+        RflUpdateDisplayDescriptorMaps (USHORT usMaps, ULONG  ulDescripToSetMap, ULONG  ulDescripToClearMap);
+        RFLUpdateDisplayByMajorMinorClass (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR fbSaveControl);
+        RFLUpdateDisplayedStatusDescriptors (USHORT usMaps, ULONG  ulDescripToSetMap, ULONG  ulDescripToClearMap);
+        RflClearDisplay (USHORT usMaps, ULONG  ulDescripToSetMap, ULONG  ulDescripToClearMap);
+      So rather than code such as:
+        {
+            REGDISPMSG  UifDisp = {0};
+            UifDisp.uchMajorClass = CLASS_UIFREGDISP;   /* set display class */
+            UifDisp.uchMinorClass = CLASS_UIFDISP_LOCK;
+            DispWrite(&UifDisp);                        /* display */
+        }
+      we instead do a single line of source code which fits quite a few uses of the CLASS_UIFREGDISP major class:
+        RFLUpdateDisplayByMajorMinorClass (CLASS_UIFREGDISP, CLASS_UIFDISP_LOCK, DISP_SAVE_TYPE_0);
+
+
+24. Look into where struct MLDTRANSDATA is being used to determine if there can be changes to use the following new functions.
+        MLDTRANSDATA *MldMainSetMldData (MLDTRANSDATA *pWorkMLD);
+        SHORT MldMainCallWithMldData (SHORT (*pFunc)(MLDTRANSDATA *pWorkMLD));
+        MLDTRANSDATA *MldMainSetMldDataSplit (MLDTRANSDATA *pWorkMLD, TrnStorageType  sStorageType);
+        SHORT MldMainCallWithMldDataSplit (SHORT (*pFunc)(MLDTRANSDATA *pWorkMLD), TrnStorageType  sStorageType);
+
+25.  Look at function ItemOtherCurVoidRedisplay() which does a redisplay on a cursor void but whose arguments are dummy arguments. The
+     question is if the functionality is to broad with unnecessary actions. It may be that most of it is unnessary and not needed.
+
+26.  Look at the power failure and shutdown functionality to improve it. The original functionality was designed to handle
+     a Windows CE low power in which the application is being suspended as a part of going asleep. The NCR 7448 terminal,
+     a Windows CE operating system terminal, had a battery backup built into it. In many ways NHPOS was expected to act
+     similar to a cell phone app by handling a low power state by saving data and then suspending itself until such time
+     as it was woken back up.
+     
+     See use of globbal variable fsPifDuringPowerDown. See as well functionality in file pifpower.c which is designed to
+     work with the Windows CE power monitoring.
+     
+27.  Review where function PifNetControl() is used to determine if the return status should be checked, most places it is
+     not, and what should be done if the function reports a failure. One such failure is PIF_ERROR_NET_POWER_FAILURE
+     indicating that a power failure or shutdown is in the process of being done. This is detected by checking the
+     global variable fsPifDuringPowerDown to see if there is a power down in process.
+
+28.  Why are there several different functions for Supervisor Intervention? Search for all the places where the
+     function ItemSPVInt() is being used and there seems to be quite a bit of duplication.  Some of this duplication
+     is due to the test needed to determine if a Supervisor Intervention is necessary or not depending on the
+     MDC settings and the type of item being rung up in the transactions.
+     
+     In some cases that a Supervisor Intervention has been done is recorded in the ITEMCOMMONLOCAL memory resident
+     database, see uses of defined constant COMMON_SPVINT such as in ItemSalesSpvIntForModDisc(), and in many cases
+     this is not done. So is there a need to have more than flag for Supervisor Intervention so that repetitions of
+     the same action will not require multiple Supervisor Interventions?
+     
+29.  Need to complete the Alternate PLU Mnemonic functionality to print the alternate PLU specified in the PLU
+     record for kitchen printing.
+     
+30.  In function UifPG3EnterData2() of file uifpg3.c when an input of FSC_SCANNER is being processed there is the
+     chance of a buffer overflow from an RSS-14 bar code with more than 14 digits. This is possible for some kinds
+     of retail applications.
+     
+     There is also the question whether other places that are processing an FSC_SCANNER input should be modified
+     to handle an RSS-14 bar code. It looks like the input characters from the RSS-14 bar code scan should be loaded
+     into a LABELANALYSIS struct and processed with function RflLabelAnalysis() to pull the actual PLU number out
+     of the RSS-14 bar code payload.
+     
+31.  In the old NHPOS 1.4 version there were eight bonus totals and a PLU may have zero or more of the eight bonus
+     totals that it could update. With NHPOS 2.0 version the eight bonus totals were replaced with 100 bonus totals
+	 and a PLU could only update a single bonus total whose index number was specified.
+
+	 However the area in the PLU record that indicates the eight bonus totals was not used for anything else so
+	 we could use those bits to indicate up to eight bonus totals in addition to the other single bonus total
+	 indicated by the bonus total index introduced in Rel 2.0.
+
+	 We do need to consider that some of the original eight bonus totals are used to track other activities
+	 so what should probably be introduced is an MDC that indicates (1) don't use the eight bonus totals in
+	 the PLU record, (2) use the eight bonus totals as an offset to bonus total number 10 - bit map indicates
+	 bonus total 11, 12, 13, 14, 15, 16, 17, and 18 - see MDC 467 Bit B Financial Report printing and MDC 463
+	 Bit B Operator Report printing, (3) use the eight bonus totals as an offfset to bonus total number 20 -
+	 bit map indicates bonus total 21, 22, 23, 24, 25, 26, 27, and 28 - see MDC 467 Bit A Financial Report
+	 Printing and MDC 463 Bit A Operator Report Printing, (4) use the eight bonus totals as an offfset to
+	 bonus total number 30 - bit map indicates bonus total 31, 32, 33, 34, 35, 36, 37, and 38 - see
+	 MDC 468 Bit D Financial Report Printing and MDC 464 Bit D Operator Report Printing.
+
+	 See comments in file paraequ.h and see defines BONUS_MASK_DATA as well as PLU_BONUS_IDX1, etc.
+
+32.  MLD subsystem has its own version of the RFL functions for retrieving mnemonics. Need to replace the
+     use of MLD functions with the RFL version.  See the following:
+	    MldGetTranMnem()  -> RflGetTranMnem()
+		MldGetSpecMnem()  -> RflGetSpecMnem()
+
+	 Investigation:  DONE. Change made and the MLD versions of these functions no longer exist.
+
+33.  Are there places where the PPI calculation initialization function ItemSalesCalcInitCom() needs to be
+     called as a part of initializing a sales transaction environment? See places where the SALES_ITEMIZE flag
+	 is being set as a part of indicating that a new sales transaction has started.
+
+34.  Should the various minor class defines used with structs ITEMTENDER, ITEMTOTAL, and UIFREGTENDER be
+     reconciled to use the same values?  See defines for CLASS_UITENDER1 and CLASS_TENDER1 as well as
+     CLASS_UIFOREIGN1 and CLASS_FOREIGN1 and for CLASS_UIFOREIGNTOTAL1 and CLASS_FOREIGNTOTAL1.
+
+	 As a side note can we replace the use of the defines in maint.h such as CLASS_MAINTTENDER1
+	 with the ITEMTENDER defines such as CLASS_TENDER1 in the source code and remove the defines
+	 from main.th?
+
+35.  In receipt printing logic two functions are used to adjust the decimal point representation of an
+     item quantity: PrtSetQtyDecimal() and PrtResetQtyDecimal(). The method used is to perform a mod()
+	 operation to get the remainder of dividing by 1000 then 100 and then 10 and if the remainder is
+	 not zero then make an assumption as to the decimal point position.
+
+	 These functions should really use the item data to determine if it is a scalable item or not
+	 and to then check MDC Address 29 settings instead.
+
+36.  Looking at the handling of condiments, print modifiers, and linked PLUs, there appears to be
+     an inconsistency in the handling of the two arrays in ITEMSALES which are used to contain
+	 the list of print modifiers and the list of condiments and the usMaxChild variable that is
+	 used in a number of places.
+
+	 Note that linked PLUs are stored in the Condiment[] array in the first element of the array.
+	 It looks like there can be only one linked PLU. The member variable uchChildNo indicates the
+	 number of linked PLUs so acts as an offset into the Condiment[] array for the first condiment PLU.
+
+	 The usMaxChild variable is calculated by a line of code prior to processing the printing
+	 of the list of condiments and print modifiers of the ITEMSALES data. These count variables
+	 contain the count of linked PLUs (uchChildNo), the count of condiments (uchCondNo), and the
+	 count of print modifiers (uchPrintModNo).
+	     usMaxChild = ( pItem->uchChildNo + pItem->uchCondNo + pItem->uchPrintModNo );
+	 or
+	     usNoOfChild = pItem->uchCondNo + pItem->uchPrintModNo + pItem->uchChildNo;
+     However it appears there are two separate arrays that contain the list of print modifiers
+	 and the list of condiments and linked PLUs (only one linked PLU is allowed and it is put
+	 in the first condiment array element).
+	      UCHAR           auchPrintModifier[STD_MAX_COND_NUM];
+		  ITEMCOND        Condiment[STD_MAX_COND_NUM];
+
+	 So this calculation of usMaxChild appears to be incorrect. However perhaps this enforces a cap
+	 on the maximum number of print modifier and condiment PLUs associated with a PLU?
+
+	 It appears that the ITEMCOND array may have been added at a later time in order to provide
+	 a way to integrate condiments as condiment PLUs when previously they were not. The print
+	 modifiers were used to indicate cooking instructions such as meat temperature. Print modifiers
+	 are seldom used these days as condiment PLUs provide an alternative for cooking instructions
+	 and the PLU mneumonic is 20 characters rather than 10 characters as provided by a print modifier
+	 mnemonic.
+
+	 The other issue with print modifiers is they are not available with the Order Entry Prompting
+	 table functionality the way that condiment PLUs are. Customers using the OEP table functionality
+	 tend to use condiment PLUs since those have the same data fields as a regular PLU including
+	 OEP table number.
+
+	 In order to reintroduce print modifier, it appears we have two conditions that need to be met:
+	 (1) increase the mnemonic length to provide more reoom for instructions and (2) introduce a
+	 new OEP Table speciality code indicating to pop up a window listing the print modifiers. Perhaps
+	 we also should add room for a few more, the current limit is eight (8), and allow sixteen (16)?
+
+37.  Can the functions PrtDouble() and PrtSDouble() be combined into a single function that will
+     do the transformation of a print string to double wide or double wide and high? And why is
+	 there a difference in the replacement loop between these two functions?
+
+	 The function would take as an argument the type of double character to use, PRT_DOUBLE or
+	 PRT_SDOUBLE, and would return a pointer to the beginning of the destination text string.
+
+38.  Modify the function PrtChkCasWai() so that it will return the correct user id, whether
+     Cashier Id or Waiter Id, and properly truncated. Every where this function is used the
+	 there is the additional step of using the function RflTruncateEmployeeNumber() to
+	 truncate the leading Employee Number digits based on the return value of the function
+	 PrtChkCasWai() so just go ahead and do it in the function itself.
+
+39.  There are a large number of C4267 Warnings,
+         "conversion from 'size_t' to 'USHORT', possible loss of data"
+	 One culprit is the use of the function tcslen(), which returns a size_t,
+	 and assigning the return value to a USHORT variable.
+
+	 We also have a number of places where a USHORT value is needed for a function
+	 call and the result of _tcslen() is cast to a USHORT as in:
+	     PrtPrint((USHORT)PMG_PRT_JOURNAL, aszMnemonics, (USHORT)_tcslen(aszMnemonics));
+
+	 As part of eliminating warnings, is it time to write a USHORT version of
+	 tcslen() that will return a USHORT. The easiest would be a wrapper, RflTcslen(),
+	 which just returns value of a call to tcslen().
+
+40.  Can functions PrtIsItemInWorkBuff() and PrtIsIDiscInWorkBuff() be the same function?
+     The source code seems similar though the function PrtIsItemInWorkBuff() does seem to
+	 do an additional check. And is this additional check necessary?
+
+	 Should this be an Rfl function similar to RflIsSalesItemDisc()?
+
+41.  We tested changes to simplify the logic in function PrtSupLoanPickup_SP()
+     which should be replicated to the other PrtSupLoanPickup type functions.
+	 Changes involved figuring out mnemonic and printing the load/pickup receipt
+	 and eliminating duplicated code.
+
+42.  Looks like function PrtSPQtyFor() and function PrtSPForeignQtyFor() are using
+     the global format aszPrtSPQty with incorrect arguments.
+
+43.  Mnemonic cleanup using RflCleanupMnemonic() needed in some parts of functionality
+     for example PrtEJTranNum(). Mnemonic cleanup processes a mnemonic in order to remove
+	 the tildes used in mnemonics to indicate double width characters. While double wide
+	 characters are fine for receipt and other printing, the display of mnemonics with
+	 double wide characters is confusing since there are no double wide characters with
+	 displayed mnemonics nor should they be used in the Electronic Journal output either.
+
+44.  Signature capture needs to be updated to do signature capture through the Datacap control
+     in order to remain Out Of Scope and to eliminate talking with the electronic payment terminal.
+	 The current way of requesting a signature was done for Veterans Canteen Service and the
+	 Ingenico payment terminal they were using.
+
+	 See functions ItemTendCollectSignatureOnly() and ItemTendCollectSignature() and
+	 ItemTendDiaSignatureCapture().
+
+45.  GenPOS Rel 2.2.2 was in parallel to GenPOS Rel 2.3.0 and the question is whether
+     all changes made in Rel 2.2.2 were ported to the Rel 2.3.0 source in the repository.
+
+46.  

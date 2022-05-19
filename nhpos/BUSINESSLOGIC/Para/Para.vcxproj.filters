@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{f565685a-54f9-484c-be6e-d746a1588b86}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{175cbece-71c4-403a-809c-62277ea907df}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="para.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAACT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAADJ.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAAGE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="paraall.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAAUTO.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARACASH.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARACH24.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARACOST.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARACTLT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARACURR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Paradept.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARADISC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARADRVT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="paradsps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAFLEX.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAFSC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAHALO.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAHOUR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAHTID.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAIP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAKCTL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAKTYP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARALEAD.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAMANU.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="paramdc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAMDEP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAMENU.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAMISC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAOEP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAPAMT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAPCIF.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAPIG.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAPLU.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAPROM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAPRTM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAREGN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAREPO.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARAREST.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARARND.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARASECU.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARASERV.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARASHR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARASLIP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARASOFT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARASPCO.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARASPEM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARASUPL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARATARE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARATAXR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="paratend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARATONE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARATRAN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PARATTBL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uniniram.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

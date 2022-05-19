@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8b1b8fbf-9771-419a-b46d-34a41086601b}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{00bcf513-4d7d-4cea-b6ff-9baf0fe5d917}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="prcfeedt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prcitemt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PRCSHR_.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prctran_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prdcmn_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prddfl_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prradd1t.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prradd2t.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrcasit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrchktt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrcmnj_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrcmns_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrcmnt_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrcnclt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrcomn_.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrcpnt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrctaxt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrdeptt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrdisct.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrect.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prretkt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrftndt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrheadt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrimodt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrirdit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrkpt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrkptEx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrmisct.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrmltlt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrmltpt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrmoddt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrmulct.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrmulpt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrmult.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrnchkt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrnoslt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrntndt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prropent.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PrROrdDecT.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrplut.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrpot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrpromt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrreodt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrroat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrsalet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrsett.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrsevtt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrsrect.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrtaxt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrtdt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrtendt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrtipt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrtotlt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrtpot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrtrayt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrtrilt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrttlt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrutaxt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prrvatt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\IncludeTherm\PRRCOLM_.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IncludeTherm\PRTCOM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IncludeTherm\prtdfl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IncludeTherm\prtrin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IncludeTherm\prtshr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IncludeTherm\prtsin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

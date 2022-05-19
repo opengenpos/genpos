@@ -1,0 +1,481 @@
+#  tender key validation and assignment for auto processing of account numbers
+#
+#  the assignment tag is used to indicate an assignment rule.
+#    assignment rules map account numbers to tender keys.  tags are case sensitive.
+#
+#  the validation tag is used to indicate a validation rule.
+#    validation rule indicates when an account number is valid.
+#
+#  userules keyword indicates if rules following are to be used (1) or ignored (0).  can be used multiple times.
+#      Default is to use rules.  userules keyword can be used to cause a section of rules to be ignored.
+#       <userules>n</userules>
+#  required keyword indicates if a validation rule is to be required (1) or optional (0).
+#      Default is rule is optional.  required keyword can be used to cause a section of rules to be optional
+#      or required as a part of validation.
+#       <required>n</required>
+#  ignoretender keyword indicates that a tender key should not use automatic account rules.  this is used
+#      to indicate that when a tender specifying a particular tender key is being processed that the
+#      auto account type determination rules should not be used.  just use the tender key instead.
+#      <ignoretender>n</ignoretender>
+#  tender indicates the tender key 2 through 20 to assign to the rule.  Tender key 1 is for cash only.
+#       <tender>nn</tender>
+#  number indicates the pattern for matching an account number.  Any digit is represented by either a
+#       period (.) or a question mark (?).  so 4? matches 40 through 49.  ranges can be specified by enclosing
+#       the list of possible digits in square brackets.  4[0128] matches 40, 41, 42, and 48.
+#       <number>nnnn</number>
+#  length indicates the number of digits for the account type.  specify a range using a dash.
+#       for instance a range of 12 to 16 digits would be 12-16.  If you leave off the second
+#       number after the dash then a default of 255 is used so more than 11 digits would be 12-
+#       <length>xx</length>
+#
+#  a range of account numbers can be specified by using the <range> and </range> tags.  The format
+#  is as follows:
+#      <range>
+#      <first>nnnn</first>
+#      <last>nnnn</last>
+#      </range>
+#
+#  patterns are processed in the order they are in the file so the first match found is used.
+#  for instance if patterns are 909 with length of 7 then 90 with length of 7 then 9091444 will match
+#  first pattern and 9081234 would match the second pattern.  if patterns are in different order
+#  as in 90 with length of 7 then 909 with length of 7, both account numbers would match the first
+#  pattern.  So patterns should be listed in the file from most specific to most general.
+#
+#  Version:  .04
+#  Date:     12/09/2014
+#
+#  Update log
+# 01/19/2010  D. Parliman  updated rules for different types of cards
+#  Following assumes any CC Tender rules are defined prior to EPD\Emeal
+# 03/23/2012  R. Chambers updated comments for new account number validation functionality for Amtrak.
+# 12/09/2014  R. Chambers updated comments as part of creating a standard issue example GenPOS Rel 2.2.1.142.
+#
+# Rename this file to PARAMTDR and put in \Database folder under \Saratoga, prior to Ap start
+<accountrules>
+<userules>1</userules>
+
+# Following ignoretender rules are used with tender assignment only.
+# The validation processing ignores any ignoretender rules specified.
+<ignoretender>1</ignoretender>
+<ignoretender>2</ignoretender>
+<ignoretender>3</ignoretender>
+<ignoretender>4</ignoretender>
+<ignoretender>5</ignoretender>
+<ignoretender>6</ignoretender>
+<ignoretender>9</ignoretender>
+<ignoretender>10</ignoretender>
+<ignoretender>11</ignoretender>
+<ignoretender>12</ignoretender>
+<ignoretender>13</ignoretender>
+<ignoretender>14</ignoretender>
+<ignoretender>15</ignoretender>
+<ignoretender>16</ignoretender>
+<ignoretender>17</ignoretender>
+<ignoretender>18</ignoretender>
+<ignoretender>19</ignoretender>
+<ignoretender>20</ignoretender>
+
+# #/Type validation rules follow.  These are assigned to a specific
+# tender key or total key.
+
+#  Tender 8 defined for Emeals then uncomment
+#<assignment>
+#	<tender>8</tender>
+#	<number>999</number>
+#	<length>12-16</length>
+#</assignment>
+#<assignment>
+#	<tender>8</tender>
+#	<number>991</number>
+#	<length>14</length>
+#</assignment>
+#  Tender 7 defined for EPD
+#<assignment>
+#	<tender>7</tender>
+#	<number>[12345678]</number>
+#	<length>12-</length>
+#</assignment># order declare key or total key.
+
+# specify required length of data entry with #/Type key for particular keys.
+# these could be tender key, total key, or an order declare key.  may use range
+# as well as a specific number of characters.  if not specified then any number
+# of characters will be accepted up to the max number of characters.
+#<numtype>
+#	<tender>10</tender>
+#	<length>10</length>
+#</numtype>
+#<numtype>
+#	<total>10</total>
+#	<length>10</length>
+#</numtype>
+# Amtrak uses order declare #2 for train id.
+#<numtype>
+#	<orderdec>2</orderdec>
+#	<length>10</length>
+#</numtype>
+
+
+#
+# Tender key account number validation starts here.
+# These rules are used to determine if an account number is valid for a tender key.
+# If the tender tag is not specified then the rule applies to all tenders.
+#
+# The rules are processed in the order in which they are listed in the file so the
+# first validation rule is checked first and then the next and then the next.
+#
+# If the rule specifies a tender then the rule applies only to that tender
+# whether it is required or optional.
+#
+# More general rules that are required should be used first because the first
+# required rule that is not passed will cause validation to fail.
+#
+# Next should come more specific required rules especially rules for a particular tender.
+#
+# Next should come optional rules.
+#
+# If it is desired to use the Luhn Mod 10 check sum validation on
+# account numbers then use the luhnmode10 tag and specify a value of one (1).
+#
+# General required rule to validate all account numbers for checksum, beginning digit, and length.
+#<validation>
+#	<required>1</required>
+#	<luhnmod10>1</luhnmod10>
+#</validation>
+
+# Next check the specific length is one of the following for all account numbers
+# All optional rules must specify both number and length tags and fields.
+# The first optional rule that validates the account number will stop processing.
+
+#TENDER 3 Starts HERE
+#VISA 4 13 digits
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>4</number>
+	<length>13</length>
+        <cardlabel>VISA</cardlabel>
+</validation>
+#VISA 4 16 digits
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>4</number>
+	<length>16</length>
+        <cardlabel>VISA</cardlabel>
+</validation>
+#Mastercard 5 16 digits
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>5</number>
+	<length>16</length>
+        <cardlabel>M/C</cardlabel>
+</validation>
+
+#Amex 34 or 37 15 digits
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>3[47]</number>
+	<length>15</length>
+        <cardlabel>AMEX</cardlabel>
+</validation>
+#Discover 6011  16 digits
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>6011</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 6221  16 digits  **Needs more verification**
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>6221[23456789][6789]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 6222-8  16 digits  **Needs more verification**
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>622[2345678]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 6229  16 digits  **Needs more verification**
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>6229[012][012345]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 624  16 digits
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>62[456]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 628  16 digits
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>628[2345678]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 640  16 digits
+<validation>
+	<tender>3</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>6[45]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 65  16 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>65</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#TENDER 4 Starts HERE
+#VISA 4 13 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>4</number>
+	<length>13</length>
+        <cardlabel>VISA</cardlabel>
+</validation>
+#VISA 4 16 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>4</number>
+	<length>16</length>
+        <cardlabel>VISA</cardlabel>
+</validation>
+#Mastercard 5 16 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>5</number>
+	<length>16</length>
+        <cardlabel>M/C</cardlabel>
+</validation>
+
+#Amex 34 or 37 15 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>3[47]</number>
+	<length>15</length>
+        <cardlabel>AMEX</cardlabel>
+</validation>
+#Discover 6011  16 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>6011</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 6221  16 digits  **Needs more verification**
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>6221[23456789][6789]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 6222-8  16 digits  **Needs more verification**
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>622[2345678]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 6229  16 digits  **Needs more verification**
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>6229[012][012345]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 624  16 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>62[456]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 628  16 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>628[2345678]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+#Discover 640  16 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>6[45]</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+
+</validation>
+#Discover 65  16 digits
+<validation>
+	<tender>4</tender>
+        <required>0</required>
+        <luhnmod10>1</luhnmod10>
+	<number>65</number>
+	<length>16</length>
+        <cardlabel>DCVR</cardlabel>
+</validation>
+
+#Next check the specific length is one of the following for all account numbers
+# All optional rules must specify both number and length tags and fields.
+# The first optional rule that validates the account number will stop processing.
+#<validation>
+#	<required>0</required>
+#	<number>[3456]</number>
+#	<length>12</length>
+#</validation>
+#<validation>
+#	<required>0</required>
+#	<number>[3456]</number>
+#	<length>15</length>
+#</validation>
+#<validation>
+#	<required>0</required>
+#	<number>[3456]</number>
+#	<length>16</length>
+#</validation>
+#<validation>
+#	<required>0</required>
+#	<number>[3456]</number>
+#	<length>18</length>
+#</validation>
+
+
+# #/Type validation rules follow.  These are assigned to a specific
+
+</accountrules>
+
+# Following are the rules that are used with Returns/Exchanges/Refunds to
+# enforce specific business rules about Returns/Exchanges/Refunds.
+#  - userules indicates if return rules are to be enforced, value of 1, or not, value of 0.
+<returnsrules>
+<userules>0</userules>
+
+# Following ignoretender rules are used with tender assignment only.
+# The returns processing ignores any ignoretender rules specified.
+#<ignoretender>1</ignoretender>
+#<ignoretender>2</ignoretender>
+#<ignoretender>3</ignoretender>
+
+# Some tenders such as cash or Train Delay Voucher (Amtrak) should be consolidated
+# in the case of split tenders.  Those tenders to be consolidated need
+# to be so indicated.
+<consolidatetender>1</consolidatetender>
+<consolidatetender>2</consolidatetender>
+# In the code what the consolidatetender flag does is that for that particular tender all of the tender sections 
+# in the return transaction data are consolidated into a single entry in the return tender table used for checking
+# the rules.  So if the transaction is a split tender that has several cash tenders (tender #1) and 
+# consolidatetender for tender #1 is set then the several cash tenders are consolidated into a single tender within
+# the table that is used for checking the business rules.  The purpose of this is to consolidate cash and cash like 
+# tenders so that the rules about tender amounts and like to like rule can be applied.  You would not want to 
+# consolidate non-cash tenders such as credit since by doing so you would not be able to apply the credit specific 
+# rules such as approved only, account to account, etc.
+
+<globalrules>
+# indicate if credit must be in batch of NETePay server or not.
+# if 1 then any credit must be in batch and not settled.  if 0 then
+# whether in batch or not is ignored.
+<batchonly>1</batchonly>
+
+# specify the location of the Amtrak batch close file and
+# the keyword for the BATCHCLOSE=YYYYMMDDHHMMSS directive which
+# specifies the date and time stamp of the last batch settlement.
+<batchcloseini>C:/TrainTrip.ini</batchcloseini>
+<batchclosekeyword>BATCHDATE</batchclosekeyword>
+
+# indicate if credit must be approved or not.
+# if 1 then any credit must be EPT processed and approved.  if 0 then
+# whether approved or not is ignored.
+<approvedonly>0</approvedonly>
+# This setting is to specify a rule that a credit tender must be Approved before it can be used in a return 
+# transaction.  If you are not using Storing then GenPOS would never have a credit tender that has not been Approved
+# because the Decline of the credit tender by the Electronic Payment would discard the tender.  However with Storing
+# involved, you can have a credit that is stored and then forwarded at which time the credit is declined.  At this 
+# point there will be a tender in the transaction data however it will indicate that the tender was not Approved.  
+# Also you could have a Preauth that was Approved but not yet Captured.  Using this would allow you to do a return 
+# against the approved Preauth before it is Captured.
+
+# indicate if credit in Stored file is allowed or not.
+# if 1 then any credit tender that has been Stored but not forwarded
+# may still be used for a return
+<allowstored>1</allowstored>
+# If allowstored is set to 1 then if the credit is stored then it can be used in a return even if it has not been 
+# forwarded. 
+
+# indicate if Preauth credit not yet Captured is allowed or not.
+# if 1 then any Preauth credit tender that has not yet been Captured
+# may still be used for a return.
+<allowpreauth>0</allowpreauth>
+
+# indicate if Declined credit is allowed or not.
+# if 1 then any declined credit tender 
+# may still be used for a return.
+<allowdeclined>1</allowdeclined>
+
+# indicate if only same type of tender can be used in a return or not.
+# if 1 then only a tender that has been used in the transaction may be
+# used in the return.  if 0 then any tender may be used.
+# indicate if cash must go to cash and credit must go to credit
+# if 1 then amounts of the tenders are checked and limits enforced.
+<liketolike>1</liketolike>
+
+# indicate if only same card label (card type and last 4 digits of account number)
+# can be used in a return or not.  If 1 then only same card can be used.
+# if 0 then any card can be used.
+<accounttoaccount>1</accounttoaccount>
+</globalrules>
+
+</returnsrules>

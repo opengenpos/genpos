@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{b38ce242-3624-48d0-8278-7b9e569487ae}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{62d742fa-f843-433c-ae38-c83c00f0ba80}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="_progcas.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progcmn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progcpn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progdpt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progeod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progfil.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progfin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_proghur.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progind.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progplu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progptd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_progtim.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="progrpt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="_progrpt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

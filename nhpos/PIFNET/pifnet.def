@@ -1,0 +1,13 @@
+LIBRARY	PIFNET
+
+EXPORTS
+	NetInitialize		@1
+	NetOpen			@2
+	NetReceive		@3
+	NetReceive2		@4
+	NetSend			@5
+	NetControl		@6
+	NetClose		@7
+	NetFinalize		@8
+	NetSetClusterInfo	@9
+

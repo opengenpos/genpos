@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{03d54a49-b7c2-4df9-bd53-d20d9bad1a73}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{f9554e97-130d-4eb0-bb43-6e2c9737d463}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{e5762927-413d-4030-b084-2abe0ca0435f}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="EventSubSystem.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EvsApi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EvsDlm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EvsInit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EvsPrcV.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EvsPrcW.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EvsProc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EvsVio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosblig.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosbligo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosblink.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosbords.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="voscls.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosctype.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosdispa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosgcur.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosinit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosmem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosmem2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VOSMISC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosmode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosprtf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosprtfa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosqueue.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosrefre.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosscur.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vossdown.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosstr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosstra.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vossup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vostable.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vosthrea.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="voswcrea.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VOSWDELE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="voswtype.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EvsL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vosl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vostable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

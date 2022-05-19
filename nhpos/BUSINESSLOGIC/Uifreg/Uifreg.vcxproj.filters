@@ -1,0 +1,326 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{767821a2-4ccf-436a-b1f8-ac47672a41ab}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{30346284-8e77-42ce-bbec-3825048a8da3}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CVTREGC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTREGM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTREGTICKET.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTREGTOUCH.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTREGW68.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTREGW78.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidcas.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidcaset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidclr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidcp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidcpet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidetk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidetket.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidgcn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDGCNET.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidlin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDLINET.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidoek.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidoeket.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidoep.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidoepet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDPERET.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidprc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Uidprcet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidsclet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidscrl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidseaet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidseat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidspint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidtbl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDTBLET.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidtsf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uidtsfer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDWAIIN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDWAIRV.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDWINET.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifacken.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifaddck.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifalp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifalpf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifcan.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifcas.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifcasin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifcasot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFCCOMP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFCHKNO.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifchtip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFCKTRS.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifcvoid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifdeclr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifdisc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifdspnf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifdspns.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifetkin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifetkot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFFEDRL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFFEED.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifforin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifforot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifgcinf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifgcnum.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifitem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFMONFL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFMONIN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFMONOT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFMONTL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifmsr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFNCKEN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifnewck.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifnewgc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifnewks.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifpay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPAYMD.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPB.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPOST.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifprdmd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifpsn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifpsnf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifpstot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFRECPT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifreg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifrelse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifreodr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFREVER.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifrgcom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifrgdef.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifsales.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifseat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifsingl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifslock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiftend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiftotal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiftrnsf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFTRSIN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiftrsot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFTVOID.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifwai.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifwaiin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifwaiot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifwictr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="uiregloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

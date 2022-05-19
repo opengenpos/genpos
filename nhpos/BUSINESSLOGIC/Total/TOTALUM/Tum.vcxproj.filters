@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{063d16e4-0c0a-4bff-895d-a65fd313001f}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{310a2032-e5d4-4f4a-9bf9-80aba6087101}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="totaltum.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ttlbkup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTLCPNUP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ttlsbcup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTLSBDUP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ttlsbfup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ttlsbhup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTLSBPUP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ttltimup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTLUMSUB.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ttlumup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ttltum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

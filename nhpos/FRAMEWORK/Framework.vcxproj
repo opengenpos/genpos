@@ -1,0 +1,372 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Demo Release|Win32">
+      <Configuration>Demo Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0D1BF604-2EC0-4D2E-B990-EEC0BF254C32}</ProjectGuid>
+    <RootNamespace>Framework</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\..\bin\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">
+    <OutDir>.\..\bin\DemoRelease\</OutDir>
+    <IntDir>.\DemoRelease\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\..\bin\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\bin\Debug/Framework.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\include;..\OPOSINCLUDE;..\..\TouchLibrary;..\BusinessLogic\Include;..\DeviceConfig;..\..\COMMON\DeviceFPReader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_DEBUG;XP_PORT;TOUCHSCREEN;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeaderOutputFile>.\Debug/Framework.pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>BusinessLogic.lib;pif.lib;EventSubSystem.lib;ConnEngineMfc.lib;NCRSC.lib;2kWrappers.lib;Rfl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\..\bin\Debug/Framework.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\Lib\Debug;..\lib\Debug;..\BusinessLogic\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\..\bin\Debug/Framework.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\bin\Debug/Framework.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\bin\DemoRelease/Framework.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\include;..\OPOSINCLUDE;..\..\TouchLibrary;..\BusinessLogic\Include;..\..\COMMON\DeviceFPReader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEMO_VERSION;_WINDOWS;XP_PORT;TOUCHSCREEN;UNICODE;NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\DemoRelease/Framework.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\DemoRelease/</AssemblerListingLocation>
+      <ObjectFileName>.\DemoRelease/</ObjectFileName>
+      <ProgramDataBaseFileName>.\DemoRelease/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>DEMO_VERSION;NDEBUG;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>.\..\bin\DemoRelease/Framework.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\lib\DemoRelease;$(NHPOSLIB)\DemoRelease;$(NHPOS)\BusinessLogic\lib\DemoRelease;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\bin\DemoRelease/Framework.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\bin\Release/Framework.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\include;..\OPOSINCLUDE;..\..\TouchLibrary;..\BusinessLogic\Include;..\DeviceConfig;..\..\COMMON\DeviceFPReader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_WINDOWS;NDEBUG;XP_PORT;TOUCHSCREEN;WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/Framework.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>.\Release/</BrowseInformationFile>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>BusinessLogic.lib;pif.lib;EventSubSystem.lib;ConnEngineMfc.lib;NCRSC.lib;2kWrappers.lib;Rfl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\..\bin\Release/Framework.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\lib\Release;..\lib\Release;..\BusinessLogic\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\bin\Release/Framework.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\DEVICECONFIG\Crypto.cpp" />
+    <ClCompile Include="..\DEVICECONFIG\MsxmlWrapper.cpp" />
+    <ClCompile Include="activeformx.cpp" />
+    <ClCompile Include="CWebBrowser2.cpp" />
+    <ClCompile Include="Device.cpp" />
+    <ClCompile Include="DeviceEngine.cpp" />
+    <ClCompile Include="DeviceEngineThread.cpp" />
+    <ClCompile Include="DeviceScale.cpp" />
+    <ClCompile Include="DeviceScanner.cpp" />
+    <ClCompile Include="DeviceSS.cpp" />
+    <ClCompile Include="DisplayBitMap.cpp" />
+    <ClCompile Include="Framework.cpp" />
+    <ClCompile Include="FrameworkWndButton.cpp" />
+    <ClCompile Include="FrameworkWndDoc.cpp" />
+    <ClCompile Include="FrameworkWndEditBox.cpp" />
+    <ClCompile Include="FrameworkWndItem.cpp" />
+    <ClCompile Include="FrameworkWndLabel.cpp" />
+    <ClCompile Include="FrameworkWndListBox.cpp" />
+    <ClCompile Include="FrameworkWndText.cpp" />
+    <ClCompile Include="linedisplay.cpp" />
+    <ClCompile Include="MessageDialog.cpp" />
+    <ClCompile Include="oposcashdrawer.cpp" />
+    <ClCompile Include="oposcoindispenser.cpp" />
+    <ClCompile Include="OPOSControl.cpp" />
+    <ClCompile Include="oposlinedisplay.cpp" />
+    <ClCompile Include="oposposprinter.cpp" />
+    <ClCompile Include="ScrollReport.cpp" />
+    <ClCompile Include="SecurityCommandLineParser.cpp" />
+    <ClCompile Include="ServerProc.cpp" />
+    <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="zebraprint.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Framework.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\DEVICECONFIG\Crypto.h" />
+    <ClInclude Include="..\DEVICECONFIG\MsxmlWrapper.h" />
+    <ClInclude Include="..\INCLUDE\FrameworkIO.h" />
+    <ClInclude Include="activeformx.h" />
+    <ClInclude Include="CWebBrowser2.h" />
+    <ClInclude Include="Device.h" />
+    <ClInclude Include="DeviceEngine.h" />
+    <ClInclude Include="DeviceEngineThread.h" />
+    <ClInclude Include="DeviceScale.h" />
+    <ClInclude Include="DeviceScanner.h" />
+    <ClInclude Include="DeviceSS.h" />
+    <ClInclude Include="DisplayBitMap.h" />
+    <ClInclude Include="Framework.h" />
+    <ClInclude Include="FrameworkWndButton.h" />
+    <ClInclude Include="FrameworkWndCtrl.h" />
+    <ClInclude Include="FrameworkWndDoc.h" />
+    <ClInclude Include="FrameworkWndEditBox.h" />
+    <ClInclude Include="FrameworkWndItem.h" />
+    <ClInclude Include="FrameworkWndLabel.h" />
+    <ClInclude Include="FrameworkWndListBox.h" />
+    <ClInclude Include="FrameworkWndText.h" />
+    <ClInclude Include="linedisplay.h" />
+    <ClInclude Include="MessageDialog.h" />
+    <ClInclude Include="oposcashdrawer.h" />
+    <ClInclude Include="oposcoindispenser.h" />
+    <ClInclude Include="OPOSControl.h" />
+    <ClInclude Include="oposlinedisplay.h" />
+    <ClInclude Include="oposposprinter.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ScrollReport.h" />
+    <ClInclude Include="SecurityCommandLineParser.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="zebraprint.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\GenPOS.nsi" />
+    <None Include="arrow.cur" />
+    <None Include="res\Framework.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\background.bmp" />
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\Framework.ico" />
+    <Image Include="res\icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="GenPOS_Investigations.txt" />
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CONNENGINEMFC\ConnEngineMfcNHPOS.vcxproj">
+      <Project>{f5644fff-4645-4679-bc23-0cde2e13d49d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TOUCHLIBRARY\TouchLibrary.vcxproj">
+      <Project>{4104cb15-e855-4d73-8db3-286217575998}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\2KWRAPPERS\2kWrappers.vcxproj">
+      <Project>{ff42442b-e76d-40c1-ac84-a8161d36edbf}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\BUSINESSLOGIC\HEM.vcxproj">
+      <Project>{6ffa6d69-394a-4399-a1c1-4b315d183ef8}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\BUSINESSLOGIC\Mld\MldMain\MldMain.vcxproj">
+      <Project>{c637c7a7-8d03-4688-a950-44228046e08c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\BUSINESSLOGIC\Sa\UIE\Uieio.vcxproj">
+      <Project>{a0f855be-69f2-4b1b-b3f7-355f41ecabeb}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\BUSINESSLOGIC\Security\Security.vcxproj">
+      <Project>{6ce35c95-3fd2-4604-8c62-1155738152ec}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\DEVICECONFIG\DeviceConfig.vcxproj">
+      <Project>{ac742f04-6328-4303-8c09-93ce2b38c3d2}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\DEVICEMISC\DeviceKitchenCrt.vcxproj">
+      <Project>{cc6e58f6-fac8-4cc4-949d-6b40e3fc2de9}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\DEVICEMISC\DeviceKitchenPrinter.vcxproj">
+      <Project>{dcfb7384-2555-444b-b032-516db432aff1}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\EVENTSUBSYSTEM\EventSubSystem.vcxproj">
+      <Project>{71693fda-e7a1-477c-844b-bae846fac63c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\HTTPSERVER\httpserver.vcxproj">
+      <Project>{c791d2ec-5125-4e9a-aa86-03943cccad7b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\INCLUDE\NHPOS_Includes.vcxproj">
+      <Project>{66605dbc-26d3-45d9-bedc-3d771e4c6820}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\PIFNET\PifNet.vcxproj">
+      <Project>{1d52aa8b-879c-4364-af54-06342deca0b5}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\PIF\pif.vcxproj">
+      <Project>{d54da8c8-b0df-4277-9106-bc839eb0f911}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\SYSTEMCONFIG\SystemConfigNT.vcxproj">
+      <Project>{ce6f5409-620b-4252-8bb9-94316b00e35e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="Framework.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{65a39ca1-baaf-4cc3-9c0f-4e027934460b}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{a48d9bd8-dae3-4ebf-8625-d00b3b352b3b}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{8ff1e689-98d4-4697-a2b7-b4150cf6c3a9}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pif.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pifconf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="piffile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="piffileconv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pifio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pifnet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pifnop.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pifpower.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pifqueue.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pifsem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pifsio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pifsound.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="piftask.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="pif.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="piflocal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="pif.def">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

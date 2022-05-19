@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d1992e4b-048d-4e55-9571-60414845d1aa}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{7b53ad84-8690-45bf-aab1-58b299fa96dc}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="uiecoin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiedev.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiedisp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiedraw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uieecho.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uieerror.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uieinit2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiekey.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIELDEV.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiemsr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uieputdt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiering.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiescale.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiescan.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uietrack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uiewait.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\INCLUDE\uie.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uiedev.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uiedisp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uieecho.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIEERROR.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uieio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uiel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIELDEV.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIELIO.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uiering.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uietrack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

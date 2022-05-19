@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{1aed538e-e51f-42d0-b2b0-7c3e656bc9db}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{160bf152-2d75-4c9f-8a35-b9e7c4c6d5b5}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ispabort.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispcas.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispclean.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispcom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispcpm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispej.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="isperh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispesr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispetk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispgcf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispmain.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispopr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispoprsb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="isppass.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="isprmh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="isprmt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispttl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ispuif.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ispcom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ispext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ISPPICK.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rmt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

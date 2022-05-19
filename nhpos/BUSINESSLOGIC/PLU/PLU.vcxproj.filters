@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{191f5764-4067-4e62-b6c6-65c8763592f3}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2e0ef7d9-b1f9-4d4a-b4bc-1522de3170f6}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pluappli.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pluassert.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PluHash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PLUMAIN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plumanip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PLUPHYSC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PluSer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PLUDEFIN.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

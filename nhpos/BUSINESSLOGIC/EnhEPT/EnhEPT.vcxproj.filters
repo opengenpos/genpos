@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{b31310bf-2980-4a47-b3fb-82b45e835a58}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{0c5b7805-8f01-4aa4-a1df-8274845f7c76}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EEPTERR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eepthostif.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EEPTIF.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EEPTRCV.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EEPTSEND.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EEPTSUB.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PrevEpt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xeptdllif.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\INCLUDE\EEPTL.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

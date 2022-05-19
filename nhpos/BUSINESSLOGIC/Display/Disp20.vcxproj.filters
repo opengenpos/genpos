@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{b3d98e80-87b7-45a9-bb32-94d83668855b}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{baa07421-204c-4d63-bcad-4ee8b330ddb1}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="disp20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspbi20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspcas20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspcom20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspcstr2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspctl20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspdmu20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspdscc2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspdsco2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspdsp20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspecho2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspefl20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspetk20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspfc20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspfl20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspflx20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspfmt20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspfsc20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspfxdr2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsphur20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspkds20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DSPLP20.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsplvl20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspmep20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspmne20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspoep20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsppamt2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsppig20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspplu20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DSPPMU20.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspppi20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspred20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsprnd20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DSPRST20.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dspsto20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsptar20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsptcl20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsptxr20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsptxt20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsptyp20.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="disp20.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

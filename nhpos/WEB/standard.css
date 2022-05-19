@@ -1,0 +1,76 @@
+h1
+{
+    margin: 0px, 0px, 6px, 0px;
+    font-weight: bold;
+    font-size: 16pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+}
+h2
+{
+    margin: 20px, 0px, 6px, 0px;
+    font-weight: bold;
+    font-size: 14pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+}
+h3
+{
+    margin: 20px, 0px, 6px, 0px;
+    font-weight: bold;
+    font-size: 12pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+}
+h4
+{
+    margin: 15px, 0px, 6px, 25px;
+    font-weight: bold;
+    font-size: 10pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+}
+p
+{
+    margin: 0px, 0px, 6px, 25px;
+    font-weight: normal;
+    font-size: 10pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+}
+th
+{
+    font-size: 10pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+}
+td
+{
+    font-size: 10pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+    vertical-align: top;
+}
+ul
+{
+    margin: 0px, 0px, 6px, 25px;
+    font-size: 10pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+}
+li
+{
+    margin: 0px, 0px, 6px, 25px;
+    font-size: 10pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+}
+table {
+    margin: 0px, 0px, 6px, 25px;
+    cell-padding: 5;
+    font-size: 10pt;
+    font-family: verdana, arial, helvetica;
+    background-color: #ffffff;
+    vertical-align: top;
+}
+

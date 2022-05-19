@@ -1,0 +1,54 @@
+# This file contains the description of the images for various areas or arenas of functionality
+# in GenPOS which involve displaying imagery to the Operator or to the Customer or both.
+#
+# The XML language used in this file is to allow multiple areas or arenas of functionality to be
+# targeted. Each area of functionality starts with its own identifier followed by the
+# directives that are used by that area.
+
+# A line of text that begins with a pound sign or hash mark (#) is a comment.
+# Each description begins with the arena tag which encapsulates a particular arena
+# or area of functionality.
+# The next directive in an arena must be the name tag which indicates the name of the
+# arena and the area of functionality.
+
+# The directives that can be used within an <entry> are as follows. Most default to zero (0)
+# if not specified.
+#     <tableno>1</tableno>                # this is a table number.
+#     <groupno>16</groupno>               # this is a group number
+#     <imagename>image.png</imagename>    # image file name, .png, .jpg, .bmp
+#     <targetwindow>0</targetwindow>      # specific image window if non-zero
+#     <stickydisplay>1</stickydisplay>    # keep image displayed (1) or not (0)
+#     <overlayimage>1</overlayimage>      # copy over image, not replace (1) or replace (0)
+#     <resizetofit>1</resizetofit>        # resize image to fit (1) or not (0)
+#     <background>0x90b0b0</background>   # window background color RGB, 3 two digit hex numbers
+#     <backimage>bckgrnd.png</backimage>  # window background image. stays until replaced.
+#     <vertalign>center</vertalign>       # vertical alignment, top, center, bottom or pixel offset from top
+#     <horizalign>left</horizalign>       # horizontal alignment, left, center, right or pixel offset from left
+#     <operatortext>Text.</operatortext>  # text to display to operator when image is displayed.
+
+<arena>
+	<name>oeptable</name>
+	<entry>
+		<tableno>0</tableno>                # this is a table number.
+		<groupno>16</groupno>               # this is a group number
+		<imagename>PlatedSandwiches.png</imagename>
+		<stickydisplay>1</stickydisplay>    # keep image displayed (1) or not (0)
+		<targetwindow>0</targetwindow>      # specific window if non-zero
+		<resizetofit>1</resizetofit>        # resize image to fit (1) or not (0)
+		<background>0x90b0b0</background>   # window background color RGB, 3 two digit hex numbers
+#		<backimage>background.png</backimage>   # window background image
+		<operatortext>Ask customer if they want large fries with that.</operatortext>
+	</entry>
+	<entry>
+		<tableno>0</tableno>
+		<groupno>20</groupno>
+		<imagename>modem_after20.png</imagename>
+		<stickydisplay>1</stickydisplay>
+		<overlayimage>1</overlayimage>      # copy over image, not replace (1) or replace (0)
+		<vertalign>center</vertalign>          # vertical alignment, top, center, bottom or pixel offset
+		<horizalign>right</horizalign>         # horizontal alignment, left, center, right or pixel offset
+		<targetwindow>0</targetwindow>
+		<resizetofit>1</resizetofit>
+		<background>0x90b0b0</background>
+	</entry>
+</arena>

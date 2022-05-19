@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6062067e-f84a-4724-85f7-362f605b0224}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{bfd63c44-3279-4038-af56-c581d8094f36}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cskp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cskpConv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cskpin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cskpinEx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cskpin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cskpinEx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

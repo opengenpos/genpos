@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{53276312-7b97-418d-b2d8-ef6856dd28a9}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{81ee341b-0a01-48d1-863f-3da15459c254}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="mlddummy.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldfile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldinit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldother.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldpop2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldscrl2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldstor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mldstor2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

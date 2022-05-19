@@ -1,0 +1,408 @@
+# This is the device configuration file that is used by the DeviceConfig utility
+# to configure devices for a terminal.
+#
+# lines begining with a pound sign (#) are comment lines and are ignored.
+# lines that are empty or contain only blanks are used to indicate the beginning of a new
+# section.  Multiple blank lines are ignored.
+#
+# Each section describes a possible type of device.  There are three main kinds of devices:
+#      DIRECT uses the older direct to communications port protocol
+#      OPOS uses the new OPOS control protocol which is implemented for a few devices
+#      NOTE means that the device doesn't use a control as such and this is a data item
+#      WEDGE means that the device is a wedge keyboard type of device
+#
+# The format of each section is as follows:
+#      line 1 -> Contains the name of the device such as NCR 7194 Printer
+#                This line is used as a registry key to identify the specific device.
+#                    . for DIRECT devices used as registry key beneath Platform Software\SystemConfig\SystemParameter
+#                Ensure it is same as defined string in SCF.H such as SCF_DEVICENAME_EPTEXDLL_MERCURY.
+#      line 2 -> the DLL to use if this is a DIRECT device.
+#                The registry key beneath OLEforRetail\ServiceOPOS for OPOS devices (for instance CashDrawer)
+#                   - Same as SCF_OPOS_NAME_aaaaa in SCF.H source such as SCF_OPOS_NAME_POSPRINTER
+#      line 3 -> the Active device type which describes the type of work the device does
+#                For OPOS devices with options
+#                    . use as registry key beneath Platform Software\SystemConfig\SystemParameter
+#                This value is one of the Active device registry keys used to find active devices.
+#                    . used as registry key beneath Platform Software\SystemConfig\ActiveDevice
+#                BEVERAGE -> device is a beverage dispenser
+#                CDISPLAY -> device is a customer display or Line Display
+#                COIN -> device is a coin dispenser
+#                DRAWER -> device is a Cash Drawer
+#                KEYBOARD -> device is a keyboard
+#                KITCHEN_CRT -> device is a kitchen CRT or Kitchen Display System
+#                KITCHEN_PRINTER -> device is a kitchen printer (normally a dot matrix printer)
+#                MSR -> device is a magnetic strip reader
+#                PRINTER -> device is a POS Printer (normally a thermal receipt printer)
+#                SCALE -> device is a scale
+#                SCANNER -> device is a scanner
+#                PINPAD1 -> device is a PIN Pad device such as Ingenico i6550
+#      line 4 -> the device interface:
+#            DIRECT -> device connects to a COMM port and uses a proprietary DLL
+#            OPOS -> device connects through an OPOS control
+#            ETHERNET -> device is accessed through an Ethernet LAN using an IP address
+#            NOTE -> device is none of the above but should be noted.  Mainly used for keyboards.
+#            WEDGE -> device uses a keyboard wedge interface.  Mainly used for MSR
+#      line 5 has several different uses depending on the device type
+#            DIRECT -> COMM port settings for the device baud, bits, parity, stop, handshake (9600,8,NONE,1,NONE)
+#            ETHERNET -> IP address and IP port number (192.168.0.23, 2172)
+#            OPOS -> the registry subkey for the device profile as installed by NCR Retail Services Manager (RSM)
+#                 example: (NCRCashDrawer.2 beneath OLEforRetail\ServiceOPOS\CashDrawer)
+#	 line 6 -> Contains Options specific for the specified device profile.
+#
+# The data in the lines for each device are stored in keys and values in the Windows Registry.
+#
+# NOTICE:
+#   The data that is already stored in the Windows Registry takes precedence over the descriptions in this
+#   file so you will need to delete any registry items that need to be reset using changes that have been made to this file.
+#
+# WARNING to Development:
+#   The device name on line 1 of each set of entries must agree with the defines in SCF.H
+#
+# The data is first stored in HKEY_LOCAL_MACHINE/SOFTWARE/NCR/Platform Software/SystemConfig/SystemParameter
+# The first line containing the name of the device is used to create a key in SystemParameter with that device name.
+# The following lines are used to add values to the key.
+#   - line 2 is put into DLLName
+#   - line 3 is put into TypeName
+#   - line 4 is put into ActivePort
+#   - line 5 is ignored for OPOS and WEDGE devices
+#   - line 5 is parsed and put into the following items for DIRECT devices
+#      . Baud
+#      . CharBit
+#      . Parity
+#      . StopBit
+#      . HandShake
+#   - line 5 is parsed and put into the following items for ETHERNET devices
+#      . IPAddr
+#      . Port
+#   - line 6 will vary
+#
+# OPOS devices uses the profiles stored in HKEY_LOCAL_MACHINE/SOFTWARE/OLEForRetail/ServiceOPOS
+# These profiles are setup using the NCR Retail Services Platform application
+#
+# This first entry for the genpos web portal url is a special entry to provide a way to modify
+# the URL that the Terminal Register dialog of DeviceConfig uses for the Fetch button.  This first
+# entry is not displayed in the DeviceConfig list of devices. It must be modified using a text editor.
+# The URL entered must have a trailing slash since additional information will be appended.
+genpos web portal
+https://w3.georgiasouthern.edu/research/genpos/api/
+URL
+DIRECT
+19200,8,NONE, 1,NONE
+NONE
+
+# SCF_ZEBRA_NAME_PRINTER
+Zebra RW 220 Printer
+Zebra Printer
+PRINTER
+DIRECT
+19200,8,NONE, 1,NONE
+NONE
+
+# SCF_COM_NAME_PRINTER
+DIRECT NCR 7194 Printer
+NCR7194.dll
+PRINTER
+DIRECT
+19200,8,NONE, 1,NONE
+NONE
+
+NCR 7194 Printer
+POSPrinter
+PRINTER
+OPOS
+NCRPrinter.1
+NONE
+
+NCR 7158 Printer
+POSPrinter
+PRINTER
+OPOS
+NCRPrinter.1
+NONE
+
+NCR 7159 Printer
+POSPrinter
+PRINTER
+OPOS
+NCRPrinter.1
+NONE
+
+NCR 7197 Printer
+POSPrinter
+PRINTER
+OPOS
+NCRPrinter.1
+NONE
+
+Charge Posting
+ChargePosting.dll
+CHARGE_POSTING
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+Ethernet Charge Posting
+DummyCPM.dll
+CHARGE_POSTING_LAN
+ETHERNET
+192.168.0.30, 2172
+NONE
+
+FreedomPay EPT
+freedompay.dll
+EPT_EX_DLL1
+ETHERNET
+192.168.0.99, 2172
+NONE
+
+DataCap EEPT
+DataCap.dll
+EPT_EX_DLL
+SPECIAL
+192.168.0.99, 2172
+NONE
+
+Mercury Payments EPT
+MercuryPayEPT.dll
+EPT_EX_DLL
+SPECIAL
+ns1.nameserver.com, ns2.nameserver.com, 1
+NONE
+
+DataCap Secure
+MercuryPayEPT.dll
+EPT_EX_DLL
+SPECIAL
+ns1.nameserver.com, ns2.nameserver.com, 1
+NONE
+
+DataCap Secure Tokenized
+MercuryPayEPT.dll
+EPT_EX_DLL
+SPECIAL
+ns1.nameserver.com, ns2.nameserver.com, 1
+NONE
+
+Ethernet EEPT
+DummyEEPT.dll
+EPT_EX_LAN
+ETHERNET
+192.168.0.30, 2172
+NONE
+
+PC Interface
+PCIF.dll
+PC
+DIRECT
+19200,8,NONE,1,NONE
+NONE
+
+Kitchen Printer A
+KitchenPrinter.dll
+KITCHEN_PRINTER
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+Kitchen Printer B
+KitchenPrinter.dll
+KITCHEN_PRINTER
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+Kitchen Printer C
+KitchenPrinter.dll
+KITCHEN_PRINTER
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+Kitchen Printer D
+KitchenPrinter.dll
+KITCHEN_PRINTER
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+Kitchen Printer E
+KitchenPrinter.dll
+KITCHEN_PRINTER
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+Kitchen Printer F
+KitchenPrinter.dll
+KITCHEN_PRINTER
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+EptEx
+EptEx.dll
+EPT_EX
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+Ept
+Ept.dll
+EPT
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+Beverage
+Beverage.dll
+BEVERAGE
+DIRECT
+9600,8,NONE,1,NONE
+NONE
+
+NCR 78xx Scanner 1
+NCR78xxS.dll
+SCANNER
+DIRECT
+9600,7,ODD,1,NONE
+NONE
+
+NCR 78xx Scanner 2
+NCR78xxS.dll
+SCANNER
+DIRECT
+9600,7,ODD,1,NONE
+NONE
+
+NCR 78xx Sca/Scale
+NCR78xxS.dll
+SCANNER
+DIRECT
+19200,7,ODD,2,NONE
+NONE
+
+Symbol M2000 Hand Scanner
+WEDGE
+SCANNER1
+WEDGE
+NONE
+NONE
+
+# Not sure of this type of scanner
+#2336-K016 Scanner
+#NCR78xxS.dll
+#SCANNER
+#DIRECT
+#19200,7,ODD,1,NONE
+
+6710/6720 Scale
+NCR67xx.dll
+SCALE
+DIRECT
+9600,7,EVEN,1,NONE
+NONE
+
+Transact
+CoinDispenser
+COIN
+OPOS
+Transact
+NONE
+
+NCR 5932 68 Key
+Dummy.dll
+KEYBOARD
+NOTE
+5932_68KEY
+NONE
+
+NCR 5932 78 Key
+Dummy.dll
+KEYBOARD
+NOTE
+5932_78KEY
+NONE
+
+NCR 7448 Micromotion
+Dummy.dll
+KEYBOARD
+NOTE
+7448MICRO
+NONE
+
+NCR 7448 Conventional
+Dummy.dll
+KEYBOARD
+NOTE
+7448CONV
+NONE
+
+Touch Screen
+Dummy.dll
+KEYBOARD
+NOTE
+TOUCH
+NONE
+
+MSR
+MSR
+MSR
+OPOS
+NCRMSR.1
+NONE
+
+Symbol USB MSR
+WEDGE
+MSR2
+WEDGE
+NONE
+NONE
+
+Zebra RW 220 Printer MSR
+Zebra Printer
+MSR
+DIRECT
+19200,8,NONE, 1,NONE
+NONE
+
+DT310 COM MSR
+NCRDirectMSR.dll
+MSR
+DIRECT
+19200,8,NONE, 1,NONE
+NONE
+
+Customer Display
+LineDisplay
+CDISPLAY
+OPOS
+NCRLineDisplay.1
+NONE
+
+Signature Capture
+SignatureCapture
+SIGCAP1
+OPOS
+NCRSignatureCapture.1
+NONE
+
+PIN Pad
+PINPad
+PINPAD1
+OPOS
+NCRPinPad.1
+NONE
+
+Cash Drawer
+CashDrawer
+DRAWER
+OPOS
+NCRCashDrawer.2
+YCABLE=FALSE;
+
+Keylock
+KeyLock
+KEYLOCK
+OPOS
+NCRWedgeKeylock
+NONE

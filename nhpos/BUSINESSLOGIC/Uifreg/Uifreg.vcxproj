@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Demo Release|Win32">
+      <Configuration>Demo Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D22648E5-EDC0-42A3-B33D-6BA0A1512792}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\..\Lib\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\..\Lib\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">
+    <OutDir>.\..\lib\DemoRelease\</OutDir>
+    <IntDir>.\DemoRelease\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\include;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_LIB;NDEBUG;XP_PORT;TOUCHSCREEN;WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/Uifreg.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>.\..\Lib\Release\Uifreg.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Lib\Release/Uifreg.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\include;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_LIB;UNICODE;_DEBUG;XP_PORT;TOUCHSCREEN;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeaderOutputFile>.\Debug/Uifreg.pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>.\..\Lib\Debug\Uifreg.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Lib\Debug/Uifreg.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(NHPOS)\BusinessLogic\Include;$(NHPOSINCLUDE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_LIB;XP_PORT;TOUCHSCREEN;DEMO_VERSION;UNICODE;NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\DemoRelease/Uifreg.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\DemoRelease/</AssemblerListingLocation>
+      <ObjectFileName>.\DemoRelease/</ObjectFileName>
+      <ProgramDataBaseFileName>.\DemoRelease/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>DEMO_VERSION;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>.\..\lib\DemoRelease\Uifreg.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\lib\DemoRelease/Uifreg.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="CVTREGC.C" />
+    <ClCompile Include="CVTREGM.C" />
+    <ClCompile Include="CVTREGTICKET.C" />
+    <ClCompile Include="CVTREGTOUCH.C" />
+    <ClCompile Include="CVTREGW68.C" />
+    <ClCompile Include="CVTREGW78.C" />
+    <ClCompile Include="uidcas.c" />
+    <ClCompile Include="uidcaset.c" />
+    <ClCompile Include="uidclr.c" />
+    <ClCompile Include="uidcp.c" />
+    <ClCompile Include="uidcpet.c" />
+    <ClCompile Include="uidetk.c" />
+    <ClCompile Include="uidetket.c" />
+    <ClCompile Include="uidgcn.c" />
+    <ClCompile Include="UIDGCNET.C" />
+    <ClCompile Include="uidlin.c" />
+    <ClCompile Include="UIDLINET.C" />
+    <ClCompile Include="uidoek.c" />
+    <ClCompile Include="uidoeket.c" />
+    <ClCompile Include="uidoep.c" />
+    <ClCompile Include="uidoepet.c" />
+    <ClCompile Include="uidper.c" />
+    <ClCompile Include="UIDPERET.C" />
+    <ClCompile Include="uidprc.c" />
+    <ClCompile Include="Uidprcet.c" />
+    <ClCompile Include="uidsclet.c" />
+    <ClCompile Include="uidscrl.c" />
+    <ClCompile Include="uidseaet.c" />
+    <ClCompile Include="uidseat.c" />
+    <ClCompile Include="uidspint.c" />
+    <ClCompile Include="uidtbl.c" />
+    <ClCompile Include="UIDTBLET.C" />
+    <ClCompile Include="uidtsf.c" />
+    <ClCompile Include="uidtsfer.c" />
+    <ClCompile Include="UIDWAIIN.C" />
+    <ClCompile Include="UIDWAIRV.C" />
+    <ClCompile Include="UIDWINET.C" />
+    <ClCompile Include="uifacken.c" />
+    <ClCompile Include="uifaddck.c" />
+    <ClCompile Include="uifalp.c" />
+    <ClCompile Include="uifalpf.c" />
+    <ClCompile Include="uifcan.c" />
+    <ClCompile Include="uifcas.c" />
+    <ClCompile Include="uifcasin.c" />
+    <ClCompile Include="uifcasot.c" />
+    <ClCompile Include="UIFCCOMP.C" />
+    <ClCompile Include="UIFCHKNO.C" />
+    <ClCompile Include="uifchtip.c" />
+    <ClCompile Include="UIFCKTRS.C" />
+    <ClCompile Include="uifcvoid.c" />
+    <ClCompile Include="uifdeclr.c" />
+    <ClCompile Include="uifdisc.c" />
+    <ClCompile Include="uifdspnf.c" />
+    <ClCompile Include="uifdspns.c" />
+    <ClCompile Include="uifec.c" />
+    <ClCompile Include="uifetkin.c" />
+    <ClCompile Include="uifetkot.c" />
+    <ClCompile Include="UIFFEDRL.C" />
+    <ClCompile Include="UIFFEED.C" />
+    <ClCompile Include="uifforin.c" />
+    <ClCompile Include="uifforot.c" />
+    <ClCompile Include="uifgcinf.c" />
+    <ClCompile Include="uifgcnum.c" />
+    <ClCompile Include="uifitem.c" />
+    <ClCompile Include="UIFMONFL.C" />
+    <ClCompile Include="UIFMONIN.C" />
+    <ClCompile Include="UIFMONOT.C" />
+    <ClCompile Include="UIFMONTL.C" />
+    <ClCompile Include="uifmsr.c" />
+    <ClCompile Include="UIFNCKEN.C" />
+    <ClCompile Include="uifnewck.c" />
+    <ClCompile Include="uifnewgc.c" />
+    <ClCompile Include="uifnewks.c" />
+    <ClCompile Include="uifpay.c" />
+    <ClCompile Include="UIFPAYMD.C" />
+    <ClCompile Include="UIFPB.C" />
+    <ClCompile Include="UIFPOST.C" />
+    <ClCompile Include="uifprdmd.c" />
+    <ClCompile Include="uifpsn.c" />
+    <ClCompile Include="uifpsnf.c" />
+    <ClCompile Include="uifpstot.c" />
+    <ClCompile Include="UIFRECPT.C" />
+    <ClCompile Include="uifreg.c" />
+    <ClCompile Include="uifrelse.c" />
+    <ClCompile Include="uifreodr.c" />
+    <ClCompile Include="UIFREVER.C" />
+    <ClCompile Include="uifrgcom.c" />
+    <ClCompile Include="uifrgdef.c" />
+    <ClCompile Include="uifsales.c" />
+    <ClCompile Include="uifseat.c" />
+    <ClCompile Include="uifsingl.c" />
+    <ClCompile Include="uifslock.c" />
+    <ClCompile Include="uiftend.c" />
+    <ClCompile Include="uiftotal.c" />
+    <ClCompile Include="uiftrnsf.c" />
+    <ClCompile Include="UIFTRSIN.C" />
+    <ClCompile Include="uiftrsot.c" />
+    <ClCompile Include="UIFTVOID.C" />
+    <ClCompile Include="uifwai.c" />
+    <ClCompile Include="uifwaiin.c" />
+    <ClCompile Include="uifwaiot.c" />
+    <ClCompile Include="uifwictr.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="uiregloc.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

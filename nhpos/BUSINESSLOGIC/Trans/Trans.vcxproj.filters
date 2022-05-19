@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{dbe54a09-ff24-4ba5-a4f2-12a1bf2c6e00}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2dfb4f89-e9c4-4a07-b63f-8bd9352b7971}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="trnbdspl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trnbody.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trncomn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trncpn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trnitem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trnitspl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trnqual.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trnquspl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trnsplt1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trnsplt2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trnstor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trnstspl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{e4358d0a-4551-4e00-a586-769be5a681c6}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{a3ee29c8-401a-4891-99f6-db93c27d8a1c}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="rptcas.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptcom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptconfig.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptcpn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptdept.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rpteept.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptej.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rpteod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptetk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptgcf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rpthour.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptplu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptplugroup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptptd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptregfn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptserv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RPTTLY.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rptwindows.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\INCLUDE\report.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rptcom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rptlocal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

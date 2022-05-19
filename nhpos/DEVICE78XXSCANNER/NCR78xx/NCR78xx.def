@@ -1,0 +1,18 @@
+; Device78xxScanner.def : Declares the module parameters for the DLL.
+
+LIBRARY      "NCR78xxS"
+
+;DESCRIPTION  'DEVICE78XXSCANNER Windows CE Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here
+	Open				@1
+	Close				@2
+	Write				@3
+	Read				@4
+	IoControl			@5
+
+	GetDeviceName		@101
+	GetDeviceCapability	@102
+	GetParameter		@103
+	SetParameter		@104

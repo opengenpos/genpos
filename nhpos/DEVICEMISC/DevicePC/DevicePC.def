@@ -1,0 +1,7 @@
+; DevicePC.def : Declares the module parameters for the DLL.
+
+;LIBRARY      "DEVICEPC"
+;DESCRIPTION  'DEVICEPC Windows CE Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here

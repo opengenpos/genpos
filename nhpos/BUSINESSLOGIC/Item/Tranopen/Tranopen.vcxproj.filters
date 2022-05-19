@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ad258afb-2dca-4c1f-8b3d-f1ca96f5f473}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{55a2ffc0-5ee0-4fbd-8458-91c8015352b4}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ittrop.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ittrop1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ittrop2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ittrop3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ittrop4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ittrop5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ittrop6.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ittrop7.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{2a3e60d8-92c7-4f52-a850-d359dee39cad}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{77d89aaa-fded-483d-bcc7-8bfa5b1ec5bb}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CVTALPHAW68.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTALPHAW78.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTALPHC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTALPHM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTPROGC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTPROGM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTPROGTOUCH.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTPROGW68.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CVTPROGW78.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifpg1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG10.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG15.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG17.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG18.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG2.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG20.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG21.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG22.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG23.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifpg3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG39.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG46.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG47.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG48.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG49.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG50.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Uifpg51.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG54.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG57.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG6.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG60.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG61.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifpg62.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifpg65.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG67.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG7.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG8.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG9.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFPG95.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Uifpg99.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uifpgmod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="UIFPGEX.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
