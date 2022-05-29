@@ -77,11 +77,11 @@ Release 2.3.1 includes support for:
   - Journal printing replaced by Electronic Journal
   
   Due to the age of some of the functionality that has gone unused and not been reviewed and updated, some features
-  may not be compatible with more recent devices.
+  may not be compatible with more recent devices or the device may need to be set to use an older protocol. See [Peripherals and Protocols](https://github.com/opengenpos/genpos/wiki/Peripherals-and-Protocols).
   
    - beverage dispensers for bars
-   - scales
-   - kitchen display systems
+   - scales (uses Weigh-Tronix scale protocol SCP-01 or Serial Communications Protocol)
+   - kitchen display systems (current devices emulate kitchen printers and use the kitchen printer interface)
  
  ## Removal of proprietary information
 
