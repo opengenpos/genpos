@@ -22,6 +22,6 @@ When installed, the OpenGenPOS terminal application uses two file trees in the C
  and resources for the terminal application:
   - C:/FlashDisk/NCR/Saratoga/Database - operational data files with provisioning data and totals
   - C:/FlashDisk/NCR/Saratoga/Program - where the executables and DLLs are installed
-  - C:/FlashDisk/NCR/Saratoga/ICON - where the graphic files for the touchscreen display are located
+  - C:/FlashDisk/NCR/Saratoga/Icons - where the graphic files for the touchscreen display are located
   - C:/FlashDisk/NCR/Saratoga/Web - the folder for the built in, simple web server
-  
+  - C:/FlashDisk/NCR/PrintFiles - the folder where files containing printer output are placed
