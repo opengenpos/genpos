@@ -16,7 +16,7 @@ utility for screen design. The source code for both os those utilities in in the
 
 When installed, the OpenGenPOS terminal application uses two file trees in the C: drive.
  - C:/FlashDisk/NCR/Saratoga
- - C:/TempDisk
+ - C:/TempDisk/NCR/Saratoga
  
  There are several subfolders in the C:/FlashDisk/NCR/Saratoga folder which contain various data files
  and resources for the terminal application:
