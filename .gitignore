@@ -348,3 +348,17 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/nhpos/BUSINESSLOGIC/Display/Disp20_Debug
+/nhpos/BUSINESSLOGIC/Display/Disp20_Release
+/nhpos/BUSINESSLOGIC/Display/Displcd_Debug
+/nhpos/BUSINESSLOGIC/Display/Displcd_Release
+/nhpos/BUSINESSLOGIC/Sa/UIE/Uieio_Release
+/nhpos/BUSINESSLOGIC/Sa/UIE/Uieio_Debug
+/nhpos/BUSINESSLOGIC/Sa/UIE/Uiefunc_Release
+/nhpos/BUSINESSLOGIC/Sa/UIE/Uiefunc_Debug
+/nhpos/BUSINESSLOGIC/Mld/VOSIF/Mldvosif_Release
+/nhpos/BUSINESSLOGIC/Mld/VOSIF/Mldvosif_Debug
+/nhpos/BUSINESSLOGIC/HEM_Release
+/nhpos/BUSINESSLOGIC/HEM_Debug
+/nhpos/BUSINESSLOGIC/Ej/Ej_Release
+/nhpos/BUSINESSLOGIC/Ej/Ej_Debug
