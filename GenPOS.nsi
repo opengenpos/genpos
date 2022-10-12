@@ -53,7 +53,7 @@ Var StartMenuGroup
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "License GenPOS.rtf"
+!insertmacro MUI_PAGE_LICENSE "License"
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -74,8 +74,8 @@ VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
-VIAddVersionKey FileDescription "GENPOS Terminal Installer"
-VIAddVersionKey LegalCopyright "Copyright (C) 2002-2021, Georgia Southern University"
+VIAddVersionKey FileDescription "OpenGenPOS Terminal Installer"
+VIAddVersionKey LegalCopyright "Copyright (C) 2002-2022, Georgia Southern University"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 RequestExecutionLevel admin
@@ -108,10 +108,17 @@ Section -Main SEC0000
     
     SetOutPath $INSTDIR
     
+    # Beginning with Visual Studio 2017, it appears the directory structure has changed somewhat
+    # previous versions of Visual Studio such as Visual Studio 2015 and Visual Studio 2005.
+    #    Visual Studio 2019 Community Edition
+    File "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142\vcredist_x86.exe"
+    #    Visual Studio 2015
+    # File "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\1033\vcredist_x86.exe"
+
     # The location of the Visual Studio 2005 C++ Runtime Redistributable depends on the version of
     # Windows being used to build the application. Beginning with Windows 7 there are now two different
     # folder hierarchies for installed programs.
-    File "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\1033\vcredist_x86.exe"
+    #    Visual Studio 2005
     # File "C:\Program Files (x86)\Microsoft Visual Studio 8\SDK\v2.0\BootStrapper\Packages\vcredist_x86\vcredist_x86.exe"
     # File "C:\Program Files\Microsoft Visual Studio 8\SDK\v2.0\BootStrapper\Packages\vcredist_x86\vcredist_x86.exe"
     
@@ -119,10 +126,10 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\Program
     # must create the directory before attempting to create shortcuts in it
     CreateDirectory "$SMPROGRAMS\$StartMenuGroup"
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\GenPOS Device Configuration Utility.lnk" $INSTDIR\Program\DeviceConfig.exe
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\GenPOS Terminal Application.lnk" $INSTDIR\Program\Framework.exe
-    CreateShortcut "$DESKTOP\GenPOS Device Configuration Utility.lnk" $INSTDIR\Program\DeviceConfig.exe
-    CreateShortcut "$DESKTOP\GenPOS Terminal Application.lnk" $INSTDIR\Program\Framework.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\OpenGenPOS Device Configuration Utility.lnk" $INSTDIR\Program\DeviceConfig.exe
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\OpenGenPOS Terminal Application.lnk" $INSTDIR\Program\Framework.exe
+    CreateShortcut "$DESKTOP\OpenGenPOS Device Configuration Utility.lnk" $INSTDIR\Program\DeviceConfig.exe
+    CreateShortcut "$DESKTOP\OpenGenPOS Terminal Application.lnk" $INSTDIR\Program\Framework.exe
     
 #	ExecWait '"$INSTDIR\vcredist_x86.exe"'  #normal run (dialog with cancel button)
 	ExecWait '"$INSTDIR\vcredist_x86.exe" /q:a /c:"msiexec /i vcredist.msi /qb!"'	#dialog with no cancel
@@ -164,8 +171,8 @@ done${UNSECTION_ID}:
 
 # Uninstaller sections
 Section /o -un.Main UNSEC0000
-    Delete /REBOOTOK "$DESKTOP\GenPOS Device Configuration Utility.lnk"
-    Delete /REBOOTOK "$DESKTOP\GenPOS Terminal Application.lnk"
+    Delete /REBOOTOK "$DESKTOP\OpenGenPOS Device Configuration Utility.lnk"
+    Delete /REBOOTOK "$DESKTOP\OpenGenPOS Terminal Application.lnk"
 #    Delete /REBOOTOK $FONTS\andalemo.ttf
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
@@ -179,8 +186,12 @@ Section -un.post UNSEC0001
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
     # using /r forces the delete even if the directory isn't empty (which it won't be)
     RmDir /r /REBOOTOK $SMPROGRAMS\$StartMenuGroup
+    # delete only the directories containing the program
     RmDir /r /REBOOTOK $INSTDIR\Program
     RmDir /r /REBOOTOK $INSTDIR\Web
+    # we leave the following directories to be deleted by hand
+    #RmDir /r /REBOOTOK $INSTDIR\Database
+    #RmDir /r /REBOOTOK $INSTDIR\Icons
 SectionEnd
 
 # Installer functions
