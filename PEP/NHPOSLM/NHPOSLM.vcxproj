@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2F7C36BF-F5DC-4297-9695-24514E8AEC89}</ProjectGuid>
+    <RootNamespace>NHPOSLM</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\..\BIN\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\..\BIN\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\BIN\Release/NHPOSLM.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/D "WINVER=0x0502" %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\TouchLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/NHPOSLM.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>TouchLibrary.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\..\BIN\Release/NHPOSLM.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\LIB\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\BIN\Release/NHPOSLM.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\BIN\Debug/NHPOSLM.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/D "WINVER=0x0502" %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\TouchLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\Debug/NHPOSLM.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>TouchLibrary.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\..\BIN\Debug/NHPOSLM.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\Lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\..\BIN\Debug/NHPOSLM.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\BIN\Debug/NHPOSLM.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ChildFrm.cpp" />
+    <ClCompile Include="DActiveWndEdit.cpp" />
+    <ClCompile Include="DButtonAction.cpp" />
+    <ClCompile Include="DButtonEdit.cpp" />
+    <ClCompile Include="DefaultEdit.cpp" />
+    <ClCompile Include="DEntryAdjPls.cpp" />
+    <ClCompile Include="DEntryDept.cpp" />
+    <ClCompile Include="DEntryPLU.cpp" />
+    <ClCompile Include="DEntryWinID.cpp" />
+    <ClCompile Include="DFileSummaryDlg.cpp" />
+    <ClCompile Include="DGroupPermission.cpp" />
+    <ClCompile Include="DLanguageEdit.cpp" />
+    <ClCompile Include="DListBoxEdit.cpp" />
+    <ClCompile Include="DTextItem.cpp" />
+    <ClCompile Include="DWindowGroup.cpp" />
+    <ClCompile Include="DWindowList.cpp" />
+    <ClCompile Include="DWinItem.cpp" />
+    <ClCompile Include="DWinLabel.cpp" />
+    <ClCompile Include="D_OEPEdit.cpp" />
+    <ClCompile Include="KeypadEntry.cpp" />
+    <ClCompile Include="LeftView.cpp" />
+    <ClCompile Include="LOMCommandLineInfo.cpp" />
+    <ClCompile Include="LOMSPlitterWnd.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="ModeEntry.cpp" />
+    <ClCompile Include="NewLayout.cpp" />
+    <ClCompile Include="NewLayoutDoc.cpp" />
+    <ClCompile Include="NewLayoutView.cpp" />
+    <ClCompile Include="StaticColorPatch.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="WindowButtonExt.cpp" />
+    <ClCompile Include="WindowControlSampleExt.cpp" />
+    <ClCompile Include="WindowDocumentExt.cpp" />
+    <ClCompile Include="WindowEditBoxExt.cpp" />
+    <ClCompile Include="WindowItemExt.cpp" />
+    <ClCompile Include="WindowLabelExt.cpp" />
+    <ClCompile Include="WindowListBoxExt.cpp" />
+    <ClCompile Include="WindowTextExt.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ChildFrm.h" />
+    <ClInclude Include="DActiveWndEdit.h" />
+    <ClInclude Include="DButtonAction.h" />
+    <ClInclude Include="DButtonEdit.h" />
+    <ClInclude Include="DefaultEdit.h" />
+    <ClInclude Include="DEntryAdjPls.h" />
+    <ClInclude Include="DEntryDept.h" />
+    <ClInclude Include="DEntryPLU.h" />
+    <ClInclude Include="DEntryWinID.h" />
+    <ClInclude Include="DFileSummaryDlg.h" />
+    <ClInclude Include="DGroupPermission.h" />
+    <ClInclude Include="DLanguageEdit.h" />
+    <ClInclude Include="DListBoxEdit.h" />
+    <ClInclude Include="DP03ToolBox.h" />
+    <ClInclude Include="DTextItem.h" />
+    <ClInclude Include="DWindowGroup.h" />
+    <ClInclude Include="DWindowList.h" />
+    <ClInclude Include="DWinItem.h" />
+    <ClInclude Include="DWinLabel.h" />
+    <ClInclude Include="D_OEPEdit.h" />
+    <ClInclude Include="KeypadEntry.h" />
+    <ClInclude Include="LeftView.h" />
+    <ClInclude Include="LOMCommandLineInfo.h" />
+    <ClInclude Include="LOMSPlitterWnd.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="ModeEntry.h" />
+    <ClInclude Include="NewLayout.h" />
+    <ClInclude Include="NewLayoutDoc.h" />
+    <ClInclude Include="NewLayoutView.h" />
+    <ClInclude Include="P003.H" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="StaticColorPatch.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="WindowButtonExt.h" />
+    <ClInclude Include="WindowControlSampleExt.h" />
+    <ClInclude Include="WindowDocumentExt.h" />
+    <ClInclude Include="WindowEditBoxExt.h" />
+    <ClInclude Include="WindowItemExt.h" />
+    <ClInclude Include="WindowLabelExt.h" />
+    <ClInclude Include="WindowListBoxExt.h" />
+    <ClInclude Include="WindowTextExt.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="HLP\NewLayout.CNT">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing NHPOSLM help build .cnt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing NHPOSLM help build .cnt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">if NOT EXIST "$(OutDir)" mkdir "$(OutDir)"
+copy "%(RootDir)%(Directory)NewLayout.cnt" "$(OutDir)NHPOSLM.cnt" /Y
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)NHPOSLM.cnt;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="HLP\NewLayout.hpj">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing NHPOSLM help build .hpj</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing NHPOSLM help build .hpj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">if NOT EXIST "$(OutDir)" mkdir "$(OutDir)"
+hcw /C /E /M "%(FullPath)"
+copy "%(RootDir)%(Directory)NHPOSLM.hlp" "$(OutDir)" /Y
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)NHPOSLM.hlp;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <None Include="res\cursor1.cur" />
+    <None Include="res\NewLayout.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NewLayout.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\NewLayout.ico" />
+    <Image Include="res\NewLayoutDoc.ico" />
+    <Image Include="res\SNAPSHOT.ICO" />
+    <Image Include="res\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TOUCHLIBRARY\TouchLibrary.vcxproj">
+      <Project>{4104cb15-e855-4d73-8db3-286217575998}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="LM_ResDLL_French\LM_ResDLL_French.vcxproj">
+      <Project>{8a2bc6f3-bc2d-45d7-a2c2-35ec94d36163}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="LM_ResDLL_German\LM_ResDLL_German.vcxproj">
+      <Project>{05993cd1-621e-454a-a8b9-91035ccdf6e3}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="LM_ResDLL_SimplifiedChinese\SimplifiedChinese.vcxproj">
+      <Project>{66ed4cd3-a8df-4139-b7db-82cbc2dba08a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="LM_RESDLL_SPANISH\LM_ResDLL_Spanish.vcxproj">
+      <Project>{5069396e-eea8-452a-b359-b3b663896262}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="NewLayout.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

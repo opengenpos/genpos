@@ -1,0 +1,24 @@
+; This file is maintained by HCW. Do not modify this file directly.
+
+[OPTIONS]
+COMPRESS=12 Hall Zeck
+ERRORLOG=NewLayout.log
+LCID=0x409 0x0 0x0 ; English (United States)
+REPORT=Yes
+FTS=31
+TITLE=Layout Manager Help
+CNT=NewLayout.CNT
+COPYRIGHT=Version: 1.0
+CITATION=Layout Manager, Copyright, 2005 Georgia Southern University
+PREFIX=IDD_
+HLP=NHPOSLM.hlp
+
+[FILES]
+dialogs.rtf
+procedures.rtf
+concepts.rtf
+
+[WINDOWS]
+Dialogs="Dialogs and Menus",(18,10,600,435),20740,(r14876671),(r12632256),f6; Used for displaying dialog descriptions and menu descriptions.
+Concept="Concepts",(18,10,600,435),20736,(r14876671),(r12632256),f6; Used to display concept material
+Proc="Procedure",(653,102,360,600),20736,(r14876671),(r12632256),f3; Used to display procedure steps

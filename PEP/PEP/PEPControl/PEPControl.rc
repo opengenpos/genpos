@@ -1,0 +1,232 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\PEPControl.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#if !defined(ALL_N_VERSIONINFO)
+#define  ALL_N_VERSIONINFO   2,3,2,005
+#define  ALL_M_VERSIONINFO   "2, 3, 2, 005\0"
+#define  ALL_Q_COPYRIGHT     "Copyright (C) 2002-2020, Georgia Southern University\0"
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION       ALL_N_VERSIONINFO
+PRODUCTVERSION    ALL_N_VERSIONINFO
+FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "PEPControl DLL\0"
+			VALUE "FileVersion", ALL_M_VERSIONINFO
+			VALUE "ProductVersion", ALL_M_VERSIONINFO
+			VALUE "InternalName", "PEPControl\0"
+            VALUE "LegalCopyright", ALL_Q_COPYRIGHT
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "PEPControl.DLL\0"
+            VALUE "ProductName", "PEPControl Dynamic Link Library\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SECURITY_DIALOG DIALOG DISCARDABLE  0, 0, 311, 135
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION
+CAPTION "Software Security"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "",IDC_SOFTLOCX6CTRL1,
+                    "{0A61246C-183E-46A1-B597-81A220D8F745}",NOT WS_VISIBLE,
+                    263,7,41,37
+    CTEXT           "Serial #",IDC_SERIAL_CAPTION,7,33,69,17,SS_CENTERIMAGE
+    CTEXT           "",IDC_SERIAL_NUM,87,34,166,17,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "Unlock Code",IDC_UNLOCK_CAPTION,7,76,69,17,
+                    SS_CENTERIMAGE
+    EDITTEXT        IDC_UNLOCK_CODE,87,76,208,17
+    PUSHBUTTON      "Unlock",IDC_UNLOCK,53,98,50,14
+    PUSHBUTTON      "Continue",IDC_CONTINUE,108,98,50,14
+    CTEXT           "Status",IDC_STATUS_CAPTION,7,14,69,17,SS_CENTERIMAGE
+    CTEXT           "",IDC_STATUS,87,12,166,17,SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Days Remaining",IDC_DAYSLEFT_CAPTION,7,56,69,17,
+                    SS_CENTERIMAGE
+    CTEXT           "",IDC_DAYSLEFT,87,56,166,17,SS_CENTERIMAGE | SS_SUNKEN
+    PUSHBUTTON      "Repair",IDC_REPAIR,161,98,50,14,NOT WS_VISIBLE
+    CONTROL         "",IDC_LOCKIT1,"{25C91092-1613-11D3-AA3C-00E0291E4D4F}",
+                    NOT WS_VISIBLE,7,100,35,28
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_SECURITY_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 304
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 128
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_SECURITY_DIALOG DLGINIT
+BEGIN
+    IDC_SOFTLOCX6CTRL1, 0x376, 146, 0
+0x0000, 0x0000, 0x0000, 0x0001, 0x0668, 0x0000, 0x0634, 0x0000, 0x0000, 
+0x0000, 0x500f, 0x5045, 0x5220, 0x6c65, 0x6165, 0x6573, 0x3220, 0x302e, 
+0x5614, 0x3032, 0x4147, 0x4f53, 0x3655, 0x7574, 0x3970, 0x586c, 0x6233, 
+0x6947, 0x0051, 0x0000, 0x0000, 0x0000, 0x0800, 0x3030, 0x3030, 0x3030, 
+0x3030, 0x0001, 0x0000, 0x002d, 0x0000, 0x0101, 0x0000, 0x0000, 0x0000, 
+0x0000, 0x0000, 0x0000, 0x01f4, 0x0000, 0x0001, 0x0000, 0x0800, 0x3934, 
+0x5130, 0x5044, 0x534a, 0x3308, 0x3630, 0x3532, 0x3237, 0x0837, 0x4350, 
+0x6e55, 0x7169, 0x6575, 0x4907, 0x766e, 0x6c61, 0x6469, 0x0101, 0x0000, 
+0x0000, 
+    IDC_LOCKIT1, 0x376, 405, 0
+0x0000, 0x0000, 0x5054, 0x3046, 0x5407, 0x6f4c, 0x6b63, 0x7449, 0x4c06, 
+0x636f, 0x496b, 0x0474, 0x654c, 0x7466, 0xf203, 0x0300, 0x6f54, 0x0370, 
+0x00e0, 0x5705, 0x6469, 0x6874, 0x3502, 0x4806, 0x6965, 0x6867, 0x0274, 
+0x152e, 0x6f48, 0x7a72, 0x6353, 0x6f72, 0x6c6c, 0x6142, 0x2e72, 0x6956, 
+0x6973, 0x6c62, 0x0865, 0x5615, 0x7265, 0x5374, 0x7263, 0x6c6f, 0x426c, 
+0x7261, 0x562e, 0x7369, 0x6269, 0x656c, 0x0708, 0x6e41, 0x6863, 0x726f, 
+0x0b73, 0x0500, 0x6f43, 0x6f6c, 0x0772, 0x6309, 0x426c, 0x6e74, 0x6146, 
+0x6563, 0x4315, 0x6e6f, 0x7473, 0x6172, 0x6e69, 0x7374, 0x4d2e, 0x7861, 
+0x6548, 0x6769, 0x7468, 0x2e02, 0x4314, 0x6e6f, 0x7473, 0x6172, 0x6e69, 
+0x7374, 0x4d2e, 0x7861, 0x6957, 0x7464, 0x0268, 0x157b, 0x6f43, 0x736e, 
+0x7274, 0x6961, 0x746e, 0x2e73, 0x694d, 0x486e, 0x6965, 0x6867, 0x0274, 
+0x142d, 0x6f43, 0x736e, 0x7274, 0x6961, 0x746e, 0x2e73, 0x694d, 0x576e, 
+0x6469, 0x6874, 0x3502, 0x460c, 0x6e6f, 0x2e74, 0x6843, 0x7261, 0x6573, 
+0x0774, 0x440f, 0x4645, 0x5541, 0x544c, 0x435f, 0x4148, 0x5352, 0x5445, 
+0x460a, 0x6e6f, 0x2e74, 0x6f43, 0x6f6c, 0x0772, 0x630c, 0x576c, 0x6e69, 
+0x6f64, 0x5477, 0x7865, 0x0b74, 0x6f46, 0x746e, 0x482e, 0x6965, 0x6867, 
+0x0274, 0x09f5, 0x6f46, 0x746e, 0x4e2e, 0x6d61, 0x0665, 0x4d0d, 0x2053, 
+0x6153, 0x736e, 0x5320, 0x7265, 0x6669, 0x460a, 0x6e6f, 0x2e74, 0x7453, 
+0x6c79, 0x0b65, 0x0e00, 0x6c4f, 0x4364, 0x6572, 0x7461, 0x4f65, 0x6472, 
+0x7265, 0x0608, 0x6353, 0x6c61, 0x6465, 0x0808, 0x6e4f, 0x7243, 0x6165, 
+0x6574, 0x0a07, 0x6f46, 0x6d72, 0x7243, 0x6165, 0x6574, 0x500d, 0x7869, 
+0x6c65, 0x5073, 0x7265, 0x6e49, 0x6863, 0x6002, 0x540a, 0x7865, 0x4874, 
+0x6965, 0x6867, 0x0274, 0x000d, "\000" 
+    0
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\PEPControl.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{7a172a33-a020-4a64-b65e-62f998f0e9da}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{51f2f0d1-4091-4f28-a969-16cda0fe8558}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Nwop.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Nwophgv10.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Nwophgv203.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Nwophgv210.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Nwopin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Nwoppein.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Nwopv34.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Csophgv10.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Csophgv203.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Csophgv210.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Csopin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Csoppein.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Csopv34.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

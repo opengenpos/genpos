@@ -1,0 +1,314 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{baa6f5ae-15f2-4d8e-9ed3-b259aabe2d1c}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Dialogs">
+      <UniqueIdentifier>{76aef99c-e6e5-485d-b1fe-e8e48aacdb9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Document">
+      <UniqueIdentifier>{c3d2eea8-ff9e-4ac1-9c2f-6e8d67bbe570}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\View">
+      <UniqueIdentifier>{a338d0dd-5d1a-4bdf-91ee-df1d9aca8c7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Help">
+      <UniqueIdentifier>{629715c4-ded3-4165-a789-fbc7a14dac8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\App">
+      <UniqueIdentifier>{f52ffbcc-b810-4e86-b4ba-2434bd4d2632}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Artifacts">
+      <UniqueIdentifier>{68aac4fe-21f1-4d28-95c3-2b407a49dbd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{ef929815-540c-452f-a5b4-fed5615f03ce}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{456014db-01f9-4bc5-bfcd-114aa71c970c}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="KeypadEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LOMCommandLineInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LOMSPlitterWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModeEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticColorPatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D_OEPEdit.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DActiveWndEdit.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DButtonAction.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DButtonEdit.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultEdit.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DEntryAdjPls.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DEntryDept.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DEntryPLU.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DEntryWinID.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DFileSummaryDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DGroupPermission.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DLanguageEdit.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DListBoxEdit.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DTextItem.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DWindowGroup.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DWindowList.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DWinItem.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="DWinLabel.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="NewLayoutDoc.cpp">
+      <Filter>Source Files\Document</Filter>
+    </ClCompile>
+    <ClCompile Include="LeftView.cpp">
+      <Filter>Source Files\View</Filter>
+    </ClCompile>
+    <ClCompile Include="NewLayoutView.cpp">
+      <Filter>Source Files\View</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildFrm.cpp">
+      <Filter>Source Files\App</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files\App</Filter>
+    </ClCompile>
+    <ClCompile Include="NewLayout.cpp">
+      <Filter>Source Files\App</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files\App</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowButtonExt.cpp">
+      <Filter>Source Files\Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowControlSampleExt.cpp">
+      <Filter>Source Files\Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowDocumentExt.cpp">
+      <Filter>Source Files\Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowEditBoxExt.cpp">
+      <Filter>Source Files\Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowItemExt.cpp">
+      <Filter>Source Files\Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowLabelExt.cpp">
+      <Filter>Source Files\Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowListBoxExt.cpp">
+      <Filter>Source Files\Artifacts</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTextExt.cpp">
+      <Filter>Source Files\Artifacts</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="NewLayoutView.h">
+      <Filter>Source Files\View</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowDocumentExt.h">
+      <Filter>Source Files\Artifacts</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D_OEPEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DActiveWndEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DButtonAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DButtonEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DEntryAdjPls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DEntryDept.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DEntryPLU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DEntryWinID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DFileSummaryDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DGroupPermission.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLanguageEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DListBoxEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DP03ToolBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DTextItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DWindowGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DWindowList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DWinItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DWinLabel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeypadEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LeftView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LOMCommandLineInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LOMSPlitterWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModeEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NewLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NewLayoutDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P003.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticColorPatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowButtonExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowControlSampleExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowEditBoxExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowItemExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowLabelExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowListBoxExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowTextExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\cursor1.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\NewLayout.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NewLayout.rc">
+      <Filter>Source Files\App</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\NewLayout.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NewLayoutDoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SNAPSHOT.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="HLP\NewLayout.CNT">
+      <Filter>Source Files\Help</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HLP\NewLayout.hpj">
+      <Filter>Source Files\Help</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

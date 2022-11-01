@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E1C399EA-FDE3-4467-A13E-39CC2333D16B}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\..\Lib\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\..\Lib\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\INCLUDE;..\..\INCLUDE;..\..\..\INCLUDE;..\..\..\PCIF\INCLUDE;..\..\..\..\COMMON\DeviceFPReader\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;MBCS;_LIB;PEP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeaderOutputFile>.\Debug/pepact32.pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>.\..\Lib\Debug\pepact32.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Lib\Debug/pepact32.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\INCLUDE;..\..\INCLUDE;..\..\..\INCLUDE;..\..\..\PCIF\INCLUDE;..\..\..\..\COMMON\DeviceFPReader\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_LIB;PEP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/pepact32.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>.\..\Lib\Release\pepact32.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\Lib\Release/pepact32.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="A004.c" />
+    <ClCompile Include="A005.C" />
+    <ClCompile Include="A007.C" />
+    <ClCompile Include="A020.C" />
+    <ClCompile Include="A033.C" />
+    <ClCompile Include="A068.c" />
+    <ClCompile Include="A071.C" />
+    <ClCompile Include="A084.c" />
+    <ClCompile Include="A086.C" />
+    <ClCompile Include="A087.C" />
+    <ClCompile Include="A088.C" />
+    <ClCompile Include="A089.c" />
+    <ClCompile Include="A111.C" />
+    <ClCompile Include="A114.c" />
+    <ClCompile Include="A115.c" />
+    <ClCompile Include="A116.c" />
+    <ClCompile Include="A124.C" />
+    <ClCompile Include="A127.C" />
+    <ClCompile Include="A128.C" />
+    <ClCompile Include="A130.C" />
+    <ClCompile Include="A133.C" />
+    <ClCompile Include="A137.C" />
+    <ClCompile Include="A152.C" />
+    <ClCompile Include="A154.C" />
+    <ClCompile Include="A160.C" />
+    <ClCompile Include="A161.c" />
+    <ClCompile Include="A162.C" />
+    <ClCompile Include="A170.C" />
+    <ClCompile Include="A208.C" />
+    <ClCompile Include="A209.C" />
+    <ClCompile Include="ACTION.C" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="A004.H" />
+    <ClInclude Include="A005.H" />
+    <ClInclude Include="A007.H" />
+    <ClInclude Include="A020.H" />
+    <ClInclude Include="A033.H" />
+    <ClInclude Include="A068.h" />
+    <ClInclude Include="A071.H" />
+    <ClInclude Include="A084.h" />
+    <ClInclude Include="A086.H" />
+    <ClInclude Include="A087.H" />
+    <ClInclude Include="A088.H" />
+    <ClInclude Include="A089.h" />
+    <ClInclude Include="A111.H" />
+    <ClInclude Include="A114.h" />
+    <ClInclude Include="A115.h" />
+    <ClInclude Include="A116.H" />
+    <ClInclude Include="A124.H" />
+    <ClInclude Include="A127.H" />
+    <ClInclude Include="A128.H" />
+    <ClInclude Include="A130.H" />
+    <ClInclude Include="A133.H" />
+    <ClInclude Include="A137.H" />
+    <ClInclude Include="A152.H" />
+    <ClInclude Include="A154.H" />
+    <ClInclude Include="A160.H" />
+    <ClInclude Include="A161.H" />
+    <ClInclude Include="A162.H" />
+    <ClInclude Include="A170.h" />
+    <ClInclude Include="A208.h" />
+    <ClInclude Include="A209.H" />
+    <ClInclude Include="ACTINIT.H" />
+    <ClInclude Include="ACTWEP.H" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\COMMON\DeviceFPReader\DeviceFPReader.vcxproj">
+      <Project>{eef66680-922b-412a-8bcb-1f1b8e18b36b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

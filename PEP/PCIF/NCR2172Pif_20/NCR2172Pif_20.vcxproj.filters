@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{42e5ef92-3562-49dc-b2d6-5052f2b88841}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{ca315c26-773d-4181-b3a4-cb1b0b48ba28}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{c7e8fe43-4d02-4039-b262-31c9e3493886}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{696a386c-51a0-4ca6-bac0-093d10eaf75b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Debug.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NCR2172Pif.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PIF32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pifctl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pifnet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PIFOTHER.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pifsio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SIO32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NCR2172Pif.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NCR2172Pif.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PIF32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\R20_PIF.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIO32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\BIOS.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\BUTLER.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\CONF.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\DLC.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\ICMP.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\IO.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\IP.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\KERNEL.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\NET.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\NETWORK.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\PIFXINU.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\UDP.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\XINU.H">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

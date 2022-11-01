@@ -1,0 +1,42 @@
+/////////////////////////////////////////////////////////////////////////////
+// DEBUG.H :
+//
+// Copyright (C) 1998 NCR Corporation, All rights reserved.
+//
+//
+// History:
+//
+// Date         Version  Author       Comments
+// ===========  =======  ===========  =======================================
+// Aug-25-1998                        initial
+//
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef	DEBUG_H
+#define	DEBUG_H
+
+// need to access the _T() macro for strings.
+#include	<tchar.h>
+
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+
+/////////////////////////////////////////////////////////////////////////////
+//  Function Prototypes
+/////////////////////////////////////////////////////////////////////////////
+
+VOID	DebugInit();
+VOID	DebugPrintf(LPCTSTR lpszFormat, ...);
+VOID	DebugUninit();
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif                                      // ifndef(DEBUG_H)

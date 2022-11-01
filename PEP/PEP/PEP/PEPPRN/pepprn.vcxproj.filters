@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{1d5f4b8d-6a22-46bf-881a-25128ace844d}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{94ed0041-0d9a-476e-9154-58d8a98af0ed}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Pepprn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Prna068.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Prna068c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Prna068d.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PRNP003.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PRNP003F.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prnp003p.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Pepprnl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Prna068.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Prna068c.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Prna068d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRNP003.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRNP003F.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Prnp003p.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

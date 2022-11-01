@@ -1,0 +1,1301 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\PCSample.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\PCSample.ico"
+
+IDR_PCSAMPTYPE          ICON                    "res\\PCSampleDoc.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_CONNECT_LAN_ON
+    SEPARATOR
+    BUTTON      ID_WINDOW_CLEAR
+    SEPARATOR
+    BUTTON      ID_TOGGLE_SYLK_EXPORT
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&Connect"
+    BEGIN
+		MENUITEM "Display Report List"			ID_DIAOLOG_REPORTLIST
+		MENUITEM "Page Setup ..."				ID_FILE_PAGE_SETUP
+		MENUITEM "&Print...",					ID_WINDOW_PRINT
+		MENUITEM SEPARATOR
+		MENUITEM "Log &On...",                  ID_CONNECT_LOGON
+        MENUITEM "Log O&ff",                    ID_CONNECT_LOGOFF
+        MENUITEM SEPARATOR
+        MENUITEM "Connect &Modem...",           ID_CONNECT_MODEM_ON
+        MENUITEM "&Disconnect Modem",           ID_CONNECT_MODEM_OFF
+        MENUITEM SEPARATOR
+		MENUITEM "Scan LAN for Master",			ID_SCAN_FOR_MASTER
+		MENUITEM "Connect L&AN",				ID_CONNECT_LAN_ON
+		MENUITEM "Disconnect LA&N",             ID_CONECT_LAN_OFF
+        MENUITEM SEPARATOR
+        MENUITEM "&Lock Keyboard",              ID_CONNECT_LOCK_KBD
+        MENUITEM "&Unlock Keyboard",            ID_CONNECT_UNLOCK_KBD
+        MENUITEM SEPARATOR
+        MENUITEM "Change &Password...\t(P-39)", ID_CONNECT_CHG_PASSWORD
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Read Report"
+    BEGIN
+        MENUITEM "&Operator/Cashier...\t(AC21)", ID_READ_CASHIER
+        MENUITEM "Register &Financial\t(AC23)", ID_READ_REGFIN
+        MENUITEM "Register Financial - &PTD\t(AC23)", ID_READ_REGFIN_PTD
+        MENUITEM "&Hourly Activity\t(AC24)",    ID_READ_HOURLY
+        MENUITEM "Major &Department...\t(AC26)", ID_READ_DEPT
+        MENUITEM "PL&U by Department... \t(AC29)", ID_READ_PLU
+        MENUITEM "Recent PLU\t(AC29)",          ID_READ_PLUEX
+        MENUITEM "&Coupon...\t(AC30)",          ID_READ_COUPON
+        MENUITEM "&Service Time\t(AC131)",      ID_READ_SERVICETIME
+        MENUITEM "&Individual Financial...\t(AC223)", ID_READ_INDFIN
+        MENUITEM SEPARATOR
+        MENUITEM "&Tally of CPM/EPT\t(AC97)",   ID_READ_CPM
+        MENUITEM "&Employee Time Keeping\t(AC150)", ID_READ_ETK
+        MENUITEM SEPARATOR
+        MENUITEM "Electronic &Journal...\t(AC70)", ID_READ_EJ
+        MENUITEM SEPARATOR
+        MENUITEM "&Guest Check List All\t(AC 2)", ID_READ_GC_ALL
+        MENUITEM "Guest Check by GC#...\t(AC 2)", ID_READ_GC_BYGCN
+        MENUITEM "Guest Check &by Operator...\t(AC 2)", ID_READ_GC_BYCASHIER
+        MENUITEM "Insert EJ Note",              ID_INSERT_EJ_NOTE
+    END
+    POPUP "Re&set Report"
+    BEGIN
+        MENUITEM "End Of &Day\t(AC99)",         ID_RESET_EOD
+        MENUITEM "Set Delay Balance\t(AC275)      ", ID_EOD_DB
+        MENUITEM SEPARATOR
+        MENUITEM "&Operator/Cashier...\t(AC19)", ID_RESET_CASHIER
+        MENUITEM "PL&U\t(AC39)",                ID_RESET_PLU
+        MENUITEM "&Coupon\t(AC40)",             ID_RESET_COUPON
+        MENUITEM "&Service Time\t(AC132)",      ID_RESET_SERVICETIME
+        MENUITEM "&Individual Financial\t(AC233)", ID_RESET_INDFIN
+        MENUITEM SEPARATOR
+        MENUITEM "&Tally of CPM/EPT\t(AC97)",   ID_RESET_CPM
+        MENUITEM "Employee Time &Keeping\t(AC151)", ID_RESET_ETK
+        MENUITEM SEPARATOR
+        MENUITEM "Electronic &Journal\t(AC100)", ID_RESET_EJ
+        MENUITEM "EJ &Polling - Override",      ID_RESET_EJ_OVERRIDE
+        MENUITEM "EJ Polling - &Non Override",  ID_RESET_EJ_NONOVERRIDE
+        MENUITEM SEPARATOR
+        MENUITEM "&Guest Check by GC#...\t(AC3)", ID_RESET_GC_BYGCN
+        MENUITEM "Guest Check &by Operator...\t(AC3)", ID_RESET_GC_BYCASHIER
+        MENUITEM "C&lose Guest Check...\t(AC103)", ID_RESET_OPENEDGC
+    END
+    POPUP "&Parameter"
+    BEGIN
+        MENUITEM "System &Configuration\t",     ID_PARA_CONFIG
+        MENUITEM "&Date && Time...\t(AC17)",    ID_PARA_SET_DATE
+        MENUITEM "Store/Terminal Number...\t(P-7)", ID_PARA_SET_REGNO
+        MENUITEM "Send Operator Message ...",   ID_SEND_OP_MESSAGE
+        MENUITEM "Update PLU ...",              ID_PARA_UPDATE_PLU
+        MENUITEM SEPARATOR
+        MENUITEM "Initiate Sup Broadcast",      ID_BCAST_SUP_AC_PARMS
+        MENUITEM "Initiate All Broadcast",      ID_BCAST_ALL_P_AC_PARMS
+        MENUITEM "Initiate Plu/Oep Broadcast",  ID_BCAST_PLU_OEP_PARMS
+    END
+    POPUP "&File Management"
+    BEGIN
+        MENUITEM "Save log to file",            ID_SAVE_LOG_TO_FILE
+        MENUITEM "Export to SYLK file",         ID_TOGGLE_SYLK_EXPORT
+        MENUITEM "Export from database file",   ID_SELECTFROMACTIVITYLIST
+        MENUITEM SEPARATOR
+        MENUITEM "Receive L&ayout",             ID_RCVLAYOUT
+        MENUITEM "Receive &Printer Logo",       ID_RCVLGOFILE
+        MENUITEM "Receive P&if Log",            ID_RCVLOGFILE
+        MENUITEM "Receive &Assert Log",         ID_RCVASSRTLOG
+        MENUITEM "Delete  &Assert Log",         ID_DELASSRTLOG
+        MENUITEM "Receive &Debug Log",          ID_RCVDEBGLOG
+    END
+    POPUP "S&aved Totals"
+    BEGIN
+        MENUITEM "Receive &Saved Total File",   IDD_RECIEVE_SAV_TTL
+        MENUITEM SEPARATOR
+        MENUITEM "&Read Saved Total File...",   ID_READ_SAV_TOTAL
+    END
+    POPUP "Terminal Provisioning"
+    BEGIN
+        MENUITEM "Cashier/Employee",            ID_PROV_CASHIER
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "Always On Top",               ID_WINDOW_ALWAYSONTOP
+        MENUITEM "Connect Engine",              ID_WINDOW_CONNECTENGINE
+        MENUITEM "&Clear Window",               ID_WINDOW_CLEAR
+        MENUITEM "&Print Last Report...",       ID_WINDOW_PRINTLASTREPORT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About PCSample...",          ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CONNECT_LOGON DIALOGEX 0, 0, 174, 143
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Log On Terminal"
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LTEXT           "Terminal &Number :",IDC_STATIC,8,9,58,8
+    EDITTEXT        IDC_EDIT_TERMNO,72,7,36,13,ES_AUTOHSCROLL
+    LTEXT           "&Password :",IDC_STATIC,8,27,58,8
+    EDITTEXT        IDC_EDIT_PASSWORD,72,25,36,13,ES_PASSWORD | ES_AUTOHSCROLL
+    GROUPBOX        "Serial Port Settings",IDC_STATIC,7,44,101,90
+    LTEXT           "Serial Port :",IDC_STATIC,14,58,37,8
+    LTEXT           "COM1",IDC_TEXT_PORT,72,56,29,13,0,WS_EX_CLIENTEDGE
+    LTEXT           "Baud Rate :",IDC_STATIC,14,73,41,8
+    LTEXT           "19200",IDC_TEXT_BAUD,72,71,29,13,0,WS_EX_CLIENTEDGE
+    LTEXT           "Data Bits :",IDC_STATIC,14,88,46,8
+    LTEXT           "8",IDC_TEXT_DATABITS,72,86,29,13,0,WS_EX_CLIENTEDGE
+    LTEXT           "Parity :",IDC_STATIC,14,103,34,8
+    LTEXT           "None",IDC_TEXT_PARITY,72,101,29,13,0,WS_EX_CLIENTEDGE
+    LTEXT           "Stop Bits :",IDC_STATIC,14,118,43,8
+    LTEXT           "1",IDC_TEXT_STOPBITS,72,116,29,13,0,WS_EX_CLIENTEDGE
+    DEFPUSHBUTTON   "&OK",IDOK,117,7,50,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,117,25,50,14
+    PUSHBUTTON      "&Serial Port...",IDC_PB_SERIALPORT,117,48,50,14
+END
+
+IDD_CHG_PASSWORD DIALOG 0, 0, 186, 90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Change Password"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "New &Password :",IDC_STATIC,9,16,52,8
+    EDITTEXT        IDC_EDIT_PASSWORD,68,14,48,12,ES_PASSWORD
+    DEFPUSHBUTTON   "&OK",IDOK,129,7,50,14,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDCANCEL,129,24,50,14
+END
+
+IDD_SET_SERIALPORT DIALOG 0, 0, 165, 106
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Serial Port Settings"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Serial Port :",IDC_STATIC,8,9,37,8
+    COMBOBOX        IDC_CB_PORTNO,58,7,39,116,CBS_DROPDOWNLIST | WS_TABSTOP
+    LTEXT           "&Baud Rate :",IDC_STATIC,8,27,37,8
+    COMBOBOX        IDC_CB_BAUD,58,25,39,82,CBS_DROPDOWNLIST | WS_TABSTOP
+    LTEXT           "&Data Bits :",IDC_STATIC,8,45,37,8
+    COMBOBOX        IDC_CB_DATABITS,58,43,39,56,CBS_DROPDOWNLIST | WS_TABSTOP
+    LTEXT           "&Parity :",IDC_STATIC,8,63,37,8
+    COMBOBOX        IDC_CB_PARITY,58,61,39,47,CBS_DROPDOWNLIST | WS_TABSTOP
+    LTEXT           "S&top Bits :",IDC_STATIC,8,81,37,8
+    COMBOBOX        IDC_CB_STOPBITS,58,79,39,44,CBS_DROPDOWNLIST | WS_TABSTOP
+    DEFPUSHBUTTON   "&OK",IDOK,108,7,50,14,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDCANCEL,108,25,50,14
+END
+
+IDD_SET_TERMINALNO DIALOG 0, 0, 186, 49
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Terminal Number"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "Terminal &No. :",IDC_STATIC,19,18,45,8
+    EDITTEXT        IDC_EDIT_TERMNO,71,16,36,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,129,7,50,14,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDCANCEL,129,24,50,14
+END
+
+IDD_SET_DATETIME DIALOG 0, 0, 170, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Date & Time"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Year :",IDC_STATIC,11,9,20,8
+    EDITTEXT        IDC_EDIT_YEAR,40,7,23,12,ES_AUTOHSCROLL
+    LTEXT           "&Month :",IDC_STATIC,11,26,21,8
+    COMBOBOX        IDC_CB_MONTH,40,24,63,55,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Day :",IDC_STATIC,11,43,18,8
+    EDITTEXT        IDC_EDIT_DAY,40,41,23,12,ES_AUTOHSCROLL
+    LTEXT           "&WDay :",IDC_STATIC,11,60,26,9
+    COMBOBOX        IDC_CB_WDAY,40,58,63,54,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Time :",IDC_STATIC,11,77,20,8
+    EDITTEXT        IDC_EDIT_HOUR,40,75,23,12,ES_AUTOHSCROLL
+    LTEXT           ":",IDC_STATIC,69,77,8,8
+    EDITTEXT        IDC_EDIT_MINUTE,78,75,23,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,113,7,50,14,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDCANCEL,113,24,50,14
+END
+
+IDD_SET_REGNO DIALOG 0, 0, 165, 58
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Store/Terminal Number"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Store No. :",IDC_STATIC,13,9,35,8
+    EDITTEXT        IDC_EDIT_STORENO,64,7,30,12,ES_AUTOHSCROLL
+    LTEXT           "&Terminal No. :",IDC_STATIC,13,30,45,8
+    EDITTEXT        IDC_EDIT_TERMNO,64,28,30,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,108,7,50,14,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDCANCEL,108,24,50,14
+END
+
+IDD_SET_CASNO DIALOG 0, 0, 174, 50
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Operator Number"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "Operator &No. :",IDC_STATIC,7,17,46,8
+    EDITTEXT        IDC_EDIT_CASNO,60,15,41,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,117,7,50,14,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDCANCEL,117,24,50,14
+END
+
+IDD_SET_GCNO DIALOG 0, 0, 186, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Guest Check Number"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Guest Check No. :",IDC_STATIC,11,18,60,8
+    EDITTEXT        IDC_EDIT_GCNO,79,16,34,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,129,7,50,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,129,24,50,14
+END
+
+IDD_SET_MDEPTNO DIALOG 0, 0, 174, 50
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Major Department Number"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "Major Department &No. :",IDC_STATIC,7,17,74,8
+    EDITTEXT        IDC_EDIT_MDEPTNO,86,15,23,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,117,7,50,14,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDCANCEL,117,24,50,14
+END
+
+IDD_SET_DEPTNO DIALOG 0, 0, 174, 50
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Department Number"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "Department &No. :",IDC_STATIC,10,17,55,8
+    EDITTEXT        IDC_EDIT_DEPTNO,74,15,23,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,117,7,50,14,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDCANCEL,117,24,50,14
+END
+
+IDD_CONNECT_MODEM DIALOG 0, 0, 240, 78
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Log On Terminal"
+FONT 10, "MS Sans Serif"
+BEGIN
+    LTEXT           "&AT Command :",IDC_STATIC,9,9,48,8
+    EDITTEXT        IDC_EDIT_ATCOMMAND,65,7,106,12,ES_AUTOHSCROLL
+    GROUPBOX        "",IDC_STATIC,7,25,172,41
+    LTEXT           "Phone &Number :",IDC_STATIC,11,38,53,9
+    EDITTEXT        IDC_EDIT_PHONE,67,36,107,12,ES_AUTOHSCROLL
+    CONTROL         "&Pulse",IDC_RADIO_PULSE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,76,52,36,8
+    CONTROL         "&Tone",IDC_RADIO_TONE,"Button",BS_AUTORADIOBUTTON,116,52,36,8
+    DEFPUSHBUTTON   "&OK",IDOK,183,7,50,14,WS_GROUP
+    PUSHBUTTON      "&Cancel",IDCANCEL,183,24,50,14
+END
+
+IDD_CONNECT_LAN DIALOGEX 0, 0, 300, 154
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "LAN Connection"
+FONT 10, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_IP1,60,18,32,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IP2,104,17,29,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IP3,148,17,31,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IP4,196,17,26,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PASSWORD_LAN,59,60,51,13,ES_PASSWORD | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,236,14,50,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,236,35,50,14
+    LTEXT           "IP Address:",IDC_STATIC,14,20,45,11
+    LTEXT           "Password :",IDC_STATIC,13,60,41,11
+    LTEXT           "Host Name :",IDC_STATIC,13,40,41,11
+    LTEXT           ".",IDC_STATIC,96,23,8,8
+    LTEXT           ".",IDC_STATIC,138,23,8,8
+    LTEXT           ".",IDC_STATIC,185,23,8,8
+    LTEXT           "Terminal Number:",IDC_STATIC,13,83,56,8
+    EDITTEXT        IDC_EDITTERMNO_LAN,72,81,24,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_HOST_LAN,59,39,105,13,ES_AUTOHSCROLL
+    GROUPBOX        "Connection Options",IDC_CONNECT_OPT,152,58,122,38,WS_GROUP
+    CONTROL         "Connect through IP address",IDC_IP_CONNECT,"Button",BS_AUTORADIOBUTTON,160,71,102,10
+    CONTROL         "Connect through Host Name",IDC_HOST_CONNECT,"Button",BS_AUTORADIOBUTTON,160,82,106,10
+    EDITTEXT        IDC_EDIT_DB_NAME,81,121,81,16,ES_AUTOHSCROLL
+    LTEXT           "Database File:",IDC_STATIC,33,125,48,10
+    CONTROL         "Save Reset Data to Database?",IDC_CHECK_USE_DATABASE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,104,107,15
+END
+
+IDD_RCV_PROGRESS DIALOG 0, 0, 128, 45
+STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION
+FONT 14, "Arial"
+BEGIN
+    CONTROL         "Progress1",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,17,24,96,8
+    LTEXT           "Receiving Layout Files",IDC_RCVLay_text,26,11,70,8
+END
+
+IDD_SEND_OP_MSG DIALOG 0, 0, 302, 210
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Send Operator Message"
+FONT 10, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Send Message",IDOK,231,5,65,14
+    PUSHBUTTON      "Cancel",IDCANCEL,246,22,50,14
+    EDITTEXT        IDC_EDIT_MSG,6,116,290,88,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
+    GROUPBOX        "Options",IDC_STATIC,6,5,193,102
+    CONTROL         "Do Not Broadcast Message",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,16,100,10
+    CONTROL         "Delete Old Messages",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,28,100,10
+    CONTROL         "Force Operator Sign Out",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,41,100,10
+    CONTROL         "Auto Operator Sign Out",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,54,100,10
+    CONTROL         "Block Operator Sign-in",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,67,100,10
+    CONTROL         "Unblock Operator Sign-in",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,80,100,10
+    CONTROL         "Force Application Shutdown",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,93,100,10
+END
+
+IDD_PLUASSIGNUPDATE DIALOGEX 0, 0, 314, 178
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "PLU Assign and Update"
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Exit",IDOK,257,7,50,14
+    LTEXT           "PLU Number:",IDC_STATIC,7,17,51,12
+    EDITTEXT        IDC_EDIT_PLUNUMBER,73,14,73,16,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "PLU Mnemonic:",IDC_STATIC,15,78,69,11,0,WS_EX_RIGHT
+    PUSHBUTTON      "Fetch PLU",IDC_BUTTON_FETCHPLU,159,14,58,16
+    GROUPBOX        "PLU Information",IDC_STATIC,7,58,300,114
+    PUSHBUTTON      "Update PLU",IDC_BUTTON_UPDATEPLU,247,73,60,27
+    EDITTEXT        IDC_EDIT_PLU_MNEMONIC,95,75,99,15,ES_AUTOHSCROLL
+    LTEXT           "PLU Price:",IDC_STATIC,21,98,63,12,0,WS_EX_RIGHT
+    EDITTEXT        IDC_EDIT_PLU_PRICE,95,96,82,14,ES_NUMBER
+    LTEXT           "Group Number:",IDC_STATIC,18,119,66,11,0,WS_EX_RIGHT
+    EDITTEXT        IDC_EDIT_PLU_GROUPNUMBER,95,117,31,12,ES_NUMBER
+    LTEXT           "Table Number:",IDC_STATIC,22,138,62,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_EDIT_PLU_TABLENUMBER,95,136,31,12,ES_NUMBER
+    LTEXT           "Dept Number:",IDC_STATIC,22,155,62,10,0,WS_EX_RIGHT
+    EDITTEXT        IDC_EDIT_PLU_DEPTNUMBER,96,153,31,12,ES_NUMBER
+    PUSHBUTTON      "Delete PLU",IDC_BUTTON_DELETEPLU,159,38,56,20
+END
+
+IDD_PAGE_CONNECT DIALOGEX 0, 0, 418, 391
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION
+CAPTION "ConnectEngine"
+FONT 10, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_CE_IPADDRESS,55,23,118,54,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_CE_IPPORT,209,22,46,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Connect",IDC_CE_CONNECT,274,22,50,14
+    EDITTEXT        IDC_CE_COMMAND,15,68,305,127,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
+    PUSHBUTTON      "&Send",IDC_CE_SEND,329,67,71,17,WS_DISABLED
+    PUSHBUTTON      "C&lear",IDC_CE_CLEAR,329,89,71,17
+    CONTROL         "Log outgoing msgs",IDC_CE_LOGMSGOUT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,330,115,72,10
+    EDITTEXT        IDC_CE_NOTIFICATION,15,221,305,154,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | ES_WANTRETURN | WS_VSCROLL
+    PUSHBUTTON      "C&lear",IDC_CE_CLEARINCOMING,329,220,71,17
+    CONTROL         "Log incoming msgs",IDC_CE_LOGMSGIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,330,248,71,10
+    LTEXT           "IP Address:",IDC_STATIC,14,25,38,8
+    LTEXT           "IP Port:",IDC_STATIC,179,25,26,8
+    GROUPBOX        "Connect",IDC_STATIC,7,7,404,42
+    GROUPBOX        "Outgoing Messages",IDC_STATIC,7,55,404,150
+    GROUPBOX        "Incoming Messages",IDC_STATIC,7,208,404,176
+    PUSHBUTTON      "Disconnect",IDC_DISCONNECT,351,21,43,16
+END
+
+IDD_PAGE_CASHIERACTION DIALOGEX 0, 0, 418, 266
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Cashier Action"
+FONT 10, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_CE_ACTIONTYPE,75,23,89,75,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_CE_EMPLOYEEID,75,46,88,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CE_AMOUNT,75,72,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CE_TOTALID,75,97,40,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Send",IDC_CE_SEND,349,22,50,14
+    LTEXT           "Action Type:",IDC_STATIC,13,25,42,8
+    LTEXT           "Employee ID:",IDC_STATIC,13,49,44,8
+    LTEXT           "Amount:",IDC_STATIC,13,75,28,8
+    LTEXT           "Total ID:",IDC_STATIC,13,101,29,8
+END
+
+IDD_PAGE_EMPLOYEECHANGE DIALOGEX 0, 0, 418, 266
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Employee Change"
+FONT 10, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Action Type:",IDC_STATIC,13,25,42,8
+    COMBOBOX        IDC_CE_ACTIONTYPE,75,23,89,54,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Employee ID:",IDC_STATIC,13,49,44,8
+    EDITTEXT        IDC_CE_EMPLOYEEID,75,46,88,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Send",IDC_CE_SEND,349,22,50,14
+    LTEXT           "Mnemonic:",IDC_STATIC,13,75,35,8
+    LTEXT           "Job Code:",IDC_STATIC,13,101,34,8
+    EDITTEXT        IDC_CE_MNEMONIC,75,72,142,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CE_JOBCODE,75,97,40,14,ES_AUTOHSCROLL
+END
+
+IDD_PAGE_GUESTCHECK DIALOGEX 0, 0, 418, 266
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Guest Check"
+FONT 10, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Check Number:",IDC_STATIC,13,25,50,8
+    EDITTEXT        IDC_CE_CHECKNUM,75,23,55,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Send",IDC_CE_SEND,349,22,50,14
+    LTEXT           "Use 0 (zero) for Check Number to retrieve all guest checks.",IDC_STATIC,13,79,228,8
+END
+
+IDD_CASHIER_SELECT DIALOGEX 0, 0, 303, 206
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Operator Select"
+FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    LISTBOX         IDC_CASHIER_LIST,7,7,230,192,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Cancel",IDCANCEL,242,7,40,21
+    PUSHBUTTON      "Select Operator",IDC_BUTTON_EDIT_SELECTED,242,34,54,21
+END
+
+IDD_CASHIER_LIST DIALOGEX 0, 0, 303, 206
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Operator Add/Edit"
+FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,256,7,40,21
+    LISTBOX         IDC_CASHIER_LIST,7,7,230,192,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Edit Selected",IDC_BUTTON_EDIT_SELECTED,242,84,54,21
+    PUSHBUTTON      "Send Changes",IDC_BUTTON_SEND_CHANGES,242,123,54,21
+END
+
+IDD_CASHIER_EDIT DIALOGEX 0, 0, 264, 150
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit/Add"
+FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,150,7,42,14
+    PUSHBUTTON      "Cancel",IDCANCEL,221,7,41,14
+    EDITTEXT        IDC_EDIT_CASHIER_NAME,3,24,62,12,ES_AUTOHSCROLL
+    RTEXT           "Team No.",IDC_STATIC,3,55,71,11
+    RTEXT           "Supervisor Id.",IDC_STATIC,3,43,72,11
+    RTEXT           "Guest Check Start No.",IDC_STATIC,3,73,73,11
+    RTEXT           "Guest Check End No.",IDC_STATIC,3,85,73,11
+    EDITTEXT        IDC_EDIT_CASHIER_SUPNO,84,42,34,12,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_CASHIER_TEAMNO,84,54,34,12,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_CASHIER_GCSTART,84,72,34,12,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_CASHIER_GCEND,84,84,34,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_TAB_CASHIER_EDIT_STATUS,"SysTabControl32",0x0,124,36,138,110
+END
+
+IDD_CASHIER_TAB_ONE DIALOGEX 0, 15, 178, 113
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "&Training Operator",IDC_TAB_CASHIER_EDIT_A20ST01,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,5,5,166,9
+    CONTROL         "Prohibit &Guest Check Open",IDC_TAB_CASHIER_EDIT_A20ST02,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,15,166,9
+    CONTROL         "Prohibit Non-&Guest Check Transaction",IDC_TAB_CASHIER_EDIT_A20ST03,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,25,166,9
+    CONTROL         "Prohibit Operator to &Close Own Check",IDC_TAB_CASHIER_EDIT_A20ST04,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,35,166,9
+    CONTROL         "Prohibit Operator to &Close Any Check",IDC_TAB_CASHIER_EDIT_A20ST05,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,45,166,9
+    CONTROL         "Prohibit Check &Transfer from Other Operator",IDC_TAB_CASHIER_EDIT_A20ST06,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,55,166,9
+    CONTROL         "Prohibit Check &Transfer to Other Operator",IDC_TAB_CASHIER_EDIT_A20ST07,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,65,166,9
+    CONTROL         "Require &Secret Code",IDC_TAB_CASHIER_EDIT_A20ST08,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,75,166,9
+    CONTROL         "&Release on Finalize at Guest Check Transaction",IDC_TAB_CASHIER_EDIT_A20ST09,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,85,166,9
+    CONTROL         "&Release on Finalize at Non-GC Transaction",IDC_TAB_CASHIER_EDIT_A20ST10,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,95,166,9
+    CONTROL         "Prohibit &Sign-in as surrogate",IDC_TAB_CASHIER_EDIT_A20ST11,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,105,166,9
+END
+
+IDD_CASHIER_TAB_TWO DIALOGEX 0, 15, 178, 113
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "&A Drawer",IDC_TAB_CASHIER_EDIT_A20ST01,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,5,166,9
+    CONTROL         "&B Drawer",IDC_TAB_CASHIER_EDIT_A20ST02,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,15,166,9
+    CONTROL         "&Use Team",IDC_TAB_CASHIER_EDIT_A20ST03,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,25,166,9
+    CONTROL         "Prohibit &Operator Interrupt",IDC_TAB_CASHIER_EDIT_A20ST04,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,35,166,9
+    CONTROL         "&Open Cash Drawer on Sign-In",IDC_TAB_CASHIER_EDIT_A20ST05,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,45,166,9
+    CONTROL         "&Open Cash Drawer on Sign-Out",IDC_TAB_CASHIER_EDIT_A20ST06,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,55,166,9
+    CONTROL         "Prohibit &Manual Register Sign-in on MSR",IDC_TAB_CASHIER_EDIT_A20ST07,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,65,166,9
+    CONTROL         "Auto Sign Out Disabled",IDC_TAB_CASHIER_EDIT_A20ST08,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,75,166,9
+    CONTROL         "PIN required for Sign-in",IDC_TAB_CASHIER_EDIT_A20ST09,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,85,166,9
+    CONTROL         "PIN required for Time-in",IDC_TAB_CASHIER_EDIT_A20ST10,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,95,166,9
+    CONTROL         "PIN required for Supervisor",IDC_TAB_CASHIER_EDIT_A20ST11,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,105,166,9
+END
+
+IDD_CASHIER_TAB_THREE DIALOGEX 0, 15, 178, 113
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Dialog Tab three",IDC_STATIC,6,44,90,17
+END
+
+IDD_SELECTACTIVITYLIST DIALOGEX 0, 0, 236, 263
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Select activity"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,107,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,179,7,50,14
+    LISTBOX         IDC_LIST1,7,27,185,229,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DIALOG_REPORTLIST DIALOGEX 0, 0, 309, 301
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Report List"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,252,7,50,27
+    PUSHBUTTON      "Cancel",IDCANCEL,252,44,50,24
+    LISTBOX         IDC_LIST1,7,17,223,277,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_ABOUTBOX DIALOG 0, 0, 219, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About PCSample"
+FONT 10, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,5,5,20,20
+    LTEXT           "PCSample  Retail Solution Version 2.3.2",IDC_STATIC,35,15,135,14,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2000 - 2020 Georgia Southern University",IDC_STATIC,35,30,200,20
+    DEFPUSHBUTTON   "OK",IDOK,180,7,32,14,WS_GROUP
+END
+
+
+#if !defined(ALL_N_VERSIONINFO)
+#define  ALL_N_VERSIONINFO   2,3,2,005
+#define  ALL_M_VERSIONINFO   "2, 3, 2, 005\0"
+#define  ALL_Q_COPYRIGHT     "Copyright (C) 2002-2020, Georgia Southern University\0"
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION  ALL_N_VERSIONINFO
+ PRODUCTVERSION  ALL_N_VERSIONINFO
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "PCSample 2.3.2 sample NCR General POS report generator."
+            VALUE "FileVersion", ALL_M_VERSIONINFO
+            VALUE "ProductVersion", ALL_M_VERSIONINFO
+            VALUE "InternalName", "PCSample"
+            VALUE "LegalCopyright", ALL_Q_COPYRIGHT
+            VALUE "OriginalFilename", "PCSample.EXE"
+            VALUE "ProductName", "NCR General POS Application Software: PCSample Application"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_CONNECT_LOGON, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 167
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 136
+    END
+
+    IDD_CHG_PASSWORD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_SET_SERIALPORT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 158
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 99
+    END
+
+    IDD_SET_TERMINALNO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 42
+    END
+
+    IDD_SET_DATETIME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_SET_REGNO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 158
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 51
+    END
+
+    IDD_SET_CASNO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 167
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
+    END
+
+    IDD_SET_GCNO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_SET_MDEPTNO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 167
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
+    END
+
+    IDD_SET_DEPTNO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 167
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
+    END
+
+    IDD_CONNECT_MODEM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 233
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 71
+    END
+
+    IDD_CONNECT_LAN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 145
+    END
+
+    IDD_RCV_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 121
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 38
+    END
+
+    IDD_SEND_OP_MSG, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 296
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 204
+    END
+
+    IDD_PLUASSIGNUPDATE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 307
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
+    END
+
+    IDD_PAGE_CONNECT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 411
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 384
+    END
+
+    IDD_PAGE_CASHIERACTION, DIALOG
+    BEGIN
+        LEFTMARGIN, 13
+        RIGHTMARGIN, 399
+        TOPMARGIN, 22
+        BOTTOMMARGIN, 259
+    END
+
+    IDD_PAGE_EMPLOYEECHANGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 13
+        RIGHTMARGIN, 399
+        TOPMARGIN, 22
+        BOTTOMMARGIN, 259
+    END
+
+    IDD_PAGE_GUESTCHECK, DIALOG
+    BEGIN
+        LEFTMARGIN, 13
+        RIGHTMARGIN, 411
+        TOPMARGIN, 22
+        BOTTOMMARGIN, 259
+    END
+
+    IDD_CASHIER_LIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 296
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 199
+    END
+
+    IDD_CASHIER_EDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 3
+        RIGHTMARGIN, 262
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 146
+    END
+
+    IDD_CASHIER_TAB_ONE, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 173
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 109
+    END
+
+    IDD_CASHIER_TAB_TWO, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 173
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 109
+    END
+
+    IDD_CASHIER_TAB_THREE, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 173
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 109
+    END
+
+    IDD_SELECTACTIVITYLIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 229
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 256
+    END
+
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 212
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_DIALOG_REPORTLIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 294
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_SET_SERIALPORT DLGINIT
+BEGIN
+    IDC_CB_PORTNO, 0x403, 5, 0
+0x4f43, 0x314d, "\000" 
+    IDC_CB_PORTNO, 0x403, 5, 0
+0x4f43, 0x324d, "\000" 
+    IDC_CB_PORTNO, 0x403, 5, 0
+0x4f43, 0x334d, "\000" 
+    IDC_CB_PORTNO, 0x403, 5, 0
+0x4f43, 0x344d, "\000" 
+    IDC_CB_BAUD, 0x403, 4, 0
+0x3033, 0x0030, 
+    IDC_CB_BAUD, 0x403, 4, 0
+0x3036, 0x0030, 
+    IDC_CB_BAUD, 0x403, 5, 0
+0x3231, 0x3030, "\000" 
+    IDC_CB_BAUD, 0x403, 5, 0
+0x3432, 0x3030, "\000" 
+    IDC_CB_BAUD, 0x403, 5, 0
+0x3834, 0x3030, "\000" 
+    IDC_CB_BAUD, 0x403, 5, 0
+0x3639, 0x3030, "\000" 
+    IDC_CB_BAUD, 0x403, 6, 0
+0x3931, 0x3032, 0x0030, 
+    IDC_CB_BAUD, 0x403, 6, 0
+0x3833, 0x3034, 0x0030, 
+    IDC_CB_BAUD, 0x403, 6, 0
+0x3735, 0x3036, 0x0030, 
+    IDC_CB_DATABITS, 0x403, 2, 0
+0x0037, 
+    IDC_CB_DATABITS, 0x403, 2, 0
+0x0038, 
+    IDC_CB_PARITY, 0x403, 5, 0
+0x6f4e, 0x656e, "\000" 
+    IDC_CB_PARITY, 0x403, 4, 0
+0x644f, 0x0064, 
+    IDC_CB_PARITY, 0x403, 5, 0
+0x7645, 0x6e65, "\000" 
+    IDC_CB_STOPBITS, 0x403, 2, 0
+0x0031, 
+    IDC_CB_STOPBITS, 0x403, 2, 0
+0x0032, 
+    0
+END
+
+IDD_SET_DATETIME DLGINIT
+BEGIN
+    IDC_CB_MONTH, 0x403, 8, 0
+0x614a, 0x756e, 0x7261, 0x0079, 
+    IDC_CB_MONTH, 0x403, 9, 0
+0x6546, 0x7262, 0x6175, 0x7972, "\000" 
+    IDC_CB_MONTH, 0x403, 6, 0
+0x614d, 0x6372, 0x0068, 
+    IDC_CB_MONTH, 0x403, 6, 0
+0x7041, 0x6972, 0x006c, 
+    IDC_CB_MONTH, 0x403, 4, 0
+0x614d, 0x0079, 
+    IDC_CB_MONTH, 0x403, 5, 0
+0x754a, 0x656e, "\000" 
+    IDC_CB_MONTH, 0x403, 5, 0
+0x754a, 0x796c, "\000" 
+    IDC_CB_MONTH, 0x403, 7, 0
+0x7541, 0x7567, 0x7473, "\000" 
+    IDC_CB_MONTH, 0x403, 10, 0
+0x6553, 0x7470, 0x6d65, 0x6562, 0x0072, 
+    IDC_CB_MONTH, 0x403, 8, 0
+0x634f, 0x6f74, 0x6562, 0x0072, 
+    IDC_CB_MONTH, 0x403, 9, 0
+0x6f4e, 0x6576, 0x626d, 0x7265, "\000" 
+    IDC_CB_MONTH, 0x403, 9, 0
+0x6544, 0x6563, 0x626d, 0x7265, "\000" 
+    IDC_CB_WDAY, 0x403, 7, 0
+0x7553, 0x646e, 0x7961, "\000" 
+    IDC_CB_WDAY, 0x403, 7, 0
+0x6f4d, 0x646e, 0x7961, "\000" 
+    IDC_CB_WDAY, 0x403, 8, 0
+0x7554, 0x7365, 0x6164, 0x0079, 
+    IDC_CB_WDAY, 0x403, 10, 0
+0x6557, 0x6e64, 0x7365, 0x6164, 0x0079, 
+    IDC_CB_WDAY, 0x403, 9, 0
+0x6854, 0x7275, 0x6473, 0x7961, "\000" 
+    IDC_CB_WDAY, 0x403, 7, 0
+0x7246, 0x6469, 0x7961, "\000" 
+    IDC_CB_WDAY, 0x403, 9, 0
+0x6153, 0x7574, 0x6472, 0x7961, "\000" 
+    0
+END
+
+IDD_PAGE_CASHIERACTION DLGINIT
+BEGIN
+    IDC_CE_ACTIONTYPE, 0x403, 9, 0
+0x6170, 0x6469, 0x6f2d, 0x7475, "\000" 
+    IDC_CE_ACTIONTYPE, 0x403, 16, 0
+0x6572, 0x6563, 0x7669, 0x2d65, 0x6361, 0x6f63, 0x6e75, 0x0074, 
+    IDC_CE_ACTIONTYPE, 0x403, 5, 0
+0x6f6c, 0x6e61, "\000" 
+    IDC_CE_ACTIONTYPE, 0x403, 8, 0
+0x6970, 0x6b63, 0x752d, 0x0070, 
+    0
+END
+
+IDD_PAGE_EMPLOYEECHANGE DLGINIT
+BEGIN
+    IDC_CE_ACTIONTYPE, 0x403, 14, 0
+0x6d45, 0x6c70, 0x796f, 0x6565, 0x442d, 0x7461, 0x0061, 
+    IDC_CE_ACTIONTYPE, 0x403, 4, 0
+0x6573, 0x0074, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_REPORTLIST AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "PCSample\n\nPCSamp\n\n\nPCSample.Document\nPCSamp Document"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "PCIF"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application."
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this document"
+    ID_FILE_MRU_FILE2       "Open this document"
+    ID_FILE_MRU_FILE3       "Open this document"
+    ID_FILE_MRU_FILE4       "Open this document"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE
+BEGIN
+    ID_CONNECT_LOGON        "Log on the POS terminal through the RS232 port."
+    ID_CONNECT_LOGOFF       "Log off the POS terminal."
+    ID_CONNECT_LOCK_KBD     "Lock the keyboard of the POS terminal."
+    ID_CONNECT_UNLOCK_KBD   "Unlock the keyboard of the POS terminal."
+    ID_CONNECT_CHG_PASSWORD "Change the password in the POS terminal."
+    ID_READ_REGFIN          "Issue the financial daily report."
+    ID_READ_REGFIN_PTD      "Issue register PTD report."
+    ID_READ_EJ              "Issue the electronic journal report."
+    ID_READ_ETK             "Issue the employee time keeping daily report."
+    ID_READ_CPM             "Issue the charge postiong manager tally report."
+    ID_READ_SERVICETIME     "Issue the service time daily report."
+    ID_READ_INDFIN          "Issue the individual financial daily report."
+END
+
+STRINGTABLE
+BEGIN
+    ID_RESET_EJ_OVERRIDE    "Issue and reset the electronic journal (override) without terminal lock."
+    ID_RESET_EJ_NONOVERRIDE "Issue and reset the electronic journal (non-override) without terminal lock."
+    ID_WINDOW_CLEAR         "Clear contents of the window."
+    ID_READ_CASHIER         "Issue the operator daily report."
+    ID_READ_GC_BYGCN        "Issue the guest check report by guest check number."
+    ID_READ_GC_BYCASHIER    "Issue the guest check report by operator number."
+    ID_READ_HOURLY          "Issue the hourly activity daily report."
+    ID_READ_DEPT            "Issue the department daily report."
+    ID_READ_PLU             "Issue the PLU daily report."
+    ID_READ_COUPON          "Issue the coupon daily report."
+    ID_RESET_PLU            "Issue and reset the PLU daily report."
+    ID_RESET_COUPON         "Issue and reset the coupon daily report."
+    ID_CONNECT_MODEM_ON     "Log on the POS terminal through the modem."
+    ID_CONNECT_MODEM_OFF    "Log off the POS terminal."
+    ID_CONNECT_LAN_ON       "Log on the POS terminal through the LAN."
+END
+
+STRINGTABLE
+BEGIN
+    ID_CONECT_LAN_OFF       "Log off the NCR General POS terminal."
+    ID_ISSUE_EOD            "Issues an End of Day Report"
+    ID_READ_GC_ALL          "Issue the guest check report listing all open checks."
+    ID_READ_PLUEX           "Issue a report of recent PLU data"
+    ID_RCVLAYOUT            "Receive Layout file(s)"
+    ID_RCVLGOFILE           "Receive Printer Logo file(s)"
+    ID_RCVLOGFILE           "Receive Pif Log file"
+    ID_RCVASSRTLOG          "Receive Assert Log file"
+    ID_RCVDEBGLOG           "Receive Debug Log file(s)"
+    ID_EOD_DB               "Initiialize Delayed Balance for Current Terminal"
+    ID_READ_SAV_TOTAL       "Open a Saved Total File for reading"
+    IDD_RECIEVE_SAV_TTL     "Receive a Saved Total File"
+    ID_SEND_OP_MESSAGE      "Displays a dialog that will allow the sending of a message to a cluster."
+END
+
+STRINGTABLE
+BEGIN
+    ID_PARA_UPDATE_PLU      "Provides a dialog box to allow an existing PLU to be modified."
+    ID_BCAST_SUP_AC_PARMS   "Intiates a Supervisor type of Paramater Broadcast for Sup parameters."
+    ID_BCAST_ALL_P_AC_PARMS "Intiates an All type of Paramater Broadcast for Prog and Sup parameters."
+    ID_BCAST_PLU_OEP_PARMS  "Intiates PLU and OEP type of Paramater Broadcast for OEP changes and Layout refresh."
+    ID_WINDOW_PRINT         "Print contents of the window."
+    ID_PROV_CASHIER         "Retrieves Cashier/Operator provisioning and allows changes."
+    ID_TOGGLE_SYLK_EXPORT   "Toggle export of SYLK format report files for spreadsheets."
+    ID_SELECTFROMACTIVITYLIST 
+                            "Displays a dialog listing activities in current database and allows to choose one."
+	ID_DIAOLOG_REPORTLIST   "Display a dialog listing past reports from this session and allows to choose one."
+END
+
+STRINGTABLE
+BEGIN
+    ID_RESET_EOD            "Issue the end of day report."
+    ID_RESET_CASHIER        "Issue and reset the operator daily report."
+    ID_RESET_SERVICETIME    "Issue and reset the service time daily report."
+    ID_RESET_INDFIN         "Issue and reset the individual financial daily report."
+    ID_RESET_CPM            "Issue and reset the charge posting manager tally report."
+    ID_RESET_EJ             "Issue and reset the electronic journal."
+    ID_RESET_ETK            "Issue and reset the employee time keeping daily report."
+    ID_RESET_GC_BYGCN       "Issue and reset the guest check report by guest check number."
+    ID_RESET_GC_BYCASHIER   "Issue and reset the guest check report by operator number."
+    ID_RESET_OPENEDGC       "Close the guest check."
+    ID_PARA_CONFIG          "Read the system configuration of the POS terminal."
+    ID_PARA_SET_DATE        "Set the date and time of the POS terminal."
+    ID_PARA_SET_REGNO       "Set the store and terminal number of the POS terminal."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\PCSample.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

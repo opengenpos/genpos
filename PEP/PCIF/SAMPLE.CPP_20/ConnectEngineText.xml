@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConnectEngine>
+
+  <Commands>
+    <!-- FRAMEWORK -->
+    <FRAMEWORK>
+      <windowname>inventory</windowname>
+      <displaywindow>1</displaywindow>
+    </FRAMEWORK>
+
+    <FRAMEWORK>
+      <windowname>inventory</windowname>
+      <controlname></controlname>
+      <controltext></controltext>
+      <controlbgcolor></controlbgcolor>
+      <controliconfile></controliconfile>
+      <displaycontrol></displaycontrol>
+    </FRAMEWORK>
+
+    <!-- CASHIERACTION -->
+    <CASHIERACTION>
+      <tcsActionType>sign-in</tcsActionType>
+      <ulEmployeeId>1</ulEmployeeId>
+    </CASHIERACTION>
+
+    <CASHIERACTION>
+      <tcsActionType>sign-out</tcsActionType>
+      <ulEmployeeId>1</ulEmployeeId>
+    </CASHIERACTION>
+
+    <CASHIERACTION>
+      <tcsActionType></tcsActionType>
+      <ulEmployeeId></ulEmployeeId>
+      <lAmount></lAmount>
+      <usTotalID></usTotalID>
+    </CASHIERACTION>
+
+    <CASHIERACTION>
+      <tcsActionType></tcsActionType>
+      <ulEmployeeId></ulEmployeeId>
+      <lAmount></lAmount>
+      <usTotalID></usTotalID>
+    </CASHIERACTION>
+
+    <CASHIERACTION>
+      <tcsActionType></tcsActionType>
+      <ulEmployeeId></ulEmployeeId>
+      <lAmount></lAmount>
+      <usTotalID></usTotalID>
+    </CASHIERACTION>    
+    
+    <!-- EJENTRYACTION -->
+    
+    <!-- EMPLOYEECHANGE -->
+    <EMPLOYEECHANGE>
+      <tcsActionType>Employee-Data</tcsActionType>  
+    </EMPLOYEECHANGE>
+    
+    <EMPLOYEECHANGE>
+      <tcsActionTypes>set</tcsActionTypes>
+      <ulEmployeeId>51234</ulEmployeeId>
+      <tcsMnemonic>Mickle F</tcsMnemonic>
+    </EMPLOYEECHANGE>
+
+    <EMPLOYEECHANGE>
+      <tcsActionTypes>set</tcsActionTypes>
+      <ulEmployeeId>51234</ulEmployeeId>
+      <usJobCode>77</usJobCode>
+    </EMPLOYEECHANGE>
+
+    <!-- GUESTCHECK_RTRV -->
+    <GUESTCHECK_RTRV>
+      <gcnum>27</gcnum>
+    </GUESTCHECK_RTRV>
+
+    <!-- Retrieve all guest checks -->
+    <GUESTCHECK_RTRV>
+      <gcnum>0</gcnum>      
+    </GUESTCHECK_RTRV>
+    
+  </Commands>
+
+  <Responses>
+    <!-- EMPLOYEECHANGE -->
+    <EMPLOYEECHANGE>
+      <tcsActionType>time-in</tcsActionType>
+      <ulEmployeeId>81234</ulEmployeeId>
+      <tcsStatus>ok</tcsStatus>
+    </EMPLOYEECHANGE>    
+  </Responses>
+  
+</ConnectEngine>

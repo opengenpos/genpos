@@ -1,0 +1,46 @@
+NCR NeighborhoodPOS, Parameter Entry Program
+PROD ID - G370-1801-0000, Version 1.4.00
+
+                                NOTICE
+
+                       Copyright NCR Corporation, 2000-2003
+
+
+     The information contained on this diskette is confidential and
+     proprietary property of NCR. This information is to be held in
+     confidence and is not intended for public disclosure, public use
+     or other publication.
+
+1.4.00
+     Convert from 16 bit application (Windows 3.x) to 32 bit application (Windows 9x/NT/2000)
+
+1.0.09
+     21RFC05106: RFC for NHP: OEP/Slip Impr/MSR Drwr B
+
+1.0.08
+     21RFC05402
+     Add Check Endorsement to NHP 1.0 similar to Dtree SCER.
+     21RFC05437
+     Add Print Option for Itemizers to NHP R1.0
+
+1.0.07
+     21RFC05284
+     Euro Minor Enhancement for NeiborhoodPOS 1.0
+
+1.0.06
+     TAR150824
+     PEP does not correctly save Remote printer 5-8 status settings.
+
+1.0.05
+     TAR150577
+     Terminal limitation value is not correct with Prog#50.
+
+1.0.04
+     TAR149209
+     PLU label (UPC Type2) can not be created with PEP.
+
+1.0.03
+     Initial Release
+
+
+                        *** END OF FIX FILE ***

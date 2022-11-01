@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d26800d1-2e46-44a4-bb4c-310ac474b1bd}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1df9a347-7ed7-4a06-afa0-9d0ad00b9dc3}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CSCAS.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSCASIN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSCASPE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CSCASIN.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSCASPE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Readme.txt" />
+  </ItemGroup>
+</Project>

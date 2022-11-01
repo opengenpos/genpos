@@ -1,0 +1,45 @@
+/*
+/////////////////////////////////////////////////////////////////////////////
+// STUBWIN.Hi :
+//
+// Copyright (C) 1998 NCR Corporation, All rights reserved.
+//
+//
+// History:
+//
+// Date         Version  Author       Comments
+// ===========  =======  ===========  =======================================
+// Sep-02-1998                        initial
+//
+/////////////////////////////////////////////////////////////////////////////
+*/
+
+#ifndef _INC_STUBWIN_HI_
+#define _INC_STUBWIN_HI_
+
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+/*
+/////////////////////////////////////////////////////////////////////////////
+*/
+
+#define	STUBWIN16_SUCCESS		0
+#define	STUBWIN16_DLL_NO_INIT		1
+#define	STUBWIN16_DLL_NOT_FOUND		2
+#define	STUBWIN16_INVALID_DLL		3
+
+
+SHORT STUBENTRY 	StubWinGetLastError();
+
+
+/*
+/////////////////////////////////////////////////////////////////////////////
+*/
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif                                      /* _INC_STUBWIN_HI_ */

@@ -1,0 +1,27 @@
+; This file is maintained by HCW. Do not modify this file directly.
+
+[OPTIONS]
+ERRORLOG=pephelp.log
+LCID=0x409 0x0 0x0 ; English (United States)
+REPORT=Yes
+FTS=31
+TITLE=Parameter Entry Program for NeighborhoodPOS
+CNT=pephelp.cnt
+COPYRIGHT=Version: 2.0
+CITATION=PEP help, Copyright, 2014 NCR
+PREFIX=IDD_
+HLP=pephelp.hlp
+
+[FILES]
+dialogs.rtf
+procedures.rtf
+concepts.rtf
+
+[MAP]
+#include ACTION.H
+#include PROG.H
+
+[WINDOWS]
+Dialogs="Dialogs and Menus",(18,10,600,435),20740,(r14876671),(r12632256),f6; Used for displaying dialog descriptions and menu descriptions.
+Concept="Concepts",(18,10,600,435),20736,(r14876671),(r12632256),f6; Used to display concept material
+Proc="Procedure",(653,102,360,600),20736,(r14876671),(r12632256),f3; Used to display procedure steps

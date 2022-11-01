@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C5C509BD-17EA-4A89-83BF-7844A14F725A}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Bin\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Bin\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\..\Bin\Release/pep.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>.\INCLUDE;..\INCLUDE;..\..\INCLUDE;..\..\..\INCLUDE;..\..\..\..\INCLUDE;..\..\PCIF\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;PEP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/pep.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <BrowseInformation />
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>./INCLUDE;../INCLUDE;../../INCLUDE;../../../INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>cascas.lib;etk.lib;opepara.lib;para.lib;plu.lib;Plu_gp.lib;progrpt.lib;rfl.lib;pepprn.lib;prog32.lib;pepcomm.lib;pepact32.lib;report.lib;file.lib;trans.lib;AW_Interfaces.lib;NCR2172Pif_20.lib;NCR2172Stub_20.lib;Imm32.lib;odbc32.lib;odbccp32.lib;PEPControl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>.\Lib\Release;..\..\Lib\Release;..\Lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>.\Release/pep.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\..\Bin\Release/pep.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\..\Bin\Debug/pep.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\INCLUDE;..\INCLUDE;..\..\INCLUDE;..\..\..\INCLUDE;..\..\..\..\INCLUDE;..\..\PCIF\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;PEP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeaderOutputFile>.\Debug/pep.pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>.\INCLUDE;..\INCLUDE;..\..\INCLUDE;..\..\..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>cascas.lib;etk.lib;opepara.lib;para.lib;plu.lib;Plu_gp.lib;progrpt.lib;rfl.lib;pepprn.lib;prog32.lib;pepcomm.lib;pepact32.lib;report.lib;file.lib;trans.lib;AW_Interfaces.lib;NCR2172Pif_20.lib;NCR2172Stub_20.lib;Imm32.lib;odbc32.lib;odbccp32.lib;layout.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>.\Lib\Debug;..\..\Lib\Debug;..\Lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\..\..\Bin\Debug/pep.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>.\Debug/pep.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\..\Bin\Debug/pep.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ABOUT.C" />
+    <ClCompile Include="HELP.C" />
+    <ClCompile Include="Pep.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RES\PEP.RC">
+      <Culture Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">0x0804</Culture>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">RES;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Culture Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">0x0804</Culture>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./INCLUDE;../INCLUDE;../../INCLUDE;RES</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\PCIF.nsi" />
+    <None Include="..\..\..\PEP.nsi" />
+    <None Include="hlp\concepts.rtf" />
+    <None Include="hlp\dialogs.rtf" />
+    <CustomBuild Include="HLP\pephelp.cnt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing PEP help build .cnt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing PEP help build .cnt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">if NOT EXIST "$(OutDir)" mkdir "$(OutDir)"
+xcopy "%(RootDir)%(Directory)pephelp.cnt" "$(OutDir)" /Y /E
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)pephelp.cnt;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="HLP\pephelp.hpj">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing PEP help build .hpj</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing PEP help build .hpj</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">if NOT EXIST "$(OutDir)" mkdir "$(OutDir)"
+hcw /C /E /M "%(FullPath)"
+xcopy "%(RootDir)%(Directory)pephelp.hlp" "$(OutDir)" /Y /E
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\hlp\concepts.rtf;.\hlp\dialogs.rtf;.\hlp\procedures.rtf;.\hlp\pephelp.cnt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)pephelp.hlp;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <None Include="hlp\procedures.rtf" />
+    <None Include="RES\P3HOLD.CUR" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\INCLUDE\LAYOUT.H" />
+    <ClInclude Include="HLP\ACTION.H" />
+    <ClInclude Include="HLP\PROG.H" />
+    <ClInclude Include="INCLUDE\ABOUT.H" />
+    <ClInclude Include="INCLUDE\ACTION.H" />
+    <ClInclude Include="INCLUDE\AW_Interfaces.h" />
+    <ClInclude Include="INCLUDE\FILE.H" />
+    <ClInclude Include="INCLUDE\PEP.H" />
+    <ClInclude Include="INCLUDE\pepcalc.h" />
+    <ClInclude Include="INCLUDE\PEPCOMM.H" />
+    <ClInclude Include="INCLUDE\PEPFLAG.H" />
+    <ClInclude Include="INCLUDE\PEPPRN.H" />
+    <ClInclude Include="INCLUDE\PROG.H" />
+    <ClInclude Include="INCLUDE\REPORT.H" />
+    <ClInclude Include="INCLUDE\TRANS.H" />
+    <ClInclude Include="RES\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\PEP1.ICO" />
+    <Image Include="RES\PEP2.ICO" />
+    <Image Include="RES\PEP3.ICO" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NHPOSLM\NHPOSLM.vcxproj">
+      <Project>{2f7c36bf-f5dc-4297-9695-24514e8aec89}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PCIF\NCR2172Pif_20\NCR2172Pif_20.vcxproj">
+      <Project>{e06b4c60-143a-4510-9cac-282a89489e18}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\PEPControl\PEPControl.vcxproj">
+      <Project>{719fe85d-a9fd-4878-9208-2be470d774cb}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\PROGRPT\progReport_32_win.vcxproj">
+      <Project>{9b53f4ea-1511-48d5-8af6-f02a7466828d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="ACT\pepact32.vcxproj">
+      <Project>{e1c399ea-fde3-4467-a13e-39cc2333d16b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="FILE\file.vcxproj">
+      <Project>{0298d3d6-d116-4cc8-879d-d36071556f6d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="LAYOUT\LAYOUT.vcxproj">
+      <Project>{d3cf46b1-a38b-4efd-a7d7-570ade6f4292}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPCOMM\CAS\cascas.vcxproj">
+      <Project>{cf3262ea-8075-4ba8-9702-223921d6ec29}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPCOMM\ETK\etk.vcxproj">
+      <Project>{3278ee42-6587-418d-87fa-065bcdad2fd5}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPCOMM\OPEPARA\opepara.vcxproj">
+      <Project>{c0f78ba4-ed19-424a-97a3-a0c6cc9eced4}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPCOMM\PARA\para.vcxproj">
+      <Project>{3ad3e256-f426-4f23-be05-37640adc9feb}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPCOMM\pepcomm.vcxproj">
+      <Project>{a96a962d-b982-4da6-ae6f-998822632cef}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPCOMM\PLU\plu.vcxproj">
+      <Project>{487465ec-7703-45e9-8185-6426cae87d53}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPCOMM\Plu_GP\Plu_gp.vcxproj">
+      <Project>{6d8cf38d-de5c-41c1-9f22-0682bbeb36e0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPCOMM\PROGRPT\progrpt.vcxproj">
+      <Project>{6009eb16-29ae-42db-b8ac-0e8b270ab85d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPCOMM\RFL\rfl.vcxproj">
+      <Project>{31a4b1b1-412c-44d6-b786-756d98e751db}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PEPPRN\pepprn.vcxproj">
+      <Project>{1f7b586f-6d94-4ab8-b314-2f09b874e741}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="PROG\prog32.vcxproj">
+      <Project>{aff392ff-1b44-400b-8230-177bff6fffa3}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="REPORT\report.vcxproj">
+      <Project>{7eb4cd07-914c-48ac-9b38-a143a3641351}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="ResDLL_ChineseSimplified\ResDLL_ChineseSimplified.vcxproj">
+      <Project>{3692e990-e59c-4401-ba08-64769dc1a275}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="ResDLL_French\ResDLL_French.vcxproj">
+      <Project>{6e3b64d9-7fbf-4c8d-b759-4ffd257cf1e8}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="RESDLL_GERMAN\ResDLL_German.vcxproj">
+      <Project>{8569ee7f-8fd2-4685-98b7-9436ed460a61}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="ResDLL_Spanish\ResDLL_Spanish.vcxproj">
+      <Project>{6c7181a6-6d61-4ce6-b83f-6014273e13d6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="TRANS\trans.vcxproj">
+      <Project>{bf4e181d-bca5-4371-8f12-fd4b9982284a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

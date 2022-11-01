@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ab51d099-050a-415c-9c0b-c952ec7de82c}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{fa24c1b0-c5bc-42ad-ae97-ce54f774e4c8}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{6ad04f21-044e-4cd3-9dae-0393002445fd}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Help Files">
+      <UniqueIdentifier>{1eb1d710-5e34-4e63-8d2d-b402f209bc6e}</UniqueIdentifier>
+      <Extensions>rtf</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ABOUT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HELP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pep.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RES\PEP.RC">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RES\P3HOLD.CUR">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="hlp\concepts.rtf">
+      <Filter>Help Files</Filter>
+    </None>
+    <None Include="hlp\dialogs.rtf">
+      <Filter>Help Files</Filter>
+    </None>
+    <None Include="hlp\procedures.rtf">
+      <Filter>Help Files</Filter>
+    </None>
+    <None Include="..\..\..\PCIF.nsi" />
+    <None Include="..\..\..\PEP.nsi" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="INCLUDE\ABOUT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\ACTION.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\AW_Interfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\FILE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\LAYOUT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\PEP.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\pepcalc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\PEPCOMM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\PEPFLAG.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\PEPPRN.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\PROG.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\REPORT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RES\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INCLUDE\TRANS.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HLP\ACTION.H">
+      <Filter>Help Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HLP\PROG.H">
+      <Filter>Help Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\PEP1.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\PEP2.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\PEP3.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="HLP\pephelp.cnt">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HLP\pephelp.hpj">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

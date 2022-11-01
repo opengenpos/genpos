@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FB94C78D-4FBD-432F-9BF5-8BAA139AB8F0}</ProjectGuid>
+    <RootNamespace>Pep_Includes</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\PEP\INCLUDE\FILE.H" />
+    <ClInclude Include="APPLINI.H" />
+    <ClInclude Include="APPLLOG.H" />
+    <ClInclude Include="AW_Interfaces.h" />
+    <ClInclude Include="Controls.h" />
+    <ClInclude Include="CSCAS.H" />
+    <ClInclude Include="CSETK.H" />
+    <ClInclude Include="CSGCS.H" />
+    <ClInclude Include="CSLOG.H" />
+    <ClInclude Include="Csop.h" />
+    <ClInclude Include="CSPRGRPT.H" />
+    <ClInclude Include="Csstbfcc.h" />
+    <ClInclude Include="CSSTBPAR.H" />
+    <ClInclude Include="Csstbstb.h" />
+    <ClInclude Include="CSTTL.H" />
+    <ClInclude Include="defs32bitport.h" />
+    <ClInclude Include="EJ.H" />
+    <ClInclude Include="FSC.H" />
+    <ClInclude Include="ISP.H" />
+    <ClInclude Include="LAYOUT.H" />
+    <ClInclude Include="LOG.H" />
+    <ClInclude Include="NB.H" />
+    <ClInclude Include="para.h" />
+    <ClInclude Include="paraequ.h" />
+    <ClInclude Include="PARALOG.H" />
+    <ClInclude Include="pararam.h" />
+    <ClInclude Include="PCIF.H" />
+    <ClInclude Include="PCSTBCAS.H" />
+    <ClInclude Include="PCSTBETK.H" />
+    <ClInclude Include="PCSTBISP.H" />
+    <ClInclude Include="PCSTBPAR.H" />
+    <ClInclude Include="PCSTBTTL.H" />
+    <ClInclude Include="PIF.H" />
+    <ClInclude Include="plu.h" />
+    <ClInclude Include="PluHK.h" />
+    <ClInclude Include="Progrept.h" />
+    <ClInclude Include="Regstrct.h" />
+    <ClInclude Include="RFL.H" />
+    <ClInclude Include="RMT.H" />
+    <ClInclude Include="STORAGE.H" />
+    <ClInclude Include="stringResource.h" />
+    <ClInclude Include="TERMCFG.H" />
+    <ClInclude Include="TRANSACT.H" />
+    <ClInclude Include="versioninfo.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{47bc0d71-611b-4152-9548-2768013f5b1a}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1eec5166-790c-451b-8342-5d7736c9613d}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PluaplGP.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlumnGP.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlumnpGP.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PluphyGP.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PludefGP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluGP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluPrcGP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

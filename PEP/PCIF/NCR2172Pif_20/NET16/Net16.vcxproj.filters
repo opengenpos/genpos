@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{7232a6de-2c4a-484d-9ea1-d2c207841cf4}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9f94cb76-55c1-4439-9fc2-5f65f9ddbff1}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{f7efe3f2-a070-4b3c-86e4-840fb97a73ed}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CKSUM.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DGALLOC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DGCLOSE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DGCNTL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DGINIT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DGREAD.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DGWRITE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GETADDR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ICMPECHO.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IPRECV.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IPSEND.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NETCNTL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NETINIT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NETOPEN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NETSTART.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NETSTOP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NETUTIL.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NQALLOC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ROUTE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPNXTP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPRECV.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPSEND.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

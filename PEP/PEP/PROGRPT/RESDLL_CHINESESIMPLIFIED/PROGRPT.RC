@@ -1,0 +1,842 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resrc1.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "..\resource.h"
+#define LANG_CHINESE 0x04
+#define SUBLANG_CHINESE_SIMPLIFIED 0x02
+
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+
+#define APSTUDIO_READONLY_SYMBOLS
+#include "afxres.h"
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#ifdef APSTUDIO_INVOKED
+// This resource will prevent the App Studio user from saving this file
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+"< 不能更改标准 MFC 资源! >\0"
+END
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+
+// Standard Menu commands
+STRINGTABLE DISCARDABLE
+BEGIN
+	ID_FILE_NEW,            "建立一个新文档\n新建"
+	ID_FILE_OPEN,           "打开一个现存文档\n打开"
+	ID_FILE_CLOSE,          "关闭活动文档\n关闭"
+	ID_FILE_SAVE,           "保存活动文档\n保存"
+	ID_FILE_SAVE_AS,        "用一个新文件名保存当前文档\n另存为" // modified by LU
+	ID_FILE_PAGE_SETUP,     "修改打印选项\n页面设置"  // modified by LU
+	ID_FILE_PRINT_SETUP,    "改变打印机及打印选项\n打印设置"
+	ID_FILE_PRINT,          "打印当前文档\n打印"       // modified by LU
+	ID_FILE_PRINT_PREVIEW,  "显示整页\n打印预览"
+	ID_APP_ABOUT,           "显示程序信息，版本号和版权\n关于"
+	ID_APP_EXIT,            "退出应用程序；提示保存文档\n退出"
+	ID_FILE_SEND_MAIL,      "通过电子邮件传送活动文档\n传送邮件"
+	ID_FILE_MRU_FILE1+0,    "打开该文档"
+	ID_FILE_MRU_FILE1+1,    "打开该文档"
+	ID_FILE_MRU_FILE1+2,    "打开该文档"
+	ID_FILE_MRU_FILE1+3,    "打开该文档"
+	ID_FILE_MRU_FILE1+4,    "打开该文档"
+	ID_FILE_MRU_FILE1+5,    "打开该文档"
+	ID_FILE_MRU_FILE1+6,    "打开该文档"
+	ID_FILE_MRU_FILE1+7,    "打开该文档"
+	ID_FILE_MRU_FILE1+8,    "打开该文档"
+	ID_FILE_MRU_FILE1+9,    "打开该文档"
+	ID_FILE_MRU_FILE1+10,   "打开该文档"
+	ID_FILE_MRU_FILE1+11,   "打开该文档"
+	ID_FILE_MRU_FILE1+12,   "打开该文档"
+	ID_FILE_MRU_FILE1+13,   "打开该文档"
+	ID_FILE_MRU_FILE1+14,   "打开该文档"
+	ID_FILE_MRU_FILE1+15,   "打开该文档"
+	ID_CONTEXT_HELP,        "显示对按钮、菜单和窗口执行单击操作的帮助\n帮助"
+	ID_HELP,                "显示对当前任务或命令的帮助\n帮助"
+	ID_HELP_INDEX,          "列出帮助主题\n帮助索引"
+	ID_HELP_FINDER,         "列出帮助主题\n帮助主题"
+	ID_HELP_USING,          "显示关于如何使用帮助的指令\n帮助"
+	ID_NEXT_PANE,           "切换到下一个窗格\n下一窗格"
+	ID_PREV_PANE,           "切换回前一个窗格\n前一窗格"
+	ID_WINDOW_NEW,          "为当前文档打开另一个窗口\n新建窗口"   // modified by LU
+	ID_WINDOW_ARRANGE,      "将图标排列在窗口底部\n排列图标"
+	ID_WINDOW_CASCADE,      "排列窗口成相互重叠\n层叠窗口"
+	ID_WINDOW_TILE_HORZ,    "排列窗口成互不重叠\n平铺窗口"
+	ID_WINDOW_TILE_VERT,    "排列窗口成互不重叠\n平铺窗口"
+	ID_WINDOW_SPLIT,        "将活动的窗口分隔成窗格\n分隔"
+	ID_EDIT_CLEAR,          "删除被选对象\n删除"
+	ID_EDIT_CLEAR_ALL,      "全部删除\n全部删除"
+	ID_EDIT_COPY,           "复制被选对象并将其置于剪贴板上\n复制"
+	ID_EDIT_CUT,            "剪切被选对象并将其置于剪贴板上\n剪切"
+	ID_EDIT_FIND,           "查找指定的文本\n查找"
+	ID_EDIT_PASTE,          "插入剪贴板内容\n粘贴"
+	ID_EDIT_PASTE_LINK,     "插入剪贴板内容和一条通向其来源的链接\n粘贴链接"
+	ID_EDIT_PASTE_SPECIAL,  "用选项插入剪贴板内容\n选择性粘贴"
+	ID_EDIT_REPEAT,         "重复上一步操作\n重复"
+	ID_EDIT_REPLACE,        "用不同的文本替换指定的文本\n替换"
+	ID_EDIT_SELECT_ALL,     "选择整个文档\n选择全部"
+	ID_EDIT_UNDO,           "撤消最后一步操作\n撤消"
+	ID_EDIT_REDO,           "重新执行先前已撤消的操作\n重新执行"
+	ID_VIEW_TOOLBAR,        "显示或隐藏工具栏\n显隐工具栏"
+	ID_VIEW_STATUS_BAR,     "显示或隐藏状态栏\n显隐状态栏"
+	ID_FORMAT_FONT,         "为当前被选中的对象选择字体\n字体"
+END
+
+
+// OLE specific
+STRINGTABLE
+BEGIN
+	ID_OLE_EDIT_LINKS,      "编辑链接的对象\n编辑链接"
+	ID_OLE_INSERT_NEW,      "插入新嵌入的对象\n新对象"
+	ID_OLE_EDIT_CONVERT,    "对被选对象作类型转换\n转换对象"
+	ID_OLE_EDIT_CHANGE_ICON,"改变被选对象的图标\n改变图标"
+	ID_OLE_VERB_FIRST+0,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+1,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+2,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+3,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+4,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+5,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+6,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+7,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+8,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+9,    "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+10,   "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+11,   "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+12,   "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+13,   "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+14,   "激活嵌入或链接的对象"
+	ID_OLE_VERB_FIRST+15,   "激活嵌入或链接的对象"
+END
+
+// Database specific
+STRINGTABLE
+BEGIN
+	ID_RECORD_NEXT          "移到下一个记录\n下一个记录"
+	ID_RECORD_PREV          "移到前一个记录\n前一个记录"
+	ID_RECORD_LAST          "移到最后一个记录\n最后记录"
+	ID_RECORD_FIRST         "移到第一个记录\n第一个记录"
+END
+
+// System commands
+STRINGTABLE
+BEGIN
+	AFX_IDS_SCSIZE,         "改变窗口大小"
+	AFX_IDS_SCMOVE,         "改变窗口位置"
+	AFX_IDS_SCMINIMIZE,     "将窗口缩小成图标"
+	AFX_IDS_SCMAXIMIZE,     "把窗口放大到最大尺寸"
+	AFX_IDS_SCNEXTWINDOW,   "切换到下一个文档窗口"
+	AFX_IDS_SCPREVWINDOW,   "切换到先前的文档窗口"
+	AFX_IDS_SCCLOSE,        "关闭活动窗口并提示保存所有文档"
+	AFX_IDS_SCRESTORE,      "把窗口恢复到正常大小"
+	AFX_IDS_SCTASKLIST,     "激活任务表"
+	AFX_IDS_MDICHILD,       "激活该窗口"
+	AFX_IDS_PREVIEW_CLOSE,  "关闭打印预览模式\n取消预览"
+	AFX_IDS_DESKACCESSORY,  "打开被选项"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "PRT7193.ICO"
+IDR_REPORTTYPE          ICON    DISCARDABLE     "LIST.ICO"
+IDR_SHEETTYPE           ICON    DISCARDABLE     "SHEET.ICO"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "TOOLBAR.BMP"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_REPORT_INSERTFIELD
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "文档" //"&File"
+    BEGIN
+        MENUITEM "新建\tCtrl+N",                ID_FILE_NEW //"&New\tCtrl+N"
+        MENUITEM "打开...\tCtrl+O",            ID_FILE_OPEN //"&Open...\tCtrl+O"
+        MENUITEM SEPARATOR
+        MENUITEM "最新文档",               ID_FILE_MRU_FILE1, GRAYED //"Recent File"
+        MENUITEM SEPARATOR
+        MENUITEM "退出",                   ID_APP_EXIT //"E&xit"
+    END
+    POPUP "显示" //"&View"
+    BEGIN
+        MENUITEM "工具箱",                 ID_VIEW_TOOLBAR  //"&Toolbar"
+        MENUITEM "状态栏",                 ID_VIEW_STATUS_BAR  //"&Status Bar"
+    END
+    POPUP "帮助" //"&Help"
+    BEGIN
+        MENUITEM "&About Programmable Report...", ID_APP_ABOUT
+    END
+END
+
+IDR_REPORTTYPE MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "文档"  //"&File"
+    BEGIN
+        MENUITEM "新建\tCtrl+N",                ID_FILE_NEW //"&New\tCtrl+N"
+        MENUITEM "打开...\tCtrl+O",            ID_FILE_OPEN //"&Open...\tCtrl+O"
+        MENUITEM "关闭",                      ID_FILE_CLOSE //"&Close"
+        MENUITEM "保存\tCtrl+S",               ID_FILE_SAVE //"&Save\tCtrl+S"
+        MENUITEM "另存为...",                 ID_FILE_SAVE_AS //"Save &As..."
+        MENUITEM SEPARATOR
+        MENUITEM "最新文档",                 ID_FILE_MRU_FILE1, GRAYED //"Recent File"
+        MENUITEM SEPARATOR
+        MENUITEM "退出",                       ID_APP_EXIT //"E&xit"
+    END
+    POPUP "编辑" //"&Edit"
+    BEGIN
+        MENUITEM "剪切\tCtrl+X",                ID_EDIT_CUT //"Cu&t\tCtrl+X"
+        MENUITEM "复制\tCtrl+C",               ID_EDIT_COPY //"&Copy\tCtrl+C"
+        MENUITEM "粘贴\tCtrl+V",              ID_EDIT_PASTE //"&Paste\tCtrl+V"
+        MENUITEM "&Delete\tDel",                ID_EDIT_CLEAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Insert Row",                 ID_EDIT_INSERTROW
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Print Fields",               ID_VIEW_PRINT
+        MENUITEM "&Mathematics Fields",         ID_VIEW_MATHE
+        MENUITEM SEPARATOR
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Setting"
+    BEGIN
+        MENUITEM "&End of Day...",              ID_SETTING_EOD
+        MENUITEM "&Period to Day...",           ID_SETTING_PTD
+        MENUITEM SEPARATOR
+        MENUITEM "&16 Characters Mnemonics...", ID_SETTING_16CHAR
+        MENUITEM "&40 Characters Mnemonics...", ID_SETTING_40CHAR
+    END
+    POPUP "&Report"
+    BEGIN
+        MENUITEM "&New...",                     ID_REPORT_NEW
+        MENUITEM "&Open",                       ID_REPORT_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Import...",                  ID_REPORT_IMPORT
+        MENUITEM SEPARATOR
+        MENUITEM "Insert &Field...\tCtrl+I",    ID_REPORT_INSERTFIELD
+        MENUITEM "Set &Title...",               ID_REPORT_SETTITLE
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+        MENUITEM "&Arrange Icons",              ID_WINDOW_ARRANGE
+    END
+    POPUP "帮助" //"&Help"
+    BEGIN
+        MENUITEM "&About Programmable Report...", ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+BEGIN
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_REPORT_INSERTFIELD,  VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
+    VK_DELETE,      ID_EDIT_CLEAR,          VIRTKEY, NOINVERT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_LIST_FORM DIALOG DISCARDABLE  0, 0, 281, 106
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "No.",IDC_STATIC,10,5,13,8
+    LTEXT           "File",IDC_STATIC,30,5,13,8
+    LTEXT           "Device",IDC_STATIC,100,5,24,8
+    LTEXT           "&Title",IDC_STATIC,170,5,16,8
+    LISTBOX         IDC_REPORT_LIST,10,15,260,65,LBS_SORT | LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_TABSTOP
+    PUSHBUTTON      "&New...",IDC_REPORT_NEW,10,85,50,15
+    PUSHBUTTON      "&Open",IDC_REPORT_OPEN,65,85,50,15,WS_DISABLED
+    PUSHBUTTON      "D&elete...",IDC_REPORT_DELETE,120,85,50,15,WS_DISABLED
+    PUSHBUTTON      "&Up",IDC_REPORT_UP,185,85,40,14,WS_DISABLED
+    PUSHBUTTON      "&Down",IDC_REPORT_DOWN,230,85,40,14,WS_DISABLED
+END
+
+IDD_LIST_PROP DIALOG DISCARDABLE  20, 40, 206, 78
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "New Report Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&File:",IDC_STATIC,5,10,15,8
+    COMBOBOX        IDC_LIST_PROP_FILE,35,10,90,75,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Device:",IDC_STATIC,5,30,27,8
+    COMBOBOX        IDC_LIST_PROP_DEVICE,35,30,90,45,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Title:",IDC_STATIC,5,50,18,8
+    EDITTEXT        IDC_LIST_PROP_TITLE,35,50,165,11,ES_AUTOHSCROLL
+    LTEXT           "(Max. 32 characters)",IDC_STATIC,125,65,68,8
+    DEFPUSHBUTTON   "OK",IDOK,150,10,50,15
+    PUSHBUTTON      "Cancel",IDCANCEL,150,30,50,14
+END
+
+IDD_FILED_FORM DIALOG DISCARDABLE  0, 0, 270, 140
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Insert Field"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Operation",IDC_STATIC,5,5,70,50
+    CONTROL         "&Loop",IDC_FIELD_LOOP,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,15,20,28,10
+    CONTROL         "&Print",IDC_FIELD_PRINT,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,15,30,26,10
+    CONTROL         "&Mathematics",IDC_FIELD_MATHE,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,15,40,52,10
+    LTEXT           "&Group:",IDC_STATIC,5,60,23,8
+    LISTBOX         IDC_FIELD_GROUP,5,70,70,64,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Field:",IDC_STATIC,85,5,19,8
+    LISTBOX         IDC_FIELD_FIELD,85,15,105,120,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "It&em or Condition:",IDC_STATIC,200,45,59,8
+    LISTBOX         IDC_FIELD_ITEM,200,55,65,64,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_STATIC,140,5,20,8
+    CONTROL         "Always on &Top",IDC_FIELD_TOP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,200,125,59,10
+    LTEXT           "",IDC_STATIC,170,5,20,8
+    PUSHBUTTON      "&Insert",IDC_FIELD_INSERT,215,5,50,15
+    PUSHBUTTON      "&Close",IDC_FIELD_CLOSE,215,25,50,15
+    PUSHBUTTON      "Cancel",IDCANCEL,195,25,15,13,NOT WS_VISIBLE | NOT 
+                    WS_TABSTOP
+    PUSHBUTTON      "OK",IDOK,195,10,15,13,NOT WS_VISIBLE | NOT WS_TABSTOP
+END
+
+IDD_TITLE_FORM DIALOG DISCARDABLE  20, 40, 257, 53
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Report Title"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Title:",IDC_STATIC,5,10,18,8
+    EDITTEXT        IDC_TITLE_TITLE,25,10,165,11,ES_AUTOHSCROLL
+    LTEXT           "(Max. 32 characters)",IDC_STATIC,120,25,68,8
+    DEFPUSHBUTTON   "OK",IDOK,200,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,200,30,50,14
+END
+
+IDD_PRINT_DETAIL DIALOG DISCARDABLE  20, 40, 297, 133
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Print Condition"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Condition:",IDC_STATIC,10,10,34,8
+    COMBOBOX        IDC_PRINTD_COND,50,10,150,55,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Condition #1",IDC_PRINTD_COND1,5,45,140,80
+    LTEXT           "&Group:",IDC_PRINTD_GR1,10,60,23,8
+    COMBOBOX        IDC_PRINTD_GROUP1,35,60,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "M&ajor:",IDC_PRINTD_MA1,10,75,22,8
+    COMBOBOX        IDC_PRINTD_MAJOR1,35,75,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Minor:",IDC_PRINTD_MI1,10,90,22,8
+    COMBOBOX        IDC_PRINTD_MINOR1,35,90,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Item:",IDC_PRINTD_IT1,10,105,18,8
+    COMBOBOX        IDC_PRINTD_ITEM1,35,105,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Condition #2",IDC_PRINTD_COND2,150,45,140,80
+    LTEXT           "G&roup:",IDC_PRINTD_GR2,155,60,23,8
+    COMBOBOX        IDC_PRINTD_GROUP2,180,60,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Maj&or:",IDC_PRINTD_MA2,155,75,19,8
+    COMBOBOX        IDC_PRINTD_MAJOR2,180,75,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Mi&nor:",IDC_PRINTD_MI2,155,90,19,8
+    COMBOBOX        IDC_PRINTD_MINOR2,180,90,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "I&tem:",IDC_PRINTD_IT2,155,105,18,8
+    COMBOBOX        IDC_PRINTD_ITEM2,180,105,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_STATIC,215,5,20,8
+    DEFPUSHBUTTON   "OK",IDOK,240,5,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,240,25,50,14
+END
+
+IDD_PRINT_PROP DIALOG DISCARDABLE  20, 40, 201, 168
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Print Operation Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Field",IDC_STATIC,5,5,130,73
+    LTEXT           "Group:",IDC_STATIC,15,20,23,10
+    LTEXT           "Static",IDC_PRINT_GROUP,40,20,90,10
+    LTEXT           "Major:",IDC_STATIC,15,30,22,8
+    LTEXT           "Static",IDC_PRINT_MAJOR,40,30,90,10
+    LTEXT           "Minor:",IDC_STATIC,15,40,22,8
+    LTEXT           "Static",IDC_PRINT_MINOR,40,40,40,8
+    LTEXT           "Item:",IDC_STATIC,15,50,18,8
+    LTEXT           "Static",IDC_PRINT_ITEM,40,50,40,8
+    LTEXT           "&Width:",IDC_STATIC,15,60,23,8
+    EDITTEXT        IDC_PRINT_WIDTH,40,60,40,12,ES_AUTOHSCROLL
+    GROUPBOX        "Format",IDC_STATIC,5,80,190,45
+    LTEXT           "&Type:",IDC_STATIC,15,95,20,8
+    COMBOBOX        IDC_PRINT_FORMAT,40,95,80,60,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_STATIC,90,110,20,8
+    CONTROL         "D&ouble Wide",IDC_PRINT_WIDE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,125,90,53,10
+    GROUPBOX        "",IDC_STATIC,120,95,72,30,NOT WS_VISIBLE
+    CONTROL         "&Left Alignment",IDC_PRINT_LEFT,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,125,100,58,10
+    CONTROL         "&Right Alignment",IDC_PRINT_RIGHT,"Button",
+                    BS_AUTORADIOBUTTON,125,110,62,10
+    GROUPBOX        "Condition",IDC_STATIC,5,125,190,30
+    LTEXT           "Static",IDC_PRINT_COND,15,140,110,8
+    PUSHBUTTON      "&Detail...",IDC_PRINT_DETAIL,140,135,50,15
+    LTEXT           "",IDC_STATIC,145,0,20,8
+    DEFPUSHBUTTON   "OK",IDOK,145,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,30,50,14
+END
+
+IDD_16CHAR_MNEMO DIALOG DISCARDABLE  20, 40, 241, 143
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "16 Characters Mnemonic"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Address:",IDC_STATIC,10,5,30,8
+    LTEXT           "Mnemonic",IDC_STATIC,50,5,34,8
+    LISTBOX         IDC_16CM_LIST,10,15,165,80,LBS_SORT | LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Mnemonic:",IDC_STATIC,10,105,36,8
+    EDITTEXT        IDC_16CM_MNEMO,50,105,125,12,ES_AUTOHSCROLL
+    LTEXT           "'~' = Double width character (Max. 16 characters)",
+                    IDC_STATIC,25,126,163,8
+    DEFPUSHBUTTON   "OK",IDOK,185,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,185,30,50,14
+END
+
+IDD_40CHAR_MNEMO DIALOG DISCARDABLE  20, 40, 311, 143
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "40 Characters Mnemonic"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "&Address:",IDC_STATIC,10,5,30,8
+    LTEXT           "Mnemonic",IDC_STATIC,50,5,34,8
+    LISTBOX         IDC_40CM_LIST,10,15,235,80,LBS_SORT | LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Mnemonic:",IDC_STATIC,10,105,36,8
+    EDITTEXT        IDC_40CM_MNEMO,50,105,195,12,ES_AUTOHSCROLL
+    LTEXT           "'~' = Double width character (Max. 40 characters)",
+                    IDC_STATIC,73,126,163,8
+    DEFPUSHBUTTON   "OK",IDOK,255,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,255,30,50,14
+END
+
+IDD_EOD_FORM DIALOG DISCARDABLE  20, 40, 251, 198
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "End of Day"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "",IDC_STATIC,5,30,179,161
+    GROUPBOX        "Static",IDC_STATIC,5,0,180,35,NOT WS_VISIBLE
+    CONTROL         "Use &Machine Definition Code",IDC_EOD_STD,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,10,106,10
+    CONTROL         "Use &Programmable Report Parameter",IDC_EOD_ORG,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,20,130,10
+    LTEXT           "&File:",IDC_EOD_FILE,15,36,15,8
+    LTEXT           "State",IDC_EOD_STATE,95,36,19,8
+    LISTBOX         IDC_EOD_LIST,15,46,160,90,LBS_SORT | LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&No:",IDC_EOD_NO,15,141,13,8
+    LTEXT           "Device",IDC_EOD_DEVICE,30,141,24,8
+    LTEXT           "Title",IDC_EOD_TITLE,95,141,16,8
+    LISTBOX         IDC_EOD_OBJECT,15,151,160,34,LBS_SORT | LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,195,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,195,30,50,14
+    PUSHBUTTON      "&Up",IDC_EOD_UP,195,100,50,14
+    PUSHBUTTON      "&Down",IDC_EOD_DOWN,195,120,50,14
+END
+
+IDD_MATHE_PROP DIALOG DISCARDABLE  20, 40, 297, 173
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Mathematics Operation Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Fields",IDC_STATIC,5,5,140,60
+    LTEXT           "Group:",IDC_STATIC,10,20,23,10
+    LTEXT           "Static",IDC_MATHE_GROUP,35,20,95,10
+    LTEXT           "Major:",IDC_STATIC,10,30,22,8
+    LTEXT           "Static",IDC_MATHE_MAJOR,35,30,95,10
+    LTEXT           "Minor:",IDC_STATIC,10,40,22,8
+    LTEXT           "Static",IDC_MATHE_MINOR,35,40,40,8
+    LTEXT           "Item:",IDC_STATIC,10,50,18,8
+    LTEXT           "Static",IDC_MATHE_ITEM,35,50,40,8
+    GROUPBOX        "&Operation",IDC_STATIC,150,5,80,35
+    COMBOBOX        IDC_MATHE_COND,155,20,70,55,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Operand #1",IDC_STATIC,5,70,140,95
+    CONTROL         "&Use Value:",IDC_MATHE_USE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,85,47,10
+    LTEXT           "",IDC_STATIC,60,75,20,8
+    EDITTEXT        IDC_MATHE_VALUE,60,85,80,12,ES_AUTOHSCROLL
+    LTEXT           "&Group:",IDC_MATHE_GR1,10,100,23,8
+    COMBOBOX        IDC_MATHE_GROUP1,35,100,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "M&ajor:",IDC_MATHE_MA1,10,115,22,8
+    COMBOBOX        IDC_MATHE_MAJOR1,35,115,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Minor:",IDC_MATHE_MI1,10,130,22,8
+    COMBOBOX        IDC_MATHE_MINOR1,35,130,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Item:",IDC_MATHE_IT1,10,145,18,8
+    COMBOBOX        IDC_MATHE_ITEM1,35,145,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Operand #2",IDC_MATHE_OPE2,150,70,140,95
+    LTEXT           "Grou&p:",IDC_MATHE_GR2,155,100,23,8
+    COMBOBOX        IDC_MATHE_GROUP2,180,100,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Majo&r:",IDC_MATHE_MA2,155,115,22,8
+    COMBOBOX        IDC_MATHE_MAJOR2,180,115,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Mi&nor:",IDC_MATHE_MI2,155,130,19,8
+    COMBOBOX        IDC_MATHE_MINOR2,180,130,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "I&tem:",IDC_MATHE_IT2,155,145,18,8
+    COMBOBOX        IDC_MATHE_ITEM2,180,145,105,55,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,240,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,240,30,50,14
+END
+
+IDD_IMPORT_FORM DIALOG DISCARDABLE  20, 40, 317, 88
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Import Report"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "File:",IDC_STATIC,10,5,13,8
+    LTEXT           "Device",IDC_STATIC,80,5,24,8
+    LTEXT           "Title",IDC_STATIC,150,5,16,8
+    LISTBOX         IDC_IMPORT_LIST,10,15,240,65,LBS_SORT | LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Cancel",IDCANCEL,260,15,50,15
+    PUSHBUTTON      "&Import",IDC_IMPORT_IMPORT,260,35,50,15
+    DEFPUSHBUTTON   "OK",IDOK,260,55,50,14,NOT WS_VISIBLE
+END
+
+IDD_PTD_FORM DIALOG DISCARDABLE  20, 40, 251, 198
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Period to Day"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "",IDC_STATIC,5,20,180,170
+    GROUPBOX        "Static",IDC_STATIC,5,0,180,35,NOT WS_VISIBLE
+    CONTROL         "Use &Machine Definition Code",IDC_PTD_STD,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,10,106,10
+    CONTROL         "Use &Programmable Report Parameter",IDC_PTD_ORG,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,20,130,10
+    LTEXT           "&File:",IDC_PTD_FILE,15,35,15,8
+    LTEXT           "State",IDC_PTD_STATE,95,35,19,8
+    LISTBOX         IDC_PTD_LIST,15,45,160,90,LBS_SORT | LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&No:",IDC_PTD_NO,15,140,13,8
+    LTEXT           "Device",IDC_PTD_DEVICE,30,140,24,8
+    LTEXT           "Title",IDC_PTD_TITLE,95,140,16,8
+    LISTBOX         IDC_PTD_OBJECT,15,150,160,34,LBS_SORT | LBS_USETABSTOPS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_STATIC,195,0,20,8
+    DEFPUSHBUTTON   "OK",IDOK,195,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,195,30,50,14
+    PUSHBUTTON      "&Up",IDC_PTD_UP,195,100,50,14
+    PUSHBUTTON      "&Down",IDC_PTD_DOWN,195,120,50,14
+END
+
+IDD_LOOP_PROP DIALOG DISCARDABLE  20, 40, 211, 93
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Loop Operation Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Field",IDC_STATIC,5,5,140,40
+    LTEXT           "Group:",IDC_STATIC,15,20,23,10
+    LTEXT           "Static",IDC_LOOP_GROUP,40,20,95,10
+    LTEXT           "Major:",IDC_STATIC,15,30,22,8
+    LTEXT           "Static",IDC_LOOP_MAJOR,40,30,95,10
+    GROUPBOX        "Condition",IDC_STATIC,5,50,200,35
+    COMBOBOX        IDC_LOOP_COND,15,65,130,55,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_STATIC,155,0,20,8
+    DEFPUSHBUTTON   "OK",IDOK,155,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,155,30,50,14
+END
+
+IDD_SIZE_FORM DIALOG DISCARDABLE  0, 0, 286, 58
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Programmable Report"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            "",IDC_SIZE_ICON,10,10,18,20
+    LTEXT           "",IDC_SIZE_MESSAGE,40,10,175,25
+    CONTROL         "&This message is not displayed after this.",
+                    IDC_SIZE_DISP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,40,
+                    40,175,10
+    DEFPUSHBUTTON   "&Yes",IDYES,225,10,50,14
+    PUSHBUTTON      "&No",IDNO,225,30,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,5,40,30,10,NOT WS_VISIBLE
+END
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  34, 22, 211, 78
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Programmable Report"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,18,20
+    LTEXT           "Programmable Report",IDC_STATIC,40,10,91,8
+    LTEXT           "Copyright 2002-2020 Georgia Southern University",IDC_STATIC,40,60,107,8
+    DEFPUSHBUTTON   "OK",IDOK,150,10,50,15,WS_GROUP
+    LTEXT           "LPID\tG370-1801-0000",IDC_STATIC,50,40,85,8
+    LTEXT           "Version\t2.3.2.005",IDC_STATIC,50,25,73,8    // VERSIONINFO  FILEVERSION ALL_N_VERSIONINFO
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_PR_SIZENS           CURSOR  DISCARDABLE     "SIZENS.CUR"
+IDC_PR_MOVE             CURSOR  DISCARDABLE     "MOVE.CUR"
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#if !defined(ALL_N_VERSIONINFO)
+#define  ALL_N_VERSIONINFO   2,3,2,005
+#define  ALL_M_VERSIONINFO   "2, 3, 2, 005\0"
+#define  ALL_Q_COPYRIGHT     "Copyright (C) 2002-2020, Georgia Southern University\0"
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION       ALL_N_VERSIONINFO
+PRODUCTVERSION    ALL_N_VERSIONINFO
+FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "Comments", "Report generator component for PEP and NCR General POS.\0"
+            VALUE "CompanyName", "NCR Corporation\0"
+            VALUE "FileDescription", "Programmable Report for PEP\0"
+			VALUE "FileVersion", ALL_M_VERSIONINFO
+			VALUE "ProductVersion", ALL_M_VERSIONINFO
+			VALUE "InternalName", "PROGRPT\0"
+            VALUE "LegalCopyright", ALL_Q_COPYRIGHT
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "PROGRPT.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "NCR General POS, Programmable Report for PEP\0"
+#if defined(DEMO_VERSION)
+            VALUE "SpecialBuild", "Demo Version Build\0"
+#elif defined(_DEBUG)
+            VALUE "SpecialBuild", "Debug Version Build\0"
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+#endif    // !_MAC
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resrc1.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""..\\resource.h""\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    IDR_MAINFRAME           "Programmable Report"
+    IDR_REPORTTYPE          "\nUntitled\nReport Document\nReport Files (*.rpt)\n.rpt\nReport.Document\nReport Document"
+    IDR_ITEMTYPE            "\nReport\n\n\n\nReport.Document\nReport Document"
+END
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "Programmable Report"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_INDICATOR_SIZE       "00000 of ?????"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ERRMSG_REPORTDELETE "Are you sure you want to delete the %1 report ?"
+    IDS_ERRMSG_INSERTLOOP   "This key is not inserted for current position."
+    IDS_ERRMSG_PEP          "Cannot find the PEP parameter file. Do you want to continue ?"
+    IDS_ERRMSG_RANGE        "Please enter an integer between %1 and %2."
+    IDS_ERRMSG_COND         "Please select all fields."
+    IDS_ERRMSG_INI          "Cannot find the PROGRPT.INI file."
+    IDS_ERRMSG_EODPTD       "The report is already deleted. This report is changed to ""Do not execute""."
+    IDS_ERRMSG_LCD          "The report of the same device has already existed."
+    IDS_ERRMSG_VERSION      "This file is the unsuported file format or invalid file version."
+    IDS_ERRMSG_SIZE         "There is not enough space is the allocated capacity to this action. Do you want to continue ?"
+    IDS_STSMSG_PEP          "Loading PEP parameters..."
+    IDS_STSMSG_PROGRPT      "Loading programmable report parameters..."
+    IDS_STSMSG_CLEAR        " "
+    IDS_STSMSG_PASTE        "Cancel paste item(s)."
+    IDS_ERRMSG_CLIPBOARD    "The selected area is too wide. Please try again after you make it to be narrow."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_SETTING_EOD          "Edit execution list of end of day"
+    ID_SETTING_PTD          "Edit execution list of period to day"
+    ID_SETTING_16CHAR       "Edit 16 characters mnemonics"
+    ID_SETTING_40CHAR       "Edit 40 characters mnemonics"
+    ID_REPORT_NEW           "Create a new report"
+    ID_REPORT_OPEN          "Open an existing report"
+    ID_REPORT_PROP          "Edit the properties of the selected item"
+    ID_REPORT_IMPORT        "Import a report into the active file"
+    ID_REPORT_INSERTFIELD   "Insert a new field into the active report"
+    ID_REPORT_SETTITLE      "Edit report title"
+    ID_VIEW_PRINT           "Show or hide the print fields"
+    ID_VIEW_MATHE           "Show or hide the mathematics fields"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDC_REPORT_PROP         "Edit the properties of the selected item"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_STSMSG_DELROW       "This row is not delete."
+    IDS_ERRMSG_FILEFILED    "There are more than one fields error in report file(s). There fields are ignored."
+    IDS_ERRMSG_OPEN310TO330 "This is an old version file, so you can use it only after conversion.\nDo you want to convert this file ?\n\nThe following files not converted to new one.\n  1. Server Report.\n  2. Server Report in EOD/PTD."
+    IDS_ERRMSG_IMP310TO330  "This is an old version file. The following file(s) are not supported to import.\n\n  1. Server Report."
+    IDS_ERRMSG_OPEN100TO340 "This is an old version file,so you can use it only after conversion.\nDo you want to convert this file ?\n\nYou have to reenter new report data manually, PLU report."
+END
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

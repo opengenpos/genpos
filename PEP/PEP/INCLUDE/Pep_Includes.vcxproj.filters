@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="APPLINI.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="APPLLOG.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AW_Interfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Controls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSCAS.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSETK.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSGCS.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSLOG.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Csop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSPRGRPT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Csstbfcc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSSTBPAR.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Csstbstb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSTTL.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defs32bitport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EJ.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PEP\INCLUDE\FILE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FSC.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ISP.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LAYOUT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LOG.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NB.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="para.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="paraequ.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PARALOG.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pararam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PCIF.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PCSTBCAS.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PCSTBETK.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PCSTBISP.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PCSTBPAR.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PCSTBTTL.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PIF.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluHK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Progrept.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Regstrct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RFL.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RMT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="STORAGE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stringResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TERMCFG.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TRANSACT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="versioninfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

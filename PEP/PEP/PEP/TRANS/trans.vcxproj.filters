@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d7e834d0-6a67-48b8-9e5b-9a6ef8d48f46}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{0b8536e0-160e-4e42-a00a-7db56d20eb47}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Traabort.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tranconv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tranip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Trans.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRATCOMM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRATDIR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Traterm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRATPASS.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tratrece.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRATSEL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tratsend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TRALCOMM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TRALOAD.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tratcomm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TRATERM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

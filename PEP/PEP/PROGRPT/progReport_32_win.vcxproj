@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9B53F4EA-1511-48D5-8AF6-F02A7466828D}</ProjectGuid>
+    <RootNamespace>progReport_32_win</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\..\..\BIN\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\..\..\BIN\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>progrpt</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\..\BIN\Release/progReport_32_win.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <StructMemberAlignment>1Byte</StructMemberAlignment>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/progReport_32_win.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>..\..\BIN\Release/progrpt.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ProgramDatabaseFile>.\..\..\BIN\Release/progrpt.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>..\..\BIN\Release/progrpt.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\..\BIN\Debug/progReport_32_win.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/Gs  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>1Byte</StructMemberAlignment>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeaderOutputFile>.\Debug/progReport_32_win.pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>..\..\BIN\Debug/progrpt.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\..\..\BIN\Debug/progrpt.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>..\..\BIN\Debug/progrpt.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="CLPBOARD.CPP" />
+    <ClCompile Include="DLG16CM.CPP" />
+    <ClCompile Include="DLG40CM.CPP" />
+    <ClCompile Include="DLGEOD.CPP" />
+    <ClCompile Include="DLGFIELD.CPP" />
+    <ClCompile Include="DLGIMP.CPP" />
+    <ClCompile Include="DLGLIST.CPP" />
+    <ClCompile Include="DLGLOOP.CPP" />
+    <ClCompile Include="DLGMATHE.CPP" />
+    <ClCompile Include="DLGPRT.CPP" />
+    <ClCompile Include="DLGPRTD.CPP" />
+    <ClCompile Include="DLGPTD.CPP" />
+    <ClCompile Include="DLGSIZE.CPP" />
+    <ClCompile Include="DLGTITLE.CPP" />
+    <ClCompile Include="INFO.CPP" />
+    <ClCompile Include="ITEM.CPP" />
+    <ClCompile Include="LISTVW.CPP" />
+    <ClCompile Include="MAINFRM.CPP" />
+    <ClCompile Include="PROGRDOC.CPP" />
+    <ClCompile Include="PROGRFRM.CPP" />
+    <ClCompile Include="PROGRPT.CPP" />
+    <ClCompile Include="REPORT.CPP" />
+    <ClCompile Include="REPORTVW.CPP" />
+    <ClCompile Include="STDAFX.CPP" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RES\PROGRPT.RC">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">RES;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">RES;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CLPBOARD.H" />
+    <ClInclude Include="DLG16CM.H" />
+    <ClInclude Include="DLG40CM.H" />
+    <ClInclude Include="DLGEOD.H" />
+    <ClInclude Include="DLGFIELD.H" />
+    <ClInclude Include="DLGIMP.H" />
+    <ClInclude Include="DLGLIST.H" />
+    <ClInclude Include="DLGLOOP.H" />
+    <ClInclude Include="DLGMATHE.H" />
+    <ClInclude Include="DLGPRT.H" />
+    <ClInclude Include="DLGPRTD.H" />
+    <ClInclude Include="DLGPTD.H" />
+    <ClInclude Include="DLGSIZE.H" />
+    <ClInclude Include="DLGTITLE.H" />
+    <ClInclude Include="INFO.H" />
+    <ClInclude Include="ITEM.H" />
+    <ClInclude Include="LISTVW.H" />
+    <ClInclude Include="MAINFRM.H" />
+    <ClInclude Include="PROGRDOC.H" />
+    <ClInclude Include="PROGRFRM.H" />
+    <ClInclude Include="PROGRPT.H" />
+    <ClInclude Include="REPORT.H" />
+    <ClInclude Include="REPORTVW.H" />
+    <ClInclude Include="RESOURCE.H" />
+    <ClInclude Include="STDAFX.H" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\LIST.ICO" />
+    <Image Include="RES\PRT7193.ICO" />
+    <Image Include="RES\SHEET.ICO" />
+    <Image Include="RES\TOOLBAR.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Progrpt.ini">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd
+echo copy "%(FullPath)" $(OutDir)
+copy "%(FullPath)" "$(OutDir)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename);%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd
+echo copy "%(FullPath)" $(OutDir)
+copy "%(FullPath)" "$(OutDir)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename);%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="RES\MOVE.CUR" />
+    <None Include="RES\SIZENS.CUR" />
+    <CustomBuild Include="SAMPLE.RPT">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd
+echo copy "%(FullPath)" $(OutDir)
+copy "%(FullPath)" "$(OutDir)"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename);%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd
+echo copy "%(FullPath)" $(OutDir)
+copy "%(FullPath)" "$(OutDir)"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename);%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="RESDLL_CHINESESIMPLIFIED\PR_ResDLL_ChineseSimplified.vcxproj">
+      <Project>{d69642ae-3812-4455-86a4-fa6cdfcb9fa9}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="RESDLL_FRENCH\PR_ResDLL_French.vcxproj">
+      <Project>{0f041e9e-b10a-4321-99b3-7abb31b28e17}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="RESDLL_GERMAN\PR_ResDLL_German.vcxproj">
+      <Project>{c83f94e1-0768-485e-a5dc-0e8c4a39a555}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="RESDLL_SPANISH\PR_ResDLL_Spanish.vcxproj">
+      <Project>{4aa3b779-9f2f-459a-9399-59dfaf913ac0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

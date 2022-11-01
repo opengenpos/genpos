@@ -1,0 +1,93 @@
+:Base pephelp.hlp
+:Title PEP - Parameter Entry Program for NeighborhoodPOS
+1 Concepts
+2 What is PEP=ConcWhatsPEP>Concept
+2 Flexible Memory Assignment Overview=ConcFMA>Concept
+2 Mnemonic Overview=concMnemOverview>Concept
+2 Total Key Overview=ConcTotK>Concept
+2 Tender Key Overview=ConcTenderKey>Concept
+2 Taxing Option Overview=concTaxOverview>Concept
+2 Operator Overview=ConcOperator>Concept
+2 Control String Overview=ConcCS>Concept
+2 Electronic Payment Terminal Interface Overview=ConcEPT>Concept
+2 Charge Posting Overview=ConcCP>Concept
+2 Timekeeping Overview=ConcTK>Concept
+2 Store/Recall/Drivethrough Overview=ConcSRD>Concept
+2 Guest Check Overview=ConcGC>Concept
+2 Order Entry Prompt Table Overview=ConcOE>Concept
+2 Combination Coupon Overview=ConcCC>Concept
+2 Remote Devices Overview=ConcRD>Concept
+2 KDS Overview=ConcKDS>Concept
+1 Menus and Dialogs
+2 Menus
+3 File Menu=FileMenu>Dialogs
+3 Setup Menu=SetupMenu>Dialogs
+3 Mnemonic Menu=MnemonicMenu>Dialogs
+3 Maintenance Menu=MaintMenu>Dialogs
+3 Transfer Menu=TransMenu>Dialogs
+3 Tools Menu=ToolsMenu>Dialogs
+2 Dialogs - Setup Menu
+3 P01 Machine Definition Code=IDD_P01@pephelp.hlp>Dialogs
+3 P02 Flexible Memory Assignment=IDD_P02@pephelp.hlp>Dialogs
+3 P03 Function Selection Code=IDD_P03>Dialogs
+3 P06 Program Mode Security Number=IDD_P06>Dialogs
+3 P08 Supervisor Number/Level=IDD_P08>Dialogs
+3 P09 Action Code Security=IDD_P09>Dialogs
+3 P10 High Amount Lock-out (HALO) Limit=IDD_P10>Dialogs
+3 P15 Preset Amount for Preset Cash=IDD_P15>Dialogs
+3 P17 Hourly Activity Time=IDD_P17>Dialogs
+3 P18 Print Lines on Slip=IDD_P18>Dialogs
+3 P49 Automatic Alternative Remote Printer=IDD_P49>Dialogs
+3 P50 Assign Terminal for Remote Printer=IDD_P50>Dialogs
+3 P51 Assign IP Address for KDS=IDD_P51>Dialogs
+3 P54 Set Hotel ID and SLD=IDD_P54>Dialogs
+3 P60,61 Total Key Type/Function=IDD_P60>Dialogs
+3 P62 Tender Key Parameter=IDD_P62>Dialogs
+3 P97 Terminal Information=IDD_P97>Dialogs
+3 P98 Tender Key Setup=IDD_P98>Dialogs
+2 Dialogs - Mnemonics Menu
+3 P20 Transaction Mnemonics=IDD_P20>Dialogs
+3 P21 Lead Through Messages=IDD_P21>Dialogs
+3 P22 Report Mnemonics=IDD_P22>Dialogs
+3 P23 Special Mnemonis=IDD_P23>Dialogs
+3 P46 Adjective Mnemonics=IDD_P46>Dialogs
+3 P47 Print Modifier Mnemonics=IDD_P47>Dialogs
+3 P48 Major Department Mnemonics=IDD_P48>Dialogs
+3 P57 Header/Special Messages=IDD_P57>Dialogs
+3 P65 Multi-Line Display Mnemonics=IDD_P65>Dialogs
+3 P72 Reason Code Mnemonics=IDD_P72>Dialogs
+2 Dialogs - Maintenance Menu
+3 AC 04 Set PLU on Keyboard=IDD_A04>Dialogs
+3 AC 05 Set Menu Page Control Table=IDD_A05>Dialogs
+3 AC 07 Cashier A/B Key Assignment=IDD_A07>Dialogs
+3 AC 20 Checker (Cashier) or Operator Maintenance=IDD_A20>Dialogs
+3 AC 33 Set Control String Table=IDD_A33>Dialogs
+3 AC 63, 64, 68 PLU Maintenance=IDD_A68>Dialogs
+3 AC 71 PPI=IDD_A71>Dialogs
+3 AC 84 Set Rounding Table=IDD_A84>Dialogs
+3 AC 86 Set Percent Rates=IDD_A86>Dialogs
+3 AC 87 Set EPT Trailer Logo=IDD_A87>Dialogs
+3 AC 88 Set Receipt Promotion Header=IDD_A88>Dialogs
+3 AC 89 Set Currency Conversion Rates=IDD_A89>Dialogs
+3 AC 111 Set Tare Table=IDD_A111>Dialogs
+3 AC 114 Department File Maintenance=IDD_A114>Dialogs
+3 AC 116 Build Promotional PLU=IDD_A116>Dialogs
+3 AC 124-126 Set US/Canadian Tax Table=IDD_A124>Dialogs
+3 AC 127 Set US Tax % Rates or Set VAT $ Rates=IDD_A127>Dialogs
+3 AC 128 Set Transaction Limit=IDD_A128>Dialogs
+3 AC 130 Set Item Count Table=IDD_A130>Dialogs
+3 AC 133 Service Time Parameter Maintenance=IDD_A133>Dialogs
+3 AC 137 Set Beverage Dispenser Parameter=IDD_A137>Dialogs
+3 AC 152 Assign Employee Time Keeping=IDD_A152>Dialogs
+3 AC 154 Set Wage  Rate for Job Code=IDD_A154>Dialogs
+3 AC 160 Set Order Entry Prompt Table=IDD_A160>Dialogs
+3 AC 161 Combination Coupon Table Maintenance=IDD_A161>Dialogs
+3 AC 162 Flexible Drive Thru Parameters=IDD_A162>Dialogs
+3 AC 170 Set Sales Restriction Table=IDD_A170>Dialogs
+3 AC 208 Set Boundary Age=IDD_A208>Dialogs
+3 AC 209 Set Color Palette=IDD_A209>Dialogs
+2 Dialogs - Transfer Menu
+3 Terminal=TransMenu>Dialogs
+2 Dialogs - Tools Menu
+3 Programmable Report=progReportMenu>Dialogs
+3 Layout Manager=layoutManagerMenu>Dialogs

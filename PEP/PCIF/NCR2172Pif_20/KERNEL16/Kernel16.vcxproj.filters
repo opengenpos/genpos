@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{064ad909-0f4c-417b-8e1f-7117d7965151}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{cb7dd91b-ba49-4768-be86-c14b73b54bc2}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{f169098d-bb77-4b43-a2cb-aa998bc80b28}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CLOSE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CONF.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CONTROL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CRC.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GETDEV.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="INIT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="INITIALI.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IOERR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IONULL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OPEN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="READ.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SLEEPM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WRITE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IO.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

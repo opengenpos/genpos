@@ -1,0 +1,16 @@
+NCR NeighborhoodPOS, Parameter Entry Program
+PROD ID - G370-1801-0000, Version 1.4.00
+
+                                NOTICE
+
+                       Copyright NCR Corporation, 2000-2003
+
+
+   The information contained on this CD-ROM is confidential and
+   proprietary property of NCR. This information is to be held in
+   confidence and is not intended for public disclosure, public use
+   or other publication.
+
+
+
+                     *** END OF RESTRICTION FILE ***

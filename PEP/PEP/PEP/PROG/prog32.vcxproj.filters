@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{e1fd3474-cda5-4727-8d90-f72ef8dee891}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{cb3a3572-ca1f-49c6-b560-d3e4f9b378a2}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="P001.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P002.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P003.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P006.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P008.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P009.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P010.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P015.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P017.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P018.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P020.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P021.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P022.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P023.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P046.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P047.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P048.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P049.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="p050.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P051.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P054.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P057.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P060.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P062.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P065.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P067.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P072.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P097.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P098.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="P223.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PROG.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="P001.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P002.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P006.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P008.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P009.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P010.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P015.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P017.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P018.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P020.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P021.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P022.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P023.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P046.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P047.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P048.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P049.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P050.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P051.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P054.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P057.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P060.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P062.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P065.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P067.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P072.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P097.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="P098.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\P3HOLD.CUR" />
+  </ItemGroup>
+</Project>

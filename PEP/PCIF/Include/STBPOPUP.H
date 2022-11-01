@@ -1,0 +1,2 @@
+int StubPopUp(int iError);
+

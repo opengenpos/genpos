@@ -1,0 +1,2105 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+#include "p003.h"
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "#include ""p003.h""\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\NewLayout.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""           // Standard components\r\n"
+    "#include ""afxprint.rc""         // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\NewLayout.ico"
+IDR_NEWLAYTYPE          ICON    DISCARDABLE     "res\\NewLayoutDoc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR DISCARDABLE  24, 22
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    BUTTON      ID_TOOLBAR_PROPERTIES
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    BUTTON      ID_TOOLBAR_UNDO
+    BUTTON      ID_TOOLBAR_REDO
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+
+    BUTTON      ID_APP_ABOUT
+    BUTTON      ID_BUTTON32789
+    BUTTON      ID_TOGGLE_RULER
+    SEPARATOR
+    BUTTON      ID_TOOLBAR_WINGROUP
+    BUTTON      ID_TOOLBAR_LANG
+    BUTTON      ID_TOOLBAR_ACTIVEWND
+    BUTTON      ID_TOOLBAR_DEFAULTS
+    SEPARATOR
+    BUTTON      ID_TOOLBAR_WND
+    BUTTON      ID_TOOLBAR_BTN
+    BUTTON      ID_TOOLBAR_TXT
+    BUTTON      ID_TOOLBAR_LBL
+    BUTTON      ID_TOOLBAR_OEP
+    BUTTON      ID_TOOLBAR_DELETE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU PRELOAD DISCARDABLE
+BEGIN
+    POPUP "Fichier" // "&File"
+    BEGIN
+        MENUITEM "Nouveau\tCtrl+N",                  ID_FILE_NEW                                // "&New\tCtrl+N"
+        MENUITEM "Ouvrir...\tCtrl+O",                ID_FILE_OPEN                               // "&Open...\tCtrl+O"
+        MENUITEM SEPARATOR
+        MENUITEM "Régler Impression...",             ID_FILE_PRINT_SETUP                        // "P&rint Setup..."
+        MENUITEM SEPARATOR
+        MENUITEM "Fichier Récent",                   ID_FILE_MRU_FILE1, GRAYED                  // "Recent File"
+        MENUITEM SEPARATOR
+        MENUITEM "Sortie",                           ID_APP_EXIT                                // "E&xit"
+    END
+    POPUP "Voir" // "&View"
+    BEGIN
+        MENUITEM "Barre d'Outils",                   ID_VIEW_TOOLBAR                            // "&Toolbar"
+        MENUITEM "Barre de Statut",                  ID_VIEW_STATUS_BAR                         // "&Status Bar"
+        MENUITEM "Langue",                           ID_VIEW_LANGUAGE                           // "Language"
+    END
+    POPUP "Aide" // "&Help"
+    BEGIN
+        MENUITEM "A propos du Nouveau Layout...",    ID_APP_ABOUT                               // "&About NewLayout..."
+    END
+END
+
+IDR_NEWLAYTYPE MENU PRELOAD DISCARDABLE
+BEGIN
+    POPUP "Fichier" // "&File"
+    BEGIN
+        MENUITEM "Nouveau\tCtrl+N",                ID_FILE_NEW                                  // "&New\tCtrl+N"
+        MENUITEM "Ouvrir...\tCtrl+O",              ID_FILE_OPEN                                 // "&Open...\tCtrl+O"
+        MENUITEM "Fermer",                         ID_FILE_CLOSE                                // "&Close"
+        MENUITEM "Sauvegarder\tCtrl+S",            ID_FILE_SAVE                                 // "&Save\tCtrl+S"
+        MENUITEM "Sauvegarder &Comme...",          ID_FILE_SAVE_AS                              // "Save &As..."
+        MENUITEM SEPARATOR
+        MENUITEM "Imprimer...\tCtrl+P",            ID_FILE_PRINT                                // "&Print...\tCtrl+P"
+        MENUITEM "Aperçu avant Impression",        ID_FILE_PRINT_PREVIEW                        // "Print Pre&view"
+        MENUITEM "Régler Impression...",           ID_FILE_PRINT_SETUP                          // "P&rint Setup..."
+        MENUITEM SEPARATOR
+        MENUITEM "Export",                      ID_FILE_EXPORT, GRAYED
+        MENUITEM "Import",                      ID_FILE_IMPORT, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Test..\tCtrl+T",                 ID_FILE_TEST                                 // "&Test..\tCtrl+T"
+        MENUITEM SEPARATOR
+        MENUITEM "Fichier Récent",                 ID_FILE_MRU_FILE1, GRAYED                    // "Recent File"
+        MENUITEM SEPARATOR
+        MENUITEM "Sortie",                         ID_APP_EXIT                                  // "E&xit"
+        MENUITEM SEPARATOR
+        MENUITEM "Propriétés",                  ID_FILE_FILESUMMARY                             // "Properties"
+    END
+    POPUP "Editer" // "&Edit"
+    BEGIN
+        MENUITEM "Annuler Action\tCtrl+Z",         ID_EDIT_UNDO                                 // "&Undo\tCtrl+Z"
+        MENUITEM "&Refaire Action\tCtrl+Y",               ID_EDIT_REDO                          // "&Redo\tCtrl+Y"
+        MENUITEM SEPARATOR
+        MENUITEM "Couper\tCtrl+X",                 ID_EDIT_CUT                                  // "Cu&t\tCtrl+X"
+        MENUITEM "Copier\tCtrl+C",                 ID_EDIT_COPY                                 // "&Copy\tCtrl+C"
+        MENUITEM "Coller\tCtrl+V",                 ID_EDIT_PASTE                                // "&Paste\tCtrl+V"
+    END
+    POPUP "Voir" // "&View"
+    BEGIN
+        MENUITEM "Barre d'Outils",                    ID_VIEW_TOOLBAR                           // "&Toolbar"
+        MENUITEM "Barre de Statut",                   ID_VIEW_STATUS_BAR                        // "&Status Bar"
+//      MENUITEM "Ajuster pour rentrer dans la fenêtre",         ID_VIEW_SCALETOFITWINDOW       // "Scale To Fit Window"
+        POPUP    "Résolution"                                                                   // "Resolution"
+        BEGIN
+            MENUITEM "800 * 600",                   ID_VIEW_RESOLUTION_800
+            MENUITEM "1024 * 768",                  ID_VIEW_RESOLUTION_1024
+            MENUITEM "1280 * 1024",                 ID_VIEW_RESOLUTION_1280
+            MENUITEM "1440 * 900",                  ID_VIEW_RESOLUTION_1440
+        END
+        MENUITEM "Langue",                          ID_VIEW_LANGUAGE                            // "Language"
+        MENUITEM "Cacher Règles",                 ID_VIEW_RULERS                                // "Hide Rulers"
+    END
+    POPUP "Fenêtre"                                                                             // "&Window"
+    BEGIN
+        MENUITEM "Nouvelle Fenêtre",                ID_WINDOW_NEW                               // "&New Window"
+        MENUITEM "Cascade",                         ID_WINDOW_CASCADE                           // "&Cascade"
+        MENUITEM "Carreaux",                            ID_WINDOW_TILE_HORZ                     // "&Tile"
+        MENUITEM "Arranger Icônes",                 ID_WINDOW_ARRANGE                           // "&Arrange Icons"
+    END
+    POPUP "Aide" // "&Help"
+    BEGIN
+        MENUITEM "A propos du Nouveau Layout...",   ID_APP_ABOUT                                // "&About NewLayout..."
+    END
+END
+
+IDR_CONTEXTMENU MENU DISCARDABLE
+BEGIN
+    POPUP "Pop 1"
+    BEGIN
+        MENUITEM "Liste de Fenêtres",                    IDS_POP_WINDOW_LIST                    // "Window List"
+        MENUITEM SEPARATOR
+        POPUP "Ajouter Commande" // "Add Control"
+        BEGIN
+            MENUITEM "Ajouter Fenêtre",                  IDS_POP_SETWINDOW                      // "Add Window"
+            MENUITEM "Ajouter Texte",                    IDS_POP_ADD_TEXT_WINDOW                // "Add Text Display"
+            MENUITEM "Ajouter Bouton",                   IDS_POPUP_EDITBUTTON                   // "Add Button"
+            MENUITEM "Ajouter Sous-Fenêtre",             IDS_POP_SETSUBWIN, GRAYED              // "Add Sub Window"
+            MENUITEM "Ajouter Fenêtre OEP",              IDS_POP_SET_OEPWIN                     // "Add OEP Window"
+	      MENUITEM "Ajouter Etiquette",                ID_POP1__ADDLABEL                      // "Add Label"
+        END
+        POPUP "Editer Commande" // "Edit Control"
+        BEGIN
+            MENUITEM "Editer Fenêtre",                   IDS_POPUP_EDITWIN                      // "Edit Window"
+            MENUITEM "Editer Texte",                     IDS_POPUP_EDITTEXT                     // "Edit Text"
+            MENUITEM "Editer Bouton",                    IDS_POPUP_EDITBTN                      // "Edit Button"
+            MENUITEM "Editer Sous-Fenêtre",              IDS_POPUP_EDITSUBWIN, GRAYED           // "Edit SubWindow"
+	      MENUITEM "Editer Fenêtre OEP",               ID_POP1_EDIT_OEPWINDOW                 // "Edit OEP Window"
+            MENUITEM "Editer Etiquette" ,                ID_POP1_EDITLBL                        // "Edit Label"
+        END
+        MENUITEM "Enlever Commande",                     ID_POP1_REMOVECONTROL                  // "Remove Control"
+        MENUITEM SEPARATOR
+        MENUITEM "Couper",                               IDS_POPUP_CUT                          // "Cut"
+        MENUITEM "Copier",                               IDS_POPUP_COPY                         // "Copy"
+        MENUITEM "Coller",                               IDS_POPUP_PASTE                        // "Paste"
+        MENUITEM SEPARATOR
+        MENUITEM "Changer les Réglages de Base",         ID_POP1_CHANGEDEFAULTS                 // "Change Defaults"
+        MENUITEM "Ajouter/Editer Groupe de Fenêtre",     ID_POP1_ADDWINDOWGROUP                 // "Add /Edit Window Group"
+	  MENUITEM "Spécifier les fenêtres actives",       ID_POP1_ACTIVE_WINDOW_IN_GROUP         // "Specify Active Windows"
+    END
+END
+
+IDR_EXIT_TESTER MENU DISCARDABLE
+BEGIN
+    POPUP "Pop"
+    BEGIN
+        MENUITEM "Fermer la Fenêtre de Test",            ID_POP_CLOSETESTWINDOW                  // "Close Test Window"
+    END
+END
+
+IDR_TREE_MENU MENU DISCARDABLE
+BEGIN
+    POPUP "Pop1"
+    BEGIN
+        MENUITEM "Editer Fenêtre",                 ID_TREE_EDIT_WINDOW	// "Edit Window"
+        MENUITEM "Supprimer Fenêtre",               ID_TREE_DELETE_WINDOW   // "Delete Window"
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+	"T",            ID_FILE_TEST,           VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_EDIT_BUTTONCTRL DIALOGEX 0, 0, 537, 301
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Editer Bouton" // "Edit Button"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Assigner Action",IDC_BUTTON_ASSIGN_ACTION,15,17,80,18  //  "Assign Action"
+    EDITTEXT        IDC_EDIT_CAPTION,13,84,108,18,ES_AUTOHSCROLL | ES_WANTRETURN
+    CONTROL         "Rectangle",IDC_DIALOG1_SHAPE_RECT,"Button",BS_AUTORADIOBUTTON | WS_GROUP,288,106,85,15
+    CONTROL         "Elipse",IDC_DIALOG1_SHAPE_ELIPSE,"Button",BS_AUTORADIOBUTTON,288,122,88,15
+    CONTROL         "Rectangle Arrondi",IDC_DIALOG1_SHAPE_ROUNDRECT,"Button",BS_AUTORADIOBUTTON,288,139,89,13 // "Rounded Rectangle"
+    GROUPBOX        "Modèle de la Face du Bouton",IDC_STATIC_DIALOG3_PATTERN,409,92,112,69,WS_GROUP // "Button Face Pattern"
+    CONTROL         "Pas de Modèle",IDC_STATIC_DIALOG1_PATTERN_NONE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,418,107,83,14 // "No Pattern"
+    CONTROL         "Rayures Horizontales",IDC_STATIC_DIALOG1_PATTERN_HORIZ,"Button",BS_AUTORADIOBUTTON,418,123,88,12 // "Horizontal Stripes"
+    CONTROL         "Rayures Verticales",IDC_STATIC_DIALOG1_PATTERN_VERT,"Button",BS_AUTORADIOBUTTON,418,137,88,16 // "Vertical Stripes"
+    COMBOBOX        IDC_COMBO_DIALOG1_WIDTH,468,184,47,55,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_DIALOG1_HEIGHT,469,209,47,55,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Utiliser les réglages de base de la fenêtre pour les Attributs du bouton",IDC_RADIO_USEWINDEF,"Button",BS_AUTORADIOBUTTON |
+                    WS_GROUP | BS_MULTILINE,332,56,180,16 // "Use Window Defaults for Button Attributes"
+    CONTROL         "Utiliser les Attributs choisis pour les Boutons",IDC_RADIO_USECUSTOM,"Button",BS_AUTORADIOBUTTON | BS_MULTILINE,332,72,177,15// "Use Custom Attributes for Buttons"
+    DEFPUSHBUTTON   "OK",IDOK,398,11,50,25
+    PUSHBUTTON      "Annuler",IDCANCEL,461,11,50,25 // "Cancel"
+    GROUPBOX        "Caption / Icône",IDC_STATIC,6,46,259,220     // "Caption / Icon"
+    GROUPBOX        "Caption",IDC_STATIC,9,60,122,200
+    LTEXT           "Légende du Bouton",IDC_STATIC_CAPTION,13,72,107,12 // "Button Caption"
+    GROUPBOX        "Caption Preview",IDC_STATIC,12,104,116,34
+    LTEXT           "Static",IDC_EDIT_PREVIEW,14,113,110,20,SS_SUNKEN | NOT WS_GROUP
+    GROUPBOX        "Forme du Bouton",IDC_STATIC_SHAPE,280,92,111,69,WS_GROUP  // "Button Shape"
+    GROUPBOX        "Bouton Action/Macro",IDC_STATIC,6,2,258,43  // "Button Action/Macro"
+    LTEXT           "Action",IDC_STATIC_DIALOG1_ACTION,109,22,144,9
+    GROUPBOX        "Couleurs et Polices d'écriture",IDC_STATIC,280,167,116,68 // "Colors and Font"
+    PUSHBUTTON      "Déterminer Couleur de la Face",IDC_BUTTON_FACECOLOR, 286,182,70,20, BS_MULTILINE // "Set Face Color"
+    LTEXT           "",IDC_STATIC_SHOW_FACECOLOR,364,182,21,14,SS_SUNKEN
+    PUSHBUTTON      "Régler Polices d'écriture",IDC_SETBTNFONT, 286,208,70,22, BS_MULTILINE // "Set Font"
+    GROUPBOX        "Taille du Bouton",IDC_STATIC,408,167,114,66  // "Button Size"
+    LTEXT           "Multiplicateur de Largeur",IDC_STATIC_DIALOG1_WIDTH,412,185,54,20 // "Width Multiplier"
+    LTEXT           "Multiplicateur de Hauteur",IDC_STATIC_DIALOG1_HEIGHT,412,210,54,20 // "Height Multiplier"
+    CONTROL         "Charger les sous-titres installés par défaut",IDC_CHECK_CUST_CAP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,148,107,8  // "Load Default Caption"
+    LTEXT           "Orientation",IDC_STATIC,16,164,38,11
+    CONTROL         "Horizonatal",IDC_RADIO_HORIZONTAL,"Button",BS_RADIOBUTTON | WS_GROUP,15,172,54,13
+    CONTROL         "Vertical",IDC_RADIO_VERTICAL,"Button",BS_RADIOBUTTON,76,172,49,12
+    LTEXT           "Alignement",IDC_STATIC,16,194,38,11          // "Alignment"
+    CONTROL         "Haut",IDC_RADIO_CAP_TOP,"Button",BS_AUTORADIOBUTTON | WS_GROUP,15,206,46,13       //  "Top"
+    CONTROL         "Milieu",IDC_RADIO_CAP_MIDDLE,"Button",BS_AUTORADIOBUTTON,15,223,46,13        //  "Middle"
+    CONTROL         "Bas",IDC_RADIO_CAP_BOTTOM,"Button",BS_AUTORADIOBUTTON,15,239,46,13          // "Bottom"
+    CONTROL         "Gauche",IDC_RADIO_CAP_LEFT,"Button",BS_AUTORADIOBUTTON | WS_GROUP,77,206,46,13   // "Left"
+    CONTROL         "Centre",IDC_RADIO_CAP_CENTER,"Button",BS_AUTORADIOBUTTON,77,223,46,13     // "Center"
+    CONTROL         "Droite",IDC_RADIO_CAP_RIGHT,"Button",BS_AUTORADIOBUTTON,77,239,46,13        // "Right"
+    GROUPBOX        "Icône",IDC_STATIC,137,61,123,130              // "Icon"
+    LTEXT           "Nom de l'icône du fichier",IDC_STATIC,144,73,100,10 // "Icon File Name"
+    EDITTEXT        IDC_EDIT_ICONFILENAME, 144,85,108,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "Chercher...",IDC_BUTTON_BROWSE,144,105,50,18    // "Browse..."
+    PUSHBUTTON      "Régler Dossier",IDC_BUTTON_SETDIR,202,105,52,18    // "Set Folder"
+    LTEXT           "Alignement",IDC_STATIC,149,129,38,11    // "Alignment"
+    CONTROL         "Haut",IDC_RADIO_CAP_TOP2,"Button",BS_AUTORADIOBUTTON | WS_GROUP,207,141,46,13        //  "Top"
+    CONTROL         "Milieu",IDC_RADIO_CAP_MIDDLE2,"Button",BS_AUTORADIOBUTTON,207,158,46,13         //  "Middle"
+    CONTROL         "Bas",IDC_RADIO_CAP_BOTTOM2,"Button",BS_AUTORADIOBUTTON,207,174,46,13          // "Bottom"
+    CONTROL         "Gauche",IDC_RADIO_CAP_LEFT2,"Button",BS_AUTORADIOBUTTON | WS_GROUP,147,141,46,13   // "Left"
+    CONTROL         "Centre",IDC_RADIO_CAP_CENTER2,"Button",BS_AUTORADIOBUTTON,147,158,46,13     // "Center"
+    CONTROL         "Droite",IDC_RADIO_CAP_RIGHT2,"Button",BS_AUTORADIOBUTTON,147,174,46,13       // "Right"
+    GROUPBOX        "Attributs du Bouton",IDC_STATIC_BUTTON_ATTRIBUTES,270,47,260,193 // "Button Attributes"
+    GROUPBOX        "Lock Mode Options",IDC_STATIC,138,195,110,65
+    CONTROL         "REG Mode Required",IDC_CHECK_SPR_REG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,150,208,91,12
+    CONTROL         "SUPR Mode Required",IDC_CHECK_SPR_SUPR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,150,225,92,11
+    CONTROL         "PROG Mode Required",IDC_CHECK_SPR_PROG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,150,240,90,14
+    GROUPBOX        "Connection Engine Interface",IDC_STATIC_CONNENGINE,270,248,258,49
+    CONTROL         "Use Connection Engine interface.",IDC_CHECK_CONNENGINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,287,257,216,17
+    CONTROL         "Allow script",IDC_CHECK_SCRIPTING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,229,117,12
+    LTEXT           "Button Name",IDC_STATIC_CONNENGINE_BUTTON_NAME,299,276,101,14
+    EDITTEXT        IDC_EDIT_CONNENGINE_BUTTON_NAME,407,276,82,13,ES_AUTOHSCROLL
+END
+
+IDD_EDIT_WINDOWCTRL DIALOGEX 0, 0, 346, 326
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Placer Fenêtre"   // "Place Window"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,140,7,50,14
+    PUSHBUTTON      "Annuler",IDCANCEL,140,24,50,14  // "Cancel"
+    LTEXT           "Nom de la Fenêtre",IDC_STATIC_WIN_NAME,9,10,91,11 // "Window Name"
+    EDITTEXT        IDC_EDIT_WIN_NAME,9,26,93,13,ES_AUTOHSCROLL
+    LTEXT           "Groupe de Fenêtre",IDC_STATIC,15,59,100,13,0,WS_EX_RIGHT  // "Window Group"
+    COMBOBOX        IDC_COMBO_GROUP,125,55,55,86,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Nombre de Boutons en bas",IDC_STATIC_DIALOG2_NO_ROWS,15,
+                    78,100,14,0,WS_EX_RIGHT  // "Number of Grids Down"
+    COMBOBOX        IDC_COMBO_DIALOG2_NO_ROWS,125,76,55,124,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Nombre de Boutons en face",IDC_STATIC_DIALOG2_NO_COLS,15,
+                    99,100,14,0,WS_EX_RIGHT // "Number of Grids Across"
+    COMBOBOX        IDC_COMBO_DIALOG2_NO_COLS,125,97,55,118,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Couleur",IDC_DIALOG2_BUTTON_COLOR,96,120,52,18  // "Color"
+    LTEXT           "",IDC_STATIC_SHOW_FACECOLOR,152,120,21,18,0,
+                    WS_EX_STATICEDGE
+    GROUPBOX        "Type de Fenêtre",IDC_STATIC_WINSTYLE,5,143,75,68   // "Window Type"
+    CONTROL         "Non-Popup",IDC_RADIO_VIRTUAL,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,156,58,10
+    CONTROL         "Popup",IDC_RADIO_POPUP,"Button",BS_AUTORADIOBUTTON,10,167,47,12
+    LTEXT           "Number of Picks",IDC_STATIC,13,182,59,8
+    COMBOBOX        IDC_COMBO_NO_PICKS,12,194,54,68,CBS_DROPDOWN |
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Lock Mode Options",IDC_STATIC,88,143,102,68
+    CONTROL         "REG Mode Required",IDC_CHECK_SPR_REG,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,92,156,91,12
+    CONTROL         "SUPR Mode Required",IDC_CHECK_SPR_SUPR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,92,173,92,11
+    CONTROL         "PROG Mode Required",IDC_CHECK_SPR_PROG,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,92,188,90,14
+    CONTROL         "Default User Screen",IDC_DEFAULT_WINDOW,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,224,134,9
+    CONTROL         "Utiliser les Réglages de Base du Document pour les commandes",IDC_RADIO_DOCDEF,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | BS_MULTILINE,7,237,131,14 // "Use Document Defaults for Controls"
+    CONTROL         "Utiliser les Réglages de base de la fenêtre pour les commandes",IDC_RADIO_WINDEF,
+                    "Button",BS_AUTORADIOBUTTON | BS_MULTILINE ,7,258,131,14// "Use Window Defaults for Controls"
+    PUSHBUTTON      "Régler les commandes de base de la fenêtre",IDC_BUTTONRESET,16,288,108,
+                    24, BS_MULTILINE  // "Set Window Control Defaults"
+    GROUPBOX        "Window Event Trigger",IDC_STATIC,205,55,120,156
+    CONTROL         "Attach Window to Event",IDC_EVENTTRIGGER_ENABLED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,209,65,108,16
+    CONTROL         "Order Declaration Event",IDC_EVENTTRIGGER_ORDERDEC,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP,218,84,97,14
+END
+
+IDD_P03_BOX DIALOG MOVEABLE IMPURE  475, 10, 193, 440
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Boîte à Outils FSC (P 3)"   // "FSC Tool Box (P 3)"
+FONT 7, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "AC",IDD_P03_AC,2,1,45,12
+    PUSHBUTTON      "Ajouter Chèque",IDD_P03_ADDCHK,50,1,45,12                                  // "Add Check"
+    PUSHBUTTON      "Adjectif",IDD_P03_ADJ,98,1,45,12                                           // "Adjective"
+    PUSHBUTTON      "Alpha",IDD_P03_ALPHA,146,1,45,12                                           // "Alpha"
+    PUSHBUTTON      "Touche A",IDD_P03_AKEY,2,14,45,12                                          // "A Key"
+    PUSHBUTTON      "Demander",IDD_P03_ASK,50,14,45,12                                          // "Ask"
+    PUSHBUTTON      "Touche B",IDD_P03_BKEY,98,14,45,12                                         // "B Key"
+    PUSHBUTTON      "Annuler",IDD_P03_CANCEL,146,14,45,12                                       // "Cancel"
+    PUSHBUTTON      "Changer Calcul",IDD_P03_CHGCOMP,2,27,45,12                                 // "Chg. Cmpt."
+    PUSHBUTTON      "Chrg. Pourboires",IDD_P03_CHARTIP,50,27,45,12                              // "Chrg. Tips"
+    PUSHBUTTON      "Enlever",IDD_P03_CLEAR,98,27,45,12                                         // "Clear"
+    PUSHBUTTON      "Coupon",IDD_P03_KEYEDCPN,146,27,45,12
+    PUSHBUTTON      "No.Coupon",IDD_P03_CPNNO,2,40,45,12                                         // "Coupon #"
+    PUSHBUTTON      "Annulation avec Curseur",IDD_P03_CURSORVOID,50,40,45,12                    // "Cursor Void"
+    PUSHBUTTON      "Pourboires Déclarés",IDD_P03_DECTIP,98,40,45,12                            // "Dec.Tips"
+    PUSHBUTTON      "Virgule Décimale",IDD_P03_DECPT,146,40,45,12                               // "Dec. Point"
+    PUSHBUTTON      "Changement de page direct",IDD_P03_DRCTSHFT,2,53,45,12                     // "Drct. Shift"
+    PUSHBUTTON      "Dépt.",IDD_P03_KEYEDDPT,50,53,45,12                                        // "Dept."
+    PUSHBUTTON      "No.Dépt.",IDD_P03_DEPTNO,98,53,45,12                                       // "Dept No."
+    PUSHBUTTON      "E/C",IDD_P03_EC,146,53,45,12
+    PUSHBUTTON      "Recharger",IDD_P03_FEED,2,66,45,12                                         // "Feed"
+    PUSHBUTTON      "Etranger",IDD_P03_FC,50,66,45,12                                           // "Foreign"
+    PUSHBUTTON      "Mod.FS",IDD_P03_FOODSTAMPMOD,98,66,45,12                                   // "FS Mod."
+    PUSHBUTTON      "Transf.G.C.",IDD_P03_GCTRANS,146,66,45,12                                  // "G.C. Trnsfr."
+    PUSHBUTTON      "No.G.C.",IDD_P03_GCNO,2,79,45,12                                           // "G.C. #"
+    PUSHBUTTON      "Réd.sur Article",IDD_P03_IDISC,50,79,45,12                                 // "Item Disc."
+    PUSHBUTTON      "Trans.Article",IDD_P03_ITEMTRANS,98,79,45,12                               // "Item Trans."
+    PUSHBUTTON      "Recharger Journal",IDD_P03_JOUFEED,146,79,45,12                            // "Jou. Feed"
+    PUSHBUTTON      "Flêche de Gauche",IDD_P03_LEFT,2,92,45,12                                  // "Left Arrow"
+    PUSHBUTTON      "Apparaît à Gauche",IDD_P03_LEFTDISPLAY,50,92,45,12                         // "Left Display"
+    PUSHBUTTON      "Régler Niveau",IDD_P03_ADJPLS,98,92,45,12                                  // "Level Set"
+    PUSHBUTTON      "Ligne No.",IDD_P03_LINENO,146,92,45,12                                     // "Line #"
+    PUSHBUTTON      "Touche Mode",IDD_P03_MENUMODEKEY,2,105,45,12                               // "Mode Key"
+    PUSHBUTTON      "Argent",IDD_P03_MONEYDEC,50,105,45,12                                      // "Money"
+    PUSHBUTTON      "Nouveau Chèque",IDD_P03_NEWCHK,98,105,45,12                                // "New Check"
+    PUSHBUTTON      "Pas de ventes",IDD_P03_NOSALE,146,105,45,12                                // "No Sale"
+    PUSHBUTTON      "Bloc de nombres",IDD_P03_NUMBERPAD,2,118,45,12                             // "Number Pad"
+    PUSHBUTTON      "Méth.paiement hors-ligne",IDD_P03_OFFTEND,50,118,45,12                     // "Off. Tend."
+    PUSHBUTTON      "Opr. IntA",IDD_P03_OPRINT_A,98,118,45,12                                   // "Opr. IntA"
+    PUSHBUTTON      "Opr. IntB",IDD_P03_OPRINT_B,146,118,45,12                                  // "Opr. IntB"
+    PUSHBUTTON      "Ordre de payer",IDD_P03_PAID_REC,2,131,45,12                               // "Paid Order"
+    PUSHBUTTON      "P.B.",IDD_P03_PB,50,131,45,12
+    PUSHBUTTON      "PLU",IDD_P03_KEYEDPLU,98,131,45,12
+    PUSHBUTTON      "No.PLU",IDD_P03_PLUNO,146,131,45,12                                        // "PLU #"
+    PUSHBUTTON      "P.O.",IDD_P03_PO,2,144,45,12
+    PUSHBUTTON      "Déterminer Liquide",IDD_P03_PRECASH,50,144,45,12                           // "Pre. Cash"
+    PUSHBUTTON      "Vérifier Prix",IDD_P03_PRICECHECK,98,144,45,12                             // "Price Check"
+    PUSHBUTTON      "Entrer Prix",IDD_P03_PRICEENT,146,144,45,12                                // "Price Ent."
+    PUSHBUTTON      "Imprimer Mod.",IDD_P03_PRTMOD,2,157,45,12                                  // "Print Mod."
+    PUSHBUTTON      "Impr. Dmd.",IDD_P03_PRTDEM,50,157,45,12                                    // "Prt. Dmd."
+    PUSHBUTTON      "Quantité",IDD_P03_QTY,98,157,45,12                                         // "QTY"
+    PUSHBUTTON      "Reçu",IDD_P03_RCTNORCT,146,157,45,12                                       // "Receipt"
+    PUSHBUTTON      "Recharger Reçu",IDD_P03_RECFEED,2,170,45,12                                // "Rec. Feed"
+    PUSHBUTTON      "Répéter",IDD_P03_REPEAT,50,170,45,12                                       // "Repeat"
+    PUSHBUTTON      "Impression Inversée",IDD_P03_RVSPRI,98,170,45,12                           // "Rev. Print"
+    PUSHBUTTON      "Remise Norm.",IDD_P03_RDISC,146,170,45,12                                  // "Rglr. Disc."
+    PUSHBUTTON      "Flêche de Droite",IDD_P03_RIGHT,2,183,45,12                                // "Right Arrow"
+    PUSHBUTTON      "R.O.A.",IDD_P03_ROA,50,183,45,12                                           // "R.O.A."
+    PUSHBUTTON      "Balance/Ivraie",IDD_P03_SCALE,98,183,45,12                                 // "Scale/Tare"
+    PUSHBUTTON      "Descendre",IDD_P03_DOWN,146,183,45,12                                      // "Scroll Down"
+    PUSHBUTTON      "Monter",IDD_P03_UP,2,196,45,12                                             // "Scroll Up"
+    PUSHBUTTON      "No.Siège",IDD_P03_SEAT,50,196,45,12                                        // "Seat #"
+    PUSHBUTTON      "Changer",IDD_P03_SHIFT,98,196,45,12                                        // "Shift"
+    PUSHBUTTON      "Partager",IDD_P03_SPLIT,146,196,45,12                                      // "Split"
+    PUSHBUTTON      "Barre de commandes",IDD_P03_KEYEDSTR,2,209,45,12                           // "String"
+    PUSHBUTTON      "No. barre de commandes",IDD_P03_STRNO,50,209,45,12                         // "String #"
+    PUSHBUTTON      "No.Remplaçant",IDD_P03_BARTENDER,98,209,45,12                              // "Surrogate #"
+    PUSHBUTTON      "No.Table",IDD_P03_TBLNO,146,209,45,12                                      // "Table #"
+    PUSHBUTTON      "Mod. Taxe",IDD_P03_TAXMOD,2,222,45,12                                      // "Tax Mod."
+    PUSHBUTTON      "Méthode de paiement",IDD_P03_TENDER,50,222,45,12                           // "Tender"
+    PUSHBUTTON      "Entrée",IDD_P03_TIMEIN,98,222,45,12                                        // "Time-In"
+    PUSHBUTTON      "Sortie",IDD_P03_TIMEOUT,146,222,45,12                                      // "Time-Out"
+    PUSHBUTTON      "Pourboires mis sur carte de crédit",IDD_P03_TIPSPO,2,235,45,12             // "Tips P.O."
+    PUSHBUTTON      "Total",IDD_P03_TTL,50,235,45,12
+    PUSHBUTTON      "Annulation Trans.",IDD_P03_VTRAN,98,235,45,12                              // "Trans.Void"
+    PUSHBUTTON      "UPC-E",IDD_P03_UPCEVER,146,235,45,12
+    PUSHBUTTON      "Annulation",IDD_P03_VOID,2,248,45,12                                       // "Void"
+    PUSHBUTTON      "Attendre",IDD_P03_WAIT,50,248,45,12                                        // "Wait"
+    PUSHBUTTON      "Trans.WIC",IDD_P03_WICTRANS,98,248,45,12                                   // "WIC Trans."
+    PUSHBUTTON      "Mod. WIC",IDD_P03_WICMOD,146,248,45,12                                     // "WIC Mod."
+    PUSHBUTTON      "Eliminer Fen.",IDD_P03_MENUWINDREMOVE,2,261,45,12                          // "Win Dismiss"
+    PUSHBUTTON      "Fenêtre",IDD_P03_MENUWIND,50,261,45,12                                     // "Window"
+    PUSHBUTTON      "Touche 00",IDD_P03_00KEY,98,261,45,12                                      // "00 Key"
+    PUSHBUTTON      "Nombre de Personnes",IDD_P03_NOPERSON,146,261,45,12                        // "# Person"
+    PUSHBUTTON      "#/Type",IDD_P03_NOTYPE,2,274,45,12                                         // "#/Type"
+    PUSHBUTTON      "Def #Pad",IDD_P03_DEF_KEYPAD,50,274,45,12                                  // "Def #Pad"
+    PUSHBUTTON      "Char. Button",IDD_P03_CHARACTER_BUTTON,98,274,45,12
+    PUSHBUTTON      "Supprimer Char.",IDD_P03_CHARACTER_DELETE,146,274,45,12                   // "Char. Delete"
+    PUSHBUTTON      "P1",IDD_P03_P1,2,287,45,12
+    PUSHBUTTON      "P2",IDD_P03_P2,50,287,45,12
+    PUSHBUTTON      "P3",IDD_P03_P3,98,287,45,12
+    PUSHBUTTON      "P4",IDD_P03_P4,146,287,45,12
+    PUSHBUTTON      "P5",IDD_P03_P5,2,300,45,12
+    PUSHBUTTON	  "@/Pour", IDD_P03_AT_FOR, 50, 300, 45, 12  //  "@/For"
+    PUSHBUTTON	  "HALO Ovr", IDD_P03_HALO_OVERRIDE, 98, 300, 45, 12
+    PUSHBUTTON	  "Valid.", IDD_P03_VALIDATION, 146, 300, 45, 12
+    PUSHBUTTON      "Minimiser",IDD_P03_MINIMIZE,2,313,45,13   //  "Minimize"
+    PUSHBUTTON      "Groupe de PLU",IDD_P03_PLU_GROUP,50,313,45,13          // "PLU Group"
+    PUSHBUTTON      "Edit Cond",IDD_P03_EDIT_CONDIMENT,98,313,45,13
+    PUSHBUTTON      "Receipt ID", IDD_P03_TENT, 146,313,45, 13
+	PUSHBUTTON		"Order Dec.", IDD_P03_ORDER_DEC, 2,326,45,13
+	PUSHBUTTON      "Adj. Mod",   IDD_P03_ADJ_MOD, 50,326,45,13
+    PUSHBUTTON      "Gift Card",  IDD_P03_GIFT_CARD, 98,326,45, 13
+	PUSHBUTTON		"Launch Appl",IDD_P03_DOC_LAUNCH, 146,326,45,13
+	PUSHBUTTON		"Cash Pickup",IDD_P03_OPR_PICKUP, 2,339,45,13
+	PUSHBUTTON		"Edit Cond Tbl",IDD_P03_EDIT_COND_TBL, 50,339,45,13
+	PUSHBUTTON		"Display Win"  ,IDD_P03_WINDOW_DISPLAY, 98,339,45,13	// FSC_WINDOW_DISPLAY
+	PUSHBUTTON		"Dismiss Win"  ,IDD_P03_WINDOW_DISMISS,146,339,45,13	// FSC_WINDOW_DISMISS
+	PUSHBUTTON		"Display Win #",IDD_P03_WINDOW_DISPLAY_MANUAL,2,352,45,13	// FSC_WINDOW_DISPLAY
+	PUSHBUTTON		"Dismiss Win #",IDD_P03_WINDOW_DISMISS_MANUAL,49,352,45,13	// FSC_WINDOW_DISMISS
+END
+
+IDD_P03_ENTRY DIALOG MOVEABLE IMPURE  88, 55, 142, 87
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Entrer Extension FSC (P 3)"  // "Enter Extended FSC (P 3)"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDD_P03_EXTFSC,94,26,22,12,ES_RIGHT | ES_MULTILINE |
+                    ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_ENTRY_SPIN,"msctls_updown32",UDS_SETBUDDYINT |
+                    UDS_AUTOBUDDY | UDS_ARROWKEYS | WS_TABSTOP,115,26,11,12
+    PUSHBUTTON      "OK",IDOK,16,61,37,23
+    PUSHBUTTON      "Annuler",IDCANCEL,82,61,38,23   // "&Cancel"
+    LTEXT           "",IDD_P03_EXTMNEMO,21,7,100,8
+    LTEXT           "",IDD_P03_EXTEND_MSG,21,26,70,8
+    LTEXT           "(Interval de données :      1 -             )",-1,24,41,109,8   // "(Data Range :      1 -             )"
+    LTEXT           "",IDD_P03_EXTRANGE,93,46,16,8
+END
+
+IDD_P03_PLUENTRY DIALOG MOVEABLE IMPURE  88, 55, 160, 106
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Entrer Numéro PLU"   // "Enter PLU Number"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDD_P03_EXTFSC,87,18,64,12,ES_RIGHT | ES_MULTILINE |
+                    ES_AUTOHSCROLL
+    COMBOBOX        IDD_P03_LABEL,87,53,64,71,CBS_DROPDOWNLIST | WS_VSCROLL |
+                    WS_TABSTOP
+    PUSHBUTTON      "OK",IDOK,14,80,40,19
+    PUSHBUTTON      "Annuler",IDCANCEL,98,78,42,20  // "&Cancel"
+    LTEXT           "",IDD_P03_EXTMNEMO,21,7,100,8
+    LTEXT           "",IDD_P03_EXTEND_MSG,14,20,70,8
+    LTEXT           "(Interval de données :      1 - 99999999999999)",-1,20,33,128,8   // "(Data Range :      1 - 9999999999999)"
+    LTEXT           "Type d'étiquette :",-1,14,56,70,8    // "Label Type :"
+END
+
+// popup for the two buttons associated with FSC_WINDOW_DISPLAY and FSC_WINDOW_DISMISS
+//
+IDD_P03_WINID DIALOG MOVEABLE IMPURE  88, 55, 160, 106
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Window ID"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDD_P03_EXTFSC,87,18,64,12,ES_RIGHT | ES_MULTILINE | 
+                    ES_AUTOHSCROLL
+    PUSHBUTTON      "&OK",IDOK,14,80,40,19
+    PUSHBUTTON      "&Cancel",IDCANCEL,98,78,42,20
+    LTEXT           "",IDD_P03_EXTMNEMO,21,7,100,8
+    LTEXT           "",IDD_P03_EXTEND_MSG,14,20,70,8
+    LTEXT           "(Data Range :      1 - 99999999999999)",-1,20,33,128,8
+END
+
+IDD_P03_DEPTENTRY DIALOG MOVEABLE IMPURE  88, 55, 142, 102
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Entrer Extension FSC (P 3)"   // "Enter Extended FSC (P 3)"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDD_P03_DEPTIN,94,32,22,12,ES_RIGHT | ES_MULTILINE |
+                    ES_AUTOHSCROLL
+    CONTROL         "Spin3",IDD_P03_DEPTSPIN,"msctls_updown32",
+                    UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,33,8,
+                    12
+    PUSHBUTTON      "OK",IDOK,22,74,40,21
+    PUSHBUTTON      "Annuler",IDCANCEL,87,74,39,21   // "&Cancel"
+    LTEXT           "",IDD_P03_EXTMNEMO,21,7,100,8
+    LTEXT           "",IDD_P03_EXTEND_MSG,21,26,70,8
+    LTEXT           "DEPT No. :",-1,21,34,70,8
+    LTEXT           "(Interval de Données :  1 - 9999)",-1,24,52,104,8    // "(Data Range :      1 - 9999)"
+END
+
+IDD_DIALOG4 DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Propriétés"   // "Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Annuler",IDCANCEL,129,24,50,14   // "Cancel"
+    LTEXT           "Auteur",IDC_STATIC,7,7,79,11     // "Author"
+    EDITTEXT        IDC_EDIT1,7,20,107,14,ES_AUTOHSCROLL
+END
+
+IDD_DIALOG5 DIALOG DISCARDABLE  0, 0, 184, 234
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Liste de Fenêtre"   // "Window List"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,117,7,50,14
+    PUSHBUTTON      "Annuler",IDCANCEL,117,24,50,14               // "Cancel"
+    PUSHBUTTON      "Propriétés",IDC_DIALOG5_SHOWPROP,7,7,52,16   // "Properties"
+    CONTROL         "Tree1",IDC_TREE1,"SysTreeView32",WS_BORDER | WS_TABSTOP,
+                    11,61,156,160
+END
+
+IDD_DIALOG6 DIALOGEX 0, 0, 186, 182
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Régler Texte pour Commande"  // "Set Text Control"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Annuler",IDCANCEL,129,24,50,14                                       // "Cancel"
+    COMBOBOX        IDC_COMBO_DIALOG6_NO_ROWS,121,117,55,66,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_DIALOG6_NO_COLS,122,138,55,63,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Nombre de boutons en bas",IDC_STATIC_DIALOG6_NO_ROWS,8,
+                    119,93,14,0,WS_EX_RIGHT                                                            // "Number of Buttons Down"
+    LTEXT           "Nombre de boutons en bas",IDC_STATIC_DIALOG6_NO_COLS,8,
+                    140,93,14,0,WS_EX_RIGHT                                                            // "Number of Buttons Down"
+    PUSHBUTTON      "Couleur de la face",IDC_DIALOG6_BUTTON_COLOR,16,46,52,18 ,BS_MULTILINE            // "Face Color"
+    LTEXT           "",IDC_STATIC_SHOW_FACECOLOR,30,71,21,14
+    LTEXT           "Fonction",IDC_STATIC,7,7,80,14                                       // "Function"
+    COMBOBOX        IDC_DIALOG6_COMBO_FUNCTION,7,20,84,70,CBS_DROPDOWN |
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Utiliser la couleur choisie pour le texte",IDC_RADIO_CUST,"Button",
+                    BS_AUTORADIOBUTTON | BS_MULTILINE,84,49,87,22                                        // "Use Custom Text Color"
+    CONTROL         "Utiliser la couleur automatique pour le texte",IDC_RADIO_DEF,"Button",
+                    BS_AUTORADIOBUTTON | BS_MULTILINE, 84,77,90,22                                        // "Use Default Text Color"
+    PUSHBUTTON      "Editer Polices",IDC_BTN_EDITFONT,15,91,52,19     //  "Edit Font"
+END
+
+IDD_PO3_MODEENTRY DIALOG DISCARDABLE  0, 0, 142, 86
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Réglage du Mode Touche"                      // "Mode Key Setup"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,15,55,50,19
+    PUSHBUTTON      "Annuler",IDCANCEL,75,55,50,20    // "Cancel"
+    LTEXT           "",IDD_P03_EXTMNEMO,21,7,100,8
+    LTEXT           "",IDD_P03_EXTEND_MSG,5,25,70,8
+    COMBOBOX        IDD_P03_LABEL,80,25,56,71,CBS_DROPDOWNLIST | WS_VSCROLL |
+                    WS_TABSTOP
+END
+
+IDD_KEYPADENTRY DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Réglage bloc de touches"  // "Key Pad Button Setup"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,30,55,50,19
+    PUSHBUTTON      "Annuler",IDCANCEL,90,55,50,20   // "Cancel"
+    LTEXT           "",IDD_P03_EXTMNEMO,36,7,100,8
+    LTEXT           "",IDD_P03_EXTEND_MSG,20,25,70,8
+    COMBOBOX        IDD_P03_LABEL,95,25,56,71,CBS_DROPDOWNLIST | WS_VSCROLL |
+                    WS_TABSTOP
+END
+
+IDD_CHANGE_LANGUAGE DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Sélection de la Langue"   // "Language Selection"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Annuler",IDCANCEL,129,24,50,14   // "Cancel"
+    COMBOBOX        IDC_COMBO_LANGUAGE,17,13,68,116,CBS_DROPDOWN |
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DLG_DEFAULTS DIALOGEX 0, 0, 340, 250
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Régler les attributs des commandes de base"    // "Set Default Control Attributes"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Couleur de la Face",IDC_BUTTON_DEF_BTNCOLOR,32,56,49,22, BS_MULTILINE // "Face Color"
+    PUSHBUTTON      "Editer Polices",IDC_BUTTON_DEF_FONT,142,57,49,22        // "Edit Font"
+    CONTROL         "Rectangle",IDC_DEF_SHAPE_RECT,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,28,104,85,15
+    CONTROL         "Elipse",IDC_DEF_SHAPE_ELIPSE,"Button",
+                    BS_AUTORADIOBUTTON,28,123,50,9
+    CONTROL         "Rectangle Arrondi",IDC_DEF_SHAPE_ROUNDRECT,"Button",
+                    BS_AUTORADIOBUTTON,28,138,79,10                               // "Rounded Rectangle"
+    CONTROL         "Pas de Modèles",IDC_STATIC_DEF_PATTERN_NONE,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,140,104,83,14                   // "No Pattern"
+    CONTROL         "Rayures Horizontales",IDC_STATIC_DEF_PATTERN_HORIZONTAL,
+                    "Button",BS_AUTORADIOBUTTON,140,121,70,9                      // "Horizontal Stripes"
+    CONTROL         "Rayures Verticales",IDC_STATIC_DEF_PATTERN_VERTICAL,
+                    "Button",BS_AUTORADIOBUTTON,140,135,67,12                     // "Vertical Stripes"
+    COMBOBOX        IDC_COMBO_DIALOGDEF_WIDTH,242,116,77,55,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_DIALOGDEF_HEIGHT,242,148,77,55,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Couleur",IDC_BUTTON_DEFWINCOLOR,35,178,49,22                 // "Color"
+    PUSHBUTTON      "Couleur",IDC_BUTTON_DEF_TEXTWINCOLOR,196,183,50,20           // "Color"
+    DEFPUSHBUTTON   "OK",IDOK,32,221,50,14
+    LTEXT           "Multiplicateur de largeur automatique",IDC_STATIC_DIALOGDEF_WIDTH,
+                    242,97,77,16                                                 // "Default Width Multiplier"
+    LTEXT           "Veuillez faire les réglages de base pour le Layout Manager. Ces réglages pourront être changés ultérieurement.",
+                    IDC_STATIC,17,13,132,27                // "Please set the defaults for Layout Manager. This settings can be changed later."
+    GROUPBOX        "Fenêtres",IDC_STATIC,19,166,145,43    // "Windows"
+    GROUPBOX        "Buttons",IDC_STATIC,18,43,310,120
+    LTEXT           "",IDC_STATIC_SHOW_FACECOLOR,90,57,24,20,SS_SUNKEN
+    LTEXT           "",IDC_STATIC_SHOW_WINCOLOR,101,179,24,20,SS_SUNKEN
+    GROUPBOX        "Texte Commandes",IDC_STATIC,182,166,145,43    // "Text Controls"
+     LTEXT           "",IDC_STATIC_SHOW_TEXTWINCOLOR,262,183,24,21,SS_SUNKEN
+    LTEXT           "Multiplicateur de hauteur automatique",IDC_STATIC_DIALOGDEF_HEIGHT,
+                    242,130,77,16     // "Default Height Multiplier"
+    GROUPBOX        "Forme de base du bouton",IDC_STATIC_SHAPE,23,90,97,66,
+                    WS_GROUP          // "Default Button Shape"
+    GROUPBOX        "Modèle de base de la face du bouton",
+                    IDC_STATIC_DIALOGDEF_PATTERN,135,90,98,66,WS_GROUP // "Default Button Face Pattern"
+    DEFPUSHBUTTON   "Annuler",IDCANCEL,93,221,50,14   // "Cancel"
+    CONTROL         "Abc123",IDC_STATIC_SAMPLE,"Static",SS_OWNERDRAW |
+                    SS_CENTERIMAGE,211,59,74,20,WS_EX_TRANSPARENT |
+                    WS_EX_STATICEDGE
+END
+
+
+IDD_DLG_GROUPS DIALOG DISCARDABLE  0, 0, 434, 214
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Ajouter / Editer Groupes de Fenêtre"  // "Add / Edit Window Groups"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,126,186,50,14
+    PUSHBUTTON      "Annuler",IDCANCEL,231,185,50,14                                // "Cancel"
+    LTEXT           "Nom du Groupe",IDC_STATIC,19,24,75,12                           // "Group Name"
+    LTEXT           "Description du Groupe",IDC_STATIC,19,54,75,10                   // "Group Description"
+    EDITTEXT        IDC_EDIT_GRP_NAME,19,37,164,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_GRP_DESC,19,66,164,85,ES_MULTILINE |
+                    ES_AUTOVSCROLL
+    LISTBOX         IDC_LIST_GROUPS,222,37,190,112,LBS_NOINTEGRALHEIGHT | LBS_USETABSTOPS |
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Information Groupe",IDC_STATIC,13,10,182,169                     // "Group Information"
+    GROUPBOX        "Liste Groupe",IDC_STATIC,215,10,207,169                         // "Group List"
+    PUSHBUTTON      "Editer Groupe",IDC_EDIT_BUTTON,131,156,50,14                     // "Edit Group"
+    PUSHBUTTON      "Supprimer Groupe",IDC_DELETE_BUTTON,248,157,50,17, BS_MULTILINE  // "Delete Group"
+    PUSHBUTTON      "Ajouter Groupe",IDC_SUBMIT,38,156,50,14                         // "Add Group"
+    CONTROL         "",IDC_RADIO_ADD,"Button",BS_AUTORADIOBUTTON,23,159,10,9
+    CONTROL         "",IDC_RADIO_EDIT,"Button",BS_AUTORADIOBUTTON,116,158,10,
+                    9
+    LTEXT           "ID\tID Fenêtre Active\t\tNom",IDC_STATIC,222,24,190,13 // "ID\tActive Window ID\t\tName "
+    PUSHBUTTON      "Régler Fenêtre Active",IDC_BUTTON_SETACTWND,335,156,50,17,
+                    BS_MULTILINE // "Set Active Window"
+END
+
+IDD_DIALOG7 DIALOG DISCARDABLE  0, 0, 414, 252
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Propriétés de la fenêtre OEP" // "OEP Window Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,247,181,50,14
+    PUSHBUTTON      "Annuler",IDCANCEL,304,181,50,14     // "Cancel"
+    LTEXT           "Assign OEP Groups:",IDC_STATIC_OEP_GroupID,20,30,65,8
+    EDITTEXT        IDC_EDIT1_OEPGroupNumbers,88,28,92,12,ES_AUTOHSCROLL
+    LTEXT           "Group Range: 0 - 90;  Ex.: ""1,5-10,75,76""",
+                    IDC_STATIC_OEP_IDrange,48,43,132,8
+    PUSHBUTTON      "Régler la couleur de la fenêtre",IDC_OEP_WINCOLOR,25,60,69,18    // "Set Window Color"
+    LTEXT           "",IDC_STATIC_SHOW_OEP_WINCOLOR,48,84,21,14,SS_SUNKEN
+    PUSHBUTTON      "Editer Police",IDC_OEP_EDIT_WINFONT,111,60,69,18     // "Edit Font"
+    CONTROL         "Auto OEP Window",IDC_CHECK_AUTO_OEP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,110,90,11
+    RTEXT           "Nombre de Boutons en face",IDC_STATIC_OEP_BTN_ACROSS,15,140,41,16 // "No. Buttons Across"
+    COMBOBOX        IDC_COMBO_OEP_BTN_ACROSS,63,140,33,55,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Nombre de Boutons en-bas",IDC_STATIC_OEP_BTN_DOWN,105,140,41,16 // "No. Buttons Down"
+    COMBOBOX        IDC_COMBO_OEP_BTN_DOWN,152,140,33,55,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "12",IDC_STATIC_OEP_WIDTH,82,165,15,11
+    LTEXT           "21",IDC_STATIC_OEP_HEIGHT,166,165,15,11
+    RTEXT           "Largeur de la fenêtre",IDC_STATIC_OEP_WIN_WIDTH,28,210,29,17    // "Window Width"
+    RTEXT           "Hauteur de la fenêtre",IDC_STATIC_OEP_WIN_HEIGHT,116,210,29,17    // "Window Height"
+    GROUPBOX        "Forme du Bouton",IDC_STATIC_SHAPE,202,27,95,60,WS_GROUP    // "Button Shape"
+    CONTROL         "Rectangle",IDC_OEP_SHAPE_RECT,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,209,39,75,15
+    CONTROL         "Elipse",IDC_OEP_SHAPE_ELIPSE,"Button",
+                    BS_AUTORADIOBUTTON,209,55,73,15
+    CONTROL         "Rectangle arrondi",IDC_OEP_SHAPE_ROUNDRECT,"Button",
+                    BS_AUTORADIOBUTTON,209,71,79,13  // "Rounded Rectangle"
+    GROUPBOX        "Forme de la face du bouton",IDC_STATIC_DIALOG3_PATTERN,303,27,
+                    95,60,WS_GROUP     // "Button Face Pattern"
+    CONTROL         "Pas de Forme",IDC_OEP_PATTERN_NONE,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,307,40,68,14    // "No Pattern"
+    CONTROL         "Rayures Horizontales",IDC_OEP_PATTERN_HORIZ,"Button",
+                    BS_AUTORADIOBUTTON,307,56,71,12    // "Horizontal Stripes"
+    CONTROL         "Rayures Verticales",IDC_OEP_PATTERN_VERT,"Button",
+                    BS_AUTORADIOBUTTON,307,70,68,13     // "Vertical Stripes"
+    COMBOBOX        IDC_COMBO_OEP_WIDTH,235,103,47,55,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_OEP_HEIGHT,235,128,47,55,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Largeur ",IDC_STATIC_DIALOG1_WIDTH,204,107,27,14 // "Width "
+    LTEXT           "Hauteur ",IDC_STATIC_DIALOG1_HEIGHT,204,131,25,14 // "Height "
+    GROUPBOX        "Police et Couleur du Bouton",IDC_STATIC,303,91,95,60    // "Button Color & Font"
+    PUSHBUTTON      "Régler Couleur de la Face",IDC_OEP_FACECOLOR,309,105,54,19 // "Set Face Color"
+    LTEXT           "",IDC_STATIC_SHOW_OEP_FACECOLOR,370,108,21,14,SS_SUNKEN
+    GROUPBOX        "Propriétés du bouton OEP",IDC_STATIC,197,15,205,161    // "OEP Button Properties"
+    GROUPBOX        "Propriétés de la fenêtre OEP",IDC_STATIC,12,15,180,223    // "OEP Window Properties"
+    PUSHBUTTON      "Editer Police",IDC_OEP_EDIT_BTNFONT,309,127,54,19    // "Edit Font"
+    LTEXT           "Sort",IDC_STATIC_OEP_Sort,298,159,14,8
+    COMBOBOX        IDC_COMBO_OEP_Sort,316,157,81,41,CBS_DROPDOWN | CBS_SORT |
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Taille du Bouton",IDC_STATIC,202,91,95,60 // "Button Size"
+END
+
+IDD_DLG_ACTIVEWND DIALOG DISCARDABLE  0, 0, 203, 241
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Régler la fenêtre active pour Groupes" // "Set Active Window for Groups"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Fait",IDOK,24,196,70,20     // "Done"
+    COMBOBOX        IDC_COMBO_GRPLIST,17,28,171,81,CBS_DROPDOWN | WS_VSCROLL |
+                    WS_TABSTOP
+    LISTBOX         IDC_LIST_GRPWND,17,73,171,108,LBS_USETABSTOPS |
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Rendre Actif",IDC_BUTTON_ACTIVATE,108,196,70,20    // "Make Active"
+    LTEXT           "Sélectionner pour groupe de fenêtres",IDC_STATIC,17,14,138,10     // "Select Window Group"
+    LTEXT           "Fenêtres dans Groupe Sélectionné",IDC_STATIC,17,52,108,11    // "Windows in Selected Group"
+    LTEXT           "ID              Nom",IDC_STATIC,17,63,171,9    // "ID              Name"
+END
+
+IDD_DLG_WINLABEL DIALOG DISCARDABLE  0, 0, 623, 310
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit Label Control" // "Edit Label Control"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,273,199,50,14
+    PUSHBUTTON      "Annuler",IDCANCEL,273,216,50,14    // "Cancel"
+    EDITTEXT        IDC_EDIT_LBLCAPTION,18,46,172,26,ES_AUTOHSCROLL |
+                    ES_WANTRETURN
+    LTEXT           "Sous-titre Etiquette",IDC_STATIC_CAPTION,18,34,107,10 // "Label Caption"
+    LTEXT           "Nom du Fichier de l'Icône",IDC_STATIC,213,34,80,10 // "Icon File Name"
+    EDITTEXT        IDC_EDIT_LBL_ICONFILENAME,216,46,102,15,ES_AUTOHSCROLL
+    GROUPBOX        "Sous-titre / Icône",IDC_STATIC,11,12,320,150 // "Caption / Icon"
+    GROUPBOX        "Sous-titre",IDC_STATIC,15,23,187,134 // "Caption"
+    GROUPBOX        "Icône",IDC_STATIC,210,23,115,135   // "Icon"
+    LTEXT           "Alignement",IDC_STATIC,22,101,38,11   // "Alignment"
+    LTEXT           "Orientation",IDC_STATIC,22,75,38,11
+    CONTROL         "Horizonatal",IDC_RADIO_LBL_HORIZONTAL,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,20,85,54,13   // "Horizontal"
+    CONTROL         "Vertical",IDC_RADIO_LBL_VERTICAL,"Button",
+                    BS_AUTORADIOBUTTON,81,85,49,12
+    CONTROL         "Gauche",IDC_RADIO_LBLCAP_LEFT,"Button",BS_AUTORADIOBUTTON |
+                    WS_GROUP,82,112,46,13      // "Left"
+    CONTROL         "Centre",IDC_RADIO_LBLCAP_CENTER,"Button",
+                    BS_AUTORADIOBUTTON,82,126,46,13     // "Center"
+    CONTROL         "Droite",IDC_RADIO_LBLCAP_RIGHT,"Button",
+                    BS_AUTORADIOBUTTON,82,139,46,13     // "Right"
+    CONTROL         "Haut",IDC_RADIO_LBLCAP_TOP,"Button",BS_AUTORADIOBUTTON,
+                    20,112,46,13     // "Top"
+    CONTROL         "Milieu",IDC_RADIO_LBLCAP_MIDDLE,"Button",
+                    BS_AUTORADIOBUTTON,20,126,46,13     // "Middle"
+    CONTROL         "Bas",IDC_RADIO_LBLCAP_BOTTOM,"Button",
+                    BS_AUTORADIOBUTTON,20,139,46,13     // "Bottom"
+    LTEXT           "Alignement",IDC_STATIC,219,101,38,11   // "Alignment"
+    CONTROL         "Gauche",IDC_RADIO_LBLICON_LEFT,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,217,112,46,13   // "Left"
+    CONTROL         "Centre",IDC_RADIO_LBLICON_CENTER,"Button",
+                    BS_AUTORADIOBUTTON,217,126,46,13    // "Center"
+    CONTROL         "Droite",IDC_RADIO_LBLICON_RIGHT,"Button",
+                    BS_AUTORADIOBUTTON,217,139,46,13     // "Right"
+    CONTROL         "Haut",IDC_RADIO_LBLICON_TOP,"Button",BS_AUTORADIOBUTTON |
+                    WS_GROUP,277,112,46,13     // "Top"
+    CONTROL         "Milieu",IDC_RADIO_LBLICON_MIDDLE,"Button",
+                    BS_AUTORADIOBUTTON,277,126,46,13     // "Middle"
+    CONTROL         "Bas",IDC_RADIO_LBLICON_BOTTOM,"Button",
+                    BS_AUTORADIOBUTTON,277,139,46,13   // "Bottom"
+    PUSHBUTTON      "Régler la couleur de la face",IDC_WINLBL_FACECOLOR,156,180,56,25, BS_MULTILINE // "Set Face Color"
+    COMBOBOX        IDC_COMBO_WINLBL_WIDTH,73,183,47,95,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_WINLBL_HEIGHT,73,208,47,81,CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_STATIC_SHOW_FACECOLOR,213,181,21,14,SS_SUNKEN
+    LTEXT           "Largeur ",IDC_STATIC_DIALOG1_WIDTH,13,187,52,14    //  "Width "
+    LTEXT           "Hauteur ",IDC_STATIC_DIALOG1_HEIGHT,13,211,52,14   // "Height "
+    PUSHBUTTON      "Régler Police",IDC_SETWINLBLFONT,147,208,56,17     // "Set Font"
+    GROUPBOX        "Police et Couleur du Bouton",IDC_STATIC,137,169,114,63   //  "Font and Button Color"
+    GROUPBOX        "Taille de l'Etiquette",IDC_STATIC,11,169,114,63  // "Label Size"
+    PUSHBUTTON      "Chercher ...",IDC_BUTTON_BROWSE,216,65,40,16    //  "Browse ..."
+    PUSHBUTTON      "Régler Fichier",IDC_BUTTONSETDIR,278,65,49,15    // "Set Folder"
+    GROUPBOX        "Caption Preview",IDC_STATIC,334,12,282,223
+    LTEXT           "Static",IDC_EDIT_PREVIEW,340,22,270,206,NOT WS_GROUP
+    CONTROL         "Is Counter Label",IDC_CHECK_IS_COUNTER,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,254,173,78,11
+    GROUPBOX        "Label Borders",IDC_STATIC,11,238,260,64
+    CONTROL         "Special borders",IDC_CHECK_LABEL_BORDER_SPL,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,250,126,14
+    CONTROL         "Left edge border",IDC_CHECK_LABEL_BORDER_LFT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,26,268,126,14
+    CONTROL         "Right edge border",IDC_CHECK_LABEL_BORDER_RHT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,26,284,126,14
+    CONTROL         "Top edge border",IDC_CHECK_LABEL_BORDER_TOP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,152,268,114,14
+    CONTROL         "Bottom edge border",IDC_CHECK_LABEL_BORDER_BOT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,152,284,114,14
+END
+
+IDD_DLG_FILESUMMARY DIALOGEX 0, 0, 245, 337
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Résumé du Fichier Layout" // "Layout File Summary"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,113,308,50,14
+    PUSHBUTTON      "Annuler",IDCANCEL,179,308,50,14     // "Cancel"
+    LTEXT           "Majeur",IDC_STATIC,22,225,28,11     // "Major"
+    LTEXT           "Mineur",IDC_STATIC,55,225,28,11     // "Minor"
+    LTEXT           "Release",IDC_STATIC,84,225,28,11
+    EDITTEXT        IDC_EDIT_MAJOR,22,239,18,13,ES_CENTER | ES_NUMBER
+    EDITTEXT        IDC_EDIT_MINOR,55,239,18,13,ES_CENTER | ES_NUMBER
+    EDITTEXT        IDC_EDIT_RELEASE,88,239,18,13,ES_CENTER | ES_NUMBER
+    CTEXT           ".",IDC_STATIC_DOT,43,242,9,10
+    CTEXT           ".",IDC_STATIC_DOT2,76,242,9,10
+    LTEXT           "Description du Résumé:",IDC_STATIC,14,13,73,10 // "Summary Description:"
+    EDITTEXT        IDC_EDIT_SUMMARY,14,25,216,78,ES_MULTILINE |
+                    ES_AUTOVSCROLL | WS_VSCROLL,WS_EX_STATICEDGE
+    GROUPBOX        "Version",IDC_STATIC,14,211,103,52
+    EDITTEXT        IDC_EDIT_PEPFILE,126,232,100,15,ES_AUTOHSCROLL
+    LTEXT           "",IDC_STATIC_MOD1,50,126,170,14,SS_CENTERIMAGE
+    LTEXT           "",IDC_STATIC_MOD2,50,140,170,14,SS_CENTERIMAGE
+    LTEXT           "",IDC_STATIC_MOD3,50,154,170,14,SS_CENTERIMAGE
+    LTEXT           "",IDC_STATIC_MOD4,50,168,170,14,SS_CENTERIMAGE
+    LTEXT           "",IDC_STATIC_MOD5,50,182,170,14,SS_CENTERIMAGE
+    GROUPBOX        "Modification History:",IDC_STATIC,14,112,216,93
+    PUSHBUTTON      "Chercher ...",IDC_BUTTON_SETICONDIR,167,282,50,14 // "Browse ..."
+    GROUPBOX        "Fichier de l'Icône",IDC_STATIC,14,271,216,32 // "Icon Folder"
+    GROUPBOX        "Fichier PEP primaire:",IDC_STATIC,121,211,109,52 // "Primary PEP File:"
+    EDITTEXT        IDC_EDIT_ICON_DIR,21,282,136,15,ES_AUTOHSCROLL
+END
+
+IDD_DLG_GROUP_PERMISSIONS DIALOGEX 0, 0, 311, 142
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Group Permissions"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,197,121,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,254,121,50,14
+    CONTROL         "1",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,42,20,10
+    CONTROL         "2",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,55,20,10
+    CONTROL         "3",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,68,20,10
+    CONTROL         "4",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,81,20,10
+    CONTROL         "5",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,53,42,20,10
+    CONTROL         "6",IDC_CHECK6,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,53,55,20,10
+    CONTROL         "7",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,53,68,20,10
+    CONTROL         "8",IDC_CHECK8,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,53,81,20,10
+    LTEXT           "Set the Group access permissions for the chosen control:",IDC_STATIC,13,10,183,8
+    GROUPBOX        "Allowed Groups",IDC_STATIC,6,27,297,74
+    CONTROL         "9",IDC_CHECK9,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,86,42,20,10
+    CONTROL         "10",IDC_CHECK10,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,86,55,24,10
+    CONTROL         "11",IDC_CHECK11,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,86,68,24,10
+    CONTROL         "12",IDC_CHECK12,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,86,81,24,10
+    CONTROL         "13",IDC_CHECK13,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,119,42,24,10
+    CONTROL         "14",IDC_CHECK14,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,119,55,24,10
+    CONTROL         "15",IDC_CHECK15,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,119,68,24,10
+    CONTROL         "16",IDC_CHECK16,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,119,81,24,10
+    CONTROL         "17",IDC_CHECK17,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,42,24,10
+    CONTROL         "18",IDC_CHECK18,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,55,24,10
+    CONTROL         "19",IDC_CHECK19,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,68,24,10
+    CONTROL         "20",IDC_CHECK20,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,81,24,10
+    CONTROL         "21",IDC_CHECK21,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,193,42,24,10
+    CONTROL         "22",IDC_CHECK22,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,193,55,24,10
+    CONTROL         "23",IDC_CHECK23,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,193,68,24,10
+    CONTROL         "24",IDC_CHECK24,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,193,81,24,10
+    CONTROL         "25",IDC_CHECK25,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,230,42,24,10
+    CONTROL         "26",IDC_CHECK26,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,230,55,24,10
+    CONTROL         "27",IDC_CHECK27,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,230,68,24,10
+    CONTROL         "28",IDC_CHECK28,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,230,81,24,10
+    CONTROL         "29",IDC_CHECK29,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,267,42,24,10
+    CONTROL         "30",IDC_CHECK30,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,267,55,24,10
+    CONTROL         "31",IDC_CHECK31,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,267,68,24,10
+    CONTROL         "32",IDC_CHECK32,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,267,81,24,10
+    PUSHBUTTON      "All",IDC_BTN_CHECK_ALL,39,105,28,14
+    PUSHBUTTON      "None",IDC_BTN_CHECK_NONE,71,105,28,14
+    LTEXT           "Check:",IDC_STATIC,14,108,23,8
+    PUSHBUTTON      "Invert",IDC_BTN_CHECK_INVERT,103,105,28,14
+END
+
+IDD_DLG_OEP_TABLE DIALOGEX 0, 0, 182, 153
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "OEP Dynamic PLU Button"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "extmnemonic",IDD_P03_EXTMNEMO,7,7,152,8
+    LTEXT           "extmsg2",IDD_P03_EXTEND_MSG,8,26,70,8
+    LTEXT           "Table No.:",IDC_CHECK20,8,36,46,8
+    LTEXT           "(Data Range: 0-3)",IDC_CHECK21,88,47,63,8
+    EDITTEXT        IDD_P03_DEPTIN,88,31,27,12,ES_RIGHT | ES_MULTILINE | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDD_P03_DEPTSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,119,31,8,12
+    LTEXT           "extmsg25",IDD_P03_EXTEND_MSG2,8,71,72,8
+    LTEXT           "OEP Group/Dept. No. :",IDC_CHECK22,8,80,75,8
+    LTEXT           "(Data Range: 1-9999)",IDC_CHECK23,87,91,73,8
+    EDITTEXT        IDD_P03_DEPTIN2,88,75,27,12,ES_RIGHT | ES_MULTILINE | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDD_P03_DEPTSPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS,119,75,8,12
+    CONTROL         "By Priority",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,110,54,12
+    DEFPUSHBUTTON   "OK",IDOK,30,132,55,14
+    PUSHBUTTON      "Cancel",IDCANCEL,94,132,55,14
+END
+
+IDD_P03_BUTTON_ACTION DIALOGEX 0, 0, 443, 362
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "FSC Toolbox (P03)"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_LIST_ACTION,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,6,38,430,296
+    DEFPUSHBUTTON   "Apply",IDOK,331,341,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,386,341,50,14
+    LTEXT           "Select an action from the list below and click Apply to set the Action type, or click Cancel to cancel:",IDC_STATIC,8,22,316,8
+    LTEXT           "Current Action:",IDC_STATIC,9,7,50,8
+    CONTROL         "",IDC_STATIC_CURRENTACTIONNAME,"Static",SS_LEFTNOWORDWRAP | SS_PATHELLIPSIS | WS_GROUP,71,5,104,12,WS_EX_CLIENTEDGE
+END
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "A propos du nouveau Layout"  // "About NewLayout"
+FONT 8, "MS Sans Serif"
+BEGIN
+ICON            IDR_MAINFRAME, IDC_STATIC, 11, 17, 20, 20
+DEFPUSHBUTTON   "OK", IDOK, 178, 7, 50, 14, WS_GROUP
+LTEXT           "Copyright (C) 2005-2020, Georgia Southern University", IDC_STATIC, 40, 25, 119, 8
+LTEXT           "Version NouveauLayout 2.3.2.005", IDC_STATIC, 40, 10, 119, 8, // FILEVERSION ALL_N_VERSIONINFO
+SS_NOPREFIX  // "NewLayout Version 1.0"
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#if !defined(ALL_N_VERSIONINFO)
+#define  ALL_N_VERSIONINFO   2,3,2,005
+#define  ALL_M_VERSIONINFO   "2, 3, 2, 005\0"
+#define  ALL_Q_COPYRIGHT     "Copyright (C) 2002-2020, Georgia Southern University\0"
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION       ALL_N_VERSIONINFO
+PRODUCTVERSION    ALL_N_VERSIONINFO
+FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "NCR Corporation\0"
+            VALUE "FileDescription", "NCR General POS Screen Layout Editor\0"
+			VALUE "FileVersion", ALL_M_VERSIONINFO
+			VALUE "ProductVersion", ALL_M_VERSIONINFO
+			VALUE "InternalName", "Layout Manager: French resources\0"
+            VALUE "LegalCopyright", ALL_Q_COPYRIGHT
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "FrenchLayout.dll\0"
+            VALUE "ProductName", "NCR General POS Application Software: NewLayout Application\0"
+#if defined(DEMO_VERSION)
+            VALUE "SpecialBuild", "Demo Version Build\0"
+#elif defined(_DEBUG)
+            VALUE "SpecialBuild", "Debug Version Build\0"
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_EDIT_BUTTONCTRL, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 246
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 319
+    END
+
+    IDD_EDIT_WINDOWCTRL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 259
+    END
+
+    IDD_DIALOG4, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_DIALOG5, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 177
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 227
+    END
+
+    IDD_DIALOG6, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 175
+    END
+
+    IDD_PO3_MODEENTRY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 135
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 79
+    END
+
+    IDD_KEYPADENTRY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_CHANGE_LANGUAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_DLG_DEFAULTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 333
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 280
+    END
+
+
+    IDD_DLG_GROUPS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 427
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 207
+     END
+
+    IDD_DIALOG7, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 407
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 245
+    END
+
+    IDD_DLG_ACTIVEWND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 196
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 234
+    END
+
+    IDD_DLG_WINLABEL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 338
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 235
+    END
+
+    IDD_DLG_FILESUMMARY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 238
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 330
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+
+
+IDD_P03_PLUENTRY DLGINIT
+BEGIN
+    IDD_P03_LABEL, 0x403, 7, 0
+0x6f4e, 0x6d72, 0x6c61, "\000"
+    IDD_P03_LABEL, 0x403, 10, 0
+0x2d45, 0x6556, 0x7372, 0x6f69, 0x006e,
+    0
+END
+
+// cloned from IDD_P03_PLUENTRY for the new dialogue defined earlier
+// associated with the fsc codes FSC_WINDOW_DISPLAY and FSC_WINDOW_DISMISS
+//
+IDD_P03_WINLABEL DLGINIT
+BEGIN
+    IDD_P03_LABEL, 0x403, 7, 0
+0x6f4e, 0x6d72, 0x6c61, "\000" 
+    IDD_P03_LABEL, 0x403, 10, 0
+0x2d45, 0x6556, 0x7372, 0x6f69, 0x006e, 
+    0
+END
+
+IDD_PO3_MODEENTRY DLGINIT
+BEGIN
+    IDD_P03_LABEL, 0x403, 5, 0
+0x6f4c, 0x6b63, "\000"
+    IDD_P03_LABEL, 0x403, 9, 0
+0x6552, 0x6967, 0x7473, 0x7265, "\000"
+    IDD_P03_LABEL, 0x403, 11, 0
+0x7553, 0x6570, 0x7672, 0x7369, 0x726f, "\000"
+    IDD_P03_LABEL, 0x403, 8, 0
+0x7250, 0x676f, 0x6172, 0x006d,
+    0
+END
+
+IDD_KEYPADENTRY DLGINIT
+BEGIN
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0030,
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0031,
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0032,
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0033,
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0034,
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0035,
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0036,
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0037,
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0038,
+    IDD_P03_LABEL, 0x403, 2, 0
+0x0039,
+    0
+END
+
+
+
+IDD_DIALOG7 DLGINIT
+BEGIN
+    IDC_COMBO_OEP_WIDTH, 0x403, 7, 0
+0x2031, 0x7267, 0x6469, "\000"
+    IDC_COMBO_OEP_WIDTH, 0x403, 8, 0
+0x2032, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_WIDTH, 0x403, 8, 0
+0x2033, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_WIDTH, 0x403, 8, 0
+0x2034, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_WIDTH, 0x403, 8, 0
+0x2035, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_WIDTH, 0x403, 8, 0
+0x2036, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_WIDTH, 0x403, 8, 0
+0x2037, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_WIDTH, 0x403, 8, 0
+0x2038, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_HEIGHT, 0x403, 7, 0
+0x2031, 0x7267, 0x6469, "\000"
+    IDC_COMBO_OEP_HEIGHT, 0x403, 8, 0
+0x2032, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_HEIGHT, 0x403, 8, 0
+0x2033, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_HEIGHT, 0x403, 8, 0
+0x2034, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_HEIGHT, 0x403, 8, 0
+0x2035, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_HEIGHT, 0x403, 8, 0
+0x2036, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_HEIGHT, 0x403, 8, 0
+0x2037, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_HEIGHT, 0x403, 8, 0
+0x2038, 0x7267, 0x6469, 0x0073,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 2, 0
+0x0031,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 2, 0
+0x0032,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 2, 0
+0x0033,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 2, 0
+0x0034,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 2, 0
+0x0035,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 2, 0
+0x0036,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 2, 0
+0x0037,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 2, 0
+0x0038,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 2, 0
+0x0039,
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3031, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3131, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3231, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3331, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3431, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3531, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3631, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3731, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3831, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3931, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3032, "\000"
+    IDC_COMBO_OEP_BTN_ACROSS, 0x403, 3, 0
+0x3132, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 2, 0
+0x0032,
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 2, 0
+0x0033,
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 2, 0
+0x0034,
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 2, 0
+0x0035,
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 2, 0
+0x0036,
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 2, 0
+0x0037,
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 2, 0
+0x0038,
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 2, 0
+0x0039,
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3031, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3131, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3231, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3331, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3431, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3531, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3631, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3731, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3831, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3931, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3032, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3132, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 3, 0
+0x3232, "\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 1, 0
+"\000"
+    IDC_COMBO_OEP_BTN_DOWN, 0x403, 1, 0
+"\000"
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CURSOR1             CURSOR  DISCARDABLE     "res\\cursor1.cur"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE PRELOAD DISCARDABLE
+BEGIN
+    IDR_MAINFRAME           "NouveauLayout"                                                               // "NewLayout"
+    IDR_NEWLAYTYPE          "\nNouveauLay\nNouveauLay\n\n\nNouveauLayout.Document\nNouveauLay Document"   // "\nNewLay\nNewLay\n\n\nNewLayout.Document\nNewLay Document"
+    IDS_POPUP_EDITBUTTON    "Editer les attributs des boutons sélectionnés."                              // "Edit the selected button attributes."
+    IDS_POPUP_DELETEBUTTON  "Supprimer le bouton sélectionné de ce layout."                               // "Delete the selected button from this layout."
+    IDS_POP_SETWINDOW       "Ajouter une fenêtre et régler le coin en haut à gauche jusqu'ici."                 // "Add a window and set the top left corner to here."
+    IDS_POPUP_GENERATE      "Générer description de la fenêtre à partir des modèles."                     // "Generate window description from templates."
+    IDS_POPUP_REVERSE_GENERATE "Générer les modèles des fenêtres à partir de la description."             // "Generate window templates from description."
+    IDS_POPUP_COMPILE       "Rassembler la description de la fenêtre pour le terminal."                   // "Compile window description for terminal."
+    IDS_STATIC_DIALOG1_BUTTONCAPTION "Légende du Bouton"                                                  // "Button Caption"
+    IDS_STATIC_DIALOG1_TEXTCOLOR "Couleur du texte pour la légende du bouton"                             // "Text Color of Button Caption"
+    IDS_STATIC_DIALOG1_BUTTONCOLOR "Couleur de fond du bouton"                                            // "Button Background Color"
+    IDS_STATIC_DIALOG1_BUTTON_FSC "Bouton FSC"                                                            // "Button FSC"
+    IDS_STATIC_DIALOG2_WINDOWCAPTION "Légende de la fenêtre"                                              // "Caption for Window"
+    IDS_STATIC_DIALOG2_WINDOWNAME "Nom de la Fenêtre"                                                     // "Name of the Window"
+    IDS_STATIC_DIALOG2_TEMPLATE "Modèle Fenètre"                                                          // "Window Template"
+    IDS_ENTPLUNUM           "Entrer Numéro PLU"                                                           // "Enter PLU Number"
+END
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+	IDS_ENTWINID			"Enter Window ID"		//associated with FSC_WINDOW_DISPLAY and FSC_WINDOW_DISMISS
+END
+
+STRINGTABLE PRELOAD DISCARDABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "NouveauLayout"   // "NewLayout"
+    AFX_IDS_IDLEMESSAGE     "Prêt"            // "Ready"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_FILE_NEW             "Créer un nouveau document\nNouveau"                                             // "Create a new document\nNew"
+    ID_FILE_OPEN            "Ouvrir un document déjà existant\nOuvrir"                                       // "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Fermer le document actif\nFermer"                                               // "Close the active document\nClose"
+    ID_FILE_SAVE            "Sauvegarder le document actif\nSauvegarder"                                     // "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Sauvegarder le document actif sous un nouveau nom\nSauvegarder comme"           // "Save the active document with a new name\nSave As"
+    ID_FILE_PAGE_SETUP      "Changer les options d'impression\nRéglage de la Page"                           // "Change the printing options\nPage Setup"
+    ID_FILE_PRINT_SETUP     "Changer l'imprimante et les options d'impression\nRéglage de l'impression"      // "Change the printer and printing options\nPrint Setup"
+    ID_FILE_PRINT           "Imprimer le document actif\nImprimer"                                           // "Print the active document\nPrint"
+    ID_FILE_PRINT_PREVIEW   "Montrer les pages en entière\nAperçu avant Impression"                          // "Display full pages\nPrint Preview"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_BUTTON32789          "Tester le layout actuel\nTest"   // "Test the current layout\nTest"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_TOGGLE_RULER         "Montrer/Cacher la Règle Indicative\nMontrer/Cacher" // "Show/Hide the ruler guide\nShow/Hide"
+    ID_TOOLBAR_PROPERTIES   "Editer/Voir les propriétés du fichier\nPropriétés du Fichier Layout" // "Edit/View file propeties\nLayout File Properties"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_APP_ABOUT            "Montrer les informations sur le programme, le numéro de la version et le copyright\nA propos de" // "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quitter l'application; sauvegarder le document\nSortie"   // "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_FILE_MRU_FILE1       "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE2       "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE3       "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE4       "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE5       "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE6       "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE7       "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE8       "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE9       "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE10      "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE11      "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE12      "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE13      "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE14      "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE15      "Ouvrir ce document" // "Open this document"
+    ID_FILE_MRU_FILE16      "Ouvrir ce document" // "Open this document"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_NEXT_PANE            "Aller à la sous-fenêtre suivante\nSous-Fenêtre suivante"         // "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Retourner à la sous-fenêtre précédente\nSous-fenêtre précédente" // "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_WINDOW_NEW           "Ouvrir une autre fenêtre pour le document actif\nNouvelle Fenêtre"                       // "Open another window for the active document\nNew Window"
+    ID_WINDOW_ARRANGE       "Arranger les icônes en bas de la fenêtre\nArranger Icônes"                               // "Arrange icons at the bottom of the window\nArrange Icons"
+    ID_WINDOW_CASCADE       "Arranger les fenêtres de façon à les faire chevaucher\nFenêtres en Cascade"              // "Arrange windows so they overlap\nCascade Windows"
+    ID_WINDOW_TILE_HORZ     "Arranger les fenêtres de façon à ne pas faire chevaucher les titres\nCarreaux"     // "Arrange windows as non-overlapping tiles\nTile Windows"
+    ID_WINDOW_TILE_VERT     "Arranger les fenêtres de façon à ne pas faire chevaucher les titres\nCarreaux"     // "Arrange windows as non-overlapping tiles\nTile Windows"
+    ID_WINDOW_SPLIT         "Partager la fenêtre active en sous-fenêtres \nPartager"                                  // "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_EDIT_CLEAR           "Effacer la sélection\nEffacer"                                  // "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Effacer Tout\nEffacer Tout"                                     // "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copier la sélection et  la mettre sur le Clipboard\nCopier"     // "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Couper la sélection et  la mettre sur le Clipboard\nCouper"     // "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Trouver un texte spécifique \nTrouver"                          // "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insérer le contenu du Clipboard\nColler"                        // "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Répéter la dernière action\nRépéter"                            // "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Remplacer un texte spécifique avec un autre texte\nRemplacer"   // "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Sélectionner tout le document\nSélectionner Tout"               // "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Annuler la dernière action\nAnnuler"                            // "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Refaire l'action annulée précédemment\nRefaire"                 // "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "Montrer ou cacher la barre d'outils\nToggle Barre d'outils"   // "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Montrer ou cacher la barre de statut\nToggle Barre de statut" // "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    AFX_IDS_SCSIZE          "Changer la taille de la fenêtre"                                       // "Change the window size"
+    AFX_IDS_SCMOVE          "Changer la position de la fenêtre"                                     // "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Réduire la fenêtre à une icône"                                        // "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Agrandir la fenêtre à sa taille maximale"                              // "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Aller à la fenêtre du prochain document"                               // "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Retourner à la fenêtre du document précédent"                          // "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Fermer la fenêtre active et les rappels de sauvegarde du document"     // "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Agrandir la fenêtre à sa taille normale"        // "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activer la Liste de Tâches"             // "Activate Task List"
+    AFX_IDS_MDICHILD        "Activer cette fenêtre"                          // "Activate this window"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "Fermer le mode d'aperçu avant impression\nAnnuler Aperçu" // "Close print preview mode\nCancel Preview"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDC_DIALOG1_SHAPE_RECT  "Bouton Rectangulaire"                            // "Rectangular button shape"
+    IDC_DIALOG1_SHAPE_ELIPSE "Bouton à forme Eliptique"                       // "Eliptical button shape"
+    IDC_DIALOG1_SHAPE_ROUNDRECT "Bouton rectangulaire arrondi"                // "Rounded rectangle button shape"
+    IDC_STATIC_DIALOG1_PATTERN_NONE "Pas de forme sur le bouton "             // "No pattern on button face"
+    IDC_STATIC_DIALOG1_PATTERN_HORIZ "Rayures Horizontales sur le bouton"     // "Horizontal Stripes on button face"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDC_STATIC_DIALOG1_PATTERN_VERT "Rayures Verticales sur le bouton" // "Vertical stripes on button face"
+    IDS_POPUP_CONTROL_RECEIT "Fenêtre Reçu"                            // "Receipt Window"
+    IDS_POPUP_CONTROL_LEADTHRU "Fenêtre Indicative"                    // "Lead Through Window"
+    IDC_STATIC_DIALOG1_FONTSIZE "Taille des polices d'écriture "       // "Text Font Size"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_POP_WINDOW_LIST     "Liste de fenêtres sur ce bouton."                                    // "List of windows over this button."
+    ID_APP_PROPERTIES       "Montrer les propriétés et les informations récapitulatives."         // "Display the properties and summary information."
+    IDS_POP_ADD_TEXT_WINDOW "Ajouter Texte de commande tel qu'un reçu ou un texte indicatif."     // "Add a text control such as a receipt display or a lead thru display."
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDD_P03_NOFUNC          "Pas de fonction"          // "No Func."
+    IDD_P03_KEYEDPLU        "PLU"
+    IDD_P03_KEYEDDPT        "Dépt."                    // "Dept."
+    IDD_P03_PRTMOD          "Imprimer Mod."            // "Print Mod."
+    IDD_P03_ADJ             "Adjectif"                 // "Adjective"
+    IDD_P03_TENDER          "Méthode de paiement"      // "Tender"
+    IDD_P03_FC              "Etranger"                 // "Foreign"
+    IDD_P03_TTL             "Total"
+    IDD_P03_ADDCHK          "Ajouter Addition"         // "Add Check"
+    IDD_P03_IDISC           "Réd.sur article"          // "Item Disc."
+    IDD_P03_RDISC           "Réd.Normale"               // "Rglr. Disc."
+    IDD_P03_TAXMOD          "Mod.taxe"                 // "Tax Mod."
+    IDD_P03_AKEY            "Touche A"                 // "A Key"
+    IDD_P03_BKEY            "Touche B"                 // "B Key"
+    IDD_P03_NEWCHK          "Nouvelle Addition"        // "New Check"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDD_P03_PB              "P.B."
+    IDD_P03_GCNO            "G.C. #"
+    IDD_P03_GCTRANS         "Trans.Addition"                          // "G.C. Trnsfr."
+    IDD_P03_NOPERSON        "Nombre Personnes"                        // "# Person"
+    IDD_P03_TBLNO           "Numéro Table"                            // "Table #"
+    IDD_P03_LINENO          "Numéro Ligne"                            // "Line #"
+    IDD_P03_FEED            "Recharger"                               // "Feed"
+    IDD_P03_RCTNORCT        "Reçu"                                    // "Receipt"
+    IDD_P03_TIPSPO          "Pourboires mis sur carte de crédit"      // "Tips P.O."
+    IDD_P03_DECTIP          "Pourboires Déclarés"                     // "Dec.Tips"
+    IDD_P03_NOSALE          "Pas de vente"                            // "No Sale"
+    IDD_P03_PO              "P.O."
+    IDD_P03_ROA             "R.O.A."
+    IDD_P03_CHGCOMP         "Chg. Calcul"                             // "Chg. Cmpt."
+    IDD_P03_CANCEL          "Annuler"                                 // "Cancel"
+    IDD_P03_VOID            "Annulation"                              // "Void"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDD_P03_EC              "E/C"
+    IDD_P03_VTRAN           "Annulation de la transaction"              // "Trans.Void"
+    IDD_P03_QTY             "Quantité"                                  // "QTY"
+    IDD_P03_SHIFT           "Changer"                                   // "Shift"
+    IDD_P03_NOTYPE          "Numéro/Type"                               // "#/Type"
+    IDD_P03_PRTDEM          "Imprimer Dmd."                             // "Prt. Dmd."
+    IDD_P03_CHARTIP         "Charger Pourboires"                        // "Chrg. Tips"
+    IDD_P03_PLUNO           "Numéro PLU"                                // "PLU #"
+    IDD_P03_00KEY           "Touche 00"                                 // "00 Key"
+    IDD_P03_AC              "AC"
+    IDD_P03_RECFEED         "Recharger pour Reçu"                       // "Rec. Feed"
+    IDD_P03_JOUFEED         "Recharger Journal"                         // "Jou. Feed"
+    IDD_P03_DECPT           "Virgule décimale"                          // "Dec. Point"
+    IDD_P03_SCALE           "Balance/Ivraie"                            // "Scale/Tare"
+    IDD_P03_OFFTEND         "Méthode de paiement hors-ligne"            // "Off. Tend."
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDD_P03_MONEYDEC        "Argent"                                // "Money"
+    IDD_P03_RVSPRI          "Impression Inversée"                   // "Rev. Print"
+    IDD_P03_PRECASH         "Argent pré-dét."                       // "Pre. Cash"
+    IDD_P03_DRCTSHFT        "Changement de page direct"             // "Drct. Shift"
+    IDD_P03_TIMEIN          "Heure d'Entrée"                        // "Time-In"
+    IDD_P03_TIMEOUT         "Heure de Sortie"                       // "Time-Out"
+    IDD_P03_KEYEDCPN        "Coupon"
+    IDD_P03_CPNNO           "Numéro Coupon"                         // "Coupon #"
+    IDD_P03_UP              "Monter"                                // "Scroll Up"
+    IDD_P03_DOWN            "Descendre"                             // "Scroll Down"
+    IDD_P03_RIGHT           "Flêche de droite"                      // "Right Arrow"
+    IDD_P03_LEFT            "Flêche de gauche"                      // "Left Arrow"
+    IDD_P03_WAIT            "Attendre"                              // "Wait"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDD_P03_PAID_REC        "Ordre de Payer"                         // "Paid Order"
+    IDD_P03_KEYEDSTR        "Barre de Contrôle"                      // "String"
+    IDD_P03_STRNO           "Numéro de la Barre de contrôle"         // "String #"
+    IDD_P03_ALPHA           "Alpha"
+    IDD_P03_LEFTDISPLAY     "Apparaît à gauche"                      // "Left Display"
+    IDD_P03_BARTENDER       "Numéro Substitut"                       // "Surrogate #"
+    IDD_P03_SPLIT           "Partager"                               // "Split"
+    IDD_P03_SEAT            "Numéro du Siège"                        // "Seat #"
+    IDD_P03_ITEMTRANS       "Trans.Article"                          // "Item Trans."
+    IDD_P03_REPEAT          "Répéter"                                // "Repeat"
+    IDD_P03_CURSORVOID      "Annulation avec curseur"                // "Cursor Void"
+    IDD_P03_PRICECHECK      "Vérifier Prix"                          // "Price Check"
+    IDD_P03_ASK             "Demander"                               // "Ask"
+    IDD_P03_OPRINT_A        "Opr. IntA"
+    IDD_P03_OPRINT_B        "Opr. IntB"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDD_P03_ADJPLS          "Régler Niveau"               // "Level Set"
+    IDD_P03_DEPTNO          "Numéro Dépt."                // "Dept No."
+    IDD_P03_UPCEVER         "UPC-E"
+    IDD_P03_PRICEENT        "Entrer Prix"                 // "Price Ent."
+    IDD_P03_FOODSTAMPMOD    "Mod.FS"                      // "FS Mod."
+    IDD_P03_WICTRANS        "Trans.WIC"                   // "WIC Trans."
+    IDD_P03_WICMOD          "Mod.WIC"                     // "WIC Mod."
+    IDD_P03_NUMBERPAD       "Numéro du Bloc"              // "# Pad"
+	IDD_P03_MINIMIZE		"Minimiser" // "Minimize"
+    IDD_P03_CLEAR           "Effacer"                     // "Clear"
+    IDD_P03_MENUMODEKEY     "Touche Mode"                 // "Mode Key"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDD_P03_EDIT_CONDIMENT  "Edit Cond."
+	IDD_P03_EDIT_COND_TBL	"Edit Cond. Tbl"
+	IDD_P03_TENT			"Receipt ID"
+	IDD_P03_ORDER_DEC		"Order Declaration"
+	IDD_P03_GIFT_CARD		"Gift Card"
+	IDD_P03_DOC_LAUNCH      "Launch"
+	IDD_P03_OPR_PICKUP      "Cash Pickup"
+	IDD_P03_ADJ_MOD         "Adj Mod"
+	IDD_P03_WINDOW_DISPLAY	"Display Window by ID"		// FSC_WINDOW_DISPLAY
+	IDD_P03_WINDOW_DISMISS	"Dismiss Window by ID"		// FSC_WINDOW_DISMISS
+    IDD_P03_WINDOW_DISPLAY_MANUAL "Display Window #"
+    IDD_P03_WINDOW_DISMISS_MANUAL "Dismiss Window #"
+    IDD_P03_PLU_GROUPTABLE  "PLU Table/Group"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDD_P03_MENUWIND        "Fenêtre"                     // "Window"
+    IDD_P03_MENUWINDREMOVE  "Eliminer Fen."               // "Wind Dismiss"
+    IDD_P03_CHARACTER_BUTTON "Caractère" // "Character"
+	IDD_P03_PLU_GROUP_BUTTON "Groupe PLU"  //"PLU Group"
+    IDD_P03_CHARACTER_DELETE "Supprimer" // "Delete"
+    IDD_P03_P1              "P1"
+    IDD_P03_P2              "P2"
+    IDD_P03_P3              "P3"
+    IDD_P03_P4              "P4"
+    IDD_P03_P5              "P5"
+	IDD_P03_HALO_OVERRIDE   "HALO Ovr."
+    IDD_P03_AT_FOR	    "@/For"
+    IDD_P03_VALIDATION	    "Valid."
+	IDS_FREEDOMPAY			"Freedom Pay Balance"
+END
+
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_PLUKEY              "Touche PLU"                             // "PLU Key"
+    IDS_ENTEXTFSC           "Entrer Extension FSC:"                  // "Enter Extended FSC:"
+    IDS_DEPTKEY             "Touche Dept"                            // "Dept Key"
+    IDS_PRINTMOD            "Imprimer Modificateur"                  // "Print Modifier"
+    IDS_PRINTMOD_DR         "(Interval de Données: 1 - 8)"           // "(Data Range: 1 - 8)"
+    IDS_ADJECTIVE           "Adjectif"                               // "Adjective"
+    IDS_ADJECTIVE_DR        "(Interval de Données: 1 - 20)"          // "(Data Range: 1 - 20)"
+    IDS_TENDER              "Méthode de paiement"                    // "Tender"
+    IDS_TENDER_DR           "(Interval de Données: 1 - 11)"          // "(Data Range: 1 - 11)"
+    IDS_FOREIGNCUR          "Monnaie Etrangère"                      // "Foreign Currency"
+    IDS_FOREIGNCUR_DR       "(Interval de Données: 1 - 8)"           // "(Data Range: 1 - 8)"
+	IDS_WINID				"Window ID:"			//associated with FSC_WINDOW_DISPLAY and FSC_WINDOW_DISMISS
+    IDS_TOTAL               "Total"
+    IDS_TOTAL_DR            "(Interval de Données: 1 - 20)"           // "(Data Range: 1 - 9)"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_ADDCHECK            "Ajouter Addition"                       // "Add Check"
+    IDS_ADDCHECK_DR         "(Interval de Données: 1 - 3)"           // "(Data Range: 1 - 3)"
+    IDS_ENTPLUGROUP         "Entrer groupe de PLU"      // "Enter PLU Group"
+    IDS_ENTPLUGROUP_DR      "(Interval de Données: 1 - 89)"      // "(Data Range: 1 - 89)"
+    IDS_ORDER_DEC           "Order Declaration"
+    IDS_ORDER_DEC_DR        "(Interval de Données: 1 - 5)"           // "(Data Range: 1 - 5)"
+	IDS_GIFT_CARD           "Gift Card"
+    IDS_GIFT_CARD_DR        "(Interval de Données: 1 - 3)"
+    IDS_ITEM_DISC_SURCH     "Remise/Surcharge sur Article"           // "Item Discount/Surcharge"
+    IDS_ITEM_DISC_SURCH_DR  "(Interval de Données: 1 - 2)"                      // "(Data Range: 1 - 2)"
+    IDS_TRAN_DISC_SURCH     "Transaction"
+    IDS_TRAN_DISC_SURCH_DR  "(Interval de Données: 1 - 6)"                      // "(Data Range: 1 - 6)"
+    IDS_DOC_LAUNCH          "Short Cut No."
+    IDS_DOC_LAUNCH_DR       "(Interval de Données: 1 - 99)"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_TAXMOD              "Modificateur de Taxe"                              // "Tax Modifier"
+    IDS_TAXMOD_DR           "(Interval de Données: 1 - 11)"                     // "(Data Range: 1 - 11)"
+    IDS_POD                 "Imprime à la Demande"                              // "Print On Demand"
+    IDS_POD_DR              "(Interval de Données: 1 - 5)"                      // "(Data Range: 1 - 3)"
+    IDS_CHARGETIPS          "Charger Pourboires"                                // "Charge Tips"
+    IDS_CHARGETIPS_DR       "(Interval de Données: 1 - 3)"                      // "(Data Range: 1 - 3)"
+    IDS_PRESET_CASH         "Déterminer Touche pour paiement en liquide"        // "Preset Cash Tender Key"
+    IDS_PRESET_CASH_DR      "(Interval de Données: 1 - 4)"                      // "(Data Range: 1 - 4)"
+    IDS_DIRECTSHIFT         "Touche pour Changement Direct"                     // "Direct Shift Key"
+    IDS_DIRECTSHIFT_DR      "(Interval de Données: 1 - 9)"                      // "(Data Range: 1 - 9)"
+    IDS_COUPONKEY           "Touche Coupon"                                     // "Coupon Key"
+    IDS_COUPONKEY_DR        "(Interval de Données: 1 - 255)"                    // "(Data Range: 1 - 255)"
+    IDS_CONTROLSTRING       "Touche pour Contrôle de Commandes"                 // "Control String Key"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_CONTROLSTRING_DR    "(Interval de Données: 1 - 200)"                     // "(Data Range: 1 - 200)"
+    IDS_SEATNUM             "Numéro de Siège"                                    // "Seat No."
+    IDS_SEATNUM_DR          "(Interval de Données: 1 - 2)"                       // "(Data Range: 1 - 2)"
+    IDS_ASK                 "Demander"                                           // "Ask"
+    IDS_ASK_DR              "(Interval de Données: 1 - 20)"                      // "(Data Range: 1 - 20)"
+    IDS_PRICELEVEL          "Niveau Prix"                                        // "Price Level"
+    IDS_PRICELEVEL_DR       "(Interval de données: 1 - 5)"                       // "(Data Range: 1 - 5)"
+    IDS_MODEKEY             "Touche Mode"                                        // "Mode Key"
+    IDS_SELECTMODE          "Sélectionner un mode: "                             // "Select a mode: "
+    IDS_NUMPADKEY           "Touche pour Numéros"                                // "Number Pad Key"
+    IDS_SELECTNUM           "Sélectionner un numéro: "                           // "Select a number: "
+    IDS_RANGE_ERR           "La valeur est en-dehors de l'interval! L'interval a un minimum de %d et un maximum de %d" // "Value out of range! Valid range has a min of %d and max of %d"
+    IDS_LOCK                "Verrouiller"                                        // "Lock"
+    IDS_REGISTER            "REG"
+    IDS_SUPERVISOR          "SUP"
+    IDS_PROGRAM             "PROG"
+    IDS_VOIDRETURN          "Void/Return"
+    IDS_VOIDRETURN_DR       "(Data Range: 0 - 2)"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_OVERLAP_ERR         "La commande chevauche une autre commande. Ne peut pas créer" // "Control overlaps another control. Cannot create"
+    IDS_WINDOW_ERR          "La commande dépasse de la fenêtre. Ne peut pas créer" // "Control extends beyond window. Cannot create"
+    IDS_TEXTEXIST           "Le texte de commande existe déjà dans cette région. Ne peut pas créer de bouton" // "Text control already exists in this region. Cannot create button"
+    IDS_TEXTHEIGHT_ERR      "Le texte de commande doit avoir 8 d'au moins 3" // "Text control must have height of at least 3"
+    IDS_TEXT_ERR            "Le texte de commande de ce type existe déjà. Ne peut pas dupliquer" // "Text control of this type already exists. Cannot duplicate"
+    IDS_BTNEXIST            "Le bouton existe déjà dans cette région. Ne peut pas créer de texte de commande" // "Button already exists in this region. Cannot create text Control"
+    IDS_DUP_TEXT            "Ne peut pas dupliquer le texte de commande. La fenêtre va être copié sans texte de commande." // "Cannot duplicate text control. Window will be copied without text control."
+    IDS_WIN_INVALID         "La fenêtre va dépasser de l'écran. Ne peut pas créer" // "Window will extend beyond the screen. Cannot create"
+    IDS_NOT_SUP             "La sélection n'est pas dans la liste" // "Selection not in suported list"
+    IDS_CPNOTFOUND          "Code de la page non trouvé. Aucun changement n'a été fait." // "Code Page not found.  No changes made."
+    IDS_NOTKBLIST           "La sélection n'est pas dans la liste du clavier" // "Selection not in keyboard list."
+    IDS_DLLNF               "L'extension du language DLL n'a pas été trouvée. En utilisant la sélection automatique" // "Language DLL extension not found. Using default"
+    IDS_NO_SEL_GRP          "Aucun groupe n'a été sélectionné" // "No Group Selected"
+    IDS_DEL_DEFGRP          "Ne peut pas enlever le Groupe de sélection Automatique" // "Cannot Delete the Default Group"
+    IDS_DUP_GRPNAME         "Dupliquer Nom du Groupe" // "Duplicate Group Name"
+    IDS_RETLOM              "Appuyer sur la touche ESC pour retourner au Layout Manager" // "Press ESC key to return to Layout Manager"
+    IDS_NOTSUBLANG          "The Language is in the Keyboard Input Locale List, but the Sub-Language does not match."
+    IDS_SPACE               "Espace" // "Space"
+    IDS_BTNEXISTS           "Button control already exists in this region. Cannot create "
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_WIN_NF              "ERREUR - Cette fenêtre n'a pas été trouvée"                                    // "ERROR - This window was not found"
+    IDS_EMP_GRPNAME         "Le groupe doit avoir un nom"                                                   // "Group Must Have a Name"
+    IDS_EDIT_DEFGRP         "ne peut pas éditer le groupe de sélection automatique"                         // "Cannot Edit the Default Group"
+    IDS_DEFGRP_DESC         "Les fenêtres de ce groupe ne seront groupées avec aucune autre fenêtre"        // "Windows in this group will not be grouped with any other windows"
+    IDS_DEFGRP_NAME         "Pas de formation de groupe"                                                    // "No Grouping"
+    IDS_ATTRIBUTES          "Attributs:"                                                                    // "Attributes:"
+    IDS_REG_ERR             "N'a pas pu enregistrer la classe! (Déjà enregistré?)"                          // "Couldn't register class! (Already registered?)"
+    IDS_WINITEM             "Article de la fenêtre - "                                                    // "Window Item - "
+    IDS_SUBWINITEM          "Article de la sous-fenêtre - "                                               // "SubWindow Item - "
+    IDS_GROUPID             "Identité du Groupe - "                                                         // "Group ID - "
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_GRP_IN_USE          "Ce groupe est utilisé par des fenêtres. Ne peut pas supprimé." // "There are windows using this group. Cannot delete."
+    IDS_OEP_ERR             "Ne peut pas créer de fenêtre OEP à l'intérieur d'une autre fenêtre" // "Cannot create OEP window inside another window"
+    IDS_LANG_CHINESE        "Chinois" // "Chinese"
+    IDS_LANG_ENGLISH        "Anglais" // "English"
+    IDS_LANG_FRENCH         "Français" // "French"
+    IDS_LANG_GERMAN         "Allemand" // "German"
+    IDS_LANG_GREEK          "Grec" // "Greek"
+    IDS_LANG_ITALIAN        "Italien" // "Italian"
+    IDS_LANG_JAPANESE       "Japonais" // "Japanese"
+    IDS_LANG_RUSSIAN        "Russe" // "Russian"
+    IDS_LANG_SPANISH        "Espagnol" // "Spanish"
+    IDS_LANG_KOREAN         "Korean"
+    IDS_TXT_SING_RCT_MAIN   "Single Receipt Main"
+    IDS_TXT_MULTI_1         "Multi Receipt Display 1"
+    IDS_TXT_MULTI_2         "Multi Receipt Display 2"
+    IDS_TXT_MULTI_3         "Multi Receipt Display 3"
+
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_TXT_REC_NOTUSED_1   "Non utilisé" // "Not Used"
+    IDS_TXT_REC_NOTUSED_2   "Non utilisé" // "Not Used"
+    IDS_TXT_LEAD_THRU       "Guide à travers" // "Lead Thru"
+    IDS_TXT_DESC            "Descripteur" // "Descriptor"
+    IDS_TXT_SING_SUB        "Single Receipt Sub"
+    IDS_TXT_SING_SCROLL     "Single Receipt Scroll"
+    IDS_TXT_CLOCK           "Horloge" // "Clock"
+    IDS_TXT_SUP_PROG        "Sup/Prog"
+    IDS_CMDLINE_LANG_NF     "Language not found - Check command line parameter"
+    IDS_HIDE_RULERS         "Cacher Règles" // "Hide Rulers"
+    IDS_SHOW_RULERS         "Montrer Règles" // "Show Rulers"
+	IDS_LBL_INVALID       "L'étiquette va sortir de l'écran. Ne peut pas créer." // "Label will extend beyond the screen. Cannot create"
+    IDS_GRPWND_AVTIVE       "ACTIF" // "ACTIVE"
+    IDS_SET_ICONDIR_MSG     "Vous devez mettre en place un répertoire d'icônes avant de pouvoir chercher des fichiers d'icônes" // "You must set an icon directory before browsing for icon files"
+    IDS_ICONDIR_ERR         "Vous devez sélectionner les fichiers d'icônes depuis le répertoire d'icônes de base." // "You must select icon files from the preset icon directory"
+    IDS_ICONDIR_SEL_MSG     "Sélectionnez le dossier dans lequel vos fichiers d'icônes vont résider." // "Select the folder where your icon files will reside"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    ID_TOOLBAR_WINGROUP     "Régler groupe de fenêtre\nGroupes de Fenêtres" // "Set window group\nWindow Groups"
+    ID_TOOLBAR_LANG         "Changer Langue\nRégler Langue" // "Change Language\nSet Language"
+    ID_TOOLBAR_ACTIVEWND    "Régler les fenêtres actives dans les groupes de fenêtres\nRégler Groupe de Fenêtres Actives" // "Set active windows in window groups\nSet Active Group Windows"
+    ID_TOOLBAR_DEFAULTS     "Changer les attributs de base\nChanger réglages de base" // "Change default attributes\nChange Defaults"
+    ID_TOOLBAR_WND          "Add window control\nWindow Control"
+    ID_TOOLBAR_BTN          "Add/Edit button control\nButton Control"
+    ID_TOOLBAR_TXT          "Add/Edit text control\nText Control"
+    ID_TOOLBAR_LBL          "Add/Edit label control\nLabel Control"
+    ID_TOOLBAR_OEP          "Ajouter/Editer fenêtre OEP\nFenêtre OEP" // "Add/Edit OEP window\nOEP Window"
+    ID_TOOLBAR_DELETE       "Enlever Contrôle\Enlever Contrôle" // "Remove control\nRemove Control"
+    ID_TOOLBAR_UNDO         "Annuler Action\nAnnuler Action" // "Undo\nUndo"
+    ID_TOOLBAR_REDO         "Refaire\nRefaire" // "Redo\nRedo"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_STRING_SUN          "Dimanche"//"Sunday"
+    IDS_STRING_MON          "Lundi"//"Monday"
+    IDS_STRING_TUE          "Mardi"//"Tuesday"
+    IDS_STRING_WED          "Mercredi"//"Wednesday"
+    IDS_STRING_THU          "Jeudi"//"Thursday"
+    IDS_STRING_FRI          "Vendredi"//"Friday"
+    IDS_STRING_SAT          "Samedi"//"Saturday"
+    IDS_STRING_JAN          "Janvier"//"January"
+    IDS_STRING_FEB          "Février"//"February"
+    IDS_STRING_MAR          "Mars"//"March"
+    IDS_STRING_APR          "Avril"//"April"
+    IDS_STRING_MAY          "Mai"//"May"
+    IDS_STRING_JUN          "Juin"//"June"
+    IDS_STRING_JUL          "Juillet"//"July"
+    IDS_STRING_AUG          "Août"//"August"
+    IDS_STRING_SEP          "Septembre"//"September"
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDS_STRING_OCT          "Octobre"//"October"
+    IDS_STRING_NOV          "Novembre"//"November"
+    IDS_STRING_DEC          "Décembre"//"December"
+    IDS_FILEVER_MSG         "Ce fichier vient d'une ancienne version du Layout Manager. Il se peut qu'il y ait de nouveaux attributs à régler." // "File is from a previous version of Layout Manager. You may have to set new attributes"
+    IDS_WND_DEL_CONFIRM     "Cette fenêtre contient des contrôles enfants. Souhaitez-vous toujours enlever cette fenêtre?" // "The window contains child controls. DO you still wish to remove this window?"
+    IDS_STRING_GRIDS        "grilles"//"grids"
+    IDS_USR_DSM             "L'utilisateur Congédie"//"User Dismiss"
+    IDS_ERR_PLUNO           "Invalid PLU. Check Sum failed."
+END
+
+
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\NewLayout.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"          // Standard components
+#include "afxprint.rc"        // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

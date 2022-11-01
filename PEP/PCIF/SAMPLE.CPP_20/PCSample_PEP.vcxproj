@@ -1,0 +1,249 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A0FE2E77-E2D4-4F2E-B662-66BC49068196}</ProjectGuid>
+    <RootNamespace>PCSample_PEP</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)bin/debug\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <TargetName>PCSample</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)bin/release\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>PCSample</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/D "UNICODE" %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)PCIF\Sqlite;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;PCIF_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ConnEngineMfc.lib;SqliteDBE_allPepPCIF.lib;NCR2172Stub_20.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)bin/debug/PCSample.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib/debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)PCIF\Sqlite;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;NDEBUG;WIN32;_WINDOWS;PCIF_WINDOWS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Release/PCSample_PEP.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ConnEngineMfc.lib;SqliteDBE_allPepPCIF.lib;NCR2172Stub_20.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../bin/release/PCSample.exe</OutputFile>
+      <AdditionalLibraryDirectories>../../lib/release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EntryPointSymbol>wWinMainCRTStartup</EntryPointSymbol>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="CashierNoDlg.cpp" />
+    <ClCompile Include="DateTimeDlg.cpp" />
+    <ClCompile Include="DeptNoDlg.cpp" />
+    <ClCompile Include="DiaCashierAddEdit.cpp" />
+    <ClCompile Include="DiaCashierEdit.cpp" />
+    <ClCompile Include="GCNoDlg.cpp" />
+    <ClCompile Include="GlobalFunction.cpp" />
+    <ClCompile Include="GuestCheck.cpp" />
+    <ClCompile Include="LanDlg.cpp" />
+    <ClCompile Include="LogonDlg.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MDeptNoDlg.cpp" />
+    <ClCompile Include="ModemDlg.cpp" />
+    <ClCompile Include="OperatorLock.cpp" />
+    <ClCompile Include="ParaCashier.cpp" />
+    <ClCompile Include="ParaCoupon.cpp" />
+    <ClCompile Include="ParaDept.cpp" />
+    <ClCompile Include="ParaETK.cpp" />
+    <ClCompile Include="ParaFlexMem.cpp" />
+    <ClCompile Include="Parameter.cpp" />
+    <ClCompile Include="ParaPlu.cpp" />
+    <ClCompile Include="ParaStoreNo.cpp" />
+    <ClCompile Include="PasswordDlg.cpp" />
+    <ClCompile Include="PcIfPort.cpp" />
+    <ClCompile Include="PCSample.cpp" />
+    <ClCompile Include="PCSampleDoc.cpp" />
+    <ClCompile Include="PCSampleView.cpp" />
+    <ClCompile Include="PluAssignUpdate.cpp" />
+    <ClCompile Include="ReportEJ.cpp" />
+    <ClCompile Include="ReportEOD.cpp" />
+    <ClCompile Include="RPageBase.cpp" />
+    <ClCompile Include="RPageCashierAction.cpp" />
+    <ClCompile Include="RPageConnect.cpp" />
+    <ClCompile Include="RPageEmployeeChange.cpp" />
+    <ClCompile Include="RPageGuestCheck.cpp" />
+    <ClCompile Include="RPropertySheet.cpp" />
+    <ClCompile Include="SavedTotal.cpp" />
+    <ClCompile Include="SendOpMessageDialog.cpp" />
+    <ClCompile Include="SerialPortDlg.cpp" />
+    <ClCompile Include="SignInLock.cpp" />
+    <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="StoreNoDlg.cpp" />
+    <ClCompile Include="TallyCPM.cpp" />
+    <ClCompile Include="Terminal.cpp" />
+    <ClCompile Include="TerminalNoDlg.cpp" />
+    <ClCompile Include="Total.cpp" />
+    <ClCompile Include="TtlCashier.cpp" />
+    <ClCompile Include="TtlCoupon.cpp" />
+    <ClCompile Include="TtlDept.cpp" />
+    <ClCompile Include="TtlETK.cpp" />
+    <ClCompile Include="TtlHourly.cpp" />
+    <ClCompile Include="TtlIndFin.cpp" />
+    <ClCompile Include="TtlPlu.cpp" />
+    <ClCompile Include="TtlRegFin.cpp" />
+    <ClCompile Include="TtlServTime.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PCSample.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CashierNoDlg.h" />
+    <ClInclude Include="DateTimeDlg.h" />
+    <ClInclude Include="DeptNoDlg.h" />
+    <ClInclude Include="DiaCashierAddEdit.h" />
+    <ClInclude Include="DiaCashierEdit.h" />
+    <ClInclude Include="GCNoDlg.h" />
+    <ClInclude Include="Global.h" />
+    <ClInclude Include="GuestCheck.h" />
+    <ClInclude Include="LanDlg.h" />
+    <ClInclude Include="LogonDlg.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MDeptNoDlg.h" />
+    <ClInclude Include="ModemDlg.h" />
+    <ClInclude Include="Parameter.h" />
+    <ClInclude Include="PasswordDlg.h" />
+    <ClInclude Include="PCSample.h" />
+    <ClInclude Include="PCSampleDoc.h" />
+    <ClInclude Include="PCSampleView.h" />
+    <ClInclude Include="PluAssignUpdate.h" />
+    <ClInclude Include="ReportEJ.h" />
+    <ClInclude Include="ReportEOD.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="RPageBase.h" />
+    <ClInclude Include="RPageCashierAction.h" />
+    <ClInclude Include="RPageConnect.h" />
+    <ClInclude Include="RPageEmployeeChange.h" />
+    <ClInclude Include="RPageGuestCheck.h" />
+    <ClInclude Include="RPropertySheet.h" />
+    <ClInclude Include="SavedTotal.h" />
+    <ClInclude Include="SendOpMessageDialog.h" />
+    <ClInclude Include="SerialPortDlg.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="StoreNoDlg.h" />
+    <ClInclude Include="TallyCPM.h" />
+    <ClInclude Include="Terminal.h" />
+    <ClInclude Include="TerminalNoDlg.h" />
+    <ClInclude Include="Total.h" />
+    <ClInclude Include="TtlCashier.h" />
+    <ClInclude Include="TtlCoupon.h" />
+    <ClInclude Include="TtlDept.h" />
+    <ClInclude Include="TtlETK.h" />
+    <ClInclude Include="TtlHourly.h" />
+    <ClInclude Include="TtlIndFin.h" />
+    <ClInclude Include="TtlPlu.h" />
+    <ClInclude Include="TtlRegFin.h" />
+    <ClInclude Include="TtlServTime.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\PCSample.ico" />
+    <Image Include="RES\PCSampleDoc.ico" />
+    <Image Include="RES\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RES\PCSample.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="ConnectEngineText.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Notes.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NCR2172Pif_20\NCR2172Pif_20.vcxproj">
+      <Project>{e06b4c60-143a-4510-9cac-282a89489e18}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="PCSample.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{771B41BA-47A3-4E72-80BE-1126BDAC0A27}</ProjectGuid>
+    <RootNamespace>PEP_PCIF_Includes</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="appllog.h" />
+    <ClInclude Include="CPM.H" />
+    <ClInclude Include="cscas.h" />
+    <ClInclude Include="CSETK.H" />
+    <ClInclude Include="CSGCS.H" />
+    <ClInclude Include="CSLOG.H" />
+    <ClInclude Include="csop.h" />
+    <ClInclude Include="CSSERM.H" />
+    <ClInclude Include="csstbfcc.h" />
+    <ClInclude Include="CSSTUBIN.H" />
+    <ClInclude Include="csttl.h" />
+    <ClInclude Include="ECR.h" />
+    <ClInclude Include="ej.h" />
+    <ClInclude Include="EPT.H" />
+    <ClInclude Include="isp.h" />
+    <ClInclude Include="LOG.H" />
+    <ClInclude Include="maint.h" />
+    <ClInclude Include="NB.H" />
+    <ClInclude Include="para.h" />
+    <ClInclude Include="paraequ.h" />
+    <ClInclude Include="PARARAM.H" />
+    <ClInclude Include="PC2172.h" />
+    <ClInclude Include="PCIF.H" />
+    <ClInclude Include="PCSTBCAS.H" />
+    <ClInclude Include="PCSTBCPM.H" />
+    <ClInclude Include="PCSTBEJ.H" />
+    <ClInclude Include="PCSTBETK.H" />
+    <ClInclude Include="PCSTBFCC.H" />
+    <ClInclude Include="PCSTBGCF.H" />
+    <ClInclude Include="PCSTBISP.H" />
+    <ClInclude Include="PCSTBOPR.H" />
+    <ClInclude Include="PCSTBPAR.H" />
+    <ClInclude Include="PCSTBTTL.H" />
+    <ClInclude Include="PIF.H" />
+    <ClInclude Include="PIFCTL.H" />
+    <ClInclude Include="PIFNET.H" />
+    <ClInclude Include="PIFTABLE.H" />
+    <ClInclude Include="plu.h" />
+    <ClInclude Include="R20_CPM.H" />
+    <ClInclude Include="r20_cscas.h" />
+    <ClInclude Include="r20_CSETK.H" />
+    <ClInclude Include="r20_csop.h" />
+    <ClInclude Include="r20_EPT.H" />
+    <ClInclude Include="r20_isp.h" />
+    <ClInclude Include="r20_para.h" />
+    <ClInclude Include="R20_PC2172.h" />
+    <ClInclude Include="R20_PCSTBCAS.H" />
+    <ClInclude Include="R20_PCSTBCPM.H" />
+    <ClInclude Include="R20_PCSTBEJ.H" />
+    <ClInclude Include="R20_PCSTBETK.H" />
+    <ClInclude Include="R20_PCSTBFCC.H" />
+    <ClInclude Include="R20_PCSTBGCF.H" />
+    <ClInclude Include="R20_PCSTBISP.H" />
+    <ClInclude Include="R20_PCSTBOPR.H" />
+    <ClInclude Include="R20_PCSTBPAR.H" />
+    <ClInclude Include="R20_PCSTBTTL.H" />
+    <ClInclude Include="R20_PIF.H" />
+    <ClInclude Include="r20_plu.h" />
+    <ClInclude Include="R20_RMT.H" />
+    <ClInclude Include="REGSTRCT.H" />
+    <ClInclude Include="RFL.H" />
+    <ClInclude Include="RMT.H" />
+    <ClInclude Include="STBPOPUP.H" />
+    <ClInclude Include="STORAGE.H" />
+    <ClInclude Include="TERMCFG.H" />
+    <ClInclude Include="TRANS.H" />
+    <ClInclude Include="transact.h" />
+    <ClInclude Include="UIC.H" />
+    <ClInclude Include="versioninfo.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

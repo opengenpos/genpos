@@ -1,0 +1,290 @@
+LIBRARY	NCR2172Stub_20
+
+; 02.04.02 | 10.07.2022 | R. Chambers    | comment out the Visual Basic functions for OpenGenPOS
+
+EXPORTS
+		CliParaAllRead				@102
+		CliParaAllWrite				@103
+; 		CliParaRead					@104
+; 		CliParaWrite				@105
+
+		SerCasClose					@106
+		SerCasAssign				@107
+		SerCasDelete				@108
+		SerCasSecretClr				@109
+		SerCasAllIdRead				@110
+		SerCasIndRead				@111
+		SerCasIndLock				@112
+		SerCasIndUnLock				@113
+		SerCasAllLock				@114
+		SerCasAllUnLock				@115
+		SerCasIndTermLock			@116		; Add R3.1
+		SerCasIndTermUnLock			@117		; Add R3.1
+		SerCasAllTermLock			@118		; Add R3.1
+		SerCasAllTermUnLock			@119		; Add R3.1
+		SerCasChkSignIn				@120
+
+;		SerWaiClose					@121		; Delete V3.3
+;		SerWaiAssign				@122		; Delete V3.3
+;		SerWaiDelete				@123		; Delete V3.3
+;		SerWaiSecretClr				@124		; Delete V3.3
+;		SerWaiAllIdRead				@125		; Delete V3.3
+;		SerWaiIndRead				@126		; Delete V3.3
+;		SerWaiIndLock				@127		; Delete V3.3
+;		SerWaiIndUnLock				@128		; Delete V3.3
+;		SerWaiAllLock				@129		; Delete V3.3
+;		SerWaiAllUnLock				@130		; Delete V3.3
+;		SerWaiIndTermLock			@131		; Delete V3.3		; Add R3.1
+;		SerWaiIndTermUnLock			@132		; Delete V3.3		; Add R3.1
+;		SerWaiAllTermLock			@133		; Delete V3.3		; Add R3.1
+;		SerWaiAllTermUnLock			@134		; Delete V3.3		; Add R3.1
+;		SerWaiChkSignIn				@135		; Delete V3.3
+									
+		SerGusReadLock				@136
+		SerGusDelete				@137
+		SerGusIndRead				@138
+		SerGusAllIdRead				@139
+		SerGusAllLock				@140
+		SerGusAllUnLock				@141
+		SerGusAssignNo				@142
+		SerGusResetReadFlag			@143
+		SerGusCheckExist			@144
+		SerGusAllIdReadBW			@145
+
+		SerTtlTotalRead				@146
+		SerTtlTotalReset			@147
+		SerTtlIssuedReset			@148
+		SerTtlIssuedCheck			@149
+
+		CliOpPluIndRead				@150
+		CliOpDeptIndRead			@151
+		CliOpPpiIndRead				@152		; Add R3.1
+
+		SerOpPluAssign				@153
+		SerOpDeptAssign				@154
+		SerOpPluDelete				@155
+		SerOpPluFileUpdate			@156
+		SerOpPluAllRead				@157
+		SerOpRprtPluRead			@158
+		SerOpDeptPluRead			@159
+		SerOpLock					@160
+		SerOpUnLock					@161
+		SerOpMajorDeptRead			@162
+		SerOpPpiAssign				@163		; Add R3.1
+		SerOpPpiDelete				@164		; Add R3.1
+
+		IspLogOn					@165
+		IspChangePassWord			@166
+		IspLockKeyBoard				@167
+		IspUnLockKeyBoard			@168 
+		IspLogOff					@169
+		IspReqBroadcast				@170		; Add R3.1
+		IspNoOfSatellite			@171		; Add R3.1
+
+
+		PcifOpen					@172
+		PcifClose					@173
+		PcifConnect					@174
+		PcifDisconnect				@175
+
+		RmtOpenFile					@176
+		RmtReadFile					@177
+		RmtWriteFile				@178
+		RmtSeekFile					@179
+		RmtDeleteFile				@180
+		RmtCloseFile				@181
+
+		IspCheckTotals				@182
+		IspCheckAsMaster			@183
+
+		SerEJClear					@184
+		SerEJReadFile				@185
+
+;		 CliEtkTimeout				@186
+		SerEtkAssign				@187
+		SerEtkDelete				@188
+		SerEtkAllReset				@189
+		SerEtkIssuedSet				@190
+		SerEtkIndJobRead			@191
+		SerEtkCurAllIdRead			@192
+		SerEtkSavAllIdRead			@193
+		SerEtkCurIndRead			@194
+		SerEtkSavIndRead			@195
+		SerEtkAllLock				@196
+		SerEtkAllUnLock				@197
+		SerEtkIssuedCheck			@198
+		SerEtkStatRead				@199		; Adds 10-06-93
+		SerEtkCurIndWrite			@200		; Adds 10-06-93
+		SerEtkCreateTotalIndex		@201		; Adds 10-09-93
+
+		SerCpmReadResetTally		@202		; Adds 11-09-93 Hotel
+;		SerTtlWaiTotalCheck			@203		; Delete V3.3		; Adds 05-19-94 Hotel
+		SerTtlCasTotalCheck			@204		; Adds 05-19-94 Hotel
+
+		CliOpCpnIndRead				@205		; Adds 08-22-95 R3.0
+		CliOpCstrIndRead			@206		; Adds 08-22-95 R3.0
+		CliOpOepPluRead				@207		; Adds 08-22-95 R3.0
+		SerOpCpnAssign				@208		; Adds 08-22-95 R3.0
+		SerOpCstrAssign				@209		; Adds 08-22-95 R3.0
+		SerOpCstrDelete				@210		; Adds 08-22-95 R3.0
+		SerGusResetDeliveryQueue	@211		; Adds 08-22-95 R3.0
+		SerTtlTotalReadPlu			@212		; Adds 08-28-95 R3.0
+
+		IspDateTimeRead				@220		; Add V3.3
+		IspDateTimeWrite			@221		; Add V3.3
+		IspSysConfig				@222		; Add V3.3
+		IspRecvResetLog				@223		; Add V3.3
+		IspRecvResetLog2			@224		; Add V3.3
+		CliOpMldIndRead				@225		; Add V3.3
+		SerOpMldAssign				@226		; Add V3.3
+		SerEJNoOfTrans				@227		; Add V3.3
+		SerEJReadResetTransStart	@228		; Add V3.3
+		SerEJReadResetTrans			@229		; Add V3.3
+		SerEJReadResetTransEnd		@230		; Add V3.3
+		SerEJReadResetTransOver		@231		; Add V3.3
+
+		PcifOpenEx					@232
+		PcifCloseEx					@233
+    SerCasOpenPickupLoan      @234    ; ADD Saratoga
+    SerCasClosePickupLoan     @235    ; ADD Saratoga
+    SerTtlUpdateFile          @236    ; ADD Saratoga
+    SerOpDeptDelete           @237		; ADD Saratoga
+		SerTtlTotalReadPluEx			@238		; ADD Saratoga
+		RmtReloadLayout				@239	; ADD ESMITH
+		IspCheckModeOnTerm			@240	; ADD ESMITH
+		RmtGetFileNames		@241	; ADD JHHJ
+		SerCasDelayedBalance		@242	; ADD JHHJ
+		SerTtlTumUpdateDelayedBalance	@243 ; ADD JHHJ
+		IspHostLogOn	            @244 ; ADD RJC for SR 857
+		RmtGetSavFileNames          @245 ; ADD JV for PCSample
+		SerTtlCloseSavFile			@246 ; ADD JV for PCSample
+		SerOpDisplayOperatorMessage	@247 ; ADD JV for PCSample
+		SerOpUpdateExistingPlu		@248 ; ADD RJC for PCSample update PLU
+		SerOpRetrieveSystemStatus	@249 ; ADD JV for PCSample
+		CliOpMnemonicsIndRead		@250 ; add RJC for new Reason Code mnemonics
+		SerOpMnemonicsAssign		@251 ; add RJC for new Reason Code mnemonics
+		IspRecvResetLog3		    @252 ; add RJC for new Reason Code mnemonics
+
+; ----- Visual Basic Interface -----
+;
+;		vbCliParaAllRead			@1102
+;		vbCliParaAllWrite			@1103
+;
+;		vbSerCasClose				@1106
+;		vbSerCasAssign				@1107
+;		vbSerCasDelete				@1108
+;		vbSerCasSecretClr			@1109
+;		vbSerCasAllIdRead			@1110
+;		vbSerCasIndRead				@1111
+;		vbSerCasIndLock				@1112
+;		vbSerCasIndUnLock			@1113
+;		vbSerCasAllLock				@1114
+;		vbSerCasAllUnLock			@1115
+;		vbSerCasIndTermLock			@1116
+;		vbSerCasIndTermUnLock		@1117
+;		vbSerCasAllTermLock			@1118
+;		vbSerCasAllTermUnLock		@1119
+;		vbSerCasChkSignIn			@1120
+;									
+;		vbSerGusReadLock			@1136
+;		vbSerGusDelete				@1137
+;		vbSerGusIndRead				@1138
+;		vbSerGusAllIdRead			@1139
+;		vbSerGusAllLock				@1140
+;		vbSerGusAllUnLock			@1141
+;		vbSerGusAssignNo			@1142
+;		vbSerGusResetReadFlag		@1143
+;		vbSerGusCheckExist			@1144
+;		vbSerGusAllIdReadBW			@1145
+;
+;		vbSerTtlTotalRead			@1146
+;		vbSerTtlTotalReset			@1147
+;		vbSerTtlIssuedReset			@1148
+;		vbSerTtlIssuedCheck			@1149
+;
+;		vbCliOpPluIndRead			@1150
+;		vbCliOpDeptIndRead			@1151
+;		vbCliOpPpiIndRead			@1152
+;
+;		vbSerOpPluAssign			@1153
+;		vbSerOpDeptAssign			@1154
+;		vbSerOpPluDelete			@1155
+;		vbSerOpPluFileUpdate		@1156
+;		vbSerOpPluAllRead			@1157
+;		vbSerOpRprtPluRead			@1158
+;		vbSerOpDeptPluRead			@1159
+;		vbSerOpLock					@1160
+;		vbSerOpUnLock				@1161
+;		vbSerOpMajorDeptRead		@1162
+;		vbSerOpPpiAssign			@1163
+;		vbSerOpPpiDelete			@1164
+;
+;		vbIspLogOn					@1165
+;		vbIspChangePassWord			@1166
+;		vbIspLockKeyBoard			@1167
+;		vbIspUnLockKeyBoard			@1168 
+;		vbIspLogOff					@1169
+;		vbIspReqBroadcast			@1170
+;		vbIspNoOfSatellite			@1171
+;
+;		vbPcifOpen					@1172
+;		vbPcifClose					@1173
+;		vbPcifConnect				@1174
+;		vbPcifDisconnect			@1175
+;
+;		vbIspCheckTotals			@1182
+;		vbIspCheckAsMaster			@1183
+;
+;		vbSerEJClear				@1184
+;		vbSerEJReadFile				@1185
+;
+;		vbSerEtkAssign				@1187
+;		vbSerEtkDelete				@1188
+;		vbSerEtkAllReset			@1189
+;		vbSerEtkIssuedSet			@1190
+;		vbSerEtkIndJobRead			@1191
+;		vbSerEtkCurAllIdRead		@1192
+;		vbSerEtkSavAllIdRead		@1193
+;		vbSerEtkCurIndRead			@1194
+;		vbSerEtkSavIndRead			@1195
+;		vbSerEtkAllLock				@1196
+;		vbSerEtkAllUnLock			@1197
+;		vbSerEtkIssuedCheck			@1198
+;		vbSerEtkStatRead			@1199
+;		vbSerEtkCurIndWrite			@1200
+;		vbSerEtkCreateTotalIndex	@1201
+;
+;		vbSerCpmReadResetTally		@1202
+;		vbSerTtlCasTotalCheck		@1204
+;
+;		vbCliOpCpnIndRead			@1205
+;		vbCliOpCstrIndRead			@1206
+;		vbCliOpOepPluRead			@1207
+;		vbSerOpCpnAssign			@1208
+;		vbSerOpCstrAssign			@1209
+;		vbSerOpCstrDelete			@1210
+;		vbSerGusResetDeliveryQueue	@1211
+;		vbSerTtlTotalReadPlu		@1212
+;
+;		vbIspDateTimeRead			@1220
+;		vbIspDateTimeWrite			@1221
+;		vbIspSysConfig				@1222
+;		vbIspRecvResetLog			@1223
+;		vbIspRecvResetLog2			@1224
+;		vbCliOpMldIndRead			@1225
+;		vbSerOpMldAssign			@1226
+;		vbSerEJNoOfTrans			@1227
+;		vbSerEJReadResetTransStart	@1228
+;		vbSerEJReadResetTrans		@1229
+;		vbSerEJReadResetTransEnd	@1230
+;		vbSerEJReadResetTransOver	@1231
+;
+;		vbPcifOpenEx				@1232
+;		vbPcifCloseEx				@1233
+;    vbSerCasOpenPickupLoan		@1234
+;    vbSerCasClosePickupLoan		@1235
+;    vbSerTtlUpdateFile				@1236
+;    vbSerOpDeptDelete         @1237
+;		vbSerTtlTotalReadPluEx		@1238
+;
+; ----- End of File -----

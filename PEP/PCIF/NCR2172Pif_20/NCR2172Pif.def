@@ -1,0 +1,47 @@
+LIBRARY	NCR2172Pif_20
+
+EXPORTS
+		PifAbortEx					@2
+
+		PifCreateSem				@3
+		PifReleaseSem				@4
+		PifRequestSem				@5
+		PifDeleteSem				@6
+
+		PifSleep					@7
+		PifGetDateTime				@8
+
+		PifOpenFile					@10
+		PifSeekFile					@11
+		PifReadFile					@12
+		PifWriteFile				@13
+		PifCloseFile				@14
+		PifDeleteFile				@15
+		PifControlFile				@16
+
+		PifNetOpen					@20
+		PifNetControl				@21
+		PifNetReceive				@22
+		PifNetSend					@23
+		PifNetClose					@24
+
+		PifOpenCom					@25
+		PifControlCom				@26
+		PifReadCom					@27
+		PifWriteCom					@28
+		PifCloseCom					@29
+
+		PifSysConfig				@40
+		PifLog						@41
+
+		PifControl					@42
+		PifNetOpenHost				@43
+		PifGetHostByName			@44
+		PifOpenDirFile				@45
+		
+		PifGetFileSize				@46
+		PifOpenFileNew				@47
+		PifReadFileNew				@48
+		PifSeekFileNew				@49
+		PifWriteFileNew				@50
+		PifWsaLastError				@51

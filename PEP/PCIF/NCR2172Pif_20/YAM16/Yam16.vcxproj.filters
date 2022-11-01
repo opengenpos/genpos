@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{19dd81d7-6a99-4f78-8c3f-48dfd541b87d}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4c9c91cb-6e9e-4062-a58f-73ffa9eb14b4}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{3bede879-123b-47b7-b443-0e6f75d90982}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="YAMCLOSE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="YAMCNTL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="YAMINIT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="YAMOPEN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="YAMREAD.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="YAMRESP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="YAMRM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="YAMWM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="YAMWRITE.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="YAM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

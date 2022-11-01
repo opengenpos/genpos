@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d9f32ed3-8cc4-4078-8496-2242e771abcf}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{cf79b7eb-2cfa-4376-b795-abdd0089ad52}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{2813c5c3-8d6d-4351-a507-026d20e414ba}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CLPBOARD.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLG16CM.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLG40CM.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGEOD.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGFIELD.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGIMP.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGLIST.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGLOOP.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGMATHE.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGPRT.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGPRTD.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGPTD.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGSIZE.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLGTITLE.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="INFO.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ITEM.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LISTVW.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MAINFRM.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PROGRDOC.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PROGRFRM.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PROGRPT.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="REPORT.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="REPORTVW.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="STDAFX.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RES\PROGRPT.RC">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CLPBOARD.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLG16CM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLG40CM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGEOD.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGFIELD.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGIMP.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGLIST.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGLOOP.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGMATHE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGPRT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGPRTD.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGPTD.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGSIZE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLGTITLE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="INFO.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITEM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LISTVW.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MAINFRM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PROGRDOC.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PROGRFRM.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PROGRPT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="REPORT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="REPORTVW.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RESOURCE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="STDAFX.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\LIST.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\PRT7193.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\SHEET.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\TOOLBAR.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RES\MOVE.CUR">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RES\SIZENS.CUR">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Progrpt.ini" />
+    <CustomBuild Include="SAMPLE.RPT" />
+  </ItemGroup>
+</Project>

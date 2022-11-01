@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6bbbee55-fd35-4e16-b6cc-7ce685f110fe}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{afa29f17-cd57-4e01-8fe7-f192ecc578ad}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{42898e4e-c0d4-4bc0-acb1-709f5a4132e8}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ASYPCLOS.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ASYPCNTL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ASYPINIT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ASYPOPEN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ASYPREAD.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ASYPWRT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ASYRM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ASYWM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ASY.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

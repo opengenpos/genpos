@@ -1,0 +1,6 @@
+; PEPControl.def : Declares the module parameters for the DLL.
+
+LIBRARY      "PEPControl"
+
+EXPORTS
+    ; Explicit exports can go here

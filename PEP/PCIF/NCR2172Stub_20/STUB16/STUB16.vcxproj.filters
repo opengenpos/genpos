@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{73ad917d-78bd-4883-bc79-23f4255916bb}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8d5374a0-5957-4569-a317-423bddd32151}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{30269484-4a7e-4d50-88cb-f8abd0e09e3f}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Pcifclex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PCIFCLOS.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PCIFCON.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PCIFDISC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PCIFOPEN.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pcifopex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBCAS.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBCOM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBCPM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBEJ.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBETK.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBGCF.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBISP.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBOPR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBPAR.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_PCSTBTTL.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="R20_STUBRMT.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PCIFL.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\R20_PIF.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

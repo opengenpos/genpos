@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{c7785408-8cc5-4aed-9b89-70a9436af080}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{557b9ef9-fd53-4658-8cd7-8e2b75337593}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="A004.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A005.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A007.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A020.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A033.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A068.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A071.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A084.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A086.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A087.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A088.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A089.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A111.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A114.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A115.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A116.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A124.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A127.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A128.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A130.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A133.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A137.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A152.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A154.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A160.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A161.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A162.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A170.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A208.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A209.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ACTION.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="A004.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A005.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A007.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A020.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A033.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A068.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A071.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A084.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A086.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A087.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A088.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A089.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A111.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A114.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A115.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A116.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A124.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A127.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A128.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A130.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A133.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A137.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A152.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A154.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A160.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A161.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A162.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A170.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A208.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A209.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ACTINIT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ACTWEP.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

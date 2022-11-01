@@ -1,0 +1,868 @@
+/*
+* ---------------------------------------------------------------------------
+* Title         :   Public Header File of Transfer
+* Category      :   Transfer, NCR 2170 PEP for Windows (Hotel US Model)
+* Program Name  :   TRANS.H
+* Copyright (C) :   1993, NCR Corp. E&M-OISO, All rights reserved.
+* --------------------------------------------------------------------------
+* Compiler      :   MS-C Ver. 7.00 by Microsoft Corp.
+* Memory Model  :   Large Model
+* Options       :   /c /AL /W4 /G2s /Zp
+* --------------------------------------------------------------------------
+* Abstract :
+*
+*
+* --------------------------------------------------------------------------
+* Update Histories
+*
+* Date          Ver.       Name             Description
+* Nov-15-93 : 00.00.01 : T.Yamamoto : Initial (Migrate from HP US Model)
+* Mar-13-95 : 03.00.00 : H.Ishida   : Add TRANS_ACCESS_CPN
+* Apr-06-95 : 03.00.00 : H.Ishida   : Add TRANS_ACCESS_CSTR
+* Jan-22-96 : 03.00.05 : M.Suzuki   : Add TRANS_ACCESS_PROGRPT R3.1
+*           :          :            : Add TRANS_ACCESS_PPI R3.1
+* Sep-25-98 : 03.03.00 : A.Mitsui   : Add TRANS_ACCESS_MLD V3.3
+* Jan-28-00 : 01.00.00 : hrkato     : Saratoga
+*===========================================================================
+*===========================================================================
+* PVCS Entry
+* --------------------------------------------------------------------------
+* $Revision$
+* $Date$
+* $Author$
+* $Log$
+*===========================================================================
+*/
+/*
+*===========================================================================
+*   Define Declarations 
+*===========================================================================
+*/
+#ifndef TRANS_INCLUDED_DEFINED
+#define TRANS_INCLUDED_DEFINED
+
+//RJC  null out PEPENTRY for 32 bit conversion
+#ifndef PEPENTRY
+#define     PEPENTRY    
+#endif
+
+#define _INC_TRANSFER
+
+extern HANDLE hResourceDll;
+
+
+/*
+*===========================================================================
+*   Dialog Box Template ID Definition
+*===========================================================================
+*/
+#define IDD_TRANS_TERMINAL          3031
+#define IDD_TRANS_DIRECTORY         3032
+#define IDD_TRANS_PASSWORD          3033
+#define IDD_TRANS_LOADER_BOARD      3034
+#define IDD_TRANS_TIMER_MESSAGE     3035
+#define IDD_TRANS_DATA_ABORT        3036
+#define IDD_TRANS_IPADDRESS         3037
+
+#define IDD_TRANS                   100
+
+#define IDD_TRANS_CONTINUE          (IDD_TRANS + 2)
+#define IDD_TRANS_ABORT             (IDD_TRANS + 3)
+
+/* Terminal Communication for Dialog Box ID */
+#define IDD_TRANS_TERM_CONNECT      (IDD_TRANS + 100)
+#define IDD_TRANS_TERM_NUMBER       (IDD_TRANS + 101)
+#define IDD_TRANS_TERM_PORT         (IDD_TRANS + 102)
+#define IDD_TRANS_TERM_BAUD         (IDD_TRANS + 103)
+#define IDD_TRANS_TERM_SEND         (IDD_TRANS + 104)
+#define IDD_TRANS_TERM_RECEIVE      (IDD_TRANS + 105)
+#define IDD_TRANS_TERM_PASS         (IDD_TRANS + 106)
+#define IDD_TRANS_TERM_CLOSE        (IDD_TRANS + 107)
+#define IDD_TRANS_TERM_CHG_PROG     (IDD_TRANS + 108)
+#define IDD_TRANS_TERM_CHG_ACT      (IDD_TRANS + 109)
+#define IDD_TRANS_TERM_CHG_DEPT     (IDD_TRANS + 110)
+#define IDD_TRANS_TERM_CHG_PLU      (IDD_TRANS + 111)
+#define IDD_TRANS_TERM_CHG_WAI      (IDD_TRANS + 112)
+#define IDD_TRANS_TERM_CHG_CAS      (IDD_TRANS + 113)
+#define IDD_TRANS_TERM_CHG_ETK      (IDD_TRANS + 114)
+#define IDD_TRANS_TERM_CHG_CPN      (IDD_TRANS + 115)
+#define IDD_TRANS_TERM_CHG_CSTR     (IDD_TRANS + 116)
+#define IDD_TRANS_TERM_CHG_RPT      (IDD_TRANS + 117)
+#define IDD_TRANS_TERM_CHG_PPI      (IDD_TRANS + 118)
+#define IDD_TRANS_TERM_CHG_MLD      (IDD_TRANS + 119)   /* V3.3 */
+#define IDD_TRANS_TERM_CHG_TOUCHLAY	(IDD_TRANS + 120)
+#define IDD_TRANS_TERM_CHG_KEYBDLAY	(IDD_TRANS + 121)
+#define IDD_TRANS_TERM_CHG_LOGO     (IDD_TRANS + 122)
+#define IDD_TRANS_TERM_CHG_ICON     (IDD_TRANS + 123)
+#define IDD_TRANS_TERM_TRA_PROG     (IDD_TRANS + 124)
+#define IDD_TRANS_TERM_TRA_ACT      (IDD_TRANS + 125)
+#define IDD_TRANS_TERM_TRA_DEPT     (IDD_TRANS + 126)
+#define IDD_TRANS_TERM_TRA_PLU      (IDD_TRANS + 127)
+#define IDD_TRANS_TERM_TRA_WAI      (IDD_TRANS + 128)
+#define IDD_TRANS_TERM_TRA_CAS      (IDD_TRANS + 129)
+#define IDD_TRANS_TERM_TRA_ETK      (IDD_TRANS + 130)
+#define IDD_TRANS_TERM_TRA_CPN      (IDD_TRANS + 131)
+#define IDD_TRANS_TERM_TRA_CSTR     (IDD_TRANS + 132)
+#define IDD_TRANS_TERM_TRA_RPT      (IDD_TRANS + 133)
+#define IDD_TRANS_TERM_TRA_PPI      (IDD_TRANS + 134)
+#define IDD_TRANS_TERM_TRA_MLD      (IDD_TRANS + 135)   /* V3.3 */
+#define IDD_TRANS_TERM_TRA_TOUCH	(IDD_TRANS + 136)	//ESMITH LAYOUT
+#define IDD_TRANS_TERM_TRA_KEYBRD   (IDD_TRANS + 137)
+#define IDD_TRANS_TERM_TRA_LOGO     (IDD_TRANS + 138)
+#define IDD_TRANS_TERM_TRA_ICON     (IDD_TRANS + 139)
+#define IDD_TRANS_TERM_DIR          (IDD_TRANS + 140)
+#define IDD_TRANS_TERM_DIR_ADD      (IDD_TRANS + 141)
+#define IDD_TRANS_TERM_DIR_CHANGE   (IDD_TRANS + 142)
+#define IDD_TRANS_TERM_DIR_DELETE   (IDD_TRANS + 143)
+#define IDD_TRANS_TERM_ALL          (IDD_TRANS + 144)
+#define IDD_TRANS_TERM_SUP          (IDD_TRANS + 145)
+#define IDD_TRANS_TERM_PLU          (IDD_TRANS + 146)
+#define IDD_TRANS_TERM_IP           (IDD_TRANS + 147)   /* saratoga */
+#define IDD_TRANS_TERM_LAY			(IDD_TRANS + 148)  //Broadcast Layouts ESMITH LAYOUT
+#define IDD_TRANS_TERM_LOGO         (IDD_TRANS + 149)	//Broadcast Receipt Logo Files JHALL
+#define IDD_TRANS_TERM_ICON_CHANGE  (IDD_TRANS + 150)
+#define IDD_ICON_DIR_INFO            (IDD_TRANS + 151)  
+#define IDS_ICON_DIRECTORY			(IDD_TRANS + 152)
+
+
+#define IDD_TRANS_TERM_SET_ALL		(IDD_TRANS + 302) //RPH ADDED 12/09/02 SR#77
+#define IDD_TRANS_TERM_CLEAR		(IDD_TRANS + 303) //RPH ADDED 12/09/02 SR#77
+#define IDD_TRANS_TERM_SET_CHANGED	(IDD_TRANS + 304) //RPH ADDED 12/09/02 SR#77
+#define IDD_TRANS_TERM_LAYOUT_MNGR	(IDD_TRANS + 316) //JHH ADDED 11/24/03
+
+
+#define IDD_TRANS_CAPTION1			(IDD_TRANS + 305)
+#define IDD_TRANS_CAPTION2			(IDD_TRANS + 306)
+#define IDD_TRANS_CAPTION3			(IDD_TRANS + 307)
+#define IDD_TRANS_CAPTION4			(IDD_TRANS + 308)
+#define IDD_TRANS_CAPTION5			(IDD_TRANS + 309)
+#define IDD_TRANS_CAPTION6			(IDD_TRANS + 310)
+#define IDD_TRANS_CAPTION7			(IDD_TRANS + 311)
+#define IDD_TRANS_GROUPBOX1			(IDD_TRANS + 312)
+#define IDD_TRANS_GROUPBOX2			(IDD_TRANS + 313)
+#define IDD_TRANS_GROUPBOX3			(IDD_TRANS + 314)
+#define IDD_TRANS_GROUPBOX4			(IDD_TRANS + 315)
+#define IDD_TRANS_ICONGROUPBOX      (IDD_TRANS + 316)
+
+
+/* Directory for Dialog Box ID */
+#define IDD_TRANS_DIR_NAME          (IDD_TRANS + 100)
+#define IDD_TRANS_DIR_NUMBER        (IDD_TRANS + 101)
+#define IDD_TRANS_DIR_PASS          (IDD_TRANS + 102)
+#define IDD_TRANS_DIR_BAUD          (IDD_TRANS + 103)
+#define IDD_TRANS_DIR_INIT          (IDD_TRANS + 104)
+#define IDD_TRANS_DIR_TONE          (IDD_TRANS + 105)
+#define IDD_TRANS_DIR_PULSE         (IDD_TRANS + 106)
+#define IDD_TRANS_DIR_NONE          (IDD_TRANS + 107)
+#define IDD_TRANS_DIR_4             (IDD_TRANS + 108)
+#define IDD_TRANS_DIR_5             (IDD_TRANS + 109)
+
+#define IDD_TRANS_DIR_CAPTION1		(IDD_TRANS + 110)
+#define IDD_TRANS_DIR_CAPTION2		(IDD_TRANS + 111)
+#define IDD_TRANS_DIR_CAPTION3		(IDD_TRANS + 112)
+#define IDD_TRANS_DIR_CAPTION4		(IDD_TRANS + 113)
+#define IDD_TRANS_DIR_CAPTION5		(IDD_TRANS + 114)
+#define IDD_TRANS_DIR_GROUPBOX1		(IDD_TRANS + 115)
+
+
+/* Change Password for Dialog Box ID */
+#define IDD_TRANS_PASS_UPDATE       (IDD_TRANS + 100)
+#define IDD_TRANS_PASS_MNEMO        (IDD_TRANS + 101)
+#define IDD_TRANS_PASS_WORD         (IDD_TRANS + 102)
+#define IDD_TRANS_PASS_CAPTION		(IDD_TRANS + 103)
+
+/* Transfer Data (Abort) for Dialog Box ID */
+#define IDD_TRANS_ABORT_MESSAGE1    (IDD_TRANS + 100)
+#define IDD_TRANS_ABORT_MESSAGE2    (IDD_TRANS + 101)
+#define IDD_TRANS_ABORT_MESSAGE3	(IDD_TRANS + 102)
+#define IDD_TRANS_ABORT_FRAME       (IDD_TRANS + 103)
+#define IDD_TRANS_ABORT_RATE001     (IDD_TRANS_ABORT_FRAME + 1)
+#define IDD_TRANS_ABORT_RATE002     (IDD_TRANS_ABORT_FRAME + 2)
+#define IDD_TRANS_ABORT_RATE003     (IDD_TRANS_ABORT_FRAME + 3)
+#define IDD_TRANS_ABORT_RATE004     (IDD_TRANS_ABORT_FRAME + 4)
+#define IDD_TRANS_ABORT_RATE005     (IDD_TRANS_ABORT_FRAME + 5)
+#define IDD_TRANS_ABORT_RATE006     (IDD_TRANS_ABORT_FRAME + 6)
+#define IDD_TRANS_ABORT_RATE007     (IDD_TRANS_ABORT_FRAME + 7)
+#define IDD_TRANS_ABORT_RATE008     (IDD_TRANS_ABORT_FRAME + 8)
+#define IDD_TRANS_ABORT_RATE009     (IDD_TRANS_ABORT_FRAME + 9)
+#define IDD_TRANS_ABORT_RATE010     (IDD_TRANS_ABORT_FRAME + 10)
+#define IDD_TRANS_ABORT_RATE011     (IDD_TRANS_ABORT_FRAME + 11)
+#define IDD_TRANS_ABORT_RATE012     (IDD_TRANS_ABORT_FRAME + 12)
+#define IDD_TRANS_ABORT_RATE013     (IDD_TRANS_ABORT_FRAME + 13)
+#define IDD_TRANS_ABORT_RATE014     (IDD_TRANS_ABORT_FRAME + 14)
+#define IDD_TRANS_ABORT_RATE015     (IDD_TRANS_ABORT_FRAME + 15)
+#define IDD_TRANS_ABORT_RATE016     (IDD_TRANS_ABORT_FRAME + 16)
+#define IDD_TRANS_ABORT_RATE017     (IDD_TRANS_ABORT_FRAME + 17)
+#define IDD_TRANS_ABORT_RATE018     (IDD_TRANS_ABORT_FRAME + 18)
+#define IDD_TRANS_ABORT_RATE019     (IDD_TRANS_ABORT_FRAME + 19)
+#define IDD_TRANS_ABORT_RATE020     (IDD_TRANS_ABORT_FRAME + 20)
+#define IDD_TRANS_ABORT_RATE021     (IDD_TRANS_ABORT_FRAME + 21)
+#define IDD_TRANS_ABORT_RATE022     (IDD_TRANS_ABORT_FRAME + 22)
+#define IDD_TRANS_ABORT_RATE023     (IDD_TRANS_ABORT_FRAME + 23)
+#define IDD_TRANS_ABORT_RATE024     (IDD_TRANS_ABORT_FRAME + 24)
+#define IDD_TRANS_ABORT_RATE025     (IDD_TRANS_ABORT_FRAME + 25)
+#define IDD_TRANS_ABORT_RATE026     (IDD_TRANS_ABORT_FRAME + 26)
+#define IDD_TRANS_ABORT_RATE027     (IDD_TRANS_ABORT_FRAME + 27)
+#define IDD_TRANS_ABORT_RATE028     (IDD_TRANS_ABORT_FRAME + 28)
+#define IDD_TRANS_ABORT_RATE029     (IDD_TRANS_ABORT_FRAME + 29)
+#define IDD_TRANS_ABORT_RATE030     (IDD_TRANS_ABORT_FRAME + 30)
+#define IDD_TRANS_ABORT_RATE031     (IDD_TRANS_ABORT_FRAME + 31)
+#define IDD_TRANS_ABORT_RATE032     (IDD_TRANS_ABORT_FRAME + 32)
+#define IDD_TRANS_ABORT_RATE033     (IDD_TRANS_ABORT_FRAME + 33)
+#define IDD_TRANS_ABORT_RATE034     (IDD_TRANS_ABORT_FRAME + 34)
+#define IDD_TRANS_ABORT_RATE035     (IDD_TRANS_ABORT_FRAME + 35)
+#define IDD_TRANS_ABORT_RATE036     (IDD_TRANS_ABORT_FRAME + 36)
+#define IDD_TRANS_ABORT_RATE037     (IDD_TRANS_ABORT_FRAME + 37)
+#define IDD_TRANS_ABORT_RATE038     (IDD_TRANS_ABORT_FRAME + 38)
+#define IDD_TRANS_ABORT_RATE039     (IDD_TRANS_ABORT_FRAME + 39)
+#define IDD_TRANS_ABORT_RATE040     (IDD_TRANS_ABORT_FRAME + 40)
+#define IDD_TRANS_ABORT_RATE041     (IDD_TRANS_ABORT_FRAME + 41)
+#define IDD_TRANS_ABORT_RATE042     (IDD_TRANS_ABORT_FRAME + 42)
+#define IDD_TRANS_ABORT_RATE043     (IDD_TRANS_ABORT_FRAME + 43)
+#define IDD_TRANS_ABORT_RATE044     (IDD_TRANS_ABORT_FRAME + 44)
+#define IDD_TRANS_ABORT_RATE045     (IDD_TRANS_ABORT_FRAME + 45)
+#define IDD_TRANS_ABORT_RATE046     (IDD_TRANS_ABORT_FRAME + 46)
+#define IDD_TRANS_ABORT_RATE047     (IDD_TRANS_ABORT_FRAME + 47)
+#define IDD_TRANS_ABORT_RATE048     (IDD_TRANS_ABORT_FRAME + 48)
+#define IDD_TRANS_ABORT_RATE049     (IDD_TRANS_ABORT_FRAME + 49)
+#define IDD_TRANS_ABORT_RATE050     (IDD_TRANS_ABORT_FRAME + 50)
+#define IDD_TRANS_ABORT_RATE051     (IDD_TRANS_ABORT_FRAME + 51)
+#define IDD_TRANS_ABORT_RATE052     (IDD_TRANS_ABORT_FRAME + 52)
+#define IDD_TRANS_ABORT_RATE053     (IDD_TRANS_ABORT_FRAME + 53)
+#define IDD_TRANS_ABORT_RATE054     (IDD_TRANS_ABORT_FRAME + 54)
+#define IDD_TRANS_ABORT_RATE055     (IDD_TRANS_ABORT_FRAME + 55)
+#define IDD_TRANS_ABORT_RATE056     (IDD_TRANS_ABORT_FRAME + 56)
+#define IDD_TRANS_ABORT_RATE057     (IDD_TRANS_ABORT_FRAME + 57)
+#define IDD_TRANS_ABORT_RATE058     (IDD_TRANS_ABORT_FRAME + 58)
+#define IDD_TRANS_ABORT_RATE059     (IDD_TRANS_ABORT_FRAME + 59)
+#define IDD_TRANS_ABORT_RATE060     (IDD_TRANS_ABORT_FRAME + 60)
+#define IDD_TRANS_ABORT_RATE061     (IDD_TRANS_ABORT_FRAME + 61)
+#define IDD_TRANS_ABORT_RATE062     (IDD_TRANS_ABORT_FRAME + 62)
+#define IDD_TRANS_ABORT_RATE063     (IDD_TRANS_ABORT_FRAME + 63)
+#define IDD_TRANS_ABORT_RATE064     (IDD_TRANS_ABORT_FRAME + 64)
+#define IDD_TRANS_ABORT_RATE065     (IDD_TRANS_ABORT_FRAME + 65)
+#define IDD_TRANS_ABORT_RATE066     (IDD_TRANS_ABORT_FRAME + 66)
+#define IDD_TRANS_ABORT_RATE067     (IDD_TRANS_ABORT_FRAME + 67)
+#define IDD_TRANS_ABORT_RATE068     (IDD_TRANS_ABORT_FRAME + 68)
+#define IDD_TRANS_ABORT_RATE069     (IDD_TRANS_ABORT_FRAME + 69)
+#define IDD_TRANS_ABORT_RATE070     (IDD_TRANS_ABORT_FRAME + 70)
+#define IDD_TRANS_ABORT_RATE071     (IDD_TRANS_ABORT_FRAME + 71)
+#define IDD_TRANS_ABORT_RATE072     (IDD_TRANS_ABORT_FRAME + 72)
+#define IDD_TRANS_ABORT_RATE073     (IDD_TRANS_ABORT_FRAME + 73)
+#define IDD_TRANS_ABORT_RATE074     (IDD_TRANS_ABORT_FRAME + 74)
+#define IDD_TRANS_ABORT_RATE075     (IDD_TRANS_ABORT_FRAME + 75)
+#define IDD_TRANS_ABORT_RATE076     (IDD_TRANS_ABORT_FRAME + 76)
+#define IDD_TRANS_ABORT_RATE077     (IDD_TRANS_ABORT_FRAME + 77)
+#define IDD_TRANS_ABORT_RATE078     (IDD_TRANS_ABORT_FRAME + 78)
+#define IDD_TRANS_ABORT_RATE079     (IDD_TRANS_ABORT_FRAME + 79)
+#define IDD_TRANS_ABORT_RATE080     (IDD_TRANS_ABORT_FRAME + 80)
+#define IDD_TRANS_ABORT_RATE081     (IDD_TRANS_ABORT_FRAME + 81)
+#define IDD_TRANS_ABORT_RATE082     (IDD_TRANS_ABORT_FRAME + 82)
+#define IDD_TRANS_ABORT_RATE083     (IDD_TRANS_ABORT_FRAME + 83)
+#define IDD_TRANS_ABORT_RATE084     (IDD_TRANS_ABORT_FRAME + 84)
+#define IDD_TRANS_ABORT_RATE085     (IDD_TRANS_ABORT_FRAME + 85)
+#define IDD_TRANS_ABORT_RATE086     (IDD_TRANS_ABORT_FRAME + 86)
+#define IDD_TRANS_ABORT_RATE087     (IDD_TRANS_ABORT_FRAME + 87)
+#define IDD_TRANS_ABORT_RATE088     (IDD_TRANS_ABORT_FRAME + 88)
+#define IDD_TRANS_ABORT_RATE089     (IDD_TRANS_ABORT_FRAME + 89)
+#define IDD_TRANS_ABORT_RATE090     (IDD_TRANS_ABORT_FRAME + 90)
+#define IDD_TRANS_ABORT_RATE091     (IDD_TRANS_ABORT_FRAME + 91)
+#define IDD_TRANS_ABORT_RATE092     (IDD_TRANS_ABORT_FRAME + 92)
+#define IDD_TRANS_ABORT_RATE093     (IDD_TRANS_ABORT_FRAME + 93)
+#define IDD_TRANS_ABORT_RATE094     (IDD_TRANS_ABORT_FRAME + 94)
+#define IDD_TRANS_ABORT_RATE095     (IDD_TRANS_ABORT_FRAME + 95)
+#define IDD_TRANS_ABORT_RATE096     (IDD_TRANS_ABORT_FRAME + 96)
+#define IDD_TRANS_ABORT_RATE097     (IDD_TRANS_ABORT_FRAME + 97)
+#define IDD_TRANS_ABORT_RATE098     (IDD_TRANS_ABORT_FRAME + 98)
+#define IDD_TRANS_ABORT_RATE099     (IDD_TRANS_ABORT_FRAME + 99)
+#define IDD_TRANS_ABORT_RATE100     (IDD_TRANS_ABORT_FRAME + 100)
+
+#define	IDD_TRANS_ABORT_CAPTION1	(IDD_TRANS_ABORT_FRAME + 101)
+/* Loader Board Communication for Dialog Box ID */
+#define IDD_TRANS_LOADER_PORT       (IDD_TRANS + 100)
+#define IDD_TRANS_LOADER_BAUD       (IDD_TRANS + 101)
+#define IDD_TRANS_LOADER_SEND       (IDD_TRANS + 102)
+#define IDD_TRANS_LOADER_RECEIVE    (IDD_TRANS + 103)
+#define IDD_TRANS_LOADER_CLOSE      (IDD_TRANS + 104)
+#define IDD_TRANS_LOADER_CHG_PARA   (IDD_TRANS + 105)
+#define IDD_TRANS_LOADER_CHG_DEPT   (IDD_TRANS + 106)
+#define IDD_TRANS_LOADER_CHG_PLU    (IDD_TRANS + 107)
+#define IDD_TRANS_LOADER_CHG_WAI    (IDD_TRANS + 108)
+#define IDD_TRANS_LOADER_CHG_CAS    (IDD_TRANS + 109)
+#define IDD_TRANS_LOADER_CHG_ETK    (IDD_TRANS + 110)
+#define IDD_TRANS_LOADER_CHG_CPN    (IDD_TRANS + 111)
+#define IDD_TRANS_LOADER_CHG_CSTR   (IDD_TRANS + 112)
+#define IDD_TRANS_LOADER_CHG_RPT    (IDD_TRANS + 113)
+#define IDD_TRANS_LOADER_CHG_PPI    (IDD_TRANS + 114)
+#define IDD_TRANS_LOADER_CHG_MLD    (IDD_TRANS + 115)   /* V3.3 */
+#define IDD_TRANS_LOADER_TRA_PARA   (IDD_TRANS + 116)
+#define IDD_TRANS_LOADER_TRA_DEPT   (IDD_TRANS + 117)
+#define IDD_TRANS_LOADER_TRA_PLU    (IDD_TRANS + 118)
+#define IDD_TRANS_LOADER_TRA_WAI    (IDD_TRANS + 119)
+#define IDD_TRANS_LOADER_TRA_CAS    (IDD_TRANS + 120)
+#define IDD_TRANS_LOADER_TRA_ETK    (IDD_TRANS + 121)
+#define IDD_TRANS_LOADER_TRA_CPN    (IDD_TRANS + 122)
+#define IDD_TRANS_LOADER_TRA_CSTR   (IDD_TRANS + 123)
+#define IDD_TRANS_LOADER_TRA_RPT    (IDD_TRANS + 124)
+#define IDD_TRANS_LOADER_TRA_PPI    (IDD_TRANS + 125)
+#define IDD_TRANS_LOADER_TRA_MLD    (IDD_TRANS + 126)   /* V3.3 */
+#define IDD_TRANS_LOADER_BAUD_TXT   (IDD_TRANS + 300)   /* ###ADD Saratoga */
+#define IDD_TRANS_LOADER_PORT_TXT   (IDD_TRANS + 301) /* RPH Added 12/04/2002 SR#72 to allow enable disable*/
+
+#define IDD_TRANS_LOADER_CAPTION1	(IDD_TRANS + 302)
+#define IDD_TRANS_LOADER_CAPTION2	(IDD_TRANS + 303)
+#define IDD_TRANS_LOADER_CAPTION3	(IDD_TRANS + 304)
+#define IDD_TRANS_LOADER_CAPTION4	(IDD_TRANS + 305)
+#define IDD_TRANS_LOADER_GROUPBOX1	(IDD_TRANS + 306)
+#define IDD_TRANS_LOADER_GROUPBOX2	(IDD_TRANS + 307)
+
+/* Terminal IP Address for Dialog Box ID */
+#define IDD_TRANS_IPADD11  (IDD_TRANS + 100)   /* Terminal No.1 IP Address */
+#define IDD_TRANS_IPADD12  (IDD_TRANS + 101)   /* Terminal No.1 IP Address */
+#define IDD_TRANS_IPADD13  (IDD_TRANS + 102)   /* Terminal No.1 IP Address */
+#define IDD_TRANS_IPADD14  (IDD_TRANS + 103)   /* Terminal No.1 IP Address */
+
+#define IDD_TRANS_IPADD21  (IDD_TRANS + 104)   /* Terminal No.2 IP Address */
+#define IDD_TRANS_IPADD22  (IDD_TRANS + 105)   /* Terminal No.2 IP Address */
+#define IDD_TRANS_IPADD23  (IDD_TRANS + 106)   /* Terminal No.2 IP Address */
+#define IDD_TRANS_IPADD24  (IDD_TRANS + 107)   /* Terminal No.2 IP Address */
+
+#define IDD_TRANS_IPADD31  (IDD_TRANS + 108)   /* Terminal No.3 IP Address */
+#define IDD_TRANS_IPADD32  (IDD_TRANS + 109)   /* Terminal No.3 IP Address */
+#define IDD_TRANS_IPADD33  (IDD_TRANS + 110)   /* Terminal No.3 IP Address */
+#define IDD_TRANS_IPADD34  (IDD_TRANS + 111)   /* Terminal No.3 IP Address */
+
+#define IDD_TRANS_IPADD41  (IDD_TRANS + 112)   /* Terminal No.4 IP Address */
+#define IDD_TRANS_IPADD42  (IDD_TRANS + 113)   /* Terminal No.4 IP Address */
+#define IDD_TRANS_IPADD43  (IDD_TRANS + 114)   /* Terminal No.4 IP Address */
+#define IDD_TRANS_IPADD44  (IDD_TRANS + 115)   /* Terminal No.4 IP Address */
+
+#define IDD_TRANS_IPADD51  (IDD_TRANS + 116)   /* Terminal No.5 IP Address */
+#define IDD_TRANS_IPADD52  (IDD_TRANS + 117)   /* Terminal No.5 IP Address */
+#define IDD_TRANS_IPADD53  (IDD_TRANS + 118)   /* Terminal No.5 IP Address */
+#define IDD_TRANS_IPADD54  (IDD_TRANS + 119)   /* Terminal No.5 IP Address */
+
+#define IDD_TRANS_IPADD61  (IDD_TRANS + 120)   /* Terminal No.6 IP Address */
+#define IDD_TRANS_IPADD62  (IDD_TRANS + 121)   /* Terminal No.6 IP Address */
+#define IDD_TRANS_IPADD63  (IDD_TRANS + 122)   /* Terminal No.6 IP Address */
+#define IDD_TRANS_IPADD64  (IDD_TRANS + 123)   /* Terminal No.6 IP Address */
+
+#define IDD_TRANS_IPADD71  (IDD_TRANS + 124)   /* Terminal No.7 IP Address */
+#define IDD_TRANS_IPADD72  (IDD_TRANS + 125)   /* Terminal No.7 IP Address */
+#define IDD_TRANS_IPADD73  (IDD_TRANS + 126)   /* Terminal No.7 IP Address */
+#define IDD_TRANS_IPADD74  (IDD_TRANS + 127)   /* Terminal No.7 IP Address */
+
+#define IDD_TRANS_IPADD81  (IDD_TRANS + 128)   /* Terminal No.8 IP Address */
+#define IDD_TRANS_IPADD82  (IDD_TRANS + 129)   /* Terminal No.8 IP Address */
+#define IDD_TRANS_IPADD83  (IDD_TRANS + 130)   /* Terminal No.8 IP Address */
+#define IDD_TRANS_IPADD84  (IDD_TRANS + 131)   /* Terminal No.8 IP Address */
+
+#define IDD_TRANS_IPADD91  (IDD_TRANS + 132)   /* Terminal No.9 IP Address */
+#define IDD_TRANS_IPADD92  (IDD_TRANS + 133)   /* Terminal No.9 IP Address */
+#define IDD_TRANS_IPADD93  (IDD_TRANS + 134)   /* Terminal No.9 IP Address */
+#define IDD_TRANS_IPADD94  (IDD_TRANS + 135)   /* Terminal No.9 IP Address */
+
+#define IDD_TRANS_IPADD101  (IDD_TRANS + 136)   /* Terminal No.10 IP Address */
+#define IDD_TRANS_IPADD102  (IDD_TRANS + 137)   /* Terminal No.10 IP Address */
+#define IDD_TRANS_IPADD103  (IDD_TRANS + 138)   /* Terminal No.10 IP Address */
+#define IDD_TRANS_IPADD104  (IDD_TRANS + 139)   /* Terminal No.10 IP Address */
+
+#define IDD_TRANS_IPADD111  (IDD_TRANS + 140)   /* Terminal No.11 IP Address */
+#define IDD_TRANS_IPADD112  (IDD_TRANS + 141)   /* Terminal No.11 IP Address */
+#define IDD_TRANS_IPADD113  (IDD_TRANS + 142)   /* Terminal No.11 IP Address */
+#define IDD_TRANS_IPADD114  (IDD_TRANS + 143)   /* Terminal No.11 IP Address */
+
+#define IDD_TRANS_IPADD121  (IDD_TRANS + 144)   /* Terminal No.12 IP Address */
+#define IDD_TRANS_IPADD122  (IDD_TRANS + 145)   /* Terminal No.12 IP Address */
+#define IDD_TRANS_IPADD123  (IDD_TRANS + 146)   /* Terminal No.12 IP Address */
+#define IDD_TRANS_IPADD124  (IDD_TRANS + 147)   /* Terminal No.12 IP Address */
+
+#define IDD_TRANS_IPADD131  (IDD_TRANS + 148)   /* Terminal No.13 IP Address */
+#define IDD_TRANS_IPADD132  (IDD_TRANS + 149)   /* Terminal No.13 IP Address */
+#define IDD_TRANS_IPADD133  (IDD_TRANS + 150)   /* Terminal No.13 IP Address */
+#define IDD_TRANS_IPADD134  (IDD_TRANS + 151)   /* Terminal No.13 IP Address */
+
+#define IDD_TRANS_IPADD141  (IDD_TRANS + 152)   /* Terminal No.14 IP Address */
+#define IDD_TRANS_IPADD142  (IDD_TRANS + 153)   /* Terminal No.14 IP Address */
+#define IDD_TRANS_IPADD143  (IDD_TRANS + 154)   /* Terminal No.14 IP Address */
+#define IDD_TRANS_IPADD144  (IDD_TRANS + 155)   /* Terminal No.14 IP Address */
+
+#define IDD_TRANS_IPADD151  (IDD_TRANS + 156)   /* Terminal No.15 IP Address */
+#define IDD_TRANS_IPADD152  (IDD_TRANS + 157)   /* Terminal No.15 IP Address */
+#define IDD_TRANS_IPADD153  (IDD_TRANS + 158)   /* Terminal No.15 IP Address */
+#define IDD_TRANS_IPADD154  (IDD_TRANS + 159)   /* Terminal No.15 IP Address */
+
+#define IDD_TRANS_IPADD161  (IDD_TRANS + 160)   /* Terminal No.16 IP Address */
+#define IDD_TRANS_IPADD162  (IDD_TRANS + 161)   /* Terminal No.16 IP Address */
+#define IDD_TRANS_IPADD163  (IDD_TRANS + 162)   /* Terminal No.16 IP Address */
+#define IDD_TRANS_IPADD164  (IDD_TRANS + 163)   /* Terminal No.16 IP Address */
+
+#define IDD_TRANS_IPSTRNO     (IDD_TRANS + 164)
+#define IDD_TRANS_IPSTR1      (IDD_TRANS + 165)
+#define IDD_TRANS_IPSTR2      (IDD_TRANS + 166)
+#define IDD_TRANS_IPSTR3      (IDD_TRANS + 167)
+#define IDD_TRANS_IPSTR4      (IDD_TRANS + 168)
+#define IDD_TRANS_IPSTR5      (IDD_TRANS + 169)
+#define IDD_TRANS_IPSTR6      (IDD_TRANS + 170)
+#define IDD_TRANS_IPSTR7      (IDD_TRANS + 171)
+#define IDD_TRANS_IPSTR8      (IDD_TRANS + 172)
+#define IDD_TRANS_IPSTR9      (IDD_TRANS + 173)
+#define IDD_TRANS_IPSTR10     (IDD_TRANS + 174)
+#define IDD_TRANS_IPSTR11     (IDD_TRANS + 175)
+#define IDD_TRANS_IPSTR12     (IDD_TRANS + 176)
+#define IDD_TRANS_IPSTR13     (IDD_TRANS + 177)
+#define IDD_TRANS_IPSTR14     (IDD_TRANS + 178)
+#define IDD_TRANS_IPSTR15     (IDD_TRANS + 179)
+#define IDD_TRANS_IPSTR16     (IDD_TRANS + 180)
+#define IDD_TRANS_IPSTRDELILEN (IDD_TRANS + 181)
+
+#define IDD_TRANS_IPDHCP      (IDD_TRANS + 182)
+
+#define TRANS_SPIN_OFFSET    200
+
+#define IDD_TRANS_IPADDSPN11 (IDD_TRANS_IPADD11 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN12 (IDD_TRANS_IPADD12 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN13 (IDD_TRANS_IPADD13 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN14 (IDD_TRANS_IPADD14 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN21 (IDD_TRANS_IPADD21 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN22 (IDD_TRANS_IPADD22 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN23 (IDD_TRANS_IPADD23 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN24 (IDD_TRANS_IPADD24 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN31 (IDD_TRANS_IPADD31 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN32 (IDD_TRANS_IPADD32 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN33 (IDD_TRANS_IPADD33 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN34 (IDD_TRANS_IPADD34 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN41 (IDD_TRANS_IPADD41 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN42 (IDD_TRANS_IPADD42 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN43 (IDD_TRANS_IPADD43 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN44 (IDD_TRANS_IPADD44 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN51 (IDD_TRANS_IPADD51 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN52 (IDD_TRANS_IPADD52 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN53 (IDD_TRANS_IPADD53 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN54 (IDD_TRANS_IPADD54 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN61 (IDD_TRANS_IPADD61 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN62 (IDD_TRANS_IPADD62 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN63 (IDD_TRANS_IPADD63 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN64 (IDD_TRANS_IPADD64 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN71 (IDD_TRANS_IPADD71 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN72 (IDD_TRANS_IPADD72 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN73 (IDD_TRANS_IPADD73 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN74 (IDD_TRANS_IPADD74 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN81 (IDD_TRANS_IPADD81 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN82 (IDD_TRANS_IPADD82 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN83 (IDD_TRANS_IPADD83 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN84 (IDD_TRANS_IPADD84 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN91 (IDD_TRANS_IPADD91 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN92 (IDD_TRANS_IPADD92 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN93 (IDD_TRANS_IPADD93 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN94 (IDD_TRANS_IPADD94 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN101 (IDD_TRANS_IPADD101 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN102 (IDD_TRANS_IPADD102 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN103 (IDD_TRANS_IPADD103 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN104 (IDD_TRANS_IPADD104 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN111 (IDD_TRANS_IPADD111 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN112 (IDD_TRANS_IPADD112 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN113 (IDD_TRANS_IPADD113 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN114 (IDD_TRANS_IPADD114 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN121 (IDD_TRANS_IPADD121 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN122 (IDD_TRANS_IPADD122 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN123 (IDD_TRANS_IPADD123 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN124 (IDD_TRANS_IPADD124 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN131 (IDD_TRANS_IPADD131 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN132 (IDD_TRANS_IPADD132 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN133 (IDD_TRANS_IPADD133 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN134 (IDD_TRANS_IPADD134 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN141 (IDD_TRANS_IPADD141 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN142 (IDD_TRANS_IPADD142 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN143 (IDD_TRANS_IPADD143 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN144 (IDD_TRANS_IPADD144 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN151 (IDD_TRANS_IPADD151 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN152 (IDD_TRANS_IPADD152 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN153 (IDD_TRANS_IPADD153 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN154 (IDD_TRANS_IPADD154 + TRANS_SPIN_OFFSET)
+
+#define IDD_TRANS_IPADDSPN161 (IDD_TRANS_IPADD161 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN162 (IDD_TRANS_IPADD162 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN163 (IDD_TRANS_IPADD163 + TRANS_SPIN_OFFSET)
+#define IDD_TRANS_IPADDSPN164 (IDD_TRANS_IPADD164 + TRANS_SPIN_OFFSET)
+
+/*
+*===========================================================================
+*   String Resource IDs
+*===========================================================================
+*/
+// For problems with string defined constant numbers this range follows IDS_FILE
+// If there are problem with defined constants for strings in the resource file overlapping
+// in ranges, this value may need to be adjusted.
+#define IDS_TRANS_GUARD_VALUE           23640    // This value is defined as a string constant to help isolate constant value conflicts
+#define IDS_TRANS                       (IDS_TRANS_GUARD_VALUE+1)
+
+#define IDS_TRANS_NAME                  (IDS_TRANS + 0)
+#define IDS_TRANS_MEMORY                (IDS_TRANS + 1)
+#define IDS_TRANS_DELETE                (IDS_TRANS + 2)
+#define IDS_TRANS_PLEASE_WAIT           (IDS_TRANS + 3)
+#define IDS_TRANS_TIMER                 (IDS_TRANS + 4)
+#define IDS_TRANS_LOCK_KEYBOARD         (IDS_TRANS + 5)
+#define IDS_TRANS_NOW_LOCK_KEYBOARD     (IDS_TRANS + 6)
+#define IDS_TRANS_NOW_UNLOCK_KEYBOARD   (IDS_TRANS + 7)
+#define IDS_TRANS_SUC_TRANSFER          (IDS_TRANS + 8)
+#define IDS_TRANS_CAL_RATE              (IDS_TRANS + 9)
+#define IDS_TRANS_ERR_MASTER            (IDS_TRANS + 10)
+#define IDS_TRANS_ERR_BMASTER           (IDS_TRANS + 11)
+#define IDS_TRANS_ERR_SATELLITE         (IDS_TRANS + 12)
+#define IDS_TRANS_NOW_BROADCAST         (IDS_TRANS + 13)
+
+#define IDS_TRANS_ERR_SERIAL_OPEN       (IDS_TRANS + 16)
+#define IDS_TRANS_ERR_SERIAL_CLOSE      (IDS_TRANS + 17) 
+#define IDS_TRANS_ERR_SERIAL_ALREADY    (IDS_TRANS + 18)
+#define IDS_TRANS_NOW_CONNECT           (IDS_TRANS + 19)
+#define IDS_TRANS_SUC_CONNECT           (IDS_TRANS + 20)
+#define IDS_TRANS_ERR_CONNECT           (IDS_TRANS + 21)
+#define IDS_TRANS_ERR_HAND_SET          (IDS_TRANS + 22)
+#define IDS_TRANS_NOW_DISCONNECT        (IDS_TRANS + 23)
+#define IDS_TRANS_SUC_DISCONNECT        (IDS_TRANS + 24)
+#define IDS_TRANS_ERR_DISCONNECT        (IDS_TRANS + 25)
+#define IDS_TRANS_NOW_LOGON             (IDS_TRANS + 26)
+#define IDS_TRANS_SUC_LOGON             (IDS_TRANS + 27)
+#define IDS_TRANS_ERR_LOGON             (IDS_TRANS + 28)
+#define IDS_TRANS_ERR_LOGON_MASTER      (IDS_TRANS + 29)
+#define IDS_TRANS_ERR_LOGON_PASS        (IDS_TRANS + 30)
+#define IDS_TRANS_NOW_LOGOFF            (IDS_TRANS + 31)
+#define IDS_TRANS_SUC_LOGOFF            (IDS_TRANS + 32)
+#define IDS_TRANS_ERR_LOGOFF            (IDS_TRANS + 33)
+
+#define IDS_TRANS_ERR_LAN_OPEN          (IDS_TRANS + 34)    /* saratoga */
+#define IDS_TRANS_ERR_LAN_CLOSE         (IDS_TRANS + 35)    /* saratoga */
+#define IDS_TRANS_ERR_LAN_ALREADY       (IDS_TRANS + 36)    /* saratoga */
+#define IDS_TRANS_ERR_LAN_MEMORY        (IDS_TRANS + 37)    /* saratoga */
+#define IDS_TRANS_ERR_LAN_PARMS         (IDS_TRANS + 38)    /* saratoga */
+#define IDS_TRANS_ERR_LAN_NOEXIST       (IDS_TRANS + 39)    /* saratoga */
+#define IDS_TRANS_ERR_LAN_SOCK_ERR      (IDS_TRANS + 40)    /* saratoga */
+#define IDS_TRANS_ERR_LAN_BIND_ERR      (IDS_TRANS + 41)    /* saratoga */
+#define IDS_TRANS_ERR_LOGON_TIMEOUT     (IDS_TRANS + 42)    /* saratoga */
+
+#define IDS_TRANS_ENTER                 (IDS_TRANS + 48)
+#define IDS_TRANS_REENTER               (IDS_TRANS + 49)
+#define IDS_TRANS_ERR_PASS              (IDS_TRANS + 50)
+#define IDS_TRANS_ERR_PASS_INVALID      (IDS_TRANS + 51)
+#define IDS_TRANS_ERR_PASS_OVER         (IDS_TRANS + 52)
+
+#define IDS_TRANS_ERR_LOCAL_FILE_CREATE (IDS_TRANS + 64)
+#define IDS_TRANS_ERR_LOCAL_FILE_OPEN   (IDS_TRANS + 65)
+#define IDS_TRANS_ERR_RMT_FILE_OPEN     (IDS_TRANS + 66)
+#define IDS_TRANS_ERR_CONVERT           (IDS_TRANS + 67)
+#define IDS_TRANS_ERR_OLDVERSION        (IDS_TRANS + 68)    /* V3.3 */
+#define IDS_TRANS_ERR_FILEOPENFAILED    (IDS_TRANS + 69)
+#define IDS_TRANS_ERR_P2RECSIZEBAD      (IDS_TRANS + 70)
+
+#define IDS_TRANS_ERR_SEND              (IDS_TRANS + 80)
+#define IDS_TRANS_WAR_FILE              (IDS_TRANS + 81)
+#define IDS_TRANS_CHK_REPORT            (IDS_TRANS + 82)
+#define IDS_TRANS_WAR_REPORT            (IDS_TRANS + 83)
+#define IDS_TRANS_ERR_REPORT            (IDS_TRANS + 84)
+#define IDS_TRANS_CHG_DEPT              (IDS_TRANS + 85)
+#define IDS_TRANS_CHG_PLU               (IDS_TRANS + 86)
+#define IDS_TRANS_CHG_WAITER            (IDS_TRANS + 87)
+#define IDS_TRANS_CHG_CASHIER           (IDS_TRANS + 88)
+#define IDS_TRANS_CHG_ETK               (IDS_TRANS + 89)
+#define IDS_TRANS_CHG_EJ                (IDS_TRANS + 90)
+#define IDS_TRANS_CHG_GC                (IDS_TRANS + 91)
+#define IDS_TRANS_CHG_CPN               (IDS_TRANS + 92)
+#define IDS_TRANS_CHG_CSTR              (IDS_TRANS + 93)
+#define IDS_TRANS_CHG_RPT               (IDS_TRANS + 94)
+#define IDS_TRANS_CHG_PPI               (IDS_TRANS + 95)
+#define IDS_TRANS_CHG_MLD               (IDS_TRANS + 96)    /* V3.3 */
+#define IDS_TRANS_SEND_PROG             (IDS_TRANS + 97)
+#define IDS_TRANS_SEND_ACT              (IDS_TRANS + 98)
+#define IDS_TRANS_SEND_DEPT             (IDS_TRANS + 99)
+#define IDS_TRANS_SEND_PLU              (IDS_TRANS + 100)
+#define IDS_TRANS_SEND_PLUINDEX         (IDS_TRANS + 101)   /* Saratoga */
+#define IDS_TRANS_SEND_OEP              (IDS_TRANS + 102)   /* Saratoga */
+#define IDS_TRANS_SEND_WAITER           (IDS_TRANS + 103)
+#define IDS_TRANS_SEND_CASHIER          (IDS_TRANS + 104)
+#define IDS_TRANS_SEND_ETK              (IDS_TRANS + 105)
+#define IDS_TRANS_SEND_CPN              (IDS_TRANS + 106)
+#define IDS_TRANS_SEND_CSTR             (IDS_TRANS + 107)
+#define IDS_TRANS_SEND_RPT              (IDS_TRANS + 108)
+#define IDS_TRANS_SEND_PPI              (IDS_TRANS + 109)
+#define IDS_TRANS_SEND_MLD              (IDS_TRANS + 110)   /* V3.3 */
+
+#define IDS_TRANS_ERR_RECEIVE           (IDS_TRANS + 111)
+#define IDS_TRANS_WAR_SAVE              (IDS_TRANS + 112)
+#define IDS_TRANS_RECEIVE_PROG          (IDS_TRANS + 113)
+#define IDS_TRANS_RECEIVE_ACT           (IDS_TRANS + 114)
+#define IDS_TRANS_RECEIVE_DEPT          (IDS_TRANS + 115)
+#define IDS_TRANS_RECEIVE_PLU           (IDS_TRANS + 116)
+#define IDS_TRANS_RECEIVE_PLUINDEX      (IDS_TRANS + 117)   /* Saratoga */
+#define IDS_TRANS_RECEIVE_OEP           (IDS_TRANS + 118)   /* Saratoga */
+#define IDS_TRANS_RECEIVE_WAITER        (IDS_TRANS + 119)
+#define IDS_TRANS_RECEIVE_CASHIER       (IDS_TRANS + 120)
+#define IDS_TRANS_RECEIVE_ETK           (IDS_TRANS + 121)
+#define IDS_TRANS_RECEIVE_CPN           (IDS_TRANS + 122)
+#define IDS_TRANS_RECEIVE_CSTR          (IDS_TRANS + 123)
+#define IDS_TRANS_RECEIVE_RPT           (IDS_TRANS + 124)
+#define IDS_TRANS_RECEIVE_PPI           (IDS_TRANS + 125)
+#define IDS_TRANS_RECEIVE_MLD           (IDS_TRANS + 126)
+
+#define IDS_TRANS_LOADER                (IDS_TRANS + 127)
+#define IDS_TRANS_LOADER_SAVE           (IDS_TRANS + 128)
+#define IDS_TRANS_LOADER_SAVEERR        (IDS_TRANS + 129)
+#define IDS_TRANS_LOADER_LOAD           (IDS_TRANS + 130)
+#define IDS_TRANS_LOADER_LOADERR        (IDS_TRANS + 131)
+#define IDS_TRANS_LOADER_SAVEAPPL       (IDS_TRANS + 132)
+#define IDS_TRANS_LOADER_SAVEDEPT       (IDS_TRANS + 133)
+#define IDS_TRANS_LOADER_SAVEPLU        (IDS_TRANS + 134)
+#define IDS_TRANS_LOADER_SAVEWAI        (IDS_TRANS + 135)
+#define IDS_TRANS_LOADER_SAVECAS        (IDS_TRANS + 136)
+#define IDS_TRANS_LOADER_SAVEETK        (IDS_TRANS + 137)
+#define IDS_TRANS_LOADER_SAVECPN        (IDS_TRANS + 138)
+#define IDS_TRANS_LOADER_SAVECSTR       (IDS_TRANS + 139)
+#define IDS_TRANS_LOADER_SAVERPT        (IDS_TRANS + 140)
+#define IDS_TRANS_LOADER_SAVEPPI        (IDS_TRANS + 141)
+#define IDS_TRANS_LOADER_SAVEMLD        (IDS_TRANS + 142)   /* V3.3 */
+#define IDS_TRANS_LOADER_LOADAPPL       (IDS_TRANS + 143)
+#define IDS_TRANS_LOADER_LOADDEPT       (IDS_TRANS + 144)
+#define IDS_TRANS_LOADER_LOADPLU        (IDS_TRANS + 145)
+#define IDS_TRANS_LOADER_LOADWAI        (IDS_TRANS + 146)
+#define IDS_TRANS_LOADER_LOADCAS        (IDS_TRANS + 147)
+#define IDS_TRANS_LOADER_LOADETK        (IDS_TRANS + 148)
+#define IDS_TRANS_LOADER_LOADCPN        (IDS_TRANS + 149)
+#define IDS_TRANS_LOADER_LOADCSTR       (IDS_TRANS + 150)
+#define IDS_TRANS_LOADER_LOADRPT        (IDS_TRANS + 151)
+#define IDS_TRANS_LOADER_LOADPPI        (IDS_TRANS + 152)
+#define IDS_TRANS_LOADER_LOADMLD        (IDS_TRANS + 153)   /* V3.3 */
+#define IDS_TRANS_LOADER_SEEK           (IDS_TRANS + 154)
+
+#define IDS_TRANS_CAP_SEL               (IDS_TRANS + 155)
+#define IDS_TRANS_CAP_TERM              (IDS_TRANS + 156)
+#define IDS_TRANS_CAP_DIR               (IDS_TRANS + 157)
+#define IDS_TRANS_CAP_PAS               (IDS_TRANS + 158)
+#define IDS_TRANS_CAP_ABO               (IDS_TRANS + 159)
+#define IDS_TRANS_CAP_LOAD              (IDS_TRANS + 160)
+
+//#define IDS_TRANS_TERM_2170             (IDS_TRANS + 161)
+//#define IDS_TRANS_TERM_LAN              (IDS_TRANS + 163)   /* saratoga */
+#define IDS_TRANS_TERM_LAN              (IDS_TRANS + 161)   /*ESMITH LAN AS DEFAULT */
+#define IDS_TRANS_TERM_MODEM            (IDS_TRANS + 162)
+#define IDS_TRANS_TERM_2170             (IDS_TRANS + 163)   /*ESMITH LAN AS DEFAULT */
+#define IDS_TRANS_TERM_MASTER           (IDS_TRANS + 164)
+#define IDS_TRANS_TERM_BMASTER          (IDS_TRANS + 165)
+#define IDS_TRANS_TERM_TERMINAL02       (IDS_TRANS + 166)
+#define IDS_TRANS_TERM_TERMINAL03       (IDS_TRANS + 167)
+#define IDS_TRANS_TERM_TERMINAL04       (IDS_TRANS + 168)
+#define IDS_TRANS_TERM_TERMINAL05       (IDS_TRANS + 169)
+#define IDS_TRANS_TERM_TERMINAL06       (IDS_TRANS + 170)
+#define IDS_TRANS_TERM_TERMINAL07       (IDS_TRANS + 171)
+#define IDS_TRANS_TERM_TERMINAL08       (IDS_TRANS + 172)
+#define IDS_TRANS_TERM_TERMINAL09       (IDS_TRANS + 173)
+#define IDS_TRANS_TERM_TERMINAL10       (IDS_TRANS + 174)
+#define IDS_TRANS_TERM_TERMINAL11       (IDS_TRANS + 175)
+#define IDS_TRANS_TERM_TERMINAL12       (IDS_TRANS + 176)
+#define IDS_TRANS_TERM_TERMINAL13       (IDS_TRANS + 177)
+#define IDS_TRANS_TERM_TERMINAL14       (IDS_TRANS + 178)
+#define IDS_TRANS_TERM_TERMINAL15       (IDS_TRANS + 179)
+#define IDS_TRANS_TERM_TERMINAL16       (IDS_TRANS + 180)
+#define IDS_TRANS_ERR_MEMORY            (IDS_TRANS + 181)
+#define IDS_TRANS_WAR_CHKREPORT         (IDS_TRANS + 182)
+
+#define IDS_TRANS_IP_CAPTION            (IDS_TRANS + 190)
+#define IDS_TRANS_IPDESC1               (IDS_TRANS + 191)
+#define IDS_TRANS_IPDESC2               (IDS_TRANS + 192)
+#define IDS_TRANS_IPDESC3               (IDS_TRANS + 193)
+#define IDS_TRANS_IPDESC4               (IDS_TRANS + 194)
+#define IDS_TRANS_IPDESC5               (IDS_TRANS + 195)
+#define IDS_TRANS_IPDESC6               (IDS_TRANS + 196)
+#define IDS_TRANS_IPDESC7               (IDS_TRANS + 197)
+#define IDS_TRANS_IPDESC8               (IDS_TRANS + 198)
+#define IDS_TRANS_IPDESC9               (IDS_TRANS + 199)
+#define IDS_TRANS_IPDESC10              (IDS_TRANS + 200)
+#define IDS_TRANS_IPDESC11              (IDS_TRANS + 201)
+#define IDS_TRANS_IPDESC12              (IDS_TRANS + 202)
+#define IDS_TRANS_IPDESC13              (IDS_TRANS + 203)
+#define IDS_TRANS_IPDESC14              (IDS_TRANS + 204)
+#define IDS_TRANS_IPDESC15              (IDS_TRANS + 205)
+#define IDS_TRANS_IPDESC16              (IDS_TRANS + 206)
+#define IDS_TRANS_IPDELILEN             (IDS_TRANS + 207)
+#define IDS_TRANS_SEND_TOUCHLAY			(IDS_TRANS + 208)
+#define IDS_TRANS_SEND_KEYBRDLAY		(IDS_TRANS + 209)
+#define IDS_TRANS_RECEIVE_TOUCH			(IDS_TRANS + 210) //ESMITH LAYOUT
+#define IDS_TRANS_RECEIVE_KEYBRD		(IDS_TRANS + 211)
+#define IDS_TRANS_DEFAULT_DIRECT		(IDS_TRANS + 212)
+#define IDS_TRANS_RECEIVE_LOGO			(IDS_TRANS + 213)
+#define IDS_TRANS_SEND_LOGO				(IDS_TRANS + 214)
+#define IDS_TRANS_SEND_ICON				(IDS_TRANS + 215)
+#define IDS_TRANS_RECEIVE_ICON			(IDS_TRANS + 216)
+#define IDS_TRANS_SEND_FPDB				(IDS_TRANS + 217) //fingerprint file
+#define IDS_TRANS_RECEIVE_FPDB			(IDS_TRANS + 218) //
+
+#define IDS_TRANS_GUARD_VALUE_END       (IDS_TRANS_RECEIVE_FPDB + 2)
+
+/*
+*===========================================================================
+*   Access Flag Definition
+*
+*   WARNING: Double check the flag variable size against the number of bits
+*            used in these flags to ensure that the flag variable size in
+*            number of bits is not exceeded.
+*===========================================================================
+*/
+#define TRANS_ACCESS_MASK       0x0001      /* Mask Bit */
+#define TRANS_ACCESS_MASK2      0x0002      /* Mask Bit */
+
+#define TRANS_ACCESS_PARA       0x0003      /* Parameter */
+#define TRANS_ACCESS_PROG       0x0001      /* Setup Parameter */
+#define TRANS_ACCESS_ACT        0x0002      /* Maintenance Parameter */
+#define TRANS_ACCESS_DEPT       0x0004      /* Department File */
+#define TRANS_ACCESS_PLU        0x0008      /* PLU File */
+#define TRANS_ACCESS_WAITER     0x0010      /* Server File */
+#define TRANS_ACCESS_CASHIER    0x0020      /* Cashier File */
+#define TRANS_ACCESS_ETK        0x0040      /* ETK File */
+#define TRANS_ACCESS_CPN        0x0080      /* Combination Coupon File */
+#define TRANS_ACCESS_CSTR       0x0100      /* Control String File */
+#define TRANS_ACCESS_RPT        0x0200      /* Programmable Report File */
+#define TRANS_ACCESS_PPI        0x0400      /* PPI File */
+#define TRANS_ACCESS_MLD        0x0800      /* MLD File, V3.3 */
+#define TRANS_ACCESS_LAYTOUCH	0x1000		//ESMITH LAYOUT
+#define TRANS_ACCESS_LAYKEYBRD	0x2000	
+#define TRANS_ACCESS_LOGO		0x4000		//Receipt Logo JHALL
+#define TRANS_ACCESS_ICON		0x8000		//Icon Files	
+
+/*
+*===========================================================================
+*   Value Definition
+*===========================================================================
+*/
+/* Directory Structure Length */
+#define TRANS_DIR_NAME_LEN      (60 + 1)    /* with null terminate */
+#define TRANS_DIR_NUMBER_LEN    (30 + 1)    /* with null terminate */
+#define TRANS_DIR_PASS_LEN      (10 + 1)    /* with null terminate */
+#define TRANS_DIR_INIT_LEN      (57 + 1)    /* with null terminate */
+
+/* Message Strings */
+#define TRANS_MAX_MESSAGE_LEN   (384 + 1)   /* with null terminate */
+
+
+#define SELECT_LAN    0 /* ESMITH LAN IS NOW FIRST ENTRY*/
+//#define SELECT_LAN    2 /* ###ADD Saratoga */
+
+extern  WCHAR        szTransIPFileName[];
+extern  WCHAR        szPepAppDataFolder[256];
+
+/*
+*===========================================================================
+*   Structure Type Define Declarations
+*===========================================================================
+*/
+// Need to pack the following data structures to provide backwards compatibility
+// with 16 bit PEP.  Also need to change int to short since int is 16 bits with
+// old compiler but is 32 bit with new Visual C++ 6.0 and Win32.
+#pragma pack(push, 1)
+
+typedef struct {
+    char    szName[TRANS_DIR_NAME_LEN];     /* Name */
+    char    szNumber[TRANS_DIR_NUMBER_LEN]; /* Phone Number */
+    char    szPassword[TRANS_DIR_PASS_LEN]; /* Password */
+    WORD    wBaudRate;                      /* Baud Rate */
+    char    szInit[TRANS_DIR_INIT_LEN];     /* Modem Initial String */
+    BYTE    byMnp;                          /* MNP Status */
+    BYTE    fbyStatus;                      /* Directory Status */
+} DIRECTORY_HGV10;  
+
+typedef struct {
+    WCHAR   szName[TRANS_DIR_NAME_LEN];     /* Name */
+    WCHAR   szNumber[TRANS_DIR_NUMBER_LEN]; /* Phone Number */
+    WCHAR   szPassword[TRANS_DIR_PASS_LEN]; /* Password */
+    WORD    wBaudRate;                      /* Baud Rate */
+    WCHAR   szInit[TRANS_DIR_INIT_LEN];     /* Modem Initial String */
+    BYTE    byMnp;                          /* MNP Status */
+    BYTE    fbyStatus;                      /* Directory Status */
+} DIRECTORY;            /* Directory Statucture */
+
+
+typedef struct {
+    BYTE    byPort;                         /* Port Number */
+    WORD    wBaudRate;                      /* Baud Rate */
+    BYTE    byByteSize;                     /* Byte Size */
+    BYTE    byParity;                       /* Parity Bits */
+    BYTE    byStopBits;                     /* Stop Bits */
+    BYTE    byTerm;                         /* Terminal Number */
+    BYTE    fbyStatus;                      /* Terminal Status */
+    short     iDir;                           /* Number of Directory */
+} TERMINAL;             /* Terminal Structure */
+
+
+typedef struct {
+    BYTE    byPort;                         /* Port Number */
+    WORD    wBaudRate;                      /* Baud Rate */
+    BYTE    byByteSize;                     /* Byte Size */
+    BYTE    byParity;                       /* Parity Bits */
+    BYTE    byStopBits;                     /* Stop Bits */
+} LOADER;               /* Loader Board Structure */
+
+typedef struct {
+    TERMINAL    Term;                       /* Terminal */
+    LOADER      Loader;                     /* Loader Board */
+    WORD        fwTransTerm;                /* Transfer Flag Terminal */
+    WORD        fwTransLoader;              /* Transfer Flag Loader Board */
+    WORD        fwFlexMem;                  /* Update Flex Memory */
+    WORD        fwUpdate;                   /* Update Flag */
+} TRANSFER;             /* Transfer Static Structure */
+
+
+
+typedef struct {
+    HWND    hDlg;
+    WORD    wStatus;
+} TRANSABORT;           /* Transfer Abort Dialog Box Structure */
+
+#pragma pack(pop)
+
+/*
+*===========================================================================
+*   External Work Area Declarations
+*===========================================================================
+*/
+extern TRANSABORT   TransAbort;
+
+/*
+*===========================================================================
+*   Function Prototype Declarations
+*===========================================================================
+*/
+/* =====  TRANS.C  ===== */
+void TransInitialize(void);
+void * TransGetDataAddr(void);
+WORD TransGetDataLen(void);
+void TransAccessFlexMem(WPARAM);
+void TransAccessData(WPARAM);
+
+/* =====  TRATERM.C  ===== */
+BOOL TransTermExec(HANDLE, HWND);
+BOOL WINAPI TransTermDlgProc(HWND, UINT, WPARAM, LPARAM);
+
+/* =====  TRALOAD.C  ===== */
+#if defined(POSSIBLE_DEAD_CODE)
+BOOL TransLoaderExec(HANDLE, HWND);
+BOOL WINAPI TransLoaderDlgProc(HWND, UINT, WPARAM, LPARAM);
+#endif
+
+BOOL TransIP(HWND hWnd);
+BOOL TransIPExec(HANDLE hInst, HWND hWnd);
+BOOL WINAPI  TransIPDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam);
+
+#endif
+/* ===== End of TRANS.H ===== */
