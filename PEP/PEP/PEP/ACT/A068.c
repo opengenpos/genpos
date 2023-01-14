@@ -224,6 +224,8 @@ LONG  A068ExportPluDataFile (FILE *pFile)
 					break;
 			}
 
+            tempPlu.ParaPlu.auchPluName[OP_PLU_NAME_SIZE] = 0;  // ensure string is terminated.
+
 			fprintf (pFile, " %-13.13S, %c, %d, %S, %d, %d, %d, %d", tempPlu.auchPluNo, pluType, tempPlu.uchPluAdj, tempPlu.ParaPlu.auchPluName, lPrice,
 				tempPlu.ParaPlu.ContPlu.usDept, tempPlu.ParaPlu.uchTableNumber, tempPlu.ParaPlu.uchGroupNumber);
 
