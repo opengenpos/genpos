@@ -53,9 +53,6 @@ static DWORD TbcWriteFile(CONST TCHAR *, BOOL, UCHAR *, DWORD);
  *************************************************************************************************/
 static VOID THREADENTRY TbcThread(VOID)
 {
-    TBC_COPYSPEC *tbcCopySpec;
-    TBC_PATHSPEC *tbcPathSpec;
-    DWORD         dwIdx;
     /* --- BEGIN: Add for Dollar Tree Scer 12/05/2000 --- */
     /* dropped...
     TCHAR         szDstFilePath[MAX_PATH];
@@ -63,9 +60,6 @@ static VOID THREADENTRY TbcThread(VOID)
     CHAR          szDstFileName[MAX_PATH];
     CHAR          szSrcFileName[MAX_PATH];
     */
-    BOOL          fSrcTempDisk;
-    BOOL          fDstTempDisk;
-    DWORD         dwRet;
     /* --- END: Add for Dollar Tree Scer 12/05/2000 --- */
 #if defined(DEBUG) || defined(_DEBUG)
     ULONG   ulStartTime, ulEndTime;
@@ -73,6 +67,7 @@ static VOID THREADENTRY TbcThread(VOID)
 #endif
 
     while (1) {
+        TBC_COPYSPEC *tbcCopySpec;
 
         /* block until copy request has issued */
         tbcCopySpec = TbcWaitCopyRequest();
@@ -85,8 +80,12 @@ static VOID THREADENTRY TbcThread(VOID)
 		if (!tbcCopySpec) {
 			TbcCopyFail();
 		} else {
-			tbcPathSpec = tbcCopySpec->tbcPathSpec;
-			for (dwIdx = 0; dwIdx < tbcCopySpec->dwCount; dwIdx++, tbcPathSpec++) {
+            DWORD         dwRet = TBC_RSLT_ERROR;
+            TBC_PATHSPEC *tbcPathSpec = tbcCopySpec->tbcPathSpec;
+
+			for (DWORD dwIdx = 0; dwIdx < tbcCopySpec->dwCount; dwIdx++, tbcPathSpec++) {
+                BOOL          fSrcTempDisk;
+                BOOL          fDstTempDisk;
 
 				/* if api module couldn't find source file, ignore it */
 				if (*(tbcPathSpec->szSrcPath) == '\0') {
