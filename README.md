@@ -109,3 +109,13 @@ and by using SQL Server we have the issue of the SQL Server databases being with
 hierarchy rather than the OpenGenPOS hierarchy.
 
 As a first step we are using the SQLite ODBC driver from http://www.ch-werner.de/sqliteodbc/
+
+We are experimenting with several different database technologies. In the include file `ECR.h` there are a
+set of Preprocessor defined constants which provide a way to choose the target database technology.
+
+    #define USE_PLU_TOTALS_SQLSERVER                // the standard SQL Server Express database engine used since 2004 and NHPOS 2.0.0
+    #define USE_PLU_TOTALS_SQLITE                 // the SQLite embedded database engine from experiments around 2008
+    #define USE_PLU_TOTALS_JET                    // the Jet Access database engine, Microsoft.Jet.OLEDB.4.0
+    #define USE_PLU_TOTALS_SQLSERVER_EMBEDDED     // the SQL Server localDB embedded database engine
+
+
