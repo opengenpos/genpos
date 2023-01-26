@@ -362,3 +362,4 @@ MigrationBackup/
 /nhpos/BUSINESSLOGIC/HEM_Debug
 /nhpos/BUSINESSLOGIC/Ej/Ej_Release
 /nhpos/BUSINESSLOGIC/Ej/Ej_Debug
+*.exe
