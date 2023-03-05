@@ -33,6 +33,9 @@ CnPluTotalDb::CnPluTotalDb(const LPCTSTR szDbFileName){
 #elif defined(USE_PLU_TOTALS_SQLITE)
 	ConnectionStringTemp = L"DRIVER=SQLite3 ODBC Driver;Database=\\FlashDisk\\NCR\\Saratoga\\Database\\%s.db;LongNames=0;Timeout=1000;NoTXN=0;SyncPragma=NORMAL;StepAPI=0;";
 	ConnectionStringNoDB = L"DRIVER=SQLite3 ODBC Driver;LongNames=0;Timeout=1000;NoTXN=0;SyncPragma=NORMAL;StepAPI=0;";
+#elif defined(USE_PLU_TOTALS_LOCALDB)
+    ConnectionStringTemp = L"Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;DataTypeCompatibility=80;AttachDbFileName=C:\\FlashDisk\\NCR\\Saratoga\\Database\\TOTALPLU.mdf;";
+    ConnectionStringNoDB = L"Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;DataTypeCompatibility=80;AttachDbFileName=C:\\FlashDisk\\NCR\\Saratoga\\Database\\TOTALPLU.mdf";
 #elif defined(USE_PLU_TOTALS_JET)
 	// See https://stackoverflow.com/questions/6174724/problem-with-oledbconnection-excel-and-connection-pooling
 	// OLE DB Services = -4;Persist Security Info=True;User Id=admin;Password=;

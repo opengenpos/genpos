@@ -79,6 +79,7 @@
 
 //#define USE_PLU_TOTALS_SQLSERVER                // the standard SQL Server Express database engine used since 2004 and NHPOS 2.0.0
 #define USE_PLU_TOTALS_SQLITE                 // the SQLite embedded database engine from experiments around 2008
+//#define USE_PLU_TOTALS_LOCALDB                  // the standard LocalDB embedded version of SQL Server Express database engine
 //#define USE_PLU_TOTALS_JET                    // the Jet Access database engine, Microsoft.Jet.OLEDB.4.0
 //#define USE_PLU_TOTALS_SQLSERVER_EMBEDDED     // the SQL Server localDB embedded database engine
 
