@@ -2023,7 +2023,7 @@ int CDeviceEngine::Device_SCF_TYPE_CDISPLAY_Setup (PSCINFO pInfo, TCHAR * pchDLL
 	{
 		// In order to test the APA display, we will set this to false
 		// if there is a problem with accessing the line display control
-		if (m_pOPOSControl) {
+		if (m_pOPOSControl && m_pOPOSControl->m_hWnd) {
 			m_pOPOSControl->m_lineDisplay.m_bUnicodeSupport = FALSE;
 		}
 		NHPOS_ASSERT(m_pOPOSControl);
@@ -2372,8 +2372,8 @@ BOOL CDeviceEngine::Open()
 		char xBuff[128];
 		sprintf(xBuff, "**ERROR:  m_pOPOSControl == NULL DeviceEngine setup aborted.");
 		NHPOS_NONASSERT_NOTE("**ERROR", xBuff);
-		bResult = BlInitialize(myVersionNumber); //pass in version information to Business Logic.
-		return FALSE;
+//		bResult = BlInitialize(myVersionNumber); //pass in version information to Business Logic.
+//		return FALSE;
 	}
 
 	try {
@@ -2385,8 +2385,8 @@ BOOL CDeviceEngine::Open()
 		sprintf(xBuff, "**ERROR:  m_pOPOSControl->Create(IDD_BASE_DIALOG) DeviceEngine setup aborted.");
 		NHPOS_NONASSERT_NOTE("**ERROR", xBuff);
 		e->Delete();
-		bResult = BlInitialize(myVersionNumber); //pass in version information to Business Logic.
-		return FALSE;
+//		bResult = BlInitialize(myVersionNumber); //pass in version information to Business Logic.
+//		return FALSE;
 	}
 
 	// check to see if the OPOS control is available and loaded properly.
@@ -2422,7 +2422,12 @@ BOOL CDeviceEngine::Open()
             }
 			else if (pInfo->dwType == SCF_TYPE_DRAWER1)
             {
-				if(m_pOPOSControl->m_cashDrawer.GetState() == OPOS_S_CLOSED)
+				{
+					CHAR  xBuff[256];
+					sprintf(xBuff, "Setting up Drawer 1 %S  0x%x", pchDLL, pInfo->dwType);
+					NHPOS_NONASSERT_TEXT(xBuff);
+				}
+				if(m_pOPOSControl && m_pOPOSControl->m_hWnd && m_pOPOSControl->m_cashDrawer.GetState() == OPOS_S_CLOSED)
 				{
 					if(m_pOPOSControl->m_cashDrawer.Open(pchDLL) == OPOS_SUCCESS)
 					{
@@ -2441,7 +2446,12 @@ BOOL CDeviceEngine::Open()
 				}
 			}else if (pInfo->dwType == SCF_TYPE_DRAWER2)
 			{
-				if (m_pOPOSControl && m_pOPOSControl->m_cashDrawer2.GetState() == OPOS_S_CLOSED){
+				{
+					CHAR  xBuff[256];
+					sprintf(xBuff, "Setting up Drawer 2 %S  0x%x", pchDLL, pInfo->dwType);
+					NHPOS_NONASSERT_TEXT(xBuff);
+				}
+				if (m_pOPOSControl && m_pOPOSControl->m_hWnd && m_pOPOSControl->m_cashDrawer2.GetState() == OPOS_S_CLOSED){
 					if(m_pOPOSControl->m_cashDrawer2.Open(pchDLL) == OPOS_SUCCESS){
 						if (m_pOPOSControl->m_cashDrawer2.ClaimDevice(500) != OPOS_SUCCESS) {
 							PifLog (MODULE_FRAMEWORK, LOG_EVENT_FW_DEVICE_CLAIM_ERR);
