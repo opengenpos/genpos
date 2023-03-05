@@ -53,7 +53,7 @@ public:
     const DATE& getFromDate() const;
     const DATE& getToDate() const;
 
-    SHORT       getServiceCount( const USHORT usHourlyBlock,
+    DSCOUNTER   getServiceCount( const USHORT usHourlyBlock,
                                  const USHORT usServiceBlock ) const;
     DCURRENCY   getServiceTime ( const USHORT usHourlyBlock,
                                  const USHORT usServiceBlock ) const;
@@ -180,7 +180,7 @@ inline const DATE& CTtlServTime::getToDate() const
 //  FUNCTION :  CTtlServTime::getServiceCount()
 //===========================================================================
 
-inline SHORT CTtlServTime::getServiceCount(
+inline DSCOUNTER CTtlServTime::getServiceCount(
     const USHORT usHourlyBlock,
     const USHORT usServiceBlock
     ) const

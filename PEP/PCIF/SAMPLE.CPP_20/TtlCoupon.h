@@ -54,7 +54,7 @@ public:
     const DATE& getFromDate() const;
     const DATE& getToDate() const;
     DCURRENCY   getAmount() const;
-    SHORT       getCounter() const;
+    DSCOUNTER   getCounter() const;
 
 private:
     BOOL    Read( const UCHAR uchClassToRead );
@@ -175,7 +175,7 @@ inline DCURRENCY CTtlCoupon::getAmount() const
 //  FUNCTION :  CTtlCoupon::getCounter()
 //===========================================================================
 
-inline SHORT CTtlCoupon::getCounter() const
+inline DSCOUNTER CTtlCoupon::getCounter() const
 {
     return ( m_ttlCoupon.CpnTotal.sCounter );
 }
