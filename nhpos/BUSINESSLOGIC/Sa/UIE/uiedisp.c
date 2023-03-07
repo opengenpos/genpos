@@ -396,11 +396,12 @@ SHORT UieChooseDisplay(USHORT usDisplay, USHORT usRow, USHORT usColumn,
 VOID UieDisplay2x20(USHORT usRow, USHORT usColumn, UCHAR uchAttr,
                     TCHAR *pszStr, TCHAR *puchDispBuf, USHORT usWidth)
 {
-    TCHAR   *puchAddr, *puchDest, *puchDisp;
-    USHORT  usLoop, usLen, usEnd, usStart = 0;
+    USHORT  usLoop, usStart = 0;
     TCHAR   szBuf[UIE_LCD_COLUMN + 1];
 
     for (usLoop = usRow; usLoop < 2; usLoop++) {
+        USHORT  usEnd = 0;
+        TCHAR   *puchAddr, *puchDest;
 
         /* --- get address of new line character --- */
 
@@ -408,7 +409,7 @@ VOID UieDisplay2x20(USHORT usRow, USHORT usColumn, UCHAR uchAttr,
 
         if (puchAddr != NULL) {             /* found       */
             usEnd = puchAddr - (pszStr + usStart);
-            *(pszStr + usEnd) = _T('\0');       /* set NULL    */
+            *(pszStr + usEnd) = _T('\0');       /* set end of string    */
         } else {                            /* not found   */
             usLoop = 1;                     /* end of loop */
         }
@@ -417,15 +418,13 @@ VOID UieDisplay2x20(USHORT usRow, USHORT usColumn, UCHAR uchAttr,
             RflStrAdjust(szBuf, UIE_LCD_COLUMN + 1, pszStr + usStart, (usWidth - usColumn), RFL_FEED_OFF);
             puchAddr = szBuf;
         } else {
-            usLen = tcharlen((puchAddr = pszStr + usStart));
+            USHORT usLen = tcharlen((puchAddr = pszStr + usStart));
             if (usLen > usWidth - usColumn) {
                 *(pszStr + usStart + usWidth - usColumn) = '\0';
             }
         }
 
-        puchDest = puchDispBuf +
-                   ((usRow * usWidth + usColumn) * 2);
-        puchDisp = puchDest;
+        puchDest = puchDispBuf + ((usRow * usWidth + usColumn) * 2);
         while (*puchAddr) {
             /* *puchDest++ = *puchAddr++; */
             if (*puchAddr == 0x12) {
