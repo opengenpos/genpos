@@ -329,9 +329,12 @@ short TransTermSendWarning(HWND hWnd)
 							OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL, NULL);
 		dwFileSize = GetFileSize(handleRead, NULL);
 		{
-			DWORD *ulBuffer = (DWORD *) _alloca (dwFileSize);
-			ReadFile(handleRead, ulBuffer, dwFileSize, &bytesRead, NULL);
-			WriteFile(handleWrite, ulBuffer, dwFileSize, &actualBytes, NULL);
+			DWORD *ulBuffer = malloc(dwFileSize);
+            if (ulBuffer) {
+                ReadFile(handleRead, ulBuffer, dwFileSize, &bytesRead, NULL);
+                WriteFile(handleWrite, ulBuffer, dwFileSize, &actualBytes, NULL);
+                free(ulBuffer);
+            }
 		}
 
 		CloseHandle(handleWrite);
@@ -361,9 +364,12 @@ short TransTermSendWarning(HWND hWnd)
 							OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL, NULL);
 		dwKeybrdFSize = GetFileSize(handleRead, NULL);
 		{
-			DWORD *ulBuffer = (DWORD *) _alloca (dwKeybrdFSize);
-			ReadFile(handleRead, ulBuffer, dwKeybrdFSize, &bytesRead, NULL);
-			WriteFile(handleWrite, ulBuffer, dwKeybrdFSize, &actualBytes, NULL);
+			DWORD *ulBuffer = malloc(dwKeybrdFSize);
+            if (ulBuffer) {
+                ReadFile(handleRead, ulBuffer, dwKeybrdFSize, &bytesRead, NULL);
+                WriteFile(handleWrite, ulBuffer, dwKeybrdFSize, &actualBytes, NULL);
+                free(ulBuffer);
+            }
 		}
 
 		CloseHandle(handleWrite);
@@ -666,9 +672,14 @@ short TransTermSendData(HWND hWnd)
         }
 		// send Fingerprint DB (using cashier access flag)
 		// doesn't exist in the NewFlexMem table, so passing a blocksize of 1 to indicate the file has contents to transfer
+#if 0
 		if ((sStatus = TransTermSendFile(hWnd, szTransFPDB, TRANS_ACCESS_CASHIER, 1, IDS_TRANS_SEND_FPDB)) < 0){
 			break;
 		}
+#else
+        // continue regardless of whether Cashier fingerprint file transfer worked or not.
+        sStatus = TransTermSendFile(hWnd, szTransFPDB, TRANS_ACCESS_CASHIER, 1, IDS_TRANS_SEND_FPDB);
+#endif
         if ((getTransFwTransTerm() & TRANS_ACCESS_CASHIER) &&   /* user selected */
             (sStatTerm != ISP_WORK_AS_SATELLITE) && /* terminal is master */
             (NewFlexMem[FLEX_CAS_ADR - 1].ulRecordNumber != 0L)) { /*NCR2172*/
