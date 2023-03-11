@@ -1238,6 +1238,15 @@ SearchF04:
 
 USHORT	ComputeFreeBit(UCHAR uchByte)
 {
+#if 0
+	UCHAR  usPat = 0x01;
+
+	for (SHORT sCount = 7; sCount >= 0; sCount--) {
+		if (((usPat << sCount) & uchByte) == 0) return sCount;
+	}
+
+	return 255; // Same value provided by assembler version of this function that is being replaced.
+#else
 	USHORT	usOrder;
 
 	/* --- compute free bit's order --- */
@@ -1265,6 +1274,7 @@ ComputeF02:
 	}
 
 	return (usOrder);
+#endif
 }
 
 /**
