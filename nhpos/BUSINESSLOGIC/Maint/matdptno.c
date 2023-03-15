@@ -63,6 +63,7 @@
 
 #include "maintram.h" 
 
+
 /*
 *===========================================================================
 ** Synopsis:    SHORT MaintDeptNoMenuRead( PARADEPTNOMENU *pData )
@@ -81,28 +82,12 @@
 SHORT MaintDeptNoMenuRead( PARADEPTNOMENU *pData )
 {
     UCHAR           uchMinorFSCData;
-    UCHAR           uchMinorFSCMax;
-
-    /* check keyboard */
-    if (PifSysConfig()->uchKeyType == KEYBOARD_CONVENTION) {    // 7448 Conventional keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_MICRO) {  // 7448 Micromotion keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_TOUCH) {  // Touchscreen terminal uses Micromotion tables
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_68) {  // 64 key 5932 Wedge keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else {
-		_asm int 3;
-	}
 
     /* check status */
     if (pData->uchStatus & MAINT_WITHOUT_DATA) {                    /* without data */
         uchMinorFSCData = ++MaintWork.DeptNoMenu.uchMinorFSCData;
         /* check minor FSC data */
-        if (uchMinorFSCData > uchMinorFSCMax) {
+        if (uchMinorFSCData > MAINT_MINORFSC_DEPT) {
             uchMinorFSCData = 1;                                    /* initialize address */
         }
     } else {                                                        /* with data */                                          
@@ -110,7 +95,7 @@ SHORT MaintDeptNoMenuRead( PARADEPTNOMENU *pData )
     }
 
     /* check minor FSC data */
-    if (uchMinorFSCData < MAINT_MINORFSC_MIN  || uchMinorFSCMax < uchMinorFSCData) {
+    if (uchMinorFSCData < MAINT_MINORFSC_MIN  || MAINT_MINORFSC_DEPT < uchMinorFSCData) {
         return(LDT_KEYOVER_ADR);                                    /* wrong data */
     }
 
@@ -144,10 +129,6 @@ SHORT MaintDeptNoMenuRead( PARADEPTNOMENU *pData )
 
 SHORT MaintDeptNoMenuWrite( PARADEPTNOMENU *pData )
 {
-
-
-    UCHAR    uchMinorFSCMax;
-
 
     /* Dept number has already checked by UI */
     
@@ -187,27 +168,11 @@ SHORT MaintDeptNoMenuWrite( PARADEPTNOMENU *pData )
     
     /* set minor FSC data for next display */
 
-    /* check keyboard */
-
-    if (PifSysConfig()->uchKeyType == KEYBOARD_CONVENTION) {    // 7448 Conventional keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_MICRO) {  // 7448 Micromotion keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_TOUCH) {  // Touchscreen terminal uses Micromotion tables
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_68) {  // 64 key 5932 Wedge keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else {
-		_asm int 3;
-	}
-
     /* check address */
 
     MaintWork.DeptNoMenu.uchMinorFSCData++;
 
-    if (MaintWork.DeptNoMenu.uchMinorFSCData > uchMinorFSCMax) {
+    if (MaintWork.DeptNoMenu.uchMinorFSCData > MAINT_MINORFSC_DEPT) {
         MaintWork.DeptNoMenu.uchMinorFSCData = 1;                /* initialize address */
     }
     MaintDeptNoMenuRead(&(MaintWork.DeptNoMenu));
@@ -230,13 +195,7 @@ SHORT MaintDeptNoMenuWrite( PARADEPTNOMENU *pData )
 
 VOID MaintDeptNoMenuReport( VOID )
 {
-
-
-    UCHAR            i;
-    UCHAR            j;
-    UCHAR            uchMinorFSCMax;
-    PARADEPTNOMENU    ParaDeptNoMenu;
-
+    PARADEPTNOMENU    ParaDeptNoMenu = { 0 };
 
     /* control header item */
         
@@ -247,31 +206,15 @@ VOID MaintDeptNoMenuReport( VOID )
 
     ParaDeptNoMenu.usPrintControl = ( PRT_JOURNAL | PRT_RECEIPT );
 
-    /* check keyboard */
-
-    if (PifSysConfig()->uchKeyType == KEYBOARD_CONVENTION) {    // 7448 Conventional keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_MICRO) {  // 7448 Micromotion keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_TOUCH) {  // Touchscreen terminal uses Micromotion tables
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_68) {  // 64 key 5932 Wedge keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_DEPT;
-    } else {
-		_asm int 3;
-	}
-
     /* set data every pages */
 
-    for (i = 1; i <= DEPTPG_ADR_MAX; i++) {
+    for (UCHAR i = 1; i <= DEPTPG_ADR_MAX; i++) {
 
         ParaDeptNoMenu.uchMenuPageNumber = i;
 
         /* set data at every minor FSC data */
 
-        for (j = 1; j <= uchMinorFSCMax; j++) {
+        for (UCHAR j = 1; j <= MAINT_MINORFSC_DEPT; j++) {
 
             /* check abort key */
 
