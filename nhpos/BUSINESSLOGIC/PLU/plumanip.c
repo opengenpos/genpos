@@ -4221,6 +4221,13 @@ VOID	DeleteRecordPtr(USHORT usFile, ULONG ulCell, ULONG ulAccess, BOOL fEffect)
 
 ULONG	ComputeHash(TCHAR *pucKey, USHORT usLen, ULONG ulBase)
 {
+	/* ### New 2172 Rel1.0 */
+	// PLU length has been more than 7 digits since NHPOS Rel 1.4
+	// Just use the ComputerHast_64() function always.
+	//    Richard Chambers, Mar-08-2023
+	return	ComputeHash_64(pucKey, usLen, ulBase);
+
+#if defined(POSSIBLE_DEAD_CODE)
 	ULONG	ulHash;			/* ### MOD 2172 Rel1.0 (USHORT->ULONG) */
 #if	!defined (SMARTALG)
 	ULONG	ulSum;
@@ -4445,6 +4452,7 @@ Bcd2Hex:
 		pop		bx				; recover registers
 		ret						;
 	}
+#endif
 }
 /* #pragma	optimize("egl", on) *//* ### DEBUG */
 
