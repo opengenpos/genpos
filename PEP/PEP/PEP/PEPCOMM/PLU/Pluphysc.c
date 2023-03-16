@@ -1108,6 +1108,27 @@ USHORT	PhySearchOccupied(USHORT hf, ULONG ulCell, PFILEHDR pHeader, ULONG *pulFo
 
 UCHAR	*SearchFreeByte(UCHAR *pucBuffer, USHORT usOrigin, USHORT usSize)
 {
+#if 0
+	// ensure usOrigin is within the buffer size. if not then set to end.
+	// si will not advance further but we will go backwards in a search for
+	// a free position.
+	if (usOrigin >= usSize) usOrigin = usSize - 1;
+
+	{
+		// (di) = backward offset, (si) = foreward offset
+		LONG   di = usOrigin, si = usOrigin + 1;
+
+
+		/* --- look for a byte which has at least one free bit --- */
+		for (; di >= 0 || si < usSize; di--, si++) {
+			if (di >= 0 && pucBuffer[di] != 0xff)  // --- is available on back side ? ---
+				return pucBuffer + di;
+			else if (si < usSize && pucBuffer[si] != 0xff) // --- is available on fore side ? ---
+				return pucBuffer + si;
+		}
+	}
+	return NULL;
+#else
 	SHORT	fFound;		/* ### MOD 2172 Rel1.0 (BOOL->SHORT) */
 	UCHAR	*pucFound;
 	USHORT	usOffset;
@@ -1279,6 +1300,7 @@ SearchF04:
 	/* --- exit ... --- */
 
 	return (pucFound);
+#endif
 }
 
 /**
@@ -1297,6 +1319,15 @@ SearchF04:
 
 USHORT	ComputeFreeBit(UCHAR uchByte)
 {
+#if 0
+	UCHAR  usPat = 0x01;
+
+	for (SHORT sCount = 7; sCount >= 0; sCount--) {
+		if (((usPat << sCount) & uchByte) == 0) return sCount;
+	}
+
+	return 255; // Same value provided by assembler version of this function that is being replaced.
+#else
 	USHORT	usOrder;
 
 	/* --- compute free bit's order --- */
@@ -1327,6 +1358,7 @@ ComputeF02:
 	/* --- exit ... --- */
 
 	return (usOrder);
+#endif
 }
 
 /**
