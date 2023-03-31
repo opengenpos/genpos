@@ -333,23 +333,6 @@ typedef struct _PKTINF {                    /* function information packet  */
 #endif
 } PKTINF, *PPKTINF;
 
-/* --- kernel debugging information --- */
-#if defined (NET_DEBUG)
-typedef struct _DBGINF {                    /* kernel debugging info.       */
-    USHORT      idThread;                       /* thread ID                */
-    USHORT      usDS;                           /* DS register              */
-    USHORT      usSS;                           /* SS register              */
-    USHORT      usCS;                           /* CS register              */
-    USHORT      usState;                        /* present state            */
-    USHORT      usLoops;                        /* no. of loops             */
-} DBGINF, *PDBGINF;
-
-#define DBG_STATE_READ_QUEUE    (('Q' << 8) + 'R')  /* reading a mail       */
-#define DBG_STATE_WRITE_QUEUE   (('Q' << 8) + 'W')  /* writing a mail       */
-#define DBG_STATE_DOS_SLEEP     (('L' << 8) + 'S')  /* sleeping             */
-#define DBG_STATE_DEAD          (('E' << 8) + 'D')  /* dead                 */
-#define DBG_STATE_RECVFROM      (('F' << 8) + 'R')  /* socket recvfrom()    */
-#endif
 
 static const  ULONG  ulNetManagerStatusTimerCheck   =  0x00000001;
 
@@ -423,14 +406,7 @@ VOID THREAD SleepTimer(PRCVARG);
 /* ---------------------------- *\
  +        Sub-Routines          +
 \* ---------------------------- */
-#if defined (NET_DEBUG)
-VOID        InitializeDebugging(PDBGINF);
-# define    DBGCOUNTUP(x)           ((x).usLoops)++
-# define    DBGSETSTATE(x, s)       ((x).usState = s)
-#else
-# define    DBGCOUNTUP(x)           ((void)0)
-# define    DBGSETSTATE(x, s)       ((void)0)
-#endif
+
 /* ---------------------------- *\
  +        Tally  Macros         +
 \* ---------------------------- */
@@ -506,19 +482,6 @@ VOID        InitializeDebugging(PDBGINF);
 ;+                                                                          +
 \*==========================================================================*/
 
-/* --- kernel debugging information --- */
-#if defined (NET_DEBUG)
- PPKTINF    pNetPacketInfo;                     /* ptr. to packet info.     */
- DBGINF     infNetManager;                      /* net manager thread info  */
- DBGINF     infNetReceiver;                     /* net manager thread info  */
- DBGINF     infNetTimer;                        /* net manager thread info  */
-#else
- UCHAR      pNetPacketInfo  = 'B';              /* ptr. to packet info.     */
- UCHAR      infNetManager   = 'A';              /* net manager thread info  */
- UCHAR      infNetReceiver  = 'D';              /* net manager thread info  */
- UCHAR      infNetTimer     = '!';              /* net manager thread info  */
-#endif
-
 ULONG  ulMasterTerminalSourceAddr = 0;
 ULONG  ulBackupMasterTerminalSourceAddr = 0;
 
@@ -555,9 +518,6 @@ USHORT  SpawnNetManager(USHORT usQueue, PNETINF pInfo)
     ULONG            idRet;
     static NETARG    argManager;
     PNETINF          pNew;
-#ifdef DEBUG_PIFNET_OUTPUT
-	TCHAR  wszDisplay[128+1];
-#endif
 
     /* --- define default parameters --- */
     static  NETINF  DefaultInfo   = { "3000",   /* DefaultInfo.pszLocalPort - my local port no.       */
@@ -749,10 +709,6 @@ VOID THREAD NetManager(PNETARG pArg)
 
     /* --- do my job forever --- */
     while (! usStat) {                          /* do my job                */
-        /* --- update debugging info. --- */
-        DBGCOUNTUP(infNetManager);
-        DBGSETSTATE(infNetManager, DBG_STATE_READ_QUEUE);
-
         /* --- wait for a message requesting an action of some kind.
 			We are looking for messages from the following sources:
 				Timer message indicating time to do queue aging
@@ -849,8 +805,6 @@ VOID THREAD NetManager(PNETARG pArg)
     }
 
     /* --- well mannered ... --- */
-    DBGSETSTATE(infNetManager, DBG_STATE_DEAD);
-
     SysEndThread();
 }
 
@@ -1159,9 +1113,6 @@ USHORT  IssueTimerRequest(USHORT usQueue, PMSGHDR pRequest, PPKTINF pPacket)
     pTimer             = (PTMRMSG)(pRequest->aucMessage);
     pTimer->usMilliSec = pPacket->usTick;
 
-    /* --- update debugging state --- */
-    DBGSETSTATE(infNetManager, DBG_STATE_WRITE_QUEUE);
-
     /* --- issue timer message --- */
     if (usRet = SysWriteQueue(usQueue, &(pRequest->queControl))) {
         return ((USHORT)(PIF_ERROR_NET_QUEUE));
@@ -1255,7 +1206,6 @@ USHORT  ReceiverProtocol(PMSGHDR pInterface, PPKTINF pPacket)
     }
     else {                                      /* failed to receive data   */
 		/* --- else, something wrong ... --- */
-        DBGSETSTATE(infNetManager, DBG_STATE_DOS_SLEEP);
         STLYRECVERROR(pPacket->infTally);
         STLYLASTRECVERROR(pPacket->infTally, pReceiver->usStatus);
         SysSleep((ULONG)(pPacket->usIdleTime));     /* discard my CPU time  */
@@ -1865,9 +1815,6 @@ USHORT IssueReceiverRequest(USHORT usQueue, PMSGHDR pRequest, PPKTINF pPacket)
     pReceiver->usRecvSize      = pPacket->usSizeBuffer; /* buffer size      */
     pReceiver->usRecvSize     -= pPacket->usRecvReservedBytes;
 
-    /* --- update debugging state --- */
-    DBGSETSTATE(infNetManager, DBG_STATE_WRITE_QUEUE);
-
     /* --- issue receiver message --- */
     if (usRet = SysWriteQueue(usQueue, &(pRequest->queControl))) {
         return ((USHORT)(PIF_ERROR_NET_QUEUE));
@@ -1903,9 +1850,6 @@ USHORT ChangeReceiverSocket(USHORT usQueue, PMSGHDR pRequest, PPKTINF pPacket)
     pReceiver              = (PRCVMSG)(pRequest->aucMessage);
     pReceiver->usCommand   = CMD_CHANGE_SOCKET;
     pReceiver->iRecvSocket = pPacket->iSocket;
-
-    /* --- update debugging state --- */
-    DBGSETSTATE(infNetManager, DBG_STATE_WRITE_QUEUE);
 
     /* --- issue receiver message --- */
     if (usRet = SysWriteQueue(usQueue, &(pRequest->queControl))) {
@@ -3317,71 +3261,6 @@ USHORT  GetFreeUserTable(PUSRTBL pTable, USHORT usArrays)
     return (usHandle);
 }
 
-#if defined(POSSIBLE_DEAD_CODE)
-	// The following functions appear to be left over source that is no longer
-	// used. As part of cleaning up the source code body we are removing these
-	// from compilation as they are no longer needed and are assembler source
-	// which we are now working to eliminate from the compile.
-	// Visual Studio 2017 will not allow a x64 compile with embedded assembler.
-	//    Richard Chambers, Oct-03-2018
-
-/**
-;========================================================================
-;
-;   function : Exchange USHORT data type
-;
-;   format : USHORT     ExchangeUshort(usValue);
-;
-;   input  : USHORT     usValue;
-;
-;   output : USHORT     usRet;
-;
-;========================================================================
-**/
-USHORT  ExchangeUshort(USHORT usValue)
-{
-    USHORT      usRet;
-
-    /* --- change endianness --- */
-    _asm {
-        mov     ax, usValue         ; (ax) = original value
-        xchg    ah, al              ; (ax) = converted value
-        mov     usRet, ax           ;
-    }
-
-    return (usRet);
-}
-
-/**
-;========================================================================
-;
-;   function : Exchange ULONG data type
-;
-;   format : ULONG      ExchangeUlong(ulValue);
-;
-;   input  : ULONG      ulValue;
-;
-;   output : ULONG      ulRet;
-;
-;========================================================================
-**/
-ULONG   ExchangeUlong(ULONG ulValue)
-{
-    ULONG       ulRet;
-
-    /* --- change endianness --- */
-    _asm {
-        mov     ax, word ptr ulValue[0]     ; (ax) = original value
-        xchg    ah, al                      ; (ax) = converted value
-        mov     word ptr ulRet[2], ax       ;
-        mov     ax, word ptr ulValue[2]     ; (ax) = original value
-        xchg    ah, al                      ; (ax) = converted value
-        mov     word ptr ulRet[0], ax       ;
-    }
-
-    return (ulRet);
-}
-#endif
 
 /*==========================================================================*\
 ;+                                                                          +
@@ -3408,9 +3287,6 @@ USHORT  SpawnReceiver(USHORT usQueue, PPKTINF pinfPacket)
 {
     static RCVARG     argReceiver = {0};
     ULONG             idRet;
-#ifdef DEBUG_PIFNET_OUTPUT
-	TCHAR  wszDisplay[128];
-#endif
 
     /* --- make argument --- */
     argReceiver.usStatus = 0;                       /* init. execution status   */
@@ -3449,13 +3325,9 @@ VOID THREAD NetReceiver(PRCVARG pArg)
 {
     BOOL                fDoMyJob;
     SHORT               sRead;
-    USHORT              usRet, usQueue, usIdle, usWhy;
+    USHORT              usRet, usQueue, usIdle, usWhy = 0;
     INT                 iSocket;
 
-    /* --- save debugging info. --- */
-#if defined (NET_DEBUG)
-    InitializeDebugging(&infNetReceiver);
-#endif
     /* --- initialize --- */
     usQueue = pArg->usQueue;                    /* my queue ID              */
     iSocket = pArg->iSocket;                    /* socket handle            */
@@ -3477,10 +3349,6 @@ VOID THREAD NetReceiver(PRCVARG pArg)
 		PMSGHDR       pHeader;
 		PRCVMSG       pMessage;
 		USHORT        usRequester;
-
-        /* --- update debugging info. --- */
-        DBGCOUNTUP(infNetReceiver);
-        DBGSETSTATE(infNetReceiver, DBG_STATE_READ_QUEUE);
 
         /*    wait for a request message
 		 *  request messages are generated by ReceiverProtocol() after it processes a
@@ -3522,8 +3390,6 @@ VOID THREAD NetReceiver(PRCVARG pArg)
 			INT                 iClient;
 
             /* --- initialize buffer --- */
-            DBGSETSTATE(infNetReceiver, DBG_STATE_RECVFROM);
-
 			iClient = sizeof(sinClient);
 
             /* --- wait for a message --- */
@@ -3543,12 +3409,8 @@ VOID THREAD NetReceiver(PRCVARG pArg)
             }
 
             /* --- wait for a while if no data received ... --- */
-            DBGSETSTATE(infNetReceiver, DBG_STATE_DOS_SLEEP);
             SysSleep((ULONG)usIdle);            /* pass a control to others */
         }
-
-        /* --- update debugging info. --- */
-        DBGSETSTATE(infNetReceiver, DBG_STATE_WRITE_QUEUE);
 
         /* --- complete the message --- */
         pHeader->usSender = usQueue;            /* my signature             */
@@ -3561,7 +3423,6 @@ VOID THREAD NetReceiver(PRCVARG pArg)
     }
 
     /* --- record the event --- */
-    DBGSETSTATE(infNetReceiver, DBG_STATE_DEAD);
     SysErrorLog(FAULT_AT_PIFNET, usWhy, 0, 0, 0, NULL);
     SysErrorLog(FAULT_AT_PIFNET, usRet, 0, 0, 0, NULL);
 
@@ -3592,9 +3453,6 @@ USHORT  SpawnTimer(USHORT usQueue)
 {
 	static RCVARG    argTimer = {0};
     ULONG            idRet;
-#ifdef DEBUG_PIFNET_OUTPUT
-	TCHAR  wszDisplay[128];
-#endif
 
     /* --- make argument --- */
     argTimer.usStatus = 0;                      /* init. execution status   */
@@ -3629,14 +3487,10 @@ USHORT  SpawnTimer(USHORT usQueue)
 **/
 VOID THREAD SleepTimer(PRCVARG pArg)
 {
-    USHORT      usRet, usQueue, usRequester, usWhy;
+    USHORT      usRet, usQueue, usRequester, usWhy = 0;
     PMSGHDR     pHeader;
     PTMRMSG     pTimer;
 
-    /* --- save debugging info. --- */
-#if defined (NET_DEBUG)
-    InitializeDebugging(&infNetTimer);
-#endif
     /* --- initialize --- */
     usQueue = pArg->usQueue;                    /* my queue ID              */
     usRet   = 0;                                /* assume no error          */
@@ -3653,10 +3507,6 @@ VOID THREAD SleepTimer(PRCVARG pArg)
 
     /* --- do my job --- */
     while (! usRet) {                           /* do my job                */
-        /* --- update debugging info. --- */
-        DBGCOUNTUP(infNetTimer);
-        DBGSETSTATE(infNetTimer, DBG_STATE_READ_QUEUE);
-
         /* --- wait for a request message --- */
         if (usRet = SysReadQueue(usQueue, &pHeader, QUE_WAIT_FOREVER)) {
             usWhy = EVENT_READ_QUEUE;
@@ -3670,14 +3520,10 @@ VOID THREAD SleepTimer(PRCVARG pArg)
         pTimer      = (PTMRMSG)(pHeader->aucMessage);
 
         /* --- sleep by the specified milli. sec. --- */
-        DBGSETSTATE(infNetTimer, DBG_STATE_DOS_SLEEP);
         SysSleep((ULONG)(pTimer->usMilliSec));  /* sleep by the time        */
 
         /* --- complete the message --- */
         pHeader->usSender = usQueue;            /* my signature             */
-
-        /* --- update debugging state --- */
-        DBGSETSTATE(infNetTimer, DBG_STATE_WRITE_QUEUE);
 
         /* --- dispose the message --- */
         if (usRet = SysWriteQueue(usRequester, &(pHeader->queControl))) {
@@ -3687,7 +3533,6 @@ VOID THREAD SleepTimer(PRCVARG pArg)
     }
 
     /* --- record the event --- */
-    DBGSETSTATE(infNetTimer, DBG_STATE_DEAD);
     SysErrorLog(FAULT_AT_PIFNET, usWhy, 0, 0, 0, NULL);
     SysErrorLog(FAULT_AT_PIFNET, usRet, 0, 0, 0, NULL);
 
@@ -3695,66 +3540,7 @@ VOID THREAD SleepTimer(PRCVARG pArg)
     SysEndThread();
 }
 
-/*==========================================================================*\
-;+                                                                          +
-;+                      S u b - R o u t i n e s                             +
-;+                                                                          +
-\*==========================================================================*/
 
-/**
-;========================================================================
-;
-;   function : Initialize debugging info.
-;
-;   format : VOID       InitializeDebugging(pInfo);
-;
-;   input  : PDBGINF    pInfo;      - ptr. to debugging info.
-;
-;   output : nothing
-;
-;========================================================================
-**/
-#if defined (NET_DEBUG)
-#pragma optimize("lge", off)
-VOID    InitializeDebugging(PDBGINF pInfo)
-{
-    PIDINFO     infPid;
-
-    /* --- get my caller thread's ID --- */
-
-    DosGetPID(&infPid);
-
-    /* --- store thread ID --- */
-
-    pInfo->idThread = infPid.tid;
-
-    /* --- store other info. --- */
-
-    _asm {
-        push    es                      ; save registers
-        push    di                      ;
-
-        ; --- store important register contents ---
-
-        les     di, pInfo                   ; (es:di) = pInfo
-        mov     ax, ds                      ; (ax) = (ds) reg.
-        mov     es:[di]DBGINF.usDS, ax      ; store it
-        mov     ax, cs                      ; (ax) = (cs) reg.
-        mov     es:[di]DBGINF.usCS, ax      ; store it
-        mov     ax, ss                      ; (ax) = (ss) reg.
-        mov     es:[di]DBGINF.usSS, ax      ; store it
-        xor     ax, ax                      ; (ax) = 0
-        mov     es:[di]DBGINF.usState, ax   ; clear present state
-        mov     es:[di]DBGINF.usLoops, ax   ; clear no. of loops
-
-        ; --- exit ... ---
-
-        pop     di                      ; receover registers
-        pop     es                      ;
-    }
-}
-#pragma optimize("", on)
-#endif
 /*==========================================================================*\
 ;+                      E n d   O f   P r o g r a m                         +
 \*==========================================================================*/

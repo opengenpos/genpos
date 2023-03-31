@@ -76,7 +76,6 @@
 
 /* --- tally & debugging control --- */
 # define    NET_TALLY                           /* enable/disable tally     */
-//define    NET_DEBUG                           /* enable/disable debugging */
 
 /* --- event log --- */
 #define EVENT_READ_QUEUE        1           /* unexpected SysReadQueue()    */
