@@ -89,23 +89,23 @@
 *               index for the keyboard to use when indexing into the menu page tables.
 *===========================================================================
 */
-static UCHAR  MaintQueryKeyBoardFscMax (VOID)
+UCHAR  MaintQueryKeyBoardFscMax (VOID)
 {
-	UCHAR  uchMinorFSCMax = MAINT_MINORFSC_CONVMAX;
+    UCHAR  uchMinorFSCMax = 0;
 
     /* check keyboard */
     if (PifSysConfig()->uchKeyType == KEYBOARD_CONVENTION) {  // 7448 Conventional keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_CONVMAX;
+        uchMinorFSCMax = FSC_CONV_ADR;
     } else if (PifSysConfig()->uchKeyType == KEYBOARD_MICRO) {  // 7448 Micromotion keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_MAX;
+        uchMinorFSCMax = FSC_MICRO_ADR;
     } else if (PifSysConfig()->uchKeyType == KEYBOARD_TOUCH) {  // Touchscreen terminal uses Micromotion tables
-        uchMinorFSCMax = MAINT_MINORFSC_MAX;
+        uchMinorFSCMax = FSC_MICRO_ADR;
     } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_68) {  // 64 key 5932 Wedge keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_CONVMAX;
+        uchMinorFSCMax = FSC_CONV_ADR;
     } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
-        uchMinorFSCMax = MAINT_MINORFSC_CONVMAX;
+        uchMinorFSCMax = FSC_CONV_ADR;
     } else {
-		_asm int 3;    // an error so trigger a debugger breakpoint
+        NHPOS_ASSERT_TEXT(0, "==ERROR: MaintFSCRead() called with invalid keyboard type.");
 	}
 
 	return uchMinorFSCMax;
@@ -136,14 +136,14 @@ SHORT MaintPLUNoMenuRead( PARAPLUNOMENU *pData )
     if (pData->uchStatus & MAINT_WITHOUT_DATA) {    /* without data ? */
         uchMinorFSCData = ++MaintWork.PLUNoMenu.uchMinorFSCData;
         if (uchMinorFSCData > uchMinorFSCMax) {
-            uchMinorFSCData = 1;                    /* initialize address */
+            uchMinorFSCData = FSC_MIN_ADR;                    /* initialize address */
         }
     } else {                                        /* with data */
         uchMinorFSCData = pData->uchMinorFSCData;
     }
 
     /* check minor FSC data */
-    if (uchMinorFSCData < MAINT_MINORFSC_MIN  || uchMinorFSCMax < uchMinorFSCData) {
+    if (uchMinorFSCData < FSC_MIN_ADR || uchMinorFSCMax < uchMinorFSCData) {
         return(LDT_KEYOVER_ADR);                    /* wrong data */
     }
     MaintWork.PLUNoMenu.uchMajorClass = pData->uchMajorClass;
@@ -390,7 +390,7 @@ VOID MaintPLUNoMenuReport( VOID )
        ParaPLUNoMenu.uchMajorClass = CLASS_PARAPLUNOMENU;
        ParaPLUNoMenu.uchMenuPageNumber = i;
        ParaPLUNoMenu.usPrintControl = ( PRT_JOURNAL | PRT_RECEIPT );
-       for (j = 1; j <= uchMinorFSCMax; j++) {  /* set data at every minor FSC data */
+       for (j = FSC_MIN_ADR; j <= uchMinorFSCMax; j++) {  /* set data at every minor FSC data */
             if (UieReadAbortKey() == UIE_ENABLE) {  /* check abort key */
                 MaintMakeAbortKey();
                 MaintMakeTrailer(CLASS_MAINTTRAILER_PRTSUP);

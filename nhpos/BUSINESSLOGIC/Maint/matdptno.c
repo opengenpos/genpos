@@ -95,7 +95,7 @@ SHORT MaintDeptNoMenuRead( PARADEPTNOMENU *pData )
     }
 
     /* check minor FSC data */
-    if (uchMinorFSCData < MAINT_MINORFSC_MIN  || MAINT_MINORFSC_DEPT < uchMinorFSCData) {
+    if (uchMinorFSCData < 1  || MAINT_MINORFSC_DEPT < uchMinorFSCData) {
         return(LDT_KEYOVER_ADR);                                    /* wrong data */
     }
 

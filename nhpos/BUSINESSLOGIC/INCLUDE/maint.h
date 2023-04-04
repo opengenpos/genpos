@@ -500,9 +500,6 @@ extern UCHAR   uchMaintMldPageNo;           /* scroll display page */
 #define MAINT_TLTY_MIN           21                 /* Total Key Type & Index Min Value */
 #define MAINT_POSITION_MAX        3                 /* Round Position Max Value */
 #define MAINT_POSITION_MIN       -1                 /* Round Position Min Value */
-#define MAINT_MINORFSC_MIN        1                 /* PLU No Menu Min Minor FSC Data Value */
-#define MAINT_MINORFSC_MAX      165                 /* PLU No Menu Max Minor FSC Data Value */
-#define MAINT_MINORFSC_CONVMAX   68                 /* PLU No Menu Max Minor FSC Data Value (Conventional Keyboard) */
 #define MAINT_MINORFSC_DEPT      50                 /* Dept No Max. Value,  Saratoga */
 #define MAINT_HOURBLK_MAX        48                 /* Max Hourly Block, V3.3 */
 #define MAINT_SUPERNO_MIN       100                 /* Minimum Supervisor Number */
@@ -516,7 +513,6 @@ extern UCHAR   uchMaintMldPageNo;           /* scroll display page */
 #define MAINT_FXDRV_TERM_MAX     13                 /* Max Data for FDT Each Terminal Setting */
 #define MAINT_SERVTIME_MAX     9999                 /* Max Data for Service Time Border */
 #define MAINT_LABORCOST_MAX   65535                 /* Max Data for Labor Cost Value */
-#define MAX_NO_CAST              48                 /* All Cashier ID Buff */
 #define MAINT_TEAMNO_MAX          9                 /* MAX Team Number */
 #define MAINT_CHGTIP_MAX          3                 /* MAX Charg Tip Rate */
 

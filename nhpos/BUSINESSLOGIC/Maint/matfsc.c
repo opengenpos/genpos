@@ -107,21 +107,11 @@ SHORT MaintFSCRead( PARAFSC *pData )
 {
     UCHAR uchAddress;
     UCHAR uchPageNo;
-    UCHAR uchFSCMaxAddr;
+    CONST UCHAR uchFSCMaxAddr = MaintQueryKeyBoardFscMax();
 
     /* check keyboard */
-    if (PifSysConfig()->uchKeyType == KEYBOARD_CONVENTION) {    // 7448 Conventional keyboard
-        uchFSCMaxAddr = FSC_CONV_ADR;                                 
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_MICRO) {  // 7448 Micromotion keyboard
-        uchFSCMaxAddr = FSC_MICRO_ADR;                                
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_TOUCH) {  // Touchscreen terminal uses Micromotion tables
-        uchFSCMaxAddr = FSC_MICRO_ADR;                                
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_68) {  // 64 key 5932 Wedge keyboard
-        uchFSCMaxAddr = FSC_CONV_ADR;                                 
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
-        uchFSCMaxAddr = FSC_CONV_ADR;                                 
-    } else {
-		NHPOS_ASSERT_TEXT(0, "==ERROR: MaintFSCRead() called with invalid keyboard type.");
+    if (uchFSCMaxAddr < 1) {
+        NHPOS_ASSERT_TEXT(0, "==ERROR: MaintFSCRead() called with invalid keyboard type.");
         return(LDT_PROHBT_ADR);                                /* out of address */
 	}
 
@@ -507,7 +497,13 @@ SHORT MaintFSCEdit( PARAFSC *pData )
 
 VOID MaintFSCWrite( VOID )
 {
-    UCHAR uchFSCMaxAddr;
+    CONST UCHAR uchFSCMaxAddr = MaintQueryKeyBoardFscMax();
+
+    /* check keyboard */
+    if (uchFSCMaxAddr < 1) {
+        NHPOS_ASSERT_TEXT(0, "==ERROR: MaintFSCWrite() called with invalid keyboard type.");
+        return(LDT_PROHBT_ADR);                                /* out of address */
+    }
 
     /* write data */
     CliParaWrite(&(MaintWork.FSC));
@@ -546,21 +542,6 @@ VOID MaintFSCWrite( VOID )
     /* set address for display next address */
     MaintWork.FSC.uchAddress++;          
 
-    /* check keyboard */
-    if (PifSysConfig()->uchKeyType == KEYBOARD_CONVENTION) {       // 7448 Conventional keyboard
-        uchFSCMaxAddr = FSC_CONV_ADR;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_MICRO) {     // 7448 Micromotion keyboard
-        uchFSCMaxAddr = FSC_MICRO_ADR;                                
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_TOUCH) {  // Touchscreen terminal uses Micromotion tables
-        uchFSCMaxAddr = FSC_MICRO_ADR;                                
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_68) {  // 64 key 5932 Wedge keyboard
-        uchFSCMaxAddr = FSC_CONV_ADR;                                 
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
-        uchFSCMaxAddr = FSC_CONV_ADR;                                 
-    } else {
-		_asm int 3;
-	}
-
     /* check address */
     if (MaintWork.FSC.uchAddress > uchFSCMaxAddr) {             
         MaintWork.FSC.uchAddress = FSC_MIN_ADR;                 /* initialize address */
@@ -586,26 +567,17 @@ VOID MaintFSCReport( VOID )
 {
     UCHAR        i,j;
     SHORT        uchAbortFlug;
-    UCHAR        uchFSCMaxAddr;
+    CONST UCHAR  uchFSCMaxAddr = MaintQueryKeyBoardFscMax();
 	PARAFSC      ParaFSC = {0};
+
+    /* check keyboard */
+    if (uchFSCMaxAddr < 1) {
+        NHPOS_ASSERT_TEXT(0, "==ERROR: MaintFSCReport() called with invalid keyboard type.");
+        return(LDT_PROHBT_ADR);                                /* out of address */
+    }
 
     /* control header item */
     MaintHeaderCtl(PG_FSC, RPT_PRG_ADR);
-
-    /* check keyboard */
-    if (PifSysConfig()->uchKeyType == KEYBOARD_CONVENTION) {       // 7448 Conventional keyboard
-        uchFSCMaxAddr = FSC_CONV_ADR;
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_MICRO) {     // 7448 Micromotion keyboard
-        uchFSCMaxAddr = FSC_MICRO_ADR;                                
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_TOUCH) {  // Touchscreen terminal uses Micromotion tables
-        uchFSCMaxAddr = FSC_MICRO_ADR;                                
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_68) {  // 64 key 5932 Wedge keyboard
-        uchFSCMaxAddr = FSC_CONV_ADR;                                 
-    } else if (PifSysConfig()->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
-        uchFSCMaxAddr = FSC_CONV_ADR;                                 
-    } else {
-		_asm int 3;
-	}
 
     /* set data at every page */
     ParaFSC.uchMajorClass = CLASS_PARAFSC;

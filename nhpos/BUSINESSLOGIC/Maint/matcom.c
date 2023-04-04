@@ -618,7 +618,7 @@ SHORT MaintGetPLUNo(UCHAR uchMinorFSCData, TCHAR *pauchPLUNumber, UCHAR *puchMod
     PARAPLUNOMENU ParaPLUNoMenu = {0};
 
     /* check minor FSC data */
-    if (uchMinorFSCData < MAINT_MINORFSC_MIN  || MAINT_MINORFSC_MAX < uchMinorFSCData) {
+    if (uchMinorFSCData < FSC_MIN_ADR || FSC_MICRO_ADR < uchMinorFSCData) {
         return(LDT_KEYOVER_ADR);                                    /* wrong data */
     }
 
@@ -647,7 +647,7 @@ SHORT MaintGetDEPTNo(UCHAR uchMinorFSCData, USHORT *pusDeptNumber)
     PARADEPTNOMENU ParaDeptNoMenu = {0};
 
     /* check minor FSC data */
-    if (uchMinorFSCData < MAINT_MINORFSC_MIN  || MAINT_MINORFSC_MAX < uchMinorFSCData) {
+    if (uchMinorFSCData < FSC_MIN_ADR || FSC_MICRO_ADR < uchMinorFSCData) {
         return(LDT_KEYOVER_ADR);                                    /* wrong data */
     }
 
