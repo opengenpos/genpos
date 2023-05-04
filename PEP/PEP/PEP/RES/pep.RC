@@ -7045,7 +7045,7 @@ BEGIN
     IDS_P01_ADDR_365        " 365:  No. of Terminal"
     IDS_P01_ADDR_367        " 367:  Decimal Point"
     IDS_P01_ADDR_368        " 368:  Back-up System"
-    IDS_P01_ADDR_013        "  13:  Remote Device"               // MDC_KPTR_ADR
+    IDS_P01_ADDR_013        "  13:  Remote Device Receipt"       // MDC_KPTR_ADR
     IDS_P01_ADDR_014_1      "  14:  Drawer"                      // MDC_DRAWER_ADR
     IDS_P01_ADDR_014_2      "  14:  Date and Time"
     IDS_P01_ADDR_020_1      "  20:  Slip Print"                  // MDC_SLIP_ADR
@@ -7128,7 +7128,7 @@ BEGIN
     IDS_P01_ADDR_236        " 236:  Split Guest Check."
     IDS_P01_ADDR_257        " 257:  User Interface - Guest Check"
     IDS_P01_ADDR_257_2      " 257:  Item Count Option (Printer)"
-    IDS_P01_ADDR_258        " 258:  Remote Device"
+    IDS_P01_ADDR_258        " 258:  Remote Device Format"
     IDS_P01_ADDR_258_2      " 258:  Qty Extension"
 END
 
