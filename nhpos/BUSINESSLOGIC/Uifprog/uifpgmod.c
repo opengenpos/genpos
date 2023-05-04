@@ -57,6 +57,7 @@
 
 #include	<tchar.h>
 #include <string.h>
+#include <intrin.h>
 
 #include "ecr.h"
 #include "log.h"
@@ -142,7 +143,30 @@ UIMENU CONST aChildPGMode[] = {{UifPGModeIn,CID_PGMODEIN},
 UISEQ CONST aszSeqPGMode[] = {FSC_P2, FSC_P5, 0};
 UISEQ CONST aszSeqPGEnter[] = {FSC_P1, FSC_P2, FSC_SCROLL_UP, FSC_SCROLL_DOWN, 0};
 
+static void UifSetKeyboardMode_Prog(void)
+{
+    SYSCONFIG CONST* pSysConfig = PifSysConfig();
 
+    /* set K/B mode to neumeric mode */
+    if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {        /* conventional type */
+        UieSetCvt(CvtProgC);
+    }
+    else if (pSysConfig->uchKeyType == KEYBOARD_MICRO) {     // 7448 Micromotion keyboard
+        UieSetCvt(CvtProgM);
+    }
+    else if (pSysConfig->uchKeyType == KEYBOARD_TOUCH) {     // Touchscreen terminal uses Micromotion tables
+        UieSetCvt(CvtProgTouch);
+    }
+    else if (pSysConfig->uchKeyType == KEYBOARD_WEDGE_68) {  // 64 key 5932 Wedge keyboard
+        UieSetCvt(CvtProg5932_68);
+    }
+    else if (pSysConfig->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
+        UieSetCvt(CvtProg5932_78);
+    }
+    else {
+        __debugbreak();   // replaced _asm int 3; to allow ARM compiles for Windows on Arm
+    }
+}
 
 SHORT UifPGMode(KEYMSG *pKeyMsg) 
 {
@@ -602,6 +626,12 @@ SHORT UifPGExit(KEYMSG *pKeyMsg)
             MaintFin(CLASS_MAINTTRAILER_PRTPRG);    /* Execute Finalize Procedure */
             usUifPGControl &= ~UIF_SHIFT_PAGE;      /* Reset Shift Page Bit */
 
+#if 1
+            // use a single function to see the keyboard mode to Numeric mode
+            // we want single place for this code for future changes.
+            //    Richard Chambers, Apr-06-2023
+            UifSetKeyboardMode_Prog();
+#else 
             /* Recover KB Mode to Numeric Mode */
 			if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {       // 7448 Conventional Type
                 UieSetCvt(CvtProgC);                         
@@ -616,7 +646,7 @@ SHORT UifPGExit(KEYMSG *pKeyMsg)
 			} else {
 				_asm int 3;
 			}
-
+#endif
             UieEchoBack(UIE_ECHO_ROW0_NUMBER, UIF_DIGIT7);              /* Start Echo Back and Set Input Digit */
 
             /* Reset Descriptor */
@@ -682,6 +712,12 @@ SHORT UifPGDefProc(KEYMSG *pKeyMsg)
 
             usUifPGControl &= ~UIF_SHIFT_PAGE;      /* Reset Shift Page Bit */
 
+#if 1
+            // use a single function to see the keyboard mode to Numeric mode
+            // we want single place for this code for future changes.
+            //    Richard Chambers, Apr-06-2023
+            UifSetKeyboardMode_Prog();
+#else 
             /* Recover KB Mode to Numeric Mode */
             if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {       // 7448 Conventional Type
                 UieSetCvt(CvtProgC);                         
@@ -696,6 +732,7 @@ SHORT UifPGDefProc(KEYMSG *pKeyMsg)
 			} else {
 				_asm int 3;
 			}
+#endif
 
             UieEchoBack(UIE_ECHO_ROW0_NUMBER, UIF_DIGIT7);              /* Start Echo Back and Set Input Digit */
 
@@ -776,7 +813,13 @@ SHORT UifPGChangeKB1(KEYMSG *pKeyMsg)
 		}
 		switch (pKeyMsg->SEL.INPUT.uchMajor) {
 		case FSC_P4:
-			/* Set KB Mode to Neumeric Mode */
+#if 1
+            // use a single function to see the keyboard mode to Numeric mode
+            // we want single place for this code for future changes.
+            //    Richard Chambers, Apr-06-2023
+            UifSetKeyboardMode_Prog();
+#else 
+            /* Set KB Mode to Neumeric Mode */
 			if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {       // 7448 Conventional Type
 				UieSetCvt(CvtProgC);                         
 			} else if (pSysConfig->uchKeyType == KEYBOARD_MICRO) {     // 7448 Micromotion keyboard
@@ -790,6 +833,7 @@ SHORT UifPGChangeKB1(KEYMSG *pKeyMsg)
 			} else {
 				_asm int 3;
 			}
+#endif
 
 			UieEchoBack(UIE_ECHO_ROW0_NUMBER, UIF_DIGIT7);              /* Start Echo Back and Set Input Digit */
 	        
@@ -835,7 +879,13 @@ SHORT UifPGChangeKB2(KEYMSG *pKeyMsg)
 		}
 		switch (pKeyMsg->SEL.INPUT.uchMajor) {
 		case FSC_P4:
-			/* Set KB Mode to Neumeric Mode */
+#if 1
+            // use a single function to see the keyboard mode to Numeric mode
+            // we want single place for this code for future changes.
+            //    Richard Chambers, Apr-06-2023
+            UifSetKeyboardMode_Prog();
+#else 
+            /* Set KB Mode to Neumeric Mode */
 			if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {    /* Conventional Type */
 				UieSetCvt(CvtProgC);                         
 			} else if (pSysConfig->uchKeyType == KEYBOARD_MICRO) {     // 7448 Micromotion keyboard
@@ -849,6 +899,7 @@ SHORT UifPGChangeKB2(KEYMSG *pKeyMsg)
 			} else {
 				_asm int 3;
 			}
+#endif
 
 			UieEchoBack(UIE_ECHO_ROW0_NUMBER, UIF_DIGIT7);              /* Start Echo Back and Set Input Digit */
 	        
@@ -1094,6 +1145,12 @@ SHORT   UifPGDiaMnem(UIFPGDIADATA *pData)
     UieCtrlDevice(usCtrlDevice);            /* enable waiter lock */
     UieDeleteDialog();                                          /* delete dialog */
     
+#if 1
+    // use a single function to see the keyboard mode to Numeric mode
+    // we want single place for this code for future changes.
+    //    Richard Chambers, Apr-06-2023
+    UifSetKeyboardMode_Prog();
+#else 
     /* set K/B mode to neumeric mode */
     if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {        /* conventional type */
         UieSetCvt(CvtProgC);                         
@@ -1108,6 +1165,7 @@ SHORT   UifPGDiaMnem(UIFPGDIADATA *pData)
 	} else {
 		_asm int 3;
 	}
+#endif
 
 /*    UieSetFsc((FSCTBL FAR *)&PGFsc);      * set FSC table pointer */
     UieEchoBack(UIE_ECHO_ROW0_NUMBER, UIF_DIGIT7);
