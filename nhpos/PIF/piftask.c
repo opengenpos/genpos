@@ -9,6 +9,8 @@
 #include <crtdbg.h>
 #include <tchar.h>
 #include <process.h>
+#include <intrin.h>
+
 #include "ecr.h"
 #include "pif.h"
 #include "log.h"
@@ -377,7 +379,7 @@ static VOID   PifAbortBase (USHORT usFaultModule, USHORT usFaultCode)
 VOID   PIFENTRY PifAbortExtended (USHORT usModuleId, USHORT usExceptionCode, char *szFilePath, ULONG ulLineNo)
 {
 #if defined (_DEBUG)
-    _asm {  int 3   };
+	__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 #else
 	PifAbortBase (usModuleId, usExceptionCode);
 #endif
@@ -396,7 +398,7 @@ VOID   PIFENTRY PifAbortExtended (USHORT usModuleId, USHORT usExceptionCode, cha
 #if defined (_DEBUG)
 VOID   PIFENTRY PifAbort(USHORT usFaultModule, USHORT usFaultCode)
 {
-    _asm {  int 3   };
+	__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 }
 #else
 VOID   PIFENTRY PifAbort(USHORT usFaultModule, USHORT usFaultCode)
@@ -1365,7 +1367,7 @@ VOID   PIFENTRY PifLogAbort(UCHAR *lpCondition, UCHAR *lpFilename, UCHAR *lpFunc
 {
 	PifLogNoAbort (lpCondition, lpFilename, lpFunctionname, ulLineNo);
 #if  defined(_DEBUG) || defined(DEBUG)
-      _asm {  int 3   };
+	__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 #endif
 }
 
@@ -1489,7 +1491,7 @@ VOID   PIFENTRY PifDebugDump (UCHAR *aszTag, UCHAR *aszFileName, int nLineNo, VO
 
 #if  defined(_DEBUG) || defined(DEBUG)
 
-    _asm {  int 3   };
+	__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 
 #endif
 }
