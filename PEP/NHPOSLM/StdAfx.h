@@ -70,7 +70,7 @@
 #define  STD_GIFT_CRD_MAX		3		// Number of Gift Card types 5
 
 //CWindowButtonExt
-#define  MAX_BTN_FONT_SZ		16
+#define  MAX_BTN_FONT_SZ		48  // increased from '16' to 48 for Release 4.2
 #define  MIN_BTN_FONT_SZ		2
 #define  MAX_BTN_HEIGHT			20	// increased from '8' to '20' for Release 2.1 - CSMALL
 #define	 MIN_BTN_HEIGHT			1
@@ -93,6 +93,8 @@
 #define	 MIN_TXT_WIDTH			1
 
 //CWindowLabelExt
+#define  MAX_LBL_FONT_SZ		74
+#define  MIN_LBL_FONT_SZ		2
 #define  MAX_LBL_HEIGHT			51 // allows control to extend max resolution height - CSMALL
 #define	 MIN_LBL_HEIGHT			1
 #define  MAX_LBL_WIDTH			69 // allows control to extend max resolution width - CSMALL

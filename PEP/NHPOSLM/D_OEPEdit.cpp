@@ -375,8 +375,8 @@ void CD_OEPEdit::OnOepEditBtnFont()
 	FontDlg.m_cf.hwndOwner = NULL;
 	FontDlg.m_cf.lpLogFont = &myLF;
 	FontDlg.m_cf.Flags = CF_SCREENFONTS | CF_ENABLEHOOK | CF_INITTOLOGFONTSTRUCT  | CF_LIMITSIZE | CF_EFFECTS | CF_NOVERTFONTS;
-	FontDlg.m_cf.nSizeMax = 16;
-	FontDlg.m_cf.nSizeMin = 2;
+	FontDlg.m_cf.nSizeMax = MAX_BTN_FONT_SZ;
+	FontDlg.m_cf.nSizeMin = MIN_BTN_FONT_SZ;
 	FontDlg.m_cf.rgbColors = btnFontColor;
 	
 	myLF.lfWidth = 0;

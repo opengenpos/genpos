@@ -453,8 +453,8 @@ void CDWinLabel::OnSetFont()
 	FontDlg.m_cf.hwndOwner = NULL;
 	FontDlg.m_cf.lpLogFont = &myLF;
 	FontDlg.m_cf.Flags = CF_SCREENFONTS | CF_ENABLEHOOK | CF_INITTOLOGFONTSTRUCT  | /*CF_LIMITSIZE |*/ CF_EFFECTS | CF_NOVERTFONTS;
-	FontDlg.m_cf.nSizeMax = 200;
-	FontDlg.m_cf.nSizeMin = 2;
+	FontDlg.m_cf.nSizeMax = MAX_LBL_FONT_SZ;
+	FontDlg.m_cf.nSizeMin = MIN_LBL_FONT_SZ;
 	FontDlg.m_cf.rgbColors = colorText;
 	
 	
