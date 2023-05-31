@@ -38,7 +38,7 @@ DefaultData::~DefaultData()
 {
 #ifdef DO_ULTESTSIGNATURE_FOR_MEMORY_OVERWRITE
 	if (ulTestSignature != 0xABCDEF01) {
-		__asm int 3
+		__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 	}
 #endif
 }
@@ -86,7 +86,7 @@ void DefaultData::Serialize( CArchive& ar )
 
 #ifdef DO_ULTESTSIGNATURE_FOR_MEMORY_OVERWRITE
 	if (ulTestSignature != 0xABCDEF01) {
-		__asm int 3
+		__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 	}
 #endif
  }
@@ -107,7 +107,7 @@ void DefaultData::AssignTo ( DefaultData &dd)
 
 #ifdef DO_ULTESTSIGNATURE_FOR_MEMORY_OVERWRITE
 	if (ulTestSignature != 0xABCDEF01) {
-		__asm int 3
+		__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 	}
 #endif
 }
