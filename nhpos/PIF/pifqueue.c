@@ -170,7 +170,7 @@ VOID * PIFENTRY PifReadQueue(USHORT usQueue)
 	}
 	else {
 #if  defined(_DEBUG) || defined(DEBUG)
-		_asm {  int 3   };
+        __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 #endif
 	}
 

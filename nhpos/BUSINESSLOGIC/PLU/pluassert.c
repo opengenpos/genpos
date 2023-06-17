@@ -74,7 +74,7 @@ void	_PLU_ASSERT(char * pchProcName,char * pchMsg,int nVal){
 			wsprintf(achBuf,TEXT("[%s] %s"),achProcNm,achMsg);
 		}
 		MessageBox(NULL,achBuf,TEXT("### ASSERT (PLU MODULE)"),  MB_OK);
-		_asm int 3
+		__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 	}
 }
 
@@ -102,7 +102,7 @@ void	_PLU_TRACE(char * pchProcName,char * pchMsg,int nVal){
 
 void	_PLU_BREAKPOINT(int nVal){
 	if (nVal){
-		_asm{ int 3 };
+		__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 	}
 }
 

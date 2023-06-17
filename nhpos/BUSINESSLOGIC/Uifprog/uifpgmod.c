@@ -1120,7 +1120,7 @@ SHORT   UifPGDiaMnem(UIFPGDIADATA *pData)
 	} else if (pSysConfig->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
         UieSetCvt(CvtAlph5932_78_1);                                   /* set 5932 Wedge 78 K/B table */
 	} else {
-		_asm int 3;
+        __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 	}
 
 /*    UieSetFsc(NULL);                                            * set FSC table pointer to NULL */

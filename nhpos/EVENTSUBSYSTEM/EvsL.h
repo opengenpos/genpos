@@ -69,7 +69,7 @@ extern "C" {  /* Assume C declarations for C++ */
 #define EVS_DELETE              (3)
 
 #ifdef _DEBUG
-#define EVS_DEBUG_NOP  _asm{ nop };
+#define EVS_DEBUG_NOP          __debugbreak();   // replaced _asm {  nop   }; to allow ARM compiles for Windows on Arm
 #endif
 /*
 *===========================================================================

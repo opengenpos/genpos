@@ -275,16 +275,16 @@ VOID __vEvsCreateData_VOSWINDOW(VOID *pVosWin)
 #ifdef _DEBUG
     switch(dataId){
     case LCDWIN_ID_REG101:
-		_asm { nop }
+        EVS_DEBUG_NOP
         break;
     case LCDWIN_ID_REG208:
-		_asm { nop }
+        EVS_DEBUG_NOP
         break;
     case LCDWIN_ID_SUPER300:
-		_asm { nop }
+        EVS_DEBUG_NOP
         break;
     case LCDWIN_ID_PROG400:
-		_asm { nop }
+        EVS_DEBUG_NOP
         break;
     }
 #endif
@@ -335,16 +335,16 @@ VOID __vEvsDeleteData_VOSWINDOW(VOID *pVosWin){
 #ifdef _DEBUG
     switch(dataId){
     case LCDWIN_ID_REG101:
-		_asm { nop }
+        EVS_DEBUG_NOP
         break;
     case LCDWIN_ID_REG208:
-		_asm { nop }
+        EVS_DEBUG_NOP
         break;
     case LCDWIN_ID_SUPER300:
-		_asm { nop }
+        EVS_DEBUG_NOP
         break;
     case LCDWIN_ID_PROG400:
-		_asm { nop }
+        EVS_DEBUG_NOP
         break;
     }
 #endif

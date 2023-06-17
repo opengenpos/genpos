@@ -1742,7 +1742,7 @@ USHORT UifChangeKeyboardType (UCHAR  uchKBType)
             UieSetCvt(CvtAlph5932_78_1);                                   /* Set 5932 Wedge 78 KB Table */                        
             usUifACControl &= ~UIF_SHIFT_PAGE;                      /* Reset Shift Page Bit */
 		} else {
-			_asm int 3;
+            __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 		}
 
         UieSetFsc(NULL);                                            /* Set FSC Table Pointer to NULL */
@@ -1775,7 +1775,7 @@ USHORT UifChangeKeyboardType (UCHAR  uchKBType)
 			} else if (pSysConfig->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
 				UieSetCvt(CvtProg5932_78);                         
 			} else {
-				_asm int 3;
+                __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 			}
 			
 			//SR 661, by moving this into the area where we change it only when we are in program mode
@@ -1797,7 +1797,7 @@ USHORT UifChangeKeyboardType (UCHAR  uchKBType)
 			} else if (pSysConfig->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
 				UieSetCvt(CvtReg5932_78);                         
 			} else {
-				_asm int 3;
+                __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 			}
 
 			// guard the terminal position to ensure it is in correct range, default is we be Master
@@ -1840,7 +1840,7 @@ USHORT UifACChgKBType(UCHAR uchKBType)
             UieSetCvt(CvtAlph5932_78_1);                                   /* Set 5932 Wedge 78 KB Table */                        
             usUifACControl &= ~UIF_SHIFT_PAGE;                      /* Reset Shift Page Bit */
 		} else {
-			_asm int 3;
+            __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 		}
 
         UieSetFsc(NULL);                                            /* Set FSC Table Pointer to NULL */
@@ -1878,7 +1878,7 @@ USHORT UifACChgKBType(UCHAR uchKBType)
 			} else if (pSysConfig->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
 				UieSetCvt(CvtProg5932_78);                         
 			} else {
-				_asm int 3;
+                __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 			}
 			
 			//SR 661, by moving this into the area where we change it only when we are in program mode
@@ -1900,7 +1900,7 @@ USHORT UifACChgKBType(UCHAR uchKBType)
 			} else if (pSysConfig->uchKeyType == KEYBOARD_WEDGE_78) {  // 78 key 5932 Wedge keyboard
 				UieSetCvt(CvtReg5932_78);                         
 			} else {
-				_asm int 3;
+                __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
 			}
 
 			// guard the terminal position to ensure it is in correct range, default is we be Master

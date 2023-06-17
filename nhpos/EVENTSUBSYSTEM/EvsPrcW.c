@@ -173,7 +173,7 @@ VOID __wEvsASSERT(int nVal,char *pchProcName,char *pchMsg){
         mbstowcs(achMsg,pchMsg,strlen(pchMsg));
         wsprintf(achBuf,TEXT("[%s] %s"),achProcNm,achMsg);
         MessageBox(NULL,achBuf,TEXT("### ASSERT (EVENT SUB SYSTEM)"),  MB_OK);
-        _asm int 3
+		__debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm
     }
     return;
     pchMsg = pchMsg;

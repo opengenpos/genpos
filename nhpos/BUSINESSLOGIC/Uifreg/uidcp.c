@@ -163,7 +163,7 @@ SHORT UifDiaCP1(UIFDIADATA *pData)
 	/* set K/B mode to alphanumeric mode */
 
 #if 1
-	if (UifKeyTypeToCvtSet(keyToCvtAlpha)->pCvtTable == NULL)  _asm int 3;    // set keyboard and break if incorrect
+	if (UifKeyTypeToCvtSet(keyToCvtAlpha)->pCvtTable == NULL)  __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm // set keyboard and break if incorrect
 #else
     if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {        /* conventional type */
         UieSetCvt(CvtAlphC1);                                   /* set standard conventional K/B table */                        
@@ -222,7 +222,7 @@ SHORT UifDiaCP1(UIFDIADATA *pData)
     /* set K/B mode to neumeric mode */
 
 #if 1
-	if (UifKeyTypeToCvtSet(keyToCvtNumeric)->pCvtTable == NULL)  _asm int 3;    // set keyboard and break if incorrect
+	if (UifKeyTypeToCvtSet(keyToCvtNumeric)->pCvtTable == NULL)  __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm // set keyboard and break if incorrect
 #else
 	if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {        /* conventional type */
         UieSetCvt(CvtRegC);                         
@@ -272,7 +272,7 @@ SHORT UifDiaCP2(UIFDIADATA *pData)
     UieEchoBackWide(255, 0);
 
 #if 1
-	if (UifKeyTypeToCvtSet(keyToCvtAlpha)->pCvtTable == NULL)  _asm int 3;    // set keyboard and break if incorrect
+	if (UifKeyTypeToCvtSet(keyToCvtAlpha)->pCvtTable == NULL)  __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm  // set keyboard and break if incorrect
 #else
 	if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {        /* conventional type */
         UieSetCvt(CvtAlphC1);                                   /* set standard conventional K/B table */                        
@@ -329,7 +329,7 @@ SHORT UifDiaCP2(UIFDIADATA *pData)
     /* set K/B mode to neumeric mode */
 
 #if 1
-	if (UifKeyTypeToCvtSet(keyToCvtNumeric)->pCvtTable == NULL)  _asm int 3;    // set keyboard and break if incorrect
+	if (UifKeyTypeToCvtSet(keyToCvtNumeric)->pCvtTable == NULL)  __debugbreak();   // replaced _asm {  int 3   }; to allow ARM compiles for Windows on Arm   // set keyboard and break if incorrect
 #else
 	if (pSysConfig->uchKeyType == KEYBOARD_CONVENTION) {        /* conventional type */
         UieSetCvt(CvtRegC);                         
