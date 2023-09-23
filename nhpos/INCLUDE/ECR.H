@@ -46,6 +46,7 @@
 // Feb-09-2000           K.Iwata      Added definition of '_DEBUG_BREAK'
 // Apr-19-2015  02.02.01 R.Chambers   replace TTL_MAX_BLOCK in ttl.h with STD_MAX_HOURBLK
 // Apr-21-2015  02.02.01 R.Chambers   moved CONSOLIMAXSIZE to here from storage.h to eliminate storage.h
+// Sep-23-2023  0x.04.00 R.Chambers   removed the unused definition of '_DEBUG_BREAK'
 /////////////////////////////////////////////////////////////////////////////
 */
 
@@ -796,14 +797,6 @@ extern D13DIGITS CONST NULL13DIGITS;
 /*
 /////////////////////////////////////////////////////////////////////////////
 */
-
-/* ### ADD 2172 Rel1.0 (02/09/2000) */
-#if	(defined(DEBUG) && (!defined(_WIN32_WCE_EMULATION)))
-	#pragma	message("### _DEBUG_BREAK enabled!")
-	#define	_DEBUG_BREAK	_asm{ int 0x03 };
-#else
-	#define	_DEBUG_BREAK
-#endif
 
 //-----------  Begin of stuff for OuputDebugString functionality
 #if defined(_DEBUG) || defined(DEBUG)
