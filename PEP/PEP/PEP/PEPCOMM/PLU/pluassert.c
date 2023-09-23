@@ -66,7 +66,7 @@ void	_PLU_ASSERT(char * pchProcName,char * pchMsg,int nVal){
 			wsPepf(achBuf,WIDE("[%s] %s"),achProcNm,achMsg);
 		}
 		MessageBoxPopUp(NULL,achBuf,WIDE("### ASSERT (PLU MODULE)"),  MB_OK);
-		_asm int 3
+		__debugbreak();  // prep for ARM build _asm int 3;
 	}
 }
 #endif
@@ -95,7 +95,7 @@ void	_PLU_TRACE(char * pchProcName,char * pchMsg,int nVal){
 #pragma message("### DEBUG:__wPluBreakPoint ENABLED!!!")
 void	_PLU_BREAKPOINT(int nVal){
 	if (nVal){
-		_asm{ int 3 };
+		__debugbreak();  // prep for ARM build _asm int 3;
 	}
 }
 #endif

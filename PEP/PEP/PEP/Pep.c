@@ -329,7 +329,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpszCmdLine, int nCmdSho
 
 
 #ifdef _DEBUG
-//	_asm { int 3};  //  temp break when testing
+//	__debugbreak();  // prep for ARM build _asm int 3;  //  temp break when testing
 #endif
 
     /* ----- Initialize DLL ----- */
@@ -1801,7 +1801,7 @@ static  void    ExecuteAct(HWND hWnd, WORD wEditID)
             wID = IDD_A04_WEDGE_78;
         } else {
 			break;
-			//_asm int 3;
+			// __debugbreak();  // prep for ARM build _asm int 3;
 		}   // breakpoint out.
 
         DoAction04(hWnd, (LPHANDLE)&hwndPepDlgChk1, (LPHANDLE)&hwndPepDlgChk2, wID);

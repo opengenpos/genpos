@@ -1393,9 +1393,7 @@ VOID PIFENTRY PifAbortEx(USHORT usFaultModule, USHORT usFaultCode, BOOL fAppl)
 	// terminate
 
 #ifdef _DEBUG
-	_asm {
- 		int 3
-	}
+	__debugbreak();  // prep for ARM build _asm int 3;
 #endif
 
 	FatalExit(0);

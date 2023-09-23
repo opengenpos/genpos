@@ -204,7 +204,7 @@ BOOL    WINAPI  A004DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
                 wPluKeyMax = A04_PLUKEY_068;
 
             } else {
-				_asm int 3;
+                __debugbreak();  // prep for ARM build _asm int 3;
 			}   // breakpoint out.
 
             /* ----- Set Maximum Value of Keyed PLU No. ----- */
