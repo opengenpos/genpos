@@ -5439,6 +5439,31 @@ BEGIN
     PUSHBUTTON      "取消",IDCANCEL,90,175,30,14 //"&Cancel"
 END
 
+IDD_A156 DIALOG MOVEABLE IMPURE  77, 14, 150, 116
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Suggested Tip Amount (AC 156)"
+FONT 8, "MS Sans Serif"
+BEGIN
+CTEXT           "Description", IDD_A154_DESC, 23, 3, 60, 8
+CTEXT           "Rate", IDD_A154_RATE, 100, 3, 29, 8
+CONTROL         "", -1, "Static", SS_BLACKFRAME, 8, 13, 134, 98
+LTEXT           "", IDD_A154_DESC01, 28, 17, 60, 8
+EDITTEXT        IDD_A154_EDIT01, 100, 15, 28, 12, ES_RIGHT | ES_AUTOHSCROLL
+SCROLLBAR       IDD_A154_SPIN01, 128, 15, 8, 12, SBS_VERT
+LTEXT           "", IDD_A154_DESC02, 28, 31, 60, 8
+EDITTEXT        IDD_A154_EDIT02, 100, 29, 28, 12, ES_RIGHT | ES_AUTOHSCROLL
+SCROLLBAR       IDD_A154_SPIN02, 128, 29, 8, 12, SBS_VERT
+LTEXT           "", IDD_A154_DESC03, 28, 45, 60, 8
+EDITTEXT        IDD_A154_EDIT03, 100, 43, 28, 12, ES_RIGHT | ES_AUTOHSCROLL
+SCROLLBAR       IDD_A154_SPIN03, 128, 43, 8, 12, SBS_VERT
+LTEXT           "", IDD_A154_DESC04, 28, 59, 60, 8
+EDITTEXT        IDD_A154_EDIT04, 100, 57, 28, 12, ES_RIGHT | ES_AUTOHSCROLL
+SCROLLBAR       IDD_A154_SPIN04, 128, 57, 8, 12, SBS_VERT
+LTEXT           "( 数据范围 : 0 - 100 )", IDD_A154_CAPTION1, 13, 72, 120, 12
+PUSHBUTTON      "确认", IDOK, 29, 90, 30, 14
+PUSHBUTTON      "取消", IDCANCEL, 90, 90, 30, 14
+END
+
 IDD_A160 DIALOG MOVEABLE IMPURE  1, 1, 321, 230
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "设项目选择提示 (AC 160)" //"Set Order Entry Prompt Table (AC 160)"
@@ -6963,6 +6988,7 @@ BEGIN
         MENUITEM "(AC137) 设饮料分配器参数...", IDM_A137  //"(AC137) Set &Beverage Dispenser Parameter ..."
         MENUITEM "(AC152) 分配工时卡...", IDM_A152  //"(AC152) Assign &Employee Time Keeping..."
         MENUITEM "(AC154) 设工作编码薪酬率...", IDM_A154  //"(AC154) Set &Wage Rate for Job Code..."
+        MENUITEM "(AC156)  Set &Suggested Tip Amount ...", IDD_A156
         MENUITEM "(AC160) 项目选择提示维护...", IDM_A160 //"(AC160) &Order Entry Prompt Table Maintenance..." modified by LU
         MENUITEM "(AC161) 优惠券组合表维护...", IDM_A161 //"(AC161) &Combination Coupon Table Maintenance..." modified by LU
         MENUITEM "(AC162) 设驾车点菜参数...",  IDM_A162 //"(AC162) &Set Flexible Drivethrough Parameter..."

@@ -86,6 +86,7 @@ char    szDebug[526];
 #define IDD_A208        2171        /* Set Boundary Age           NCR2172   */
 #define IDD_A128        2128        /* ### ADD Saratoga (051900)            */
 #define	IDD_A209		2174		/* Color Palette						*/
+#define IDD_A156        2175        /* suggested tip amount Maintenance R2.4.1   */
 
 #define IDD_A04_WEDGE_68   2172     /* Set PLU Number on Menu Page NCR Wedge 64 key */
 #define IDD_A04_WEDGE_78   2173     /* Set PLU Number on Menu Page NCR Wedge 78 key */

@@ -41,3 +41,4 @@
 #define IDD_A209		2174		/* Color Palette                        */
 #define IDD_A128        2128        /* ### ADD Saratoga (051900)            */
 #define IDD_P72		2273		/* Reason Code mnemonics                */
+#define IDD_A156        2274        /* suggested tip amount Maintenance R2.4.1   */

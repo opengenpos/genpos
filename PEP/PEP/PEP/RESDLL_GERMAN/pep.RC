@@ -5096,6 +5096,31 @@ BEGIN
     PUSHBUTTON      "&Abbrechen",IDCANCEL,90,175,50,14
 END
 
+IDD_A156 DIALOG MOVEABLE IMPURE  77, 14, 150, 116
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Set Suggested Tip Amount (AC 156)"
+FONT 8, "MS Sans Serif"
+BEGIN
+CTEXT           "Description", IDD_A154_DESC, 23, 3, 60, 8
+CTEXT           "Rate", IDD_A154_RATE, 100, 3, 29, 8
+CONTROL         "", -1, "Static", SS_BLACKFRAME, 8, 13, 134, 98
+LTEXT           "", IDD_A154_DESC01, 28, 17, 60, 8
+EDITTEXT        IDD_A154_EDIT01, 100, 15, 28, 12, ES_RIGHT | ES_AUTOHSCROLL
+SCROLLBAR       IDD_A154_SPIN01, 128, 15, 8, 12, SBS_VERT
+LTEXT           "", IDD_A154_DESC02, 28, 31, 60, 8
+EDITTEXT        IDD_A154_EDIT02, 100, 29, 28, 12, ES_RIGHT | ES_AUTOHSCROLL
+SCROLLBAR       IDD_A154_SPIN02, 128, 29, 8, 12, SBS_VERT
+LTEXT           "", IDD_A154_DESC03, 28, 45, 60, 8
+EDITTEXT        IDD_A154_EDIT03, 100, 43, 28, 12, ES_RIGHT | ES_AUTOHSCROLL
+SCROLLBAR       IDD_A154_SPIN03, 128, 43, 8, 12, SBS_VERT
+LTEXT           "", IDD_A154_DESC04, 28, 59, 60, 8
+EDITTEXT        IDD_A154_EDIT04, 100, 57, 28, 12, ES_RIGHT | ES_AUTOHSCROLL
+SCROLLBAR       IDD_A154_SPIN04, 128, 57, 8, 12, SBS_VERT
+LTEXT           "( Daten Kollektion : 0 - 100 )", IDD_A154_CAPTION1, 13, 72, 120, 12
+PUSHBUTTON      "&OK", IDOK, 29, 90, 30, 14
+PUSHBUTTON      "&Abbrechen", IDCANCEL, 90, 90, 30, 14
+END
+
 IDD_A160 DIALOG MOVEABLE IMPURE  1, 1, 321, 230
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Auftrag Eintragung Anforderungszeichnen Tabelle setzen (AC 160)"
@@ -6488,6 +6513,7 @@ BEGIN
         MENUITEM "(AC137)  &Getränk Ausgeber Parameter setzen...", IDM_A137
         MENUITEM "(AC152)  Anweisen &Beschäftigte Zeit haltend...", IDM_A152
         MENUITEM "(AC154)  &Lohnsatz für Job Kode setzen...", IDM_A154
+        MENUITEM "(AC156)  Set &Suggested Tip Amount ...", IDD_A156
         MENUITEM "(AC160)  &Auftrag Eintragung Anforderungszeichen Tabelle Wartung...", IDM_A160
         MENUITEM "(AC161)  &Kombination Coupon Tabelle Wartung...", IDM_A161
         MENUITEM "(AC162)  &Flexibel Durchfahr Parameter setzen...", IDM_A162

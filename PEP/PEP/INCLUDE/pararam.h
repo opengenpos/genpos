@@ -114,7 +114,7 @@ typedef struct	tagUNINTRAM {
 	TENDERKEYINFO  TenderKeyInformation[MAX_TEND_NO];  // R_20_DATABASECHANGE
     ULONG              ParaStoreForward[MAX_MISC_SIZE];    // area used for the Store and Forward functionality
 	USHORT         ParaReasonCode[MAX_REASON_CODE_ITEMS][MAX_REASON_CODE_ENTRIES];   /* reason code data: first code in range, number in range */
-
+    USHORT         ParaSuggestedTip[MAX_SUGGESTED_TIP];
 } UNINIRAM;
 
 

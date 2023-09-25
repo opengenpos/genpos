@@ -658,4 +658,145 @@ VOID    A154RedrawThumb(LPARAM lCtrl)
 
 }
 
+
+// ----------------------------------------------------------------------------
+
+
+/*
+* ===========================================================================
+**  Synopsis    :   VOID    A154InitDlg()
+*
+**  Input       :   HWND    hDlg    -   Window Handle of DialogBox
+*                   LPWORD  lpwData -   Points to a Buffer of wage Rate Data
+*
+**  Return      :   No Return Value
+*
+**  Description :
+*       This function initializes the configulation of a DialogBox.
+* ===========================================================================
+*/
+static VOID    A156InitDlg(HWND hDlg, LPWORD lpwData)
+{
+    USHORT  usReturnLen;                /* Return Length of ParaAll */
+
+    /* ----- Set Top Index & Bottom Index ----- */
+    unTopIndex = A154_SCBAR_MIN;
+    unBottomIndex = A154_ONE_PAGE;
+
+    for (WORD wID = IDD_A154_EDIT01; wID <= IDD_A154_EDIT10; wID++) {
+        /* ----- Set Limit Length to EditText ----- */
+        SendDlgItemMessage(hDlg, wID, EM_LIMITTEXT, A154_RATE_LEN, 0L);
+    }
+
+    /* ----- Read Wage Rate Data from Parameter File ----- */
+    ParaAllRead(CLASS_PARALABORCOST,
+        (UCHAR*)lpwData,
+        (A154_ADDR_MAX * sizeof(WORD)),
+        0, &usReturnLen);
+
+    /* ----- Set Description to StaticText ----- */
+    A154RedrawText(hDlg, lpwData);
+
+    /* ----- Set Minimum & Maximum Position of Vertical Scroll ----- */
+    SetScrollRange(GetDlgItem(hDlg, IDD_A154_SCBAR), SB_CTL, A154_SCBAR_MIN, A154_SCBAR_MAX, TRUE);
+
+    /* ----- Set the Position of ScrollBox(thumb) of Vertical Scroll ----- */
+    SetScrollPos(GetDlgItem(hDlg, IDD_A154_SCBAR), SB_CTL, A154_SCBAR_MIN, FALSE);
+
+    /* ----- Set Focus to EditText in the Top of Item ----- */
+    SetFocus(GetDlgItem(hDlg, IDD_A154_EDIT01));
+    SendDlgItemMessage(hDlg, IDD_A154_EDIT01, EM_SETSEL, 0, MAKELONG(0, -1));
+}
+
+BOOL    WINAPI  A156DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
+{
+    static  WORD    awSuggestedTipRate[A154_ADDR_MAX] = { 0 };   /* Data Buffer of Wage Rate Data */
+
+    USHORT  usReturnLen;                    /* Return Length of ParaAll */
+
+    switch (wMsg) {
+
+    case WM_INITDIALOG:
+        SendMessage(hDlg, WM_SETFONT, (WPARAM)hResourceFont, MAKELPARAM(TRUE, 0));
+//        A156InitDlg(hDlg, awSuggestedTipRate);    /* ----- Initialize Configulation of DialogBox ----- */
+        return TRUE;
+
+    case WM_SETFONT:
+        if (hResourceFont) {
+            for (int j = IDD_A154_DESC01; j <= IDD_A154_CAPTION1; j++)
+            {
+                SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            }
+            SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
+        }
+        return FALSE;
+
+    case WM_MOUSEWHEEL:
+    {
+        int     dWheel = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
+        LPARAM  hScroll = (LPARAM)GetDlgItem(hDlg, IDD_A154_SCBAR);
+
+        if (dWheel < 0) {
+            A154ScrlProc(hDlg, SB_LINEDOWN, hScroll, awSuggestedTipRate);   /* ----- Vertical Scroll Bar Control ----- */
+        }
+        else if (dWheel > 0) {
+            A154ScrlProc(hDlg, SB_LINEUP, hScroll, awSuggestedTipRate);
+        }
+    }
+
+    /* ----- An application should return zero ----- */
+    return FALSE;
+
+    case WM_VSCROLL:
+        if (GetDlgCtrlID((HWND)lParam) == IDD_A154_SCBAR) {
+            A154ScrlProc(hDlg, wParam, lParam, awSuggestedTipRate);    /* ----- Vertical Scroll Bar Control ----- */
+        }
+        else {
+            A154SpinProc(hDlg, wParam, lParam, awSuggestedTipRate);    /* ----- Spin Button Control ----- */
+        }
+        return FALSE;
+
+    case WM_COMMAND:
+
+        switch (LOWORD(wParam)) {
+
+        case IDD_A154_EDIT01:
+        case IDD_A154_EDIT02:
+        case IDD_A154_EDIT03:
+        case IDD_A154_EDIT04:
+            if (HIWORD(wParam) == EN_CHANGE) {
+                /* ----- Check Inputed Data with Data Range ----- */
+                if (A154GetData(hDlg, wParam, awSuggestedTipRate)) {
+                    A154ShowErr(hDlg);    /* ----- Text out Error Message ----- */
+                    A154ResetData(hDlg, wParam);    /* ----- Reset Previous Data to Data Buffer ----- */
+                }
+                return TRUE;
+            }
+            return FALSE;
+
+        case IDOK:
+        case IDCANCEL:
+            if (HIWORD(wParam) == BN_CLICKED) {
+                if (LOWORD(wParam) == IDOK) {
+
+                    ParaAllWrite(CLASS_PARALABORCOST,
+                        (UCHAR*)awSuggestedTipRate,
+                        sizeof(awSuggestedTipRate),
+                        0, &usReturnLen);
+
+                    PepSetModFlag(hwndActMain, PEP_MF_ACT, 0);
+                }
+
+                EndDialog(hDlg, LOWORD(wParam));
+                return TRUE;
+            }
+        }
+        return FALSE;
+
+    default:
+        return FALSE;
+    }
+}
+
 /* ===== End of A154.C ===== */

@@ -914,8 +914,9 @@ LONG    WINAPI  PepWndProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
         case    IDM_A133:       /* Service Time Parameter Maintenance */
         case    IDM_A137:       /* Set Beverage Dispenser Parameter */
         case    IDM_A152:       /* Employee Number Assignment   */
-        case    IDM_A154:       /* Set Wage Rate for Job Code   */
-        case    IDM_A160:       /* Order Entry Prompt Table Maintenance */
+		case    IDM_A154:       /* Set Wage Rate for Job Code   */
+		case    IDD_A156:       /* Set suggested tip amount   */
+		case    IDM_A160:       /* Order Entry Prompt Table Maintenance */
         case    IDM_A161:       /* Combination Coupon Talbe Maintenance */
         case    IDM_A162:       /* Flexible Drivethru Parameter Maintenance */
         case    IDM_A170:       /* Set Sales Restriction Table of PLU NCR2172 */
@@ -1899,6 +1900,10 @@ static  void    ExecuteAct(HWND hWnd, WORD wEditID)
     case    IDM_A154:       /* Set Wage Rate for Job Code   */
         DoAction(hWnd, A154DlgProc, IDD_A154, hPepInst);
         break;
+
+	case    IDD_A156:       /* Set suggested tip amount   */
+		DoAction(hWnd, A154DlgProc, IDD_A156, hPepInst);
+		break;
 
     case    IDM_A160:       /* Order Entry Prompt Table Maintenance */
         DoAction(hWnd, A160DlgProc, IDD_A160, hPepInst);
