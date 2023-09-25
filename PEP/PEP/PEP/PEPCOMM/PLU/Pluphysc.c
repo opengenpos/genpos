@@ -1108,7 +1108,7 @@ USHORT	PhySearchOccupied(USHORT hf, ULONG ulCell, PFILEHDR pHeader, ULONG *pulFo
 
 UCHAR	*SearchFreeByte(UCHAR *pucBuffer, USHORT usOrigin, USHORT usSize)
 {
-#if 0
+#if defined(REMOVE_ASM)
 	// ensure usOrigin is within the buffer size. if not then set to end.
 	// si will not advance further but we will go backwards in a search for
 	// a free position.
@@ -1319,7 +1319,7 @@ SearchF04:
 
 USHORT	ComputeFreeBit(UCHAR uchByte)
 {
-#if 0
+#if defined(REMOVE_ASM)
 	UCHAR  usPat = 0x01;
 
 	for (SHORT sCount = 7; sCount >= 0; sCount--) {

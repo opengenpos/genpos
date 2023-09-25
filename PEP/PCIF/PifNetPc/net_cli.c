@@ -1604,6 +1604,8 @@ USHORT  GetFreeUserTable(PUSRTBL pTable, USHORT usArrays)
 
     return (usHandle);
 }
+
+#if defined(POSSIBLE_DEAD_CODE)
 
 /**
 ;========================================================================
@@ -1669,6 +1671,7 @@ ULONG   ExchangeUlong(ULONG ulValue)
 
     return (ulRet);
 }
+#endif
 
 /*==========================================================================*\
 ;+                      E n d   O f   P r o g r a m                         +
