@@ -939,7 +939,7 @@ BOOL    P03ChkFixKey(WORD wKeyID)
         wFixedKeyNo  = P03_TICKET_FIXED_NO;
         
     }else {
-		_asm int 3;
+        __debugbreak();  // prep for ARM build _asm int 3;
 	}   // breakpoint out.
 
     /* ----- Check Current Key is Fixed Key or Not ----- */
@@ -1159,7 +1159,7 @@ VOID    P03RepStr(HWND hDlg, HWND hwndUp, PPOINTS lpptPos, LPP03DATA lpFscData)
 			lpwKeyedPLUKeys = (LPWORD)awBigTicket;
 		}
 		else {
-			_asm int 3;
+            __debugbreak();  // prep for ARM build _asm int 3;
 		}   // breakpoint out.
         /*
 
@@ -1302,7 +1302,7 @@ VOID    P03DspStr(HWND hDlg, HWND hwndKey, LPP03DATA lpData)
 		lpwKeyedPLUKeys = (LPWORD)awBigTicket;
 	}
 	else {
-		_asm int 3;
+        __debugbreak();  // prep for ARM build _asm int 3;
 	}   // breakpoint out.
 
     if (wCurBtnID == IDD_P03_KEYEDPLU) {

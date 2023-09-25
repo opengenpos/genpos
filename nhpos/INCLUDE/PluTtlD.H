@@ -1,3 +1,49 @@
+/*
+*---------------------------------------------------------------------------
+*  Georgia Southern University, Rsearch Services and Sponsored Programs
+*    (C) Copyright 2002 - 2020
+*
+*  NHPOS, donated by NCR Corp to Georgia Southern University, August, 2002.
+*  Developemnt with NCR 7448 then ported to Windows XP and generic x86 hardware
+*  along with touch screen support.
+*
+*---------------------------------------------------------------------------
+
+        NeighborhoodPOS Software Product Development Project
+        Department of Information Systems
+        College of Information Technology
+        Georgia Southern University
+        Statesboro, Georgia
+
+        Copyright Georgia Southern University Foundation
+
+*---------------------------------------------------------------------------
+/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 1999 NCR Corporation, All rights reserved.
+//
+// --------------------------------------------------------------------------
+//    Georgia Southern University Research Services Foundation
+//    donated by NCR to the research foundation in 2002 and maintained here
+//    since.
+//       2002  -> NHPOS Rel 1.4  (Windows CE for NCR 7448, Visual Studio Embedded)
+//       2003  -> NHPOS Rel 2.0.0  (Windows XP for NCR touch screen, Datacap for EPT)
+//       2006  -> NHPOS Rel 2.0.4  (Windows XP, Rel 2.0.4.51)
+//       2006  -> NHPOS Rel 2.0.5  (Windows XP, US Customs, Store and Forward, Mobile Terminal, Rel 2.0.5.76)
+//       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
+//       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
+//       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+//
+//    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+// --------------------------------------------------------------------------
+// History:
+//
+// Date         Version  Author       Comments
+// ===========  =======  ===========  =======================================
+// Sep-23-2023  0x.04.00 R.Chambers   removed the unused definition of 'PLUTOTAL_DEBUG_BREAK'
+/////////////////////////////////////////////////////////////////////////////
+*/
+
 #ifndef __PLUTTLD_H
 #define __PLUTTLD_H
 
@@ -92,15 +138,6 @@
 #else
 #define PLUTOTAL_STATUS_TBL_FRM "ResetStatus uint,FromDate datetime,ToDate datetime,PluAllTotal int,PluAmount int,Version int "
 #endif
-#endif
-
-
-// break point
-#if defined(DEBUG) && !defined(_WIN32_WCE_EMULATION)
-/*  #pragma message("### ENABLE PLUTOTAL_DEBUG_BREAK !") */
-    #define PLUTOTAL_DEBUG_BREAK        _asm{ int 0x03 };
-#else
-    #define PLUTOTAL_DEBUG_BREAK
 #endif
 
 

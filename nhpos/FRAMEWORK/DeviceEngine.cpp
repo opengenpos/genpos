@@ -4534,7 +4534,7 @@ USHORT CDeviceEngine::ConvertKey(MSG *pMsg, VIRTUALKEY_BUFFER  *pVirtualKeyData)
 		//    OpenGenPOS Rel 2.4.0  3/22/2021  Richard Chambers
 	}
 	else if (m_bVirtualKeyProcessingEnabled) {
-		_asm int 3;
+			__debugbreak();  // prep for ARM build _asm int 3;
 	}
 
     fShiftKey   = GetKeyState(VK_SHIFT) & 0x8000;

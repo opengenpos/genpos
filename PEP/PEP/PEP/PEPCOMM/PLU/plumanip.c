@@ -242,7 +242,7 @@ USHORT	MnpInitialize(BOOL fRefresh)
 		for (pTable = FileInfo; pTable->usFileNo != TBLEND; pTable++) {
 			/* --- open it w/ read & write mode --- */
 			if (pTable->pszFileName[0] != _T('P')) {
-				_asm {int 3 };
+				__debugbreak();  // prep for ARM build _asm int 3;
 			}
 			if (PhyOpenFile(pTable->pszFileName, pTable->pusHandle, TRUE)) {
 				*(pTable->pusHandle) = 0;			/* mark 0 if fail ...	*/
