@@ -13,10 +13,6 @@
 *	Category:
 *	Program Name:
 * ---------------------------------------------------------------------------
-*	Compiler:		MS-C Ver. 6.00 A by Microsoft Corp.              
-*	Memory Model:	Medium Model
-*	Options:		/c /AM /Gs /Os /Za /Zp /W4 /G1
-* ---------------------------------------------------------------------------
 *	Abstract:
 *
 * ---------------------------------------------------------------------------
@@ -26,6 +22,12 @@
 * ---------------------------------------------------------------------------
 *			 |			|										|
 
+*
+*** GenPOS **
+* 09/25/23 : 02.04.00  : R.Chambers  : replace magic constant 0 with defined constant SPLU_COMPLETED
+* 09/25/23 : 02.04.00  : R.Chambers  : eliminate FARCONST and FAR.
+* 09/25/23 : 02.04.00  : R.Chambers  : make local functions (SearchFreeByte, etc.) static.
+* 09/25/23 : 02.04.00  : R.Chambers  : allow for ARM builds with no _asm using define SET_NO_ASM
 
 \*==========================================================================*/
 
@@ -68,7 +70,7 @@
 
 #define		MAGIC_HANDLE		1				/* control handle value		*/
 
-
+// #define     SET_NO_ASM          1       /* compile using the no _asm version of functions. */
 
 /*==========================================================================*\
 ;+																			+
@@ -84,9 +86,9 @@
 ;+																			+
 \*==========================================================================*/
 
-UCHAR FARCONST	aucReadOnly[]  = "ro";				/* open w/ read mode	*/
-UCHAR FARCONST	aucReadWrite[] = "rwo";				/* open w/ read & write	*/
-UCHAR FARCONST	aucCreateNew[] = "rwn";				/* create newly			*/
+static UCHAR aucReadOnly[]  = "ro";				/* open w/ read mode	*/
+static UCHAR aucReadWrite[] = "rwo";				/* open w/ read & write	*/
+static UCHAR aucCreateNew[] = "rwn";				/* create newly			*/
 
 
 
@@ -96,9 +98,9 @@ UCHAR FARCONST	aucCreateNew[] = "rwn";				/* create newly			*/
 ;+																			+
 \*==========================================================================*/
 
-UCHAR	*SearchFreeByte(UCHAR *, USHORT, USHORT);
-USHORT	ComputeFreeBit(UCHAR);
-INDEX	ComputeIndexOffset(ULONG);	/* ### 2172 Rel1.0(100,000item) */
+static UCHAR	*SearchFreeByte(UCHAR *, USHORT, USHORT);
+static USHORT	ComputeFreeBit(UCHAR);
+static INDEX	ComputeIndexOffset(ULONG);	/* ### 2172 Rel1.0(100,000item) */
 
 
 
@@ -129,7 +131,7 @@ INDEX	ComputeIndexOffset(ULONG);	/* ### 2172 Rel1.0(100,000item) */
 ;========================================================================
 **/
 
-USHORT	PhyCreateFile(WCHAR FAR *pszName, USHORT *phf,USHORT usID, USHORT usType,
+USHORT	PhyCreateFile(WCHAR *pszName, USHORT *phf, USHORT usID, USHORT usType,
 					 USHORT usUnit, ULONG ulRec)
 {
 	UCHAR		aucBlock[SIZEDISKIO];
@@ -208,9 +210,7 @@ USHORT	PhyCreateFile(WCHAR FAR *pszName, USHORT *phf,USHORT usID, USHORT usType,
 
 	*phf = (hf + MAGIC_HANDLE);
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -227,15 +227,13 @@ USHORT	PhyCreateFile(WCHAR FAR *pszName, USHORT *phf,USHORT usID, USHORT usType,
 ;========================================================================
 **/
 
-USHORT	PhyDeleteFile(WCHAR FAR *pszName)
+USHORT	PhyDeleteFile(WCHAR *pszName)
 {
 	/* --- just delete it --- */
 
 	PifDeleteFile(pszName);							/* delete it			*/
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -308,9 +306,7 @@ USHORT	PhyClearFile(USHORT	hf)
 		PifWriteFile(hfDirty, aucBlock, ulWrite);
     }
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -329,14 +325,14 @@ USHORT	PhyClearFile(USHORT	hf)
 ;========================================================================
 **/
 
-USHORT	PhyOpenFile(WCHAR FAR *pszName, USHORT *phf, BOOL fWrite)
+USHORT	PhyOpenFile(WCHAR *pszName, USHORT *phf, BOOL fWrite)
 {
-	USHORT		hf;
-	UCHAR FAR	*pMode;
+	USHORT	hf;
+	UCHAR 	*pMode;
 
 	/* --- compute accessing mode --- */
 
-	pMode = (UCHAR FAR *)(fWrite ? aucReadWrite : aucReadOnly);
+	pMode = (UCHAR *)(fWrite ? aucReadWrite : aucReadOnly);
 
 	/* --- open a file --- */
 
@@ -348,9 +344,7 @@ USHORT	PhyOpenFile(WCHAR FAR *pszName, USHORT *phf, BOOL fWrite)
 
 	*phf = hf + MAGIC_HANDLE;
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -412,9 +406,7 @@ USHORT	PhyAuditFile(USHORT hf)
 		return (SPLU_INVALID_FILE);					/* out of PLU file !	*/
 	}
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -454,9 +446,7 @@ USHORT	PhyReadFile(USHORT hf, WCHAR *pucBuffer, ULONG *pusBytes, ULONG ulOffset)
 
 	*pusBytes = PifReadFile(hfDirty, pucBuffer, *pusBytes);
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -496,9 +486,7 @@ USHORT	PhyWriteFile(USHORT hf, WCHAR *pucBuffer, ULONG *pusBytes, ULONG ulOffset
 
 	PifWriteFile(hfDirty, pucBuffer, *pusBytes);
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -521,9 +509,7 @@ USHORT	PhyCloseFile(USHORT hf)
 
 	PifCloseFile((USHORT)(hf - MAGIC_HANDLE));	/* close it *//* ### MOD 2172 Rel1.0 */
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -562,9 +548,7 @@ USHORT	PhyGetInfo(USHORT hf, PFILEHDR pHeader)
 		return (SPLU_FILE_BROKEN);
 	}
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -621,9 +605,7 @@ USHORT	PhyUpdateInfo(USHORT hf, PFILEHDR pHeader)
 
 	PifWriteFile(hfDirty, &hdrInf, sizeof(FILEHDR));
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -677,9 +659,7 @@ USHORT	PhyReadRecord(USHORT hf, ULONG ulCell, WCHAR *pucBuffer, PFILEHDR pHeader
 		return (SPLU_FILE_BROKEN);						/* must be broken	*/
 	}
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -731,9 +711,7 @@ USHORT	PhyWriteRecord(USHORT hf, ULONG ulCell, WCHAR *pucBuffer, PFILEHDR pHeade
 
 	PifWriteFile(hfDirty, pucBuffer, usBytes);		/* write a record		*/
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -786,9 +764,7 @@ USHORT	PhyExamOccupied(USHORT hf, ULONG ulCell, PFILEHDR pHeader, BOOL *pfOccupi
 
 	*pfOccupied = (BOOL)((uchByte & PTRNFROMINDEX(indInfo)) ? TRUE : FALSE);
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -855,9 +831,7 @@ USHORT	PhySetUpOccupied(USHORT hf, ULONG ulCell, PFILEHDR pHeader, BOOL fOccupie
 
 	PifWriteFile(hfDirty, &uchByte, sizeof(uchByte));
 
-	/* --- exit ... --- */
-
-	return (0);
+	return (SPLU_COMPLETED);
 }
 
 /**
@@ -945,7 +919,7 @@ USHORT	PhySearchVacant(USHORT hf, ULONG ulCell, PFILEHDR pHeader, ULONG *pulFree
 		if (pucFound = SearchFreeByte(aucBlock, usOrigin, sizeof(aucBlock))) {
 			*pulFree  = (ulAlign + (ULONG)(pucFound - aucBlock)) * 8L;
 			*pulFree += (ULONG)(7 - ComputeFreeBit(*pucFound));
-			usStat    = 0;
+			usStat    = SPLU_COMPLETED;
 			break;
 		}
 
@@ -955,8 +929,6 @@ USHORT	PhySearchVacant(USHORT hf, ULONG ulCell, PFILEHDR pHeader, ULONG *pulFree
 		ulAlign  = (ulAlign > pHeader->ulBytesIndex) ? 0 : ulAlign;
 		ulRest  -= usBytes;						/* remained bytes of table	*/
 	}
-
-	/* --- exit ... --- */
 
 	return (usStat);
 }
@@ -1059,7 +1031,7 @@ USHORT	PhySearchOccupied(USHORT hf, ULONG ulCell, PFILEHDR pHeader, ULONG *pulFo
 
 				*pulFound  = (ulOffset + (ULONG)(pucFound - aucBlock)) * 8;
 				*pulFound += (7 - ComputeFreeBit((UCHAR)(~(*pucFound))));
-				usStat     = 0;
+				usStat     = SPLU_COMPLETED;
 				break;
 			}
 		}
@@ -1076,8 +1048,6 @@ USHORT	PhySearchOccupied(USHORT hf, ULONG ulCell, PFILEHDR pHeader, ULONG *pulFo
 		ulRest   -= usBytes;					/* remained bytes of table	*/
 		ucBit     = MSB;						/* search from MSB			*/
 	}
-
-	/* --- exit ... --- */
 
 	return (usStat);
 }
@@ -1106,9 +1076,9 @@ USHORT	PhySearchOccupied(USHORT hf, ULONG ulCell, PFILEHDR pHeader, ULONG *pulFo
 ;========================================================================
 **/
 
-UCHAR	*SearchFreeByte(UCHAR *pucBuffer, USHORT usOrigin, USHORT usSize)
+static UCHAR	*SearchFreeByte(UCHAR *pucBuffer, USHORT usOrigin, USHORT usSize)
 {
-#if defined(REMOVE_ASM)
+#if defined(SET_NO_ASM)
 	// ensure usOrigin is within the buffer size. if not then set to end.
 	// si will not advance further but we will go backwards in a search for
 	// a free position.
@@ -1317,9 +1287,9 @@ SearchF04:
 ;========================================================================
 **/
 
-USHORT	ComputeFreeBit(UCHAR uchByte)
+static USHORT	ComputeFreeBit(UCHAR uchByte)
 {
-#if defined(REMOVE_ASM)
+#if defined(SET_NO_ASM)
 	UCHAR  usPat = 0x01;
 
 	for (SHORT sCount = 7; sCount >= 0; sCount--) {
@@ -1381,7 +1351,7 @@ ComputeF02:
 ;========================================================================
 **/
 
-INDEX	ComputeIndexOffset(ULONG ulCell)/* ### MOD 2172 Rel1.0 (100,000item)*/
+static INDEX	ComputeIndexOffset(ULONG ulCell)/* ### MOD 2172 Rel1.0 (100,000item)*/
 {
 	INDEX	indInfo;
 	UCHAR	uchBitmap = MSB;
