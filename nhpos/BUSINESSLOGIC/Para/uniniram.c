@@ -7120,13 +7120,16 @@ public class UniniramTextConv{
 			0, 0, 0, 0
 		},
 	},
-	{  // PARAMISCPARA   ParaStoreForward
+	{  // PARAMISCPARA   Para.ParaStoreForward[MAX_MISC_SIZE]
 		0, 0,         // lStoreForwardMaxAmountTrans, lStoreForwardMaxAmountCummulative
 		0, 0, 0, 0, 0, 0, 0
 	},
-	{
+	{  //  Para.ParaReasonCode[MAX_REASON_CODE_ITEMS][MAX_REASON_CODE_ENTRIES]
 		{0,0}
 	},
+    {  //  Para.ParaSuggestedTip[MAX_SUGGESTED_TIP]
+        0
+    },
     0,  /* Inquiry Status - usSerCurStatus */
     {   /* Transaction #  - ausSerCurTransNo[CLI_ALLTRANSNO] */
 		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0

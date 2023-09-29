@@ -591,6 +591,8 @@ can assign PLUs to, and 165 is the max number of keys that can be assigned per p
 #define MAX_REASON_CODE_ENTRIES   2  /* number of entries per reason code item entry */
 #define MAX_REASON_CODE_ITEMS    12  /* number of reason code items: itemsales, itemdisc, etc. */
 
+#define MAX_SUGGESTED_TIP         4  /* maximum number of suggested tip entries, ParaSuggestedTip[]  */
+
 /*------------------------------------------------------------------------*\
 *   MAX DATA DEFINE
 \*------------------------------------------------------------------------*/

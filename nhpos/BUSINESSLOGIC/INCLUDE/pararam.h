@@ -127,6 +127,7 @@ typedef struct  tagUNINTRAM {
 	TENDERKEYINFO  TenderKeyInformation[MAX_TEND_NO];  // R_20_DATABASECHANGE
     ULONG          ParaStoreForward[MAX_MISC_SIZE];    // area used for the Store and Forward functionality
 	USHORT      ParaReasonCode[MAX_REASON_CODE_ITEMS][MAX_REASON_CODE_ENTRIES];   /* reason code data: first code in range, number in range */
+    USHORT         ParaSuggestedTip[MAX_SUGGESTED_TIP];
 
     USHORT  usSerCurStatus;                 /* Inquiry status */
     USHORT  ausSerCurTransNo[CLI_ALLTRANSNO];       /* Current Transaction number */
@@ -138,7 +139,7 @@ typedef struct  tagUNINTRAM {
     EPTTALLY   EPTTally;                    /* Tally counter for EPT,   Saratoga */
 	TTLCSUPHEAD TtlUphDBdata;                 /* Total Delayed Balance update header */
 	UCHAR		uchMaintDelayBalanceFlag;
-	UCHAR       uchStoreForwardFlag;
+	UCHAR       uchStoreForwardFlag;        // Store and Forward status bit map. See PIF_STORE_AND_FORWARD_STAT_MASK
 	ULONG       ulConnEngineElectronicJournalConsecutiveNumber;
 	ULONG       ulAssrtlogFileOffset;
 } UNINIRAM;
@@ -219,7 +220,6 @@ extern UNINIRAM UNINT ParaDefault;                          /* Default, initiali
 #define ParaDeptNoMenu      (Para.ParaDeptNoMenu)
 #define ParaAutoCoupon		(Para.ParaAutoCoupon)
 #define ParaColorPalette	(Para.ParaColorPalette)
-#define ParaTtlKeyOrderDecType	(Para.ParaTtlKeyOrderDecType)
 
 #define ParaEnhEPTInfo				(Para.EPT_ENH_Information)
 #define ParaChargePostInformation	(Para.ChargePostInformation)
@@ -230,8 +230,5 @@ extern UNINIRAM UNINT ParaDefault;                          /* Default, initiali
 #define TtlUphDBdata      (Para.TtlUphDBdata)
 
 #define uchMaintDelayBalanceFlag (Para.uchMaintDelayBalanceFlag)
-#define uchStoreForwardFlag		(Para.uchStoreForwardFlag)
-#define ParaStoreForward		(Para.ParaStoreForward)
-#define ParaReasonCode          (Para.ParaReasonCode)
 
 /****** End of Definition ******/
