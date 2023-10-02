@@ -80,7 +80,7 @@ VOID ParaMiscParaRead( PARAMISCPARA *pData )
 	else {
 		i -= MAX_MISC_SIZE;
 		if (i < MAX_MISC_SIZE)
-			pData->ulMiscPara = ParaStoreForward[i];
+			pData->ulMiscPara = Para.ParaStoreForward[i];
 	}
 }
 
@@ -89,7 +89,7 @@ VOID ParaStoreForwardParaRead( PARAMISCPARA *pData )
 	UCHAR	 i = (UCHAR)(pData->uchAddress - 1);
 
 	NHPOS_ASSERT(i < MAX_MISC_SIZE);
-	pData->ulMiscPara = ParaStoreForward[i];
+	pData->ulMiscPara = Para.ParaStoreForward[i];
 }
 
 /**
@@ -119,7 +119,7 @@ VOID ParaMiscParaWrite( PARAMISCPARA *pData )
 	else {
 		i -= MAX_MISC_SIZE;
 		if (i < MAX_MISC_SIZE)
-			ParaStoreForward[i] = pData->ulMiscPara;
+			Para.ParaStoreForward[i] = pData->ulMiscPara;
 	}
 }
 
@@ -128,7 +128,7 @@ VOID ParaStoreForwardParaWrite( PARAMISCPARA *pData )
 	UCHAR 	 i= (UCHAR)(pData->uchAddress - 1);
 
 	NHPOS_ASSERT(i < MAX_MISC_SIZE);
-	ParaStoreForward[i] = pData->ulMiscPara;
+	Para.ParaStoreForward[i] = pData->ulMiscPara;
 }
 
 
@@ -160,8 +160,8 @@ VOID  ParaReasonCodeInfoParaRead (PARAREASONCODEINFO  *pData)
 	UCHAR 	 i= (UCHAR)(pData->uchAddress - 1);
 
 	if (i < MAX_REASON_CODE_ITEMS) {
-		pData->usMnemonicStartAddr = ParaReasonCode[i][0];
-		pData->usMnemonicCount = ParaReasonCode[i][1];
+		pData->usMnemonicStartAddr = Para.ParaReasonCode[i][0];
+		pData->usMnemonicCount = Para.ParaReasonCode[i][1];
 	}
 }
 
@@ -170,8 +170,8 @@ VOID  ParaReasonCodeInfoParaWrite (PARAREASONCODEINFO  *pData)
 	UCHAR 	 i= (UCHAR)(pData->uchAddress - 1);
 
 	if (i < MAX_REASON_CODE_ITEMS) {
-		ParaReasonCode[i][0] = pData->usMnemonicStartAddr;
-		ParaReasonCode[i][1] = pData->usMnemonicCount;
+		Para.ParaReasonCode[i][0] = pData->usMnemonicStartAddr;
+		Para.ParaReasonCode[i][1] = pData->usMnemonicCount;
 	}
 }
 /* --- end of Source File --- */

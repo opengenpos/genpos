@@ -187,7 +187,7 @@ VOID    ParaTtlKeyOrderDecRead(PARATTLKEYORDDEC *pData)
     UCHAR    i;
 
     i = (UCHAR)(pData->uchAddress) - 1;   /* "-1" fits program address to RAM address */     
-	pData->uchOrderDec = ParaTtlKeyOrderDecType[i];
+	pData->uchOrderDec = Para.ParaTtlKeyOrderDecType[i];
 }
 
 VOID    ParaTtlKeyOrderDecWrite(PARATTLKEYORDDEC *pData)
@@ -196,62 +196,62 @@ VOID    ParaTtlKeyOrderDecWrite(PARATTLKEYORDDEC *pData)
 
     i = (UCHAR)(pData->uchAddress) - 1;   /* "-1" fits program address to RAM address */     
 
-	ParaTtlKeyOrderDecType[i] =	pData->uchOrderDec;
+	Para.ParaTtlKeyOrderDecType[i] =	pData->uchOrderDec;
 }
 
 UCHAR  ParaStoreForwardFlag (VOID)
 {
-	return (uchStoreForwardFlag & PIF_STORE_AND_FORWARD_STAT_MASK);
+	return (Para.uchStoreForwardFlag & PIF_STORE_AND_FORWARD_STAT_MASK);
 }
 
 VOID	ParaSetStoreFlag(USHORT StoreFlag)
 {
-	uchStoreForwardFlag &= ~PIF_STORE_AND_FORWARD_STAT_MASK;
-	uchStoreForwardFlag |= ((UCHAR)StoreFlag & PIF_STORE_AND_FORWARD_STAT_MASK);
+	Para.uchStoreForwardFlag &= ~PIF_STORE_AND_FORWARD_STAT_MASK;
+	Para.uchStoreForwardFlag |= ((UCHAR)StoreFlag & PIF_STORE_AND_FORWARD_STAT_MASK);
 }
 
 UCHAR  ParaStoreForwardFlagAndStatus (VOID)
 {
-	return uchStoreForwardFlag;
+	return Para.uchStoreForwardFlag;
 }
 
 VOID	ParaSetStoreFlagAndStatus(USHORT StoreFlagStatus)
 {
-	uchStoreForwardFlag = (UCHAR)StoreFlagStatus;
+	Para.uchStoreForwardFlag = (UCHAR)StoreFlagStatus;
 }
 
 UCHAR	ParaSetStoreBitFlags (USHORT StoreFlagStatus)
 {
-	UCHAR  uchSave = uchStoreForwardFlag;
+	UCHAR  uchSave = Para.uchStoreForwardFlag;
 
-	uchStoreForwardFlag |= (UCHAR)StoreFlagStatus;
+	Para.uchStoreForwardFlag |= (UCHAR)StoreFlagStatus;
 
 	return uchSave;
 }
 
 UCHAR	ParaResetStoreBitFlags (USHORT StoreFlagStatus)
 {
-	UCHAR  uchSave = uchStoreForwardFlag;
+	UCHAR  uchSave = Para.uchStoreForwardFlag;
 
-	uchStoreForwardFlag &= ~(UCHAR)StoreFlagStatus;
+	Para.uchStoreForwardFlag &= ~(UCHAR)StoreFlagStatus;
 
 	return uchSave;
 }
 
 UCHAR	ParaSetStoreStatusOnly(USHORT StoreFlagStatus)
 {
-	UCHAR  uchSave = uchStoreForwardFlag;
+	UCHAR  uchSave = Para.uchStoreForwardFlag;
 
-	uchStoreForwardFlag |= ((UCHAR)StoreFlagStatus & ~PIF_STORE_AND_FORWARD_STAT_MASK);
+	Para.uchStoreForwardFlag |= ((UCHAR)StoreFlagStatus & ~PIF_STORE_AND_FORWARD_STAT_MASK);
 
 	return uchSave;
 }
 
 UCHAR	ParaResetStoreStatusOnly(USHORT StoreFlagStatus)
 {
-	UCHAR  uchSave = uchStoreForwardFlag;
+	UCHAR  uchSave = Para.uchStoreForwardFlag;
 
-	uchStoreForwardFlag &= ~((UCHAR)StoreFlagStatus & ~PIF_STORE_AND_FORWARD_STAT_MASK);
+	Para.uchStoreForwardFlag &= ~((UCHAR)StoreFlagStatus & ~PIF_STORE_AND_FORWARD_STAT_MASK);
 
 	return uchSave;
 }
