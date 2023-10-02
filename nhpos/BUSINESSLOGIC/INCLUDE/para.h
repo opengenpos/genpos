@@ -1372,13 +1372,13 @@ UCHAR	ParaSetStoreStatusOnly(USHORT StoreFlagStatus);
 UCHAR	ParaSetStoreBitFlags (USHORT StoreFlagStatus);
 UCHAR	ParaResetStoreStatusOnly(USHORT StoreFlagStatus);
 
-SHORT ParaAllRead( UCHAR uchClass,                      /* read system ram */
-                   UCHAR *puchRcvBuffer,
+SHORT ParaAllRead( USHORT usClass,                      /* read system ram */
+                   VOID *puchRcvBuffer,
                    USHORT usRcvBufLen,
                    USHORT usStartPointer,
                    USHORT *pusReturnLen );
-SHORT ParaAllWrite( UCHAR uchClass,                     /* write system ram */
-                    UCHAR *puchWrtBuffer,
+SHORT ParaAllWrite( USHORT usClass,                     /* write system ram */
+                    VOID *puchWrtBuffer,
                     USHORT usRWrtBufLen,
                     USHORT usStartPointer,
                     USHORT *pusReturnLen );

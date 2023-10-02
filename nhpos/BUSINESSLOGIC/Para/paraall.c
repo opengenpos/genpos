@@ -88,8 +88,8 @@
 ;===============================================================================
 fhfh**/
 
-SHORT ParaAllRead( UCHAR uchClass,
-                   UCHAR *puchRcvBuffer,
+SHORT ParaAllRead( USHORT usClass,
+                   VOID *puchRcvBuffer,
                    USHORT usRcvBufLen,
                    USHORT usStartPointer,
                    USHORT *pusReturnLen )
@@ -97,12 +97,11 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     USHORT usRamSize;
     UCHAR FAR *puchSystemRam;
-    USHORT usCopySize;
 
 
     /* distinguish data class */
 
-    switch(uchClass) {
+    switch(usClass) {
     case CLASS_PARAPLUNOMENU:
         usRamSize = sizeof(ParaPLUNoMenu);
         puchSystemRam = ( UCHAR FAR *)ParaPLUNoMenu;   /* USHORT -> UCHAR */
@@ -380,8 +379,8 @@ SHORT ParaAllRead( UCHAR uchClass,
         break;
 
     case CLASS_PARASTOREFORWARD:
-        usRamSize = sizeof(ParaStoreForward);
-        puchSystemRam = ( UCHAR FAR *)ParaStoreForward;   /* Misc para 2172 */
+        usRamSize = sizeof(Para.ParaStoreForward);
+        puchSystemRam = ( UCHAR *)Para.ParaStoreForward;   /* Misc para 2172 */
         break;
 
     case CLASS_PARATERMINALINFO:
@@ -400,20 +399,20 @@ SHORT ParaAllRead( UCHAR uchClass,
 		break;
 
 	case CLASS_PARATTLKEYORDERDEC:
-		usRamSize = sizeof(ParaTtlKeyOrderDecType);
-		puchSystemRam = (UCHAR FAR *)&ParaTtlKeyOrderDecType;
+		usRamSize = sizeof(Para.ParaTtlKeyOrderDecType);
+		puchSystemRam = (UCHAR *)& Para.ParaTtlKeyOrderDecType;
 		break;
 
 	case CLASS_PARAREASONCODE:
-		usRamSize = sizeof(ParaReasonCode);
-		puchSystemRam = ( UCHAR *)ParaReasonCode;
+		usRamSize = sizeof(Para.ParaReasonCode);
+		puchSystemRam = ( UCHAR *)Para.ParaReasonCode;
 		break;
 
     default:
         usRamSize = 0;
         puchSystemRam = NULL;
         PifLog(MODULE_PARA_ID, FAULT_INVALID_DATA);
-        PifLog(MODULE_DATA_VALUE(MODULE_PARA_ID), (USHORT)uchClass);
+        PifLog(MODULE_DATA_VALUE(MODULE_PARA_ID), usClass);
         PifLog(MODULE_LINE_NO(MODULE_PARA_ID), (USHORT)__LINE__);
 		NHPOS_ASSERT_TEXT(0,"Invalid Class Code in ParaAllRead()");
 //        PifAbort(MODULE_PARA_ID, FAULT_INVALID_DATA);
@@ -433,7 +432,7 @@ SHORT ParaAllRead( UCHAR uchClass,
             *pusReturnLen = usRcvBufLen;
             return(PARA_NOTOVER_RAMSIZE);
         } else {                         /* received buffer is over ram size */
-            usCopySize = ( USHORT)(usRamSize - usStartPointer);
+            USHORT  usCopySize = ( USHORT)(usRamSize - usStartPointer);
 			memcpy(puchRcvBuffer, puchSystemRam + usStartPointer, usCopySize );
             *pusReturnLen = usCopySize;
             return(SUCCESS);
@@ -475,8 +474,8 @@ SHORT ParaAllRead( UCHAR uchClass,
 ;===============================================================================
 fhfh**/
 
-SHORT ParaAllWrite( UCHAR uchClass,
-                    UCHAR *puchWrtBuffer,
+SHORT ParaAllWrite( USHORT usClass,
+                    VOID *puchWrtBuffer,
                     USHORT usWrtBufLen,
                     USHORT usStartPointer,
                     USHORT *pusReturnLen )
@@ -484,11 +483,10 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     USHORT usRamSize;
     UCHAR FAR *puchSystemRam;
-    USHORT  usCopySize;
 
     /* distinguish data class */
 
-    switch(uchClass) {
+    switch(usClass) {
     case CLASS_PARAPLUNOMENU:
         usRamSize = sizeof(ParaPLUNoMenu);
         puchSystemRam = ( UCHAR FAR *)ParaPLUNoMenu;   /* USHORT -> UCHAR */
@@ -769,8 +767,8 @@ SHORT ParaAllWrite( UCHAR uchClass,
         break;
 
     case CLASS_PARASTOREFORWARD:
-        usRamSize = sizeof(ParaStoreForward);
-        puchSystemRam = ( UCHAR FAR *)ParaStoreForward;   /* Misc para 2172 */
+        usRamSize = sizeof(Para.ParaStoreForward);
+        puchSystemRam = ( UCHAR *)Para.ParaStoreForward;   /* Misc para 2172 */
         break;
 
     case CLASS_PARATERMINALINFO:
@@ -789,20 +787,20 @@ SHORT ParaAllWrite( UCHAR uchClass,
 		break;
 	
 	case CLASS_PARATTLKEYORDERDEC:
-		usRamSize = sizeof(ParaTtlKeyOrderDecType);
-		puchSystemRam = (UCHAR FAR *)&ParaTtlKeyOrderDecType;
+		usRamSize = sizeof(Para.ParaTtlKeyOrderDecType);
+		puchSystemRam = (UCHAR *)& Para.ParaTtlKeyOrderDecType;
 		break;
 
 	case CLASS_PARAREASONCODE:
-		usRamSize = sizeof(ParaReasonCode);
-		puchSystemRam = ( UCHAR *)ParaReasonCode;
+		usRamSize = sizeof(Para.ParaReasonCode);
+		puchSystemRam = ( UCHAR *)Para.ParaReasonCode;
 		break;
 
     default:
         usRamSize = 0;
         puchSystemRam = NULL;
         PifLog(MODULE_PARA_ID, FAULT_INVALID_DATA);
-        PifLog(MODULE_DATA_VALUE(MODULE_PARA_ID), (USHORT)uchClass);
+        PifLog(MODULE_DATA_VALUE(MODULE_PARA_ID), usClass);
         PifLog(MODULE_LINE_NO(MODULE_PARA_ID), (USHORT)__LINE__);
 		NHPOS_ASSERT_TEXT(0,"Invalid Class Code in ParaAllWrite()");
 //        PifAbort(MODULE_PARA_ID, FAULT_INVALID_DATA);
@@ -810,7 +808,7 @@ SHORT ParaAllWrite( UCHAR uchClass,
     }
 
     /* check if offset is over ram size */
-	if (uchClass == CLASS_PARAFSC) {
+	if (usClass == CLASS_PARAFSC) {
 		// When copying the PARAFSC class we are simulating the copy of 11 menu
 		// pages when in actuality we are only copying the first 9 menu pages.
 		// We do this by copying the first 9 pages, incrementing the starting write
@@ -836,7 +834,7 @@ SHORT ParaAllWrite( UCHAR uchClass,
 				memcpy( puchSystemRam + usStartPointer, puchWrtBuffer, usWrtBufLen );
 				*pusReturnLen = usWrtBufLen;
 			} else {                         /* write buffer is over ram size */
-				usCopySize = ( USHORT)(usRamSize - usStartPointer);
+                USHORT  usCopySize = ( USHORT)(usRamSize - usStartPointer);
 				memcpy( puchSystemRam + usStartPointer, puchWrtBuffer, usCopySize );
 				*pusReturnLen = usWrtBufLen;
 			}
@@ -852,7 +850,7 @@ SHORT ParaAllWrite( UCHAR uchClass,
 				memcpy( puchSystemRam + usStartPointer, puchWrtBuffer, usWrtBufLen );
 				*pusReturnLen = usWrtBufLen;
 			} else {                         /* write buffer is over ram size */
-				usCopySize = ( USHORT)(usRamSize - usStartPointer);
+                USHORT  usCopySize = ( USHORT)(usRamSize - usStartPointer);
 				memcpy( puchSystemRam + usStartPointer, puchWrtBuffer, usCopySize );
 				*pusReturnLen = usCopySize;
 			}
@@ -861,7 +859,7 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
 	// Do final steps to ensure that the ParaTerminalInformation is congruent
 	// with the written information.
-	switch (uchClass) {
+	switch (usClass) {
 		case CLASS_PARASTOREGNO :
 #if 0
 			// Code if defed out as we do not want to override this terminal's
