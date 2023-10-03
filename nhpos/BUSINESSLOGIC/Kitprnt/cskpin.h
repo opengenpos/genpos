@@ -159,15 +159,6 @@
 #define KPS_ALTER                       1
 #define KPS_NOT_ALTER                   2
 #define KPS_ALTER_RCV                   3
-/*
-    KpsDownPrinterPrint
-*/
-#define KPS_NOT_DOWN_PRINTER			0x00			/* Printer not down								*/
-#define KPS_DOWN_PRINTER                0x01			/* Printer down										*/
-#define	KPS_DOWN_AND_OPEN				0x03			/* Printer down and cover open						*/
-#define	KPS_DOWN_AND_OUT				0x05			/* Printer down and paper out						*/
-#define KPS_DOWN_AND_TROUBLE			0x09			/* Printer down and trouble (com or general errors) */
-#define KPS_SHARED_DOWN					0x10			/* Kitchen Printer Down (but is shared as well)     */
 
 #define		KPS_TRANS_BGN	0x0016		/* Begin transaction call for shared printing*/
 #define		KPS_TRANS_END	0x0017		/* End Transaction call for shared printing*/
