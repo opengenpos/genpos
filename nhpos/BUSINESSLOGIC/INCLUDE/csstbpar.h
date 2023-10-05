@@ -55,13 +55,13 @@
     USER I/F SYSTEM PARAMETER
 -------------------------------*/
 
-SHORT   CliParaAllRead(UCHAR uchClass,
-                        UCHAR *puchRcvBuffer,
+SHORT   CliParaAllRead(USHORT usClass,
+                        VOID *puchRcvBuffer,
                         USHORT usRcvBufLen,
                         USHORT usStartPointer,
                         USHORT *pusReturnLen);
-SHORT   CliParaAllWrite(UCHAR uchClass,
-                        UCHAR *puchWrtBuffer,
+SHORT   CliParaAllWrite(USHORT usClass,
+                        VOID *puchWrtBuffer,
                         USHORT usRWrtBufLen,
                         USHORT usStartPointer,
                         USHORT *pusReturnLen);

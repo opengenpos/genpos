@@ -74,13 +74,13 @@
 ** Description: This function reads all system RAM by Data Class.   
 *===========================================================================
 */
-SHORT	CliParaAllRead( UCHAR uchClass,
-                        UCHAR *puchRcvBuffer,
+SHORT	CliParaAllRead( USHORT usClass,
+                        VOID *puchRcvBuffer,
                         USHORT usRcvBufLen,
                         USHORT usStartPointer,
                         USHORT *pusReturnLen)
 {
-    return  ParaAllRead(uchClass, puchRcvBuffer, usRcvBufLen, 
+    return  ParaAllRead(usClass, puchRcvBuffer, usRcvBufLen, 
                         usStartPointer, pusReturnLen);
 }
 
@@ -103,8 +103,8 @@ SHORT	CliParaAllRead( UCHAR uchClass,
 ** Description: This function writes all system RAM by Data Class.   
 *===========================================================================
 */
-SHORT	CliParaAllWrite(UCHAR uchClass,
-                        UCHAR *puchWrtBuffer,
+SHORT	CliParaAllWrite(USHORT usClass,
+                        VOID *puchWrtBuffer,
                         USHORT usRWrtBufLen,
                         USHORT usStartPointer,
                         USHORT *pusReturnLen)
@@ -113,7 +113,7 @@ SHORT	CliParaAllWrite(UCHAR uchClass,
 
     PifRequestSem(husCliExePara);
 
-    sError = ParaAllWrite(uchClass, puchWrtBuffer, usRWrtBufLen, 
+    sError = ParaAllWrite(usClass, puchWrtBuffer, usRWrtBufLen, 
                           usStartPointer, pusReturnLen);
 
     PifReleaseSem(husCliExePara);
