@@ -1325,14 +1325,14 @@ USHORT PmgCOMPrtConfig(USHORT usPrtType, USHORT *pusColumn, USHORT *pfbStatus)
 			switch (usPrtTypeMasked) {
 			case PMG_PRT_RECEIPT: /* receipt station          */
 			case PMG_PRT_RCT_JNL: /* receipt & journal        */
-				BlFwGetPrinterColumnsStatus(PTR_S_RECEIPT, pusColumn, pfbStatus);
+				BlFwGetPrinterColumnsStatus(PMG_MAKE_FULL_PRTTYPE(PMG_COM_PRINTER, PTR_S_RECEIPT), pusColumn, pfbStatus);
 				break;
 			case PMG_PRT_JOURNAL: /* journal station          */
-				BlFwGetPrinterColumnsStatus(PTR_S_JOURNAL, pusColumn, pfbStatus);
+				BlFwGetPrinterColumnsStatus(PMG_MAKE_FULL_PRTTYPE(PMG_COM_PRINTER, PTR_S_JOURNAL), pusColumn, pfbStatus);
 				break;
 			case PMG_PRT_VALIDATION: /* validation               */
 			case PMG_PRT_SLIP: /* slip printer             */
-				BlFwGetPrinterColumnsStatus(PTR_S_SLIP, pusColumn, pfbStatus);
+				BlFwGetPrinterColumnsStatus(PMG_MAKE_FULL_PRTTYPE(PMG_COM_PRINTER, PTR_S_SLIP), pusColumn, pfbStatus);
 				break;
 			default:
 				break;
