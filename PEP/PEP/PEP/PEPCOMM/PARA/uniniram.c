@@ -5899,7 +5899,7 @@ UNINIRAM Para = {                 /* Uninitialize RAM */
     {   /* A/C 130 PIG RULE TABLE */
 		0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L
     },
-    {   /* A/C 160 SET ORDER ENTRY PROMPT TABLE, 2172 */
+    {   /* A/C 160 SET ORDER ENTRY PROMPT TABLE, NCR2172, AC160 - Para.ParaOep[MAX_TABLE_NO][MAX_TABLE_ADDRESS] */
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -5951,15 +5951,17 @@ UNINIRAM Para = {                 /* Uninitialize RAM */
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     },
-    {   /* A/C 162 SET FLEXIBLE DRIVE THROUGH PARAMETER TABLE */
-		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
-		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
-		0,0,0,0
+    {   /* A/C 162 SET FLEXIBLE DRIVE THROUGH PARAMETER TABLE, AC162 - Para.ParaFlexDrive[MAX_FLEXDRIVE_SIZE] */
+        // AC 162 default for Store/Recall System type - two counter terminals, no drive thru terminals
+		0,0, 0,0,                                    // Delivery #1, #2  Payment #1, #2
+        0,12, 0,12, 0,12, 0,12, 0,12, 0,12,          // System Type, Terminal Type for terminals 1 through 6
+		0,0, 0,0, 0,0, 0,0, 0,0, 0,0,                // System Type, Terminal Type for terminals 7 through 12
+        0,0, 0,0, 0,0, 0,0                           // System Type, Terminal Type for terminals 13 through 16
     },
     {   /* A/C 133 SERVICE TIME PARAMETER */
 		0, 0
     },
-    {   /* A/C 154 LABOR COST VALUE */
+    {   /* A/C 154 LABOR COST VALUE, AC154 - Para.ParaLaborCost[MAX_LABORCOST_SIZE] */
 		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
 		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
 		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
@@ -5968,7 +5970,7 @@ UNINIRAM Para = {                 /* Uninitialize RAM */
 		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
 		0,0,0,0
     },
-    {   /* A/C 137 BEVERAGE DISPENSER PARAMETER */
+    {   /* A/C 137 BEVERAGE DISPENSER PARAMETER, AC137 - Para.ParaDispPara[MAX_DISPPARA_SIZE] */
 		{ 0, 0}, { 0, 0}, { 0, 0}, { 0, 0},
 		{ 0, 0}, { 0, 0}, { 0, 0}, { 0, 0},
 		{ 0, 0}, { 0, 0}, { 0, 0}, { 0, 0},
