@@ -5919,7 +5919,7 @@ BOOL CDeviceEngine::DevicePrinterWrite (VOID *pvData, DWORD dwLength)
 			}
 		}
 	}
-	else if ((lPrintType == 0 || lPrintType == PMG_COM_PRINTER) && m_pDevicePrinter)
+	else if (lPrintType == PMG_COM_PRINTER && m_pDevicePrinter)
 	{
 		UCHAR  tempBuffer[128] = { 0 };
 		DWORD  dwLength = 0, dwWritten = 0;
@@ -5941,7 +5941,7 @@ BOOL CDeviceEngine::DevicePrinterWrite (VOID *pvData, DWORD dwLength)
 		data.wLength = pData->ulLength;
 		m_pDevicePrinter->Write(tempBuffer, pData->ulLength, &dwWritten);
 	}
-	else if( (lPrintType == 0 || lPrintType == PMG_ZEBRA_PRINTER) && m_pZebraControl && m_bZebraControlDispatch){
+	else if(lPrintType == PMG_ZEBRA_PRINTER && m_pZebraControl && m_bZebraControlDispatch){
 		TCHAR prtBuff[5];
 		prtBuff[0] = _T('\x1B');
 		prtBuff[1] = _T('C');
@@ -6017,14 +6017,13 @@ BOOL CDeviceEngine::DevicePrinterColumnStatus (VOID * pvData, DWORD dwLength)
 			break;
 		}
 	}
-	else if ((lPrintType == 0 || lPrintType == PMG_COM_PRINTER) && m_pDevicePrinter)
+	else if (lPrintType == PMG_COM_PRINTER && m_pDevicePrinter)
 	{
-		NHPOS_ASSERT_TEXT(0, "FRAMEWORK_IOCTL_PRINTER_COLUMN_STATUS: PMG_COM_PRINTER needs.");
-	}
-	else if( (lPrintType == 0 || lPrintType == PMG_ZEBRA_PRINTER) && m_pZebraControl && m_bZebraControlDispatch){
+		// following Warning to ASSRTLOG disabled as is just noise.  Oct-26-2023 RJC
+		// NHPOS_ASSERT_TEXT(0, "FRAMEWORK_IOCTL_PRINTER_COLUMN_STATUS: PMG_COM_PRINTER needs.");
 		bResult = TRUE;
 		pData->bSlipStationExist = FALSE;
-		switch(lPrintStation){
+		switch (lPrintStation) {
 		case PTR_S_RECEIPT:
 			pData->lColumns = PMG_THERMAL_CHAR_D;
 			break;
@@ -6039,6 +6038,29 @@ BOOL CDeviceEngine::DevicePrinterColumnStatus (VOID * pvData, DWORD dwLength)
 			return bResult;
 			break;
 		}
+	}
+	else if (lPrintType == PMG_ZEBRA_PRINTER && m_pZebraControl && m_bZebraControlDispatch) {
+		bResult = TRUE;
+		pData->bSlipStationExist = FALSE;
+		switch (lPrintStation) {
+		case PTR_S_RECEIPT:
+			pData->lColumns = PMG_THERMAL_CHAR_D;
+			break;
+		case PTR_S_JOURNAL:
+			pData->lColumns = 0;
+			break;
+		case PTR_S_SLIP:
+			pData->lColumns = 0;
+			break;
+		default:
+			bResult = FALSE;
+			return bResult;
+			break;
+		}
+	}
+	else 
+	{
+		NHPOS_ASSERT_TEXT(0, "FRAMEWORK_IOCTL_PRINTER_COLUMN_STATUS: Unknown Printer type.");
 	}
 
 	return bResult;
