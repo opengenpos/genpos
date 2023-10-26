@@ -1782,9 +1782,7 @@ void CFrameworkWndText::GetTextRegion(LONG nRow, LONG nColumn, LONG nChars, RECT
 
 DWORD CFrameworkWndText::GetTextColor(LONG nRow, TCHAR chAttribute)
 {
-    TCHAR       chAttr;
-    COLORREF    color;
-	PARACOLORPALETTE paraColorPal;
+    COLORREF    color = RGB(0x00, 0x00, 0xff);
 
 	// Main windows coloring logic (for new Color Palette Code PLUs)
 	if( (m_nIdentifier == LCDWIN_ID_REG100)||
@@ -1792,19 +1790,15 @@ DWORD CFrameworkWndText::GetTextColor(LONG nRow, TCHAR chAttribute)
 		(m_nIdentifier == LCDWIN_ID_REG201)||
 		(m_nIdentifier == LCDWIN_ID_REG202) )
 		{
-			memset(&paraColorPal, 0x00, sizeof(paraColorPal));
+			TCHAR       chAttr = chAttribute & ~0x0180;  // get attribute of text character
+			PARACOLORPALETTE paraColorPal = { 0 };
 
 			paraColorPal.uchMajorClass = CLASS_PARACOLORPALETTE;
 			paraColorPal.uchAddress = chAttribute;
 
 			BlFwIfParaRead(&paraColorPal);
 
-			// get attribute of text character
-
-			chAttr = chAttribute & ~0x0180;
-
 			// cursor control
-
 			if (m_bLCursor && m_ptLCursor.y == nRow)
 			{
 				color = RGB(0xff, 0xff, 0xff);//RGB(0x00, 0x00, 0xff);
@@ -1823,12 +1817,9 @@ DWORD CFrameworkWndText::GetTextColor(LONG nRow, TCHAR chAttribute)
 				color = paraColorPal.crForeground;		
 			}
 	} else { // use normal coloring logic
-
-		// get attribute of text character
-		chAttr = chAttribute & 0x0f;
+		TCHAR       chAttr = chAttribute & 0x0f;   // get attribute of text character
 
 		// cursor control
-
 		if (m_bLCursor && m_ptLCursor.y == nRow)
 		{
 			// which attribute ?
@@ -1865,8 +1856,6 @@ DWORD CFrameworkWndText::GetTextColor(LONG nRow, TCHAR chAttribute)
 		}
 	}
 
-    // exit ...
-
     return color;
 }
 
@@ -1885,8 +1874,7 @@ DWORD CFrameworkWndText::GetTextColor(LONG nRow, TCHAR chAttribute)
 
 DWORD CFrameworkWndText::GetBackColor(LONG nRow, TCHAR chAttribute)
 {
-    TCHAR       chAttr;
-    COLORREF    color;
+    COLORREF    color = RGB(0x00, 0x00, 0xff);
 
 	// Main windows coloring logic (for new Color Palette Code PLUs)
 	if ((m_nIdentifier == LCDWIN_ID_REG100)||
@@ -1896,13 +1884,10 @@ DWORD CFrameworkWndText::GetBackColor(LONG nRow, TCHAR chAttribute)
 	{
 
 		// get attribute of background character
-
-		chAttr = (chAttribute & 0x70) >> 4;
+		TCHAR       chAttr = (chAttribute & 0x70) >> 4;
 
 		// cursor control
-		PARACOLORPALETTE paraColorPal;
-
-		memset(&paraColorPal, 0x00, sizeof(paraColorPal));
+		PARACOLORPALETTE paraColorPal = { 0 };
 
 		paraColorPal.uchMajorClass = CLASS_PARACOLORPALETTE;
 		paraColorPal.uchAddress = chAttribute;
@@ -1912,7 +1897,6 @@ DWORD CFrameworkWndText::GetBackColor(LONG nRow, TCHAR chAttribute)
 		if (m_bLCursor && m_ptLCursor.y == nRow)
 		{
 			// which attribute ?
-
 			switch (chAttribute)	
 			{
 			case ATTRIB_BLACK:
@@ -1929,7 +1913,6 @@ DWORD CFrameworkWndText::GetBackColor(LONG nRow, TCHAR chAttribute)
 		else
 		{
 			// is blinking character ?
-
 			if ( (chAttribute & ATTRIB_BLINK) && (m_nIdentifier == LCDWIN_ID_COMMON002) )
 			{
 				color = RGB(0xc0, 0xc0, 0xc0);  // for mono-lcd, V1.0.11
@@ -1951,17 +1934,13 @@ DWORD CFrameworkWndText::GetBackColor(LONG nRow, TCHAR chAttribute)
 			
 		}
 	} else { // use normal coloring logic
-
 		// get attribute of background character
-
-		chAttr = (chAttribute & 0x70) >> 4;
+		TCHAR       chAttr = (chAttribute & 0x70) >> 4;
 
 		// cursor control
-
 		if (m_bLCursor && m_ptLCursor.y == nRow)
 		{
 			// which attribute ?
-
 			switch (chAttr)
 			{
 			case ATTRIB_BLACK:
@@ -1978,7 +1957,6 @@ DWORD CFrameworkWndText::GetBackColor(LONG nRow, TCHAR chAttribute)
 		else
 		{
 			// is blinking character ?
-
 			if (chAttribute & oldATTRIB_BLINK)
 			{
 				color = RGB(0xc0, 0xc0, 0xc0);  // for mono-lcd, V1.0.11
@@ -1987,7 +1965,6 @@ DWORD CFrameworkWndText::GetBackColor(LONG nRow, TCHAR chAttribute)
 			}
 
 			// which attribute ?
-
 			switch (chAttr)
 			{
 			case ATTRIB_BLACK:
@@ -2001,10 +1978,7 @@ DWORD CFrameworkWndText::GetBackColor(LONG nRow, TCHAR chAttribute)
 				break;
 			}
 		}
-
-
 	}
-    // exit ...
 
     return color;
 }
@@ -3054,9 +3028,8 @@ void CFrameworkWndText::DisplayPopupControlsBack (BOOL bShouldExist)
 										0, textAttributes.oepBtnWidth, textAttributes.oepBtnHeight);
 
 		if (pChildWndButton) {
-			PARATRANSMNEMO paraTransMnemo;
+			PARATRANSMNEMO paraTransMnemo = { 0 };
 
-			memset(&paraTransMnemo, 0x00, sizeof(paraTransMnemo));
 			paraTransMnemo.uchMajorClass = CLASS_PARATRANSMNEMO;
 			paraTransMnemo.uchAddress = uchTransAddress;
 			BlFwIfParaRead(&paraTransMnemo);
@@ -3106,9 +3079,8 @@ void CFrameworkWndText::DisplayPopupControlsDone (BOOL bShouldExist)
 											textAttributes.oepBtnWidth, textAttributes.oepBtnHeight);
 
 		if (pChildWndButton) {
-			PARATRANSMNEMO paraTransMnemo;
+			PARATRANSMNEMO paraTransMnemo = { 0 };
 
-			memset(&paraTransMnemo, 0x00, sizeof(paraTransMnemo));
 			paraTransMnemo.uchMajorClass = CLASS_PARATRANSMNEMO;
 			paraTransMnemo.uchAddress = uchTransAddress;
 			BlFwIfParaRead(&paraTransMnemo);
@@ -3158,9 +3130,8 @@ void CFrameworkWndText::DisplayPopupControlsMore (BOOL bShouldExist)
 											textAttributes.oepBtnWidth, textAttributes.oepBtnHeight);
 
 		if (pChildWndButton) {
-			PARATRANSMNEMO paraTransMnemo;
+			PARATRANSMNEMO paraTransMnemo = { 0 };
 
-			memset(&paraTransMnemo, 0x00, sizeof(paraTransMnemo));
 			paraTransMnemo.uchMajorClass = CLASS_PARATRANSMNEMO;
 			paraTransMnemo.uchAddress = uchTransAddress;
 			BlFwIfParaRead(&paraTransMnemo);
