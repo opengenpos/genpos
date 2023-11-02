@@ -106,10 +106,10 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
                                 DCURRENCY lAmount, LONG lCounter, VOID *pTmpBuff){
     UCHAR           uchAdjIdxWrk;
 	PLUTOTAL_REC    prRecBuf = {0}, prRecBufPTD = {0};
-    PLUTOTAL_STATUS psStatus, psStatusPTD;
+    PLUTOTAL_STATUS psStatus = { 0 }, psStatusPTD = { 0 };
     SHORT           nSts = TTL_SUCCESS;
-    ULONG           ulRecCnt, ulSts, ulSts1;
-	PARAFLEXMEM		paraFlexMem;
+    CONST USHORT    usPTDFlag = RflGetPtdFlagByType(FLEX_PLU_ADR);
+    ULONG           ulRecCnt = 0, ulSts = 0, ulSts1 = 0;
 	char aszErrorBuffer[128];
 #if defined(LOGGING)
 #pragma message("***ENABLE LOGGING***")
@@ -171,15 +171,12 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
     /* Current PTD */
 
     /* --- Dec/14/2000 --- */
-    paraFlexMem.uchMajorClass = CLASS_PARAFLEXMEM;
-    paraFlexMem.uchAddress    = FLEX_PLU_ADR;
-    CliParaRead(&paraFlexMem);
-
-    /* blPTDFlg = _CheckTable(PLUTOTAL_ID_PTD_CUR); */
+    //paraFlexMem.uchMajorClass = CLASS_PARAFLEXMEM;
+    //paraFlexMem.uchAddress    = FLEX_PLU_ADR;
+    //CliParaRead(&paraFlexMem);
 
     /* --- Dec/14/2000 --- */
-	if(paraFlexMem.uchPTDFlag == TRUE){
-/*    if(blPTDFlg){ */
+	if(usPTDFlag == TRUE){
         ulSts = PluTotalFind(g_hdDB,PLUTOTAL_ID_PTD_CUR,puchPLUNo,uchAdjIdxWrk,&prRecBufPTD);
         if(ulSts == PLUTOTAL_NOT_FOUND){
 
@@ -198,7 +195,6 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
             /* ### MOD bug fix (041700) */
             /* ### OLD if(PluTotalInsert(g_hdDB,PLUTOTAL_ID_PTD_CUR,prRecBuf) != PLUTOTAL_SUCCESS)*/
             _tcsncpy(prRecBufPTD.auchPluNumber,puchPLUNo,PLUTOTAL_PLUNO_LEN);
-            //memcpy(prRecBufPTD.auchPluNumber,puchPLUNo,PLUTOTAL_PLUNO_LEN);
             prRecBufPTD.sAdjIdx = (SHORT)uchAdjIdxWrk;
             prRecBufPTD.lTotal = 0L;
             prRecBufPTD.lCounter = 0L;
@@ -246,8 +242,7 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
     }
     /* PTD */
     /* --- Dec/14/2000 --- */
-	if(paraFlexMem.uchPTDFlag == TRUE){
-/*    if(blPTDFlg){ */
+	if(usPTDFlag == TRUE){
         prRecBufPTD.lTotal += lAmount;
         prRecBufPTD.lCounter += lCounter;
         if((ulSts1 = PluTotalUpdate(g_hdDB,PLUTOTAL_ID_PTD_CUR,prRecBufPTD)) != PLUTOTAL_SUCCESS) {
@@ -258,8 +253,6 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
     }
 
     /*** update STATUS tables ***/
-    //_SetPluTotalStatusVal(0,NULL,NULL,0,&psStatus);   /* init PLUTOTAL_STATUS */
-    memset(&psStatus,0,sizeof(PLUTOTAL_STATUS));
     if((ulSts1 = PluTotalGetStsInfo(g_hdDB,(SHORT)PLUTOTAL_ID_DAILY_CUR,&psStatus)) != PLUTOTAL_SUCCESS) {
 		sprintf(aszErrorBuffer,"TtlPLUupdate() calling PluTotalGetStsInfo()  Return: %d",ulSts1);
 		NHPOS_ASSERT_TEXT(0,aszErrorBuffer);
@@ -267,10 +260,9 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
     }
 
     /* --- Dec/14/2000 --- */
-	if(paraFlexMem.uchPTDFlag == TRUE){
-/*    if(blPTDFlg){ */
-        //_SetPluTotalStatusVal(0,NULL,NULL,0,&psStatusPTD);
-        memset(&psStatusPTD,0,sizeof(PLUTOTAL_STATUS));
+    // read the Period to Date totals to update them only if we are collecting the PTD totals.
+    // below we modify these totals however we only update the PTD totals if we are collecting them.
+	if(usPTDFlag == TRUE){
         if((ulSts1 = PluTotalGetStsInfo(g_hdDB,(SHORT)PLUTOTAL_ID_PTD_CUR,&psStatusPTD)) != PLUTOTAL_SUCCESS) {
 			sprintf(aszErrorBuffer,"TtlPLUupdate() calling PluTotalGetStsInfo()  Return: %d",ulSts1);
 			NHPOS_ASSERT_TEXT(0,aszErrorBuffer);
@@ -279,7 +271,7 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
     }
 
     if ((usStatus & (TTL_TUP_CREDT + TTL_TUP_HASH)) == 0) { /* Check Credit PLU/PLU */
-		DATE_TIME   dtCur;
+        DATE_TIME   dtCur = { 0 };
 
 		PifGetDateTime(&dtCur);
 
@@ -292,21 +284,21 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
 		psStatus.dateTo.usSec   = dtCur.usSec;
 
         psStatus.lAmount += lAmount;
-        psStatusPTD.lAmount += lAmount; /* Update All PLU Total Amount */
+        psStatusPTD.lAmount += lAmount; /* Update All PLU Total Amount. will be discarded if we aren't collecting PTD totals */
         if (usStatus & TTL_TUP_SCALE) {
             if (lCounter < 0L) {
                 /* ### 2172GP : PLUTtl.PLUAllTotal.lCounter += -1L; */
                 psStatus.lAllTotal += -1L;
-                psStatusPTD.lAllTotal += -1L;   /* Update All PLU Total Counter */ 
+                psStatusPTD.lAllTotal += -1L;   /* Update All PLU Total Counter. will be discarded if we aren't collecting PTD totals */ 
             } else {
                 /* ### 2172GP : PLUTtl.PLUAllTotal.lCounter += 1L;  */
                 psStatus.lAllTotal += 1L;
-                psStatusPTD.lAllTotal += 1L;    /* Update All PLU Total Counter */ 
+                psStatusPTD.lAllTotal += 1L;    /* Update All PLU Total Counter. will be discarded if we aren't collecting PTD totals */ 
             }
         } else {
             /* ### 2172GP : PLUTtl.PLUAllTotal.lCounter += lCounter;    */
             psStatus.lAllTotal += lCounter;
-            psStatusPTD.lAllTotal += lCounter;  /* Update All PLU Total Counter */ 
+            psStatusPTD.lAllTotal += lCounter;  /* Update All PLU Total Counter. will be discarded if we aren't collecting PTD totals */ 
         }
     }
 
@@ -318,8 +310,9 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
     }
 
     /* --- Dec/14/2000 --- */
-	if(paraFlexMem.uchPTDFlag == TRUE){
-/*    if(blPTDFlg){ */
+    // update the Period to Date totals if we are collecting them.
+    // if not collecting PTD totals then the PLU totals database is not updated.
+	if(usPTDFlag == TRUE) {
         if((ulSts1 = PluTotalSetStsInfo(g_hdDB,PLUTOTAL_ID_PTD_CUR_S,psStatusPTD)) != PLUTOTAL_SUCCESS) {
 			sprintf(aszErrorBuffer,"TtlPLUupdate() calling PluTotalSetStsInfo()  Return: %d",ulSts1);
 			NHPOS_ASSERT_TEXT(0,aszErrorBuffer);
