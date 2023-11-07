@@ -116,19 +116,19 @@ VOID  PrtProm_TH(TRANINFORMATION  *pTran)
 	/* print header and promotional lines if necessary */
 	if (PrtTHHead(pTran) > 0) {
 		PARAPROMOTION  PM = {0};
-		TCHAR          aszMnemD[PARA_CHAR24_LEN * 2 + 1];      
+		TCHAR          aszMnemD[PARA_PROMOTION_LEN * 2 + 1];
 		UCHAR          i;
 
 		PM.uchMajorClass = CLASS_PARAPROMOTION;
 		for ( i = PRM_LINE1_ADR; i <= PRM_LINE3_ADR; i++) {
 			PM.uchAddress = i;
 			CliParaRead(&PM);
-			PM.aszProSales[21] = '\0';
+			PM.aszProSales[PARA_PROMOTION_LEN] = '\0';
 
-			PrtDouble(aszMnemD,PARA_CHAR24_LEN * 2 + 1, PM.aszProSales);    /* convert to double */
+			PrtDouble(aszMnemD, PARA_PROMOTION_LEN * 2 + 1, PM.aszProSales);    /* convert to double */
 
-			if (aszMnemD[41] == PRT_DOUBLE) {
-				aszMnemD[41] = PRT_SPACE;
+			if (aszMnemD[PARA_PROMOTION_LEN * 2] == PRT_DOUBLE) {
+				aszMnemD[PARA_PROMOTION_LEN * 2] = PRT_SPACE;
 			}
 
 			PrtPrint((USHORT)PMG_PRT_RECEIPT, aszMnemD, (USHORT) _tcslen(aszMnemD)); /* ### Mod (2171 for Win32) V1.0 */
