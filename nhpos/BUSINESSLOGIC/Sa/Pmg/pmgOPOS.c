@@ -990,9 +990,156 @@ VOID PmgCOMFinalize(VOID)
 #endif
 }
 
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+//
+
+#define ALIGN_RIGHT   0x09      // Tab, so Right Justify
+#define ALIGN_CENTER  0x16      // PRT_CENTERED, so center text
+#define ALIGN_LEFT    0x17
+
+TCHAR EscSeqOne[8] = { L"\x1b|lA" };    // left align following text in print line
+TCHAR EscSeqTwo[8] = { L"\x1b|rA" };    // right align following text in print line
+TCHAR EscSeqThree[8] = { L"\x1b|cA" };  // center following text in print line
+
+#if 0
+// OPOS receipt printer escape codes for standard
+// printer output formatting actions.
+
+typedef struct {
+	const CHAR* pEsc;
+	const USHORT usLen;
+} PrinterEscCode;
+
+static const PrinterEscCode EscAlignLeft = { "\x1b|lA", 4 };      // left align following text in print line
+static const PrinterEscCode EscAlignRight = { "\x1b|rA", 4 };     // right align following text in print line
+static const PrinterEscCode EscAlignCenter = { "\x1b|cA", 4 };    // center following text in print line
+#endif
+
+TCHAR* EscSeqList[] = { EscSeqOne, EscSeqTwo, EscSeqThree, NULL };
+
+static int CheckEscSeq(const TCHAR*inBuff, const TCHAR*escSeq) {
+for (; *escSeq; ) {
+	if (*(inBuff++) != *escSeq++) return 0;
+}
+return 1;
+}
+
+static int EscCpy(TCHAR* outBuff, int* out, const  TCHAR* inBuff, int* in, const TCHAR* escSeq) {
+	int outSave = *out;
+
+	for (; *escSeq; escSeq++) {
+		outBuff[((*out)++)] = inBuff[((*in)++)];
+	}
+	return *out - outSave;;
+}
+
+static int CountChars(const TCHAR* inBuff) {
+	int iCount = 0;
+	int bRun = 1;
+
+	for (TCHAR ucAlignType = *inBuff++; bRun; ) {
+		switch (*inBuff) {
+		case 0:
+			bRun = 0;
+			break;
+		case ALIGN_RIGHT:
+			if (*inBuff != ucAlignType) {
+				bRun = 0;
+			}
+			ucAlignType = *inBuff++;
+			break;
+		case ALIGN_CENTER:
+			if (*inBuff != ucAlignType) {
+				bRun = 0;
+			}
+			ucAlignType = *inBuff++;
+			break;
+		case ALIGN_LEFT:
+			if (*inBuff != ucAlignType) {
+				bRun = 0;
+			}
+			ucAlignType = *inBuff++;
+			break;
+		case 0x1b:   // escape character
+			// break;
+		default:
+			iCount++;
+			inBuff++;
+			break;
+		}
+	}
+	return iCount;
+}
+
+static int createPrintBuffer(TCHAR* outBuff, const TCHAR* inBuff, int lineLength)
+{
+	int in = 0, out = 0;
+	int nChars = 0;
+	int nCharsEsc = 0;
+	TCHAR ucAlignType = 0;
+
+	for (; inBuff[in]; ) {
+		switch (inBuff[in]) {
+		case 0x1b:   // escape character
+#if 1
+			// count the number of escaped characters we have processed as these are
+			// invisible characters that will not be printed. 
+			if (CheckEscSeq(inBuff + in, EscSeqOne)) {
+				nCharsEsc += EscCpy(outBuff, &out, inBuff, &in, EscSeqOne);
+			}
+			else {
+				nCharsEsc += 2;      // assume at least 2 chars in unknown escape sequence
+				outBuff[out++] = inBuff[in++];
+				nChars++;
+			}
+#else
+			// just copy the escape sequence taking a simple approach
+			outBuff[out++] = inBuff[in++];
+			nChars++;
+#endif
+			break;
+		case ALIGN_RIGHT:
+			if (ucAlignType != inBuff[in]) {
+				int i = lineLength - CountChars(inBuff + in);
+				for (; out < i; out++) {
+					outBuff[out] = ' ';
+				}
+			}
+			ucAlignType = inBuff[in];
+			in++;
+			break;
+		case ALIGN_CENTER:
+			if (ucAlignType != inBuff[in]) {
+				int i = lineLength / 2 + nCharsEsc - CountChars(inBuff + in);
+				for (; out < i; out++) {
+					outBuff[out] = ' ';
+				}
+			}
+			ucAlignType = inBuff[in];
+			in++;
+			break;
+		case ALIGN_LEFT:
+			if (ucAlignType != inBuff[in]) out = 0;
+			ucAlignType = inBuff[in];
+			in++;
+			break;
+		default:
+			outBuff[out++] = inBuff[in++];
+			nChars++;
+			break;
+		}
+	}
+	return 0;
+}
+
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
 USHORT  PmgCOMPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
 {
 	TCHAR   prtBuff[MAX_PRINT_BUFFER] = { 0 };
+	TCHAR   tmpBuff[128] = { 0 };
 	TCHAR*	pStop;
 	ULONG	ulTransNo;
 	int     i, j, k;
@@ -1001,11 +1148,15 @@ USHORT  PmgCOMPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
 	SHORT	sType;
 	USHORT  usPrtTypeMasked = PMG_GET_PRT_STATION(usPrtType);
 
+	createPrintBuffer(tmpBuff, pucBuff, 44);
+
 	bS = bD = bSD = FALSE;
 
 	if (pucBuff[0]) {
+		TCHAR   * ptmpBuff = tmpBuff;
+		usLen = wcslen(tmpBuff);
 		for (j = 0, k = 0; j < usLen; j++) {
-			switch (pucBuff[j]) {
+			switch (ptmpBuff[j]) {
 			case PRT_SDOUBLE://Double High and Wide
 				if (!bSD) {
 					bSD = TRUE;
@@ -1049,25 +1200,25 @@ USHORT  PmgCOMPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
 				break;
 			case PRT_TRANS_BGN:
 
-				sType = pucBuff[++j];
-				ulTransNo = _tcstoul(&pucBuff[++j], &pStop, 10);
+				sType = ptmpBuff[++j];
+				ulTransNo = _tcstoul(&ptmpBuff[++j], &pStop, 10);
 				BlFwIfPrintTransStart(sType, ulTransNo);
 
 				return(PMG_SUCCESS);
 			case PRT_TRANS_END:
 
-				sType = pucBuff[++j];
-				ulTransNo = _tcstoul(&pucBuff[++j], &pStop, 10);
+				sType = ptmpBuff[++j];
+				ulTransNo = _tcstoul(&ptmpBuff[++j], &pStop, 10);
 				BlFwIfPrintTransEnd(sType, ulTransNo);
 
 				return(PMG_SUCCESS);
 				break;
 			default:
-				if (pucBuff[j]) {
+				if (ptmpBuff[j]) {
 					if ((bD || bSD) &&
 						((j > 0) &&
-						(pucBuff[j - 1] != PRT_SDOUBLE) &&
-							(pucBuff[j - 1] != PRT_DOUBLE))) {
+						(ptmpBuff[j - 1] != PRT_SDOUBLE) &&
+							(ptmpBuff[j - 1] != PRT_DOUBLE))) {
 						bSD = FALSE;
 						bD = FALSE;
 						bS = TRUE;
@@ -1076,7 +1227,7 @@ USHORT  PmgCOMPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
 						prtBuff[k++] = _T('1');
 						prtBuff[k++] = _T('C');
 					}
-					prtBuff[k++] = pucBuff[j];
+					prtBuff[k++] = ptmpBuff[j];
 				}
 				break;
 			}
