@@ -90,7 +90,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "OpenGenPOS PEP Installer"
-VIAddVersionKey LegalCopyright "Copyright (C) 2002-2022, Georgia Southern University"
+VIAddVersionKey LegalCopyright "Copyright (C) 2002-2023, Georgia Southern University"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 RequestExecutionLevel admin
