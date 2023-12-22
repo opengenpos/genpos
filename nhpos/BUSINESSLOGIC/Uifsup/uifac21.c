@@ -263,8 +263,10 @@ SHORT UifAC21EnterUserType(KEYMSG *pKeyMsg)
 					UCHAR   uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
 					FILE    *fpFile = ItemOpenHistorialReportsFolderHtml (AC_CASH_READ_RPT, CLASS_TTLCURDAY, RPT_ALL_READ, 0, 0, 0);
 
-					sError = ItemGenerateAc21Report (CLASS_TTLCURDAY, RPT_ALL_READ, fpFile, 0);
-					ItemCloseHistorialReportsFolder(fpFile);
+                    if (fpFile) {
+                        sError = ItemGenerateAc21Report(CLASS_TTLCURDAY, RPT_ALL_READ, fpFile, 0);
+                        ItemCloseHistorialReportsFolder(fpFile);
+                    }
 					uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;
                     sError = RptCashierRead(CLASS_TTLCURDAY, RPT_ALL_READ, 0, 0);                         /* Execute All Read Report */
                 } else {    /* V3.3 */

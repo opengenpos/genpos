@@ -679,6 +679,13 @@ FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass,
 			docHeading = "<!DOCTYPE html>\n<html>\r\n<head>\r\n<title>%s Saved Period To Date Totals Report</title>\r\n</head>\r\n<body>\r\n";
 			docPathFormat = "\\%sSavedPTD_%4.4d%2.2d%2.2d.html";
 			break;
+		default:
+			{
+				sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderHtml() - Bad uchMinorClass %d", uchMinorClass);
+				NHPOS_ASSERT_TEXT(0, pathBuffer)
+			}
+			return NULL;
+			break;
 	}
 
 	for (iLoop = 0; iLoop < 400 && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
@@ -715,6 +722,10 @@ FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass,
 			fprintf (fpRptElementStreamFile, docHeading, ReportNameList[iLoop].nameTitle);
 		}
 	}
+	else {
+		sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderHtml() file open - usPGACNo %d  uchMinorClass %d  uchType %d", usPGACNo, uchMinorClass, uchType);
+		NHPOS_ASSERT_TEXT(pFile != NULL, pathBuffer);
+	}
 
 	return pFile;
 }
@@ -724,16 +735,14 @@ VOID ItemCloseHistorialReportsFolder (FILE *fpFile)
 	if (fpFile) {
 		fclose (fpFile);
 		fpRptElementStreamFile = NULL;
-		uchUifACRptOnOffMld = RPT_DISPLAY_OFF;
-		RptDescriptionClear();
 	}
 	
 	if (fpRptElementStreamFile) {
 		fclose (fpRptElementStreamFile);
 		fpRptElementStreamFile = NULL;
-		uchUifACRptOnOffMld = RPT_DISPLAY_OFF;
-		RptDescriptionClear();
 	}
+	uchUifACRptOnOffMld = RPT_DISPLAY_OFF;
+	RptDescriptionClear();
 }
 //---------------------------------------------------------------------------
 

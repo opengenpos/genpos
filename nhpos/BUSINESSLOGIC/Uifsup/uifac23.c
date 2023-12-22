@@ -171,8 +171,10 @@ SHORT UifAC23EnterDataType(KEYMSG *pKeyMsg)
 							UCHAR   uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
 							FILE    *fpFile = ItemOpenHistorialReportsFolderHtml (AC_REGFIN_READ_RPT, uchMinorClass, 0, 0, 0, 0);
 
-							ItemGenerateAc23Report (CLASS_TTLREGFIN, uchMinorClass, RPT_ALL_READ, fpFile, 0);
-							ItemCloseHistorialReportsFolder(fpFile);
+							if (fpFile) {
+								ItemGenerateAc23Report(CLASS_TTLREGFIN, uchMinorClass, RPT_ALL_READ, fpFile, 0);
+								ItemCloseHistorialReportsFolder(fpFile);
+							}
 							uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;
 							RptRegFinRead(uchMinorClass, RPT_ALL_READ);
 						}
