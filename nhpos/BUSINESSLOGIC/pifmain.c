@@ -1761,6 +1761,8 @@ static SHORT ProcessXmlFileHistoricalFolder (ReadFileLineControl *pMyXmlFileCont
 				if (ptcsTokenEnd) {
 					*ptcsTokenEnd = 0;    // put an end of string indicator at end of the token.
 				}
+				tcharTrimLeading(ptcsToken);
+				tcharTrimRight(ptcsToken);
 				memset (pSysConfig->tcsReportsHistoricalFolder, 0, sizeof(pSysConfig->tcsReportsHistoricalFolder));
 				_tcsncpy (pSysConfig->tcsReportsHistoricalFolder, ptcsToken, TCHARSIZEOF(pSysConfig->tcsReportsHistoricalFolder) - 1);
 			} else if ((ptcsToken = _tcsstr (aszLine, _T("<output>"))) != 0) {
