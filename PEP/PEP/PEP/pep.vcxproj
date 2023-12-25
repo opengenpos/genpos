@@ -109,7 +109,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\INCLUDE;..\INCLUDE;..\..\INCLUDE;..\..\..\INCLUDE;..\..\..\..\INCLUDE;..\..\PCIF\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;PEP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
