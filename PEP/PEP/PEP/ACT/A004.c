@@ -1301,18 +1301,21 @@ VOID    A004ConvPluKey(HWND hDlg, LPA04FSC lpFsc)
 
         return;
 
-    } else {                /* Success Allocate Memory */
-
-        lpConvPluData = (LPA04DATA)GlobalLock(hMemConvPluMenu);
-
-        /* ----- Read Initial AC 4 Data ----- */
-
-        ParaAllRead(CLASS_PARAPLUNOMENU,
-                    (UCHAR *)lpConvPluData,
-                    (USHORT)(MAX_PAGE_NO * FSC_PLU_MICROMAX * sizeof(A04PLU)),
-                    0,
-                    &usRetLen);
     }
+    
+    lpConvPluData = (LPA04DATA)GlobalLock(hMemConvPluMenu);
+
+    if (!lpConvPluData) {
+        GlobalFree(hMemConvPluMenu);
+        return;
+    }
+
+    /* ----- Read Initial AC 4 Data ----- */
+    ParaAllRead(CLASS_PARAPLUNOMENU,
+                (UCHAR *)lpConvPluData,
+                (USHORT)(MAX_PAGE_NO * FSC_PLU_MICROMAX * sizeof(A04PLU)),
+                0,
+                &usRetLen);
 
     for (wPage = 0; wPage < MAX_PAGE_NO; wPage++) {
         for (wCode = 0; wCode < MAX_FSC_NO; wCode++) {
