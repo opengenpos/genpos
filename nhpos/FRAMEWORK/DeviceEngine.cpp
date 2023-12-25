@@ -2037,7 +2037,6 @@ int CDeviceEngine::Device_SCF_TYPE_CDISPLAY_Setup (PSCINFO pInfo, TCHAR * pchDLL
 int CDeviceEngine::Device_SCF_TYPE_PRINTER_Setup(PSCINFO pInfo, TCHAR * pchDevice, TCHAR * pchDLL)
 {
 	BOOL    bResult;
-	DWORD   dwResult;
 	DWORD   dwType;
 
 	{
@@ -3257,7 +3256,7 @@ BOOL CDeviceEngine::BlInterface(DWORD dwCommand, VOID* pvData, DWORD dwLength)
 		myString = m_pOPOSControl->m_lineDisplay.GetDeviceName();
 		memcpy(pData->tchDeviceDescription, myString.GetBuffer(myString.GetLength()), (myString.GetLength() * sizeof(TCHAR)));
 #else
-		if (m_pOPOSControl->m_lineDisplay.m_bUnicodeSupport) {
+		if (m_pOPOSControl && m_pOPOSControl->m_lineDisplay.m_bUnicodeSupport) {
 			_tcscpy (pData->tchDeviceDescription, _T("Unicode"));
 		}
 		else {
