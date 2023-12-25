@@ -6958,7 +6958,10 @@ UNINIRAM Para = {                 /* Uninitialize RAM */
 	},
 	{  // PARASTOREFORWARD   ParaReasonCode[MAX_REASON_CODE_ENTRIES][MAX_REASON_CODE_ITEMS]
 		{0, 0}
-	}
+	},
+    {  //  Para.ParaSuggestedTip[MAX_SUGGESTED_TIP]
+        0
+    }
 #if defined(POSSIBLE_DEAD_CODE)
 		// This code is a candidate for removal with the next release of source code
 	// removed as not used with PEP.  These are internal areas for NHPOS individual
