@@ -1277,7 +1277,9 @@ VOID  ParaPCIFWrite( PARAPCIF *pData );                 /* set PC password mnemo
 VOID  ParaCtlTblMenuRead( PARACTLTBLMENU *pData );      /* read control menu page no.*/
 VOID  ParaCtlTblMenuWrite( PARACTLTBLMENU *pData );     /* set control menu page no. */
 VOID  ParaAutoAltKitchRead( PARAALTKITCH *pData );      /* read kitchen printer alternative list */
+UCHAR* ParaAutoAltKitchReadAll(UCHAR   paraAutoAltKitch[MAX_DEST_SIZE]);
 VOID  ParaAutoAltKitchWrite( PARAALTKITCH *pData );     /* set kitchen printer alternative */
+VOID  ParaAutoAltKitchWriteAll(UCHAR   paraAutoAltKitch[MAX_DEST_SIZE]);
 VOID  ParaFlexMemRead( PARAFLEXMEM *pData );            /* read a number of record & flag status of PTD */
 VOID  ParaFlexMemWrite( PARAFLEXMEM *pData );           /* set a number of record & flag status of PTD  */
 VOID  ParaStoRegNoRead( PARASTOREGNO *pData );          /* read store/register no. */
@@ -1287,7 +1289,9 @@ VOID  ParaTtlKeyTypWrite( PARATTLKEYTYP *pData );       /* set characteristic ty
 VOID  ParaTtlKeyCtlRead( PARATTLKEYCTL *pData );        /* read bit decide to characterize total key */
 VOID  ParaTtlKeyCtlWrite( PARATTLKEYCTL *pData );       /* set bit decide to characterize total key */
 VOID  ParaManuAltKitchRead( PARAALTKITCH *pData );      /* read kitchen printer alternative list */
+UCHAR* ParaManuAltKitchReadAll(UCHAR   paraManuAltKitch[MAX_DEST_SIZE]);
 VOID  ParaManuAltKitchWrite( PARAALTKITCH *pData );     /* set kitchen printer alternative */
+VOID  ParaManuAltKitchWriteAll(UCHAR   paraManuAltKitch[MAX_DEST_SIZE]);
 VOID  ParaCashABAssignRead( PARACASHABASSIGN *pData );  /* read cashier no. of A/B key */
 VOID  ParaCashABAssignWrite( PARACASHABASSIGN *pData ); /* set cashier no. A/B key */
 VOID  ParaSpcCoRead( PARASPCCO *pData );                /* read special counter */

@@ -27,7 +27,8 @@
 *    Date  :   Name    : Description
 * May-07-92:  00.00.01 : J.Ikeda  : initial                                   
 * Nov-30-92:  01.00.00 : K.You    : Chg from "pararam.h" to <pararam.h>                                   
-*          :           :                                    
+* Dec-24-23:  02.04.00 : R.Chambers : added range checks, new ReadAll,WriteAll functions
+*          :           :
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -65,12 +66,16 @@
 
 VOID ParaAutoAltKitchRead( PARAALTKITCH *pData )
 {
-    UCHAR    i;
+    UCHAR    i = ( UCHAR)(pData->uchSrcPtr - 1);      /* "-1" fits program address to RAM address */
 
-    i = ( UCHAR)(pData->uchSrcPtr - 1);      /* "-1" fits program address to RAM address */
+    pData->uchDesPtr = 0;  // default to zero in case uchSrcPtr is out of range
 
-    pData->uchDesPtr = ParaAutoAltKitch[i];
+    if (i < MAX_DEST_SIZE) pData->uchDesPtr = ParaAutoAltKitch[i];
+}
 
+UCHAR* ParaAutoAltKitchReadAll(UCHAR   paraAutoAltKitch[MAX_DEST_SIZE]) {
+    memmove(paraAutoAltKitch, ParaAutoAltKitch, sizeof(paraAutoAltKitch));
+    return paraAutoAltKitch;
 }
 
 /**
@@ -88,13 +93,11 @@ VOID ParaAutoAltKitchRead( PARAALTKITCH *pData )
 
 VOID ParaAutoAltKitchWrite( PARAALTKITCH *pData )
 {
-
-    UCHAR    i;
-
-    i = ( UCHAR)(pData->uchSrcPtr - 1);     /* "-1" fits program address to RAM address */
+    UCHAR    i = ( UCHAR)(pData->uchSrcPtr - 1);     /* "-1" fits program address to RAM address */
                                      
-    ParaAutoAltKitch[i] = pData->uchDesPtr;
-
+    if (i < MAX_DEST_SIZE) ParaAutoAltKitch[i] = pData->uchDesPtr;
 }
 
-
+VOID ParaAutoAltKitchWriteAll(UCHAR   paraAutoAltKitch[MAX_DEST_SIZE]) {
+    memmove(ParaAutoAltKitch, paraAutoAltKitch, sizeof(ParaAutoAltKitch));
+}

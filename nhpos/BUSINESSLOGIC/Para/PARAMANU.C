@@ -26,7 +26,8 @@
 * Update Histories                                                         
 *    Date  :   Name    : Description
 * May-07-92:  00.00.01 : J.Ikeda  : initial                                   
-* Nov-30-92:  01.00.03 : K.You    : Chg from "pararam.h" to <pararam.h>                                   
+* Nov-30-92:  01.00.03 : K.You    : Chg from "pararam.h" to <pararam.h>
+* Dec-24-23:  02.04.00 : R.Chambers : added range checks, new ReadAll,WriteAll functions
 *          :           :                                    
 *===========================================================================
 *===========================================================================
@@ -64,12 +65,16 @@
 
 VOID ParaManuAltKitchRead( PARAALTKITCH *pData )
 {
-    UCHAR    i;
+    UCHAR    i = ( UCHAR)(pData->uchSrcPtr - 1);    /* "-1" fits program address to RAM address */ 
 
-    i = ( UCHAR)(pData->uchSrcPtr - 1);    /* "-1" fits program address to RAM address */ 
+    pData->uchDesPtr = 0;
 
-    pData->uchDesPtr = ParaManuAltKitch[i];
+    if (i < MAX_DEST_SIZE) pData->uchDesPtr = ParaManuAltKitch[i];
+}
 
+UCHAR* ParaManuAltKitchReadAll(UCHAR   paraManuAltKitch[MAX_DEST_SIZE]) {
+    memmove(paraManuAltKitch, ParaManuAltKitch, sizeof(paraManuAltKitch));
+    return paraManuAltKitch;
 }
 
 /**
@@ -87,13 +92,13 @@ VOID ParaManuAltKitchRead( PARAALTKITCH *pData )
 
 VOID ParaManuAltKitchWrite( PARAALTKITCH *pData )
 {
+    UCHAR    i = ( UCHAR)(pData->uchSrcPtr - 1);    /* "-1" fits program address to RAM address */
 
-    UCHAR    i;
-
-    i = ( UCHAR)(pData->uchSrcPtr - 1);    /* "-1" fits program address to RAM address */
-
-    ParaManuAltKitch[i] = pData->uchDesPtr;
-
+    if (i < MAX_DEST_SIZE) ParaManuAltKitch[i] = pData->uchDesPtr;
 }
 
+
+VOID ParaManuAltKitchWriteAll(UCHAR   paraManuAltKitch[MAX_DEST_SIZE]) {
+    memmove(ParaManuAltKitch, paraManuAltKitch, sizeof(ParaManuAltKitch));
+}
 
