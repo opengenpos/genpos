@@ -103,7 +103,6 @@
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>.\Device7158Printer;..\BUSINESSLOGIC\INCLUDE;..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
