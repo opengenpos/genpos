@@ -2693,7 +2693,7 @@ UCHAR   CliParaMDCCheckField(USHORT address, UCHAR field);
 #define AAKTN_NO7_ADR           7       /* Kitchen Device #7 */
 #define AAKTN_NO8_ADR           8       /* Kitchen Device #8 */
 
-#define AAKTN_ADR_MAX       MAX_DEST_SIZE      /* Max. Number of This Address */
+#define AAKTN_ADR_MAX       MAX_DEST_SIZE      /* Max. Number of This Address size of ParaAutoAltKitch[] */
 
 
 
@@ -3063,7 +3063,7 @@ UCHAR   CliParaMDCCheckField(USHORT address, UCHAR field);
 
 /* Warning !!! You have to change this Define When Above Max. address is changed */
 
-#define MAKTN_ADR_MAX           8        /* Max Address */
+#define MAKTN_ADR_MAX           MAX_DEST_SIZE        /* Max Address for ParaManuAltKitch[] */
 
 /*------------------------------------------------------------------------*\
 *   Define - Cashier A/B Keys Assignment Address (A/C 7)
