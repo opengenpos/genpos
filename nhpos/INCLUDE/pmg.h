@@ -186,7 +186,7 @@
 #define		PRT_REGULARPRINTING	  2
 #define		PRT_POSTPRINTING	  3
 
-#define     PRT_KPRT_MAX          8     /* kitchen printer num R3.1  See also KPS_NUMBER_OF_PRINTER */
+#define     PRT_KPRT_MAX          MAX_DEST_SIZE   /* kitchen printer num R3.1  See also KPS_NUMBER_OF_PRINTER */
 
 /**
 	These masks are used to communicate various printer state and
