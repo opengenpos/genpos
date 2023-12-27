@@ -28,8 +28,5 @@
     <ClInclude Include="cskpin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cskpinEx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
