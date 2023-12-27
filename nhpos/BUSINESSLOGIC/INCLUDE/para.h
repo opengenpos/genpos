@@ -952,6 +952,11 @@ typedef struct {
 	USHORT	usNHPOSPort;						/* Port Address to talk to NHPOS from KDS */
 }PARAKDS;
 
+typedef struct {
+    UCHAR  ucShared;  /* Assign Shared Printer for Terminal, P50 data, see SHR_TERM1_DEF_ADR  */
+    UCHAR  ucAlt;     /* Assign Alternative Printer for Terminal, P50 data, see SHR_TERM1_ALT_ADR  */
+} PARA_KP_SHRALT;
+
 /* Auto Combinational Coupons  RLZ */
 typedef struct {						/* Auto Combinational Coupons */
 	UCHAR   uchMajorClass;
@@ -1301,6 +1306,9 @@ VOID  ParaToneCtlWrite( PARATONECTL *pData );           /* set tone control data
 VOID  ParaTareRead( PARATARE *pData );                  /* read tare table (ParaTare.c) */
 VOID  ParaTareWrite( PARATARE *pData );                 /* set tare table (ParaTare.c) */
 VOID  ParaSharedPrtRead( PARASHAREDPRT *pData );        /* assignment terminal # installingshared printer */
+PARA_KP_SHRALT ParaSharedPrtReadShrAlt(USHORT iTermNo); /* read shared and alternate for a terminal */
+UCHAR ParaSharedPrtReadKp(USHORT iKpNo);                /* read kitchen Printer assigned to remote device */
+UCHAR ParaSharedPrtReadCom(USHORT iComNo);              /* read COM port assigned to remote device */
 VOID  ParaSharedPrtWrite( PARASHAREDPRT *pData );       /* assignment terminal # installingshared printer */
 VOID  ParaPresetAmountRead( PARAPRESETAMOUNT *pData );  /* preset amount for preset cash key (parpamt.c) */
 VOID  ParaPresetAmountWrite( PARAPRESETAMOUNT *pData ); /* preset amount for preset cash key (parapamt.c) */

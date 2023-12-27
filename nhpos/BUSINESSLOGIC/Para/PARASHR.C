@@ -78,6 +78,34 @@ VOID ParaSharedPrtRead( PARASHAREDPRT *pData )
 
 }
 
+PARA_KP_SHRALT ParaSharedPrtReadShrAlt(USHORT iTermNo) {
+    PARA_KP_SHRALT shrAlt = { 0 };
+    UCHAR  i = (iTermNo - 1) * 2 + SHR_TERM1_DEF_ADR - 1;
+
+    shrAlt.ucShared = Para_SharedPrt[i];
+    shrAlt.ucAlt = Para_SharedPrt[i + 1];
+
+    return shrAlt;
+}
+
+UCHAR ParaSharedPrtReadKp(USHORT iKpNo) {
+    UCHAR  ucShared = 0;
+    UCHAR  i = (iKpNo - 1) + SHR_KP1_DEF_ADR - 1;
+
+    if (i < SHR_KP1_DEF_ADR + 8) ucShared = Para_SharedPrt[i];
+
+    return ucShared;
+}
+
+UCHAR ParaSharedPrtReadCom(USHORT iComNo) {
+    UCHAR  ucShared = 0;
+    UCHAR  i = (iComNo - 1) + SHR_COM_KP1_DEF_ADR - 1;
+
+    if (i < SHR_COM_KP1_DEF_ADR + 8) ucShared = Para_SharedPrt[i];
+
+    return ucShared;
+}
+
 /**
 ;=============================================================================
 ;    Synopsis:  VOID ParaSharedPrtWrite( PARASHAREDPRT *pData )
