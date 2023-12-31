@@ -546,7 +546,7 @@ can assign PLUs to, and 165 is the max number of keys that can be assigned per p
 #define MAX_TONE_SIZE           1    /* Max Size of Tone control */
 //#define MAX_TARE_SIZE          10    /* Max Size of Tare table   */
 #define MAX_TARE_SIZE          30    /* Max Size of Tare table   */
-#define MAX_SHAREDPRT_SIZE     48    /* Max Size of Shared Printer, 2172 */
+#define MAX_SHAREDPRT_SIZE     48    /* Max Size of Shared Printer P50, 2172 - ParaSharedPrtRead() shared and alternate printers for 16 terminals, shared printer for 8 kitchen printers, COM port for 8 kitchen printers */
 #define MAX_EMPLOYEENO       9999    /* Max Employee No */
 #define MAX_JOB_CODE           99    /* Max Job Code */
 #define MAX_JOB_CODE_ADDR      3L    /* Max Job Code Address */

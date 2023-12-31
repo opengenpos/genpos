@@ -103,7 +103,7 @@ typedef struct  tagUNINTRAM {
     ULONG   ParaMiscPara[MAX_MISC_SIZE];                /* MISC. PARAMETER */
     USHORT  ParaTare[MAX_TARE_SIZE];            /* A/C #111 */
     ULONG   ParaPresetAmount[MAX_PRESETAMOUNT_SIZE];    /* prog #15. may be 4 ULONG values or 8 USHORT values for Preset Amount Tender. See also FSC_PREAMT_MAX and MDC 82 Bit A, MDC_DRAWER2_ADR */
-    UCHAR   ParaSharedPrt[MAX_SHAREDPRT_SIZE];      /* prog #50 */
+    UCHAR   ParaSharedPrt[MAX_SHAREDPRT_SIZE];      /* prog #50 See ParaSharedPrtRead() - shared and alternate printers for 16 terminals, shared printer for 8 kitchen printers, COM port for 8 kitchen printers */
     TCHAR   ParaSoftChk[MAX_SOFTCHK_NO][PARA_SOFTCHK_LEN];  /* A/C #87 */
     ULONG   ParaPigRule[MAX_PIGRULE_SIZE];          /* A/C #130 */
     UCHAR   ParaOep[MAX_TABLE_NO][MAX_TABLE_ADDRESS];   /* A/C #160 */
