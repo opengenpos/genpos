@@ -104,12 +104,11 @@
 #define  KPS_RED_CODE                0x0E   /* Print Color is red (0x0e = sift out code) */
 
 
-#define KPS_NUMBER_OF_PRINTER     MAX_DEST_SIZE        /* No. of Remote Printer (R3.1) */
+#define  KPS_NUMBER_OF_PRINTER     MAX_DEST_SIZE        /* No. of Remote Printer (R3.1)  See also PRT_KPRT_MAX */
 #define  KPS_FRAME_SIZE              1024              // increased Jan-11-18 R.Chambers, Alt PLU mnemonic
 
 #define  KPS_TRAILER_SIZE             44
 
-#define KPS_CHK_PORTINDEX(x)    ((0 <= x) && (x < KPS_NUM_COM))
 #define KPS_CHK_KPNUMBER(x)     ((1 <= x) && (x <= KPS_NUMBER_OF_PRINTER))
 
 /* ### CAUTION! 16bit only  */

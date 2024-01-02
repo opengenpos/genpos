@@ -1,4 +1,13 @@
 /*========================================================================*\
+*---------------------------------------------------------------------------
+*  Georgia Southern University, Rsearch Services and Sponsored Programs
+*    (C) Copyright 2002 - 2020
+*
+*  NHPOS, donated by NCR Corp to Georgia Southern University, August, 2002.
+*  Developemnt with NCR 7448 then ported to Windows XP and generic x86 hardware
+*  along with touch screen support.
+*
+*---------------------------------------------------------------------------
 *   Title              : Client/Server KITCHIN PRINTER module, Header file
 *   Category           : Client/Server KITCHIN PRINTER module, NCR2170 US HOSPITALITY MODEL
 *   Program Name       : CSKPIN.H
@@ -32,6 +41,7 @@
 ** GenPOS **
 *   Apr-24-15          : 02.02.01   :R.Chambers   : removed KPSSHRINF   KpsShrInf with move to cskpin.c
 *   Jan-11-18 : 02.02.02 : R.Chambers  :implementing Alt PLU Mnemonic in Kitchen Printing.
+*   Dec-24-23 : 04.01.00 : R.Chambers : removed prototype KpsItemPrint(). now static.
 \*=======================================================================*/
 /*
 ----------------------------------------------
@@ -198,7 +208,6 @@
 /* ===== New Defines (Release 3.1) END ===== */
 
 /***************************** ADD Saratoga ******************************/
-#define KPS_NUM_COM                     (8)             /* number of COM port   */
 
 /*
 ----------------------------------------------
@@ -274,16 +283,7 @@ VOID  KpsEachItem(KPSBUFFER *KpsBuffer);
 VOID  KpsPrintEditRecover(KPSBUFFER *KpsBuffer);
 SHORT KpsTranEdit(UCHAR uchPrintNo, KPSBUFFER *auchRcvBuffer, UCHAR uchPrinter, UCHAR *pauchDownPriter);
 SHORT KpsItemEdit(UCHAR uchPrintNo, KPSBUFFER *pBuffer, UCHAR uchPrinter, UCHAR *pauchDownPriter);
-SHORT KpsItemPrint(UCHAR uchPrinterNo,
-                   SHORT hsFileHandle,
-                   USHORT usReadPointer);
 SHORT KpsAlt(UCHAR uchPrintNo, UCHAR uchPrinter);
-SHORT KpsHeader(UCHAR uchPrinterNo,
-                SHORT hsFileHandle,
-                USHORT ReadPointer);
-SHORT KpsTrailer(UCHAR uchPrinterNo,
-                 SHORT hsFileHandle,
-                 USHORT ReadPointer);
 SHORT KpsPaperCut(UCHAR uchPrinterNo);
 SHORT KpsTransactionPrint(UCHAR uchPrinterNo, UCHAR uchType);
 SHORT KpsVoidPrint(UCHAR uchPrinterNo);
@@ -306,10 +306,6 @@ SHORT KpsWaitPowerDown(VOID);
 SHORT KpsCheckPrinting(VOID);
 VOID  KpsStartPrint(VOID);
 SHORT KpsCheckTime(DATE_TIME *pOld_Date_Time, DATE_TIME *pNow_Date_Time);
-SHORT KpsGetBuffFile(ULONG ulOffset, VOID *pData,
-                      ULONG ulSize, SHORT hsFileHandle, ULONG *pulActualBytesRead);
-VOID  KpsPutBuffFile(ULONG ulOffset, VOID *pData,
-                     USHORT usSize, SHORT hsFileHandle);
 /* VOID KpsCheckSharedPara( VOID ); removed */          /* Add R3.0 */
 VOID KpsShrInit(VOID);                                  /* Add R3.0 */
 UCHAR   KpsCheckPort(VOID);                             /* Add R3.0 */
@@ -317,22 +313,21 @@ UCHAR   KpsCheckPort(VOID);                             /* Add R3.0 */
 /* ### ADD 2172 Rel1.0 (Saratoga) */
 /*** cskpconv.c ***/
 VOID    _KpsMakePortTable(void);
-SHORT   _KpsComNo2KPNo(const SHORT nComNo);
-SHORT   _KpsKPNo2ComNo(const SHORT nKPNo);
-UCHAR   _KpsPortSts2PrtSts(void);
-BOOL    _KpsIsEnable(const SHORT usPrinterNo);
-BOOL    _KpsIsSharedPrinter(const SHORT nPrinterNo);
-VOID    _KpsSetPrinterSts(const SHORT sPrinterNo,const BOOL bSetVal);
+SHORT   _KpsComNo2KPNo(SHORT nComNo);
+SHORT   _KpsKPNo2ComNo(SHORT nKPNo);
+USHORT  _KpsPortSts2PrtSts(void);
+BOOL    _KpsIsEnable(SHORT usPrinterNo);
+BOOL    _KpsIsSharedPrinter(SHORT nPrinterNo);
+VOID    _KpsSetPrinterSts(SHORT sPrinterNo, BOOL bSetVal);
 SHORT   _KpsGetMyTerminalNo(void);
 SHORT   _KpsGetMySharedPrinterNo (UCHAR uchPrinterNo);
 VOID    _ParaTest(void);                                /* for DEBUG */
-BOOL    _KpsIsEpson(const SHORT nPrinterNo);    /* EPSON check      */
+BOOL    _KpsIsEpson(SHORT nPrinterNo);    /* EPSON check      */
 
 /*** cskpinEx.c ***/
-BOOL    _IsSaratoga(void);                      /* check version */
-SHORT   _KpsGetAltPrinterNo(const USHORT usOutPrinterInfo);
+SHORT   _KpsGetAltPrinterNo(USHORT usOutPrinterInfo);
 VOID    KpsMakeOutPutPrinterEx(KPSBUFFER *pKpsBuffer, USHORT * pPrinterSts);
-BOOL    _KpsIsAlt(const USHORT usOutPrinterInfo);
+BOOL    _KpsIsAlt(USHORT usOutPrinterInfo);
 
 
 /*
@@ -344,7 +339,7 @@ extern USHORT        husKpsQueue;
 extern PifSemHandle  husKpsQueueSem;
 
 /*extern UCHAR   uchKpsPrinterStatus;*/                 /* printer status table */
-extern UCHAR   g_uchPortStatus;                         /* port status table    */
+extern USHORT  g_uchPortStatus;                         /* port status table    */
 
 extern UCHAR   g_uchKpsTerminalLock;                    /* terminal check During excuting Terminal No. (uniqu address) */
 extern SHORT   g_hasKpsPort[KPS_NUMBER_OF_PRINTER];     /* Port handle save area */

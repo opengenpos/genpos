@@ -1,4 +1,12 @@
 /*
+*---------------------------------------------------------------------------
+*  Georgia Southern University, Rsearch Services and Sponsored Programs
+*    (C) Copyright 2002 - 2020
+*
+*  NHPOS, donated by NCR Corp to Georgia Southern University, August, 2002.
+*  Developemnt with NCR 7448 then ported to Windows XP and generic x86 hardware
+*  along with touch screen support.
+*
 ****************************************************************************
 **                                                                        **
 **        *=*=*=*=*=*=*=*=*                                               **
@@ -12,10 +20,6 @@
 * Title       : Manual Auto Kitchen Printer Module                         
 * Category    : User Interface For Supervisor, NCR 2170 US Hospitality Application         
 * Program Name: MATAKIT.C
-* --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Midium Model                                               
-* Options     : /c /AM /W4 /Gs /Os /Za /Zp                                 
 * --------------------------------------------------------------------------
 * Abstract: The provided function names are as follows:  
 *
@@ -73,19 +77,14 @@
 
 SHORT MaintAutoAltKitchRead( PARAALTKITCH *pData )
 {
-
-
     UCHAR uchSrcPtr;
 
-
     /* Check W/ Amount */
-
     if (pData->uchStatus & MAINT_WITHOUT_DATA) {                        /* W/o Amount */
         uchSrcPtr = ++MaintWork.AltKitch.uchSrcPtr;
 
         /* Check Max Address */
-
-        if (AAKTN_ADR_MAX < uchSrcPtr) {                                /* Over Max. */
+        if (MAX_DEST_SIZE < uchSrcPtr) {                                /* Over Max. */
             uchSrcPtr = 1;                                              /* Initialize address */
         } 
     } else {                                                            /* W/ Amount */
@@ -93,16 +92,14 @@ SHORT MaintAutoAltKitchRead( PARAALTKITCH *pData )
     }
   
     /* Check Address */
-
-    if (uchSrcPtr < 1 || AAKTN_ADR_MAX < uchSrcPtr) {                   /* Out of Range */
+    if (uchSrcPtr < 1 || MAX_DEST_SIZE < uchSrcPtr) {                   /* Out of Range */
         return(LDT_KEYOVER_ADR);
     }
 
     /* Execute Read and Display Parameter */
-
     MaintWork.AltKitch.uchMajorClass = pData->uchMajorClass;                                        
     MaintWork.AltKitch.uchSrcPtr = uchSrcPtr;
-    CliParaRead(&(MaintWork.AltKitch));                                 
+    ParaRead(&(MaintWork.AltKitch));                                 
     DispWrite(&(MaintWork.AltKitch));                                   
     return(SUCCESS);
 }
@@ -124,34 +121,29 @@ SHORT MaintAutoAltKitchRead( PARAALTKITCH *pData )
 
 SHORT MaintAutoAltKitchWrite( PARAALTKITCH *pData )
 {
-
     /* Check W/ Amount */
-
     if (pData->uchStatus & MAINT_WITHOUT_DATA) {            /* W/o Amount */
         return(LDT_SEQERR_ADR);
     }
 
     /* Check Input Data Range */
-
-    if (AAKTN_ADR_MAX < pData->uchDesPtr) {  /* Out of Range */
+    if (MAX_DEST_SIZE < pData->uchDesPtr) {  /* Out of Range */
         return(LDT_KEYOVER_ADR);
     }
 
     MaintWork.AltKitch.uchDesPtr = pData->uchDesPtr;
-    CliParaWrite(&(MaintWork.AltKitch));   
+    ParaWrite(&(MaintWork.AltKitch));   
 
     /* Control Header Item */
-    
     MaintHeaderCtl(PG_AUTO_KITCH, RPT_PRG_ADR);
 
     MaintWork.AltKitch.usPrintControl = ( PRT_JOURNAL | PRT_RECEIPT );
     PrtPrintItem(NULL, &(MaintWork.AltKitch));
 
     /* Display Next Address */
-
     MaintWork.AltKitch.uchSrcPtr++;
 
-    if (AAKTN_ADR_MAX < MaintWork.AltKitch.uchSrcPtr) {         /* Over Max. */
+    if (MAX_DEST_SIZE < MaintWork.AltKitch.uchSrcPtr) {         /* Over Max. */
         MaintWork.AltKitch.uchSrcPtr = 1;                       /* Initialize Address */
 
     }
@@ -174,44 +166,30 @@ SHORT MaintAutoAltKitchWrite( PARAALTKITCH *pData )
 
 VOID MaintAutoAltKitchReport( VOID )
 {
-
-
-    UCHAR            i;
-    PARAALTKITCH     ParaAltKitch;
-
+    PARAALTKITCH     ParaAltKitch = { 0 };
 
     /* Control Header Item */
-    
     MaintHeaderCtl(PG_AUTO_KITCH, RPT_PRG_ADR);
 
     ParaAltKitch.uchMajorClass = CLASS_PARAAUTOALTKITCH;
     ParaAltKitch.usPrintControl = ( PRT_JOURNAL | PRT_RECEIPT );
 
     /* Report Each Item */
-
-    for (i = 1; i <= AAKTN_ADR_MAX; i++) {
+    for (UCHAR i = 1; i <= MAX_DEST_SIZE; i++) {
 
         /* Check Abort Key */
-
         if (UieReadAbortKey() == UIE_ENABLE) {      /* Depress Abort Key */
             MaintMakeAbortKey();
             break;
         }
 
         ParaAltKitch.uchSrcPtr = i;
-        CliParaRead(&ParaAltKitch);       
+        ParaAutoAltKitchRead(&ParaAltKitch);
         PrtPrintItem(NULL, &ParaAltKitch);
     }
 
     /* Make Trailer */
-    
     MaintMakeTrailer(CLASS_MAINTTRAILER_PRTPRG);
 }
 
 
-
-
-
-
-
-                

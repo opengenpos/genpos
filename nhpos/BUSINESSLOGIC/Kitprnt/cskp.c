@@ -1,4 +1,13 @@
-/*========================================================================*\
+/*
+*---------------------------------------------------------------------------
+*  Georgia Southern University, Rsearch Services and Sponsored Programs
+*    (C) Copyright 2002 - 2020
+*
+*  NHPOS, donated by NCR Corp to Georgia Southern University, August, 2002.
+*  Developemnt with NCR 7448 then ported to Windows XP and generic x86 hardware
+*  along with touch screen support.
+*
+*========================================================================*\
 *   Title              : Client/Server KITCHEN PRINTER module, Program List
 *   Category           : Client/Server KITCHEN PRINTER module, NCR2170 US HOSPITAL FOR US MODEL
 *   Program Name       : CSKP.C
@@ -40,6 +49,7 @@
 ** GenPOS **
 *   Apr-24-15 : 02.02.01 :R.Chambers   :Correct KpsInit() initialization, include csstbstb.h fix compiler warning.
 *   Jan-11-18 : 02.02.02 :R.Chambers   :implementing Alt PLU Mnemonic in Kitchen Printing.
+*   Dec-31-23 : 02.04.00 : R.Chambers  :moved global g_uchPortStatus from this file to cskpin.c.
 \*=======================================================================*/
 #include	<tchar.h>
 #include    <string.h>
@@ -105,7 +115,6 @@ static KPSBUFFER KpsBuffer16;
 /*UCHAR   uchKpsPrinterStatus;*/                        /* printer status table */
 
 UCHAR   g_uchKpsTerminalLock;                           /* terminal check During excuting Terminal No. (uniqu address) */
-UCHAR   g_uchPortStatus;                                /* com ports status table *//* ### NEW 2172 Rel1.0 */
 SHORT   g_hasKpsPort[KPS_NUMBER_OF_PRINTER];            /* Port handle save area,       Modify at R3.1 */
 
 /* SHORT   hasKpsPort[4];                                  Port handle save area */
@@ -324,9 +333,8 @@ SHORT KpsPrint(UCHAR *auchRcvBuffer, USHORT usRcvBufLen, UCHAR uchUniqueAddress,
     if ((pKps_1_Frame->COM_ID/*auchRcvBuffer[KPS_COM_FRAME]*/ & KPS_FIRST_FRAME) != 0x00) {
         *puchLastFrameAutoAltered = 0;
     }
-
-    /* At continued frame */
     else {
+        /* At continued frame */
         /* If Auto Alternate flag is not specified, return with value 'PRINTER_DOWN' */
         if ((*puchLastFrameAutoAltered != 0) &&
             ((usOutPrinterInfo & 0x4000) == 0)) {
@@ -375,9 +383,8 @@ SHORT KpsPrint(UCHAR *auchRcvBuffer, USHORT usRcvBufLen, UCHAR uchUniqueAddress,
             else
                 ausKpsOutPrtInfo[uchUniqueAddress - 1] = usOutPrinterInfo;
         }
-
-        /* new consecutive number is passed from caller. update internal table */
         else {
+            /* new consecutive number is passed from caller. update internal table */
             ausKpsConsNo[uchUniqueAddress - 1] = usConsNo;
             ausKpsOutPrtInfo[uchUniqueAddress - 1] = usOutPrinterInfo;
         }
@@ -752,6 +759,11 @@ SHORT   KpsCreateFile(USHORT usSize)
             pKpsBuf = &KpsBuffer16;
             uchFileName = aszKPSBuffFile16;
             break;
+        default:
+            // should never hit this however the compiler is warning so let's
+            // allow it to relax.
+            return KPS_ERROR;
+            break;
         }
 
         /* open file. */
@@ -768,12 +780,17 @@ SHORT   KpsCreateFile(USHORT usSize)
 			NHPOS_ASSERT_TEXT((0 <= hsFileHandle), xBuff);
 		}
 
+        if (hsFileHandle < 0) {
+            pKpsBuf->hsKpsBuffFH = -1;  // assign bad file handle indicating file not open.
+            return KPS_ERROR;
+        }
+
         /* verify file size and check error */
         sReturn = PifSeekFile(hsFileHandle, ulActSize, &ulActMove);
         if ((sReturn < 0) || (ulActMove != ulActSize)) {
             PifCloseFile(hsFileHandle);
             PifDeleteFile(uchFileName);
-			pKpsBuf->hsKpsBuffFH = -1;
+			pKpsBuf->hsKpsBuffFH = -1;  // assign bad file handle indicating file not open.
             return KPS_ERROR;
         }
 

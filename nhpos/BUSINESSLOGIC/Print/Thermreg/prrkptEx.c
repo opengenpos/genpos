@@ -29,6 +29,9 @@
 *
 ** GenPOS **
 * Dec-07-20 : v2.3.2.0 : R.Chambers  : removed include of unused file oldstdc.h.
+* Dec-27-23 : c2.4.0   : R.Chambers  : replaced CliParaRead() and CliParaAllRead() with specific Para functions, ParaSharedPrtRead() etc.
+* Dec-27-23 : c2.4.0   : R.Chambers  : replace boolean flag for auto/manual with masks: KPS_MASK16_ALT_MAN, KPS_MASK16_ALT_AUTO
+* Jan-01-23 : v2.4.0   : R.Chambers  : removed unneeded include files.
 *============================================================================
 */
 
@@ -44,20 +47,12 @@
 
 #include <ecr.h>
 #include <regstrct.h>
-#include <transact.h>
 #include <paraequ.h>
 #include <para.h>
 #include <cskp.h>
 #include <csstbkps.h>
-#include <csstbstb.h>
-#include <csstbpar.h>
 #include <rfl.h>
-#include <uie.h>
-#include <fsc.h>
 #include <pif.h>
-#include <pmg.h>
-#include "prtrin.h"
-#include "prrcolm_.h"
 
 
 
@@ -65,68 +60,67 @@ static  UCHAR   s_AutoAltTbl[KPS_NUMBER_OF_PRINTER];
 static  UCHAR   s_ManAltTbl[KPS_NUMBER_OF_PRINTER];
 static  UCHAR   s_KPTbl[KPS_NUMBER_OF_PRINTER];
 
-static  VOID    _PrtMakeAltTbl(void){
-    USHORT  usRet,cnt;
-    PARASHAREDPRT   ParaShPrt_Term;
-
+static  VOID    _PrtMakeAltTbl(void) {
     memset(s_AutoAltTbl,0,sizeof(s_AutoAltTbl));
     memset(s_ManAltTbl,0,sizeof(s_ManAltTbl));
     memset(s_KPTbl,0,sizeof(s_KPTbl));
 
     /* auto */
-    CliParaAllRead(CLASS_PARAAUTOALTKITCH,s_AutoAltTbl,KPS_NUMBER_OF_PRINTER,0,&usRet);
+    ParaAutoAltKitchReadAll(s_AutoAltTbl);
 
     /* manual */
-    CliParaAllRead(CLASS_PARAMANUALTKITCH,s_ManAltTbl,KPS_NUMBER_OF_PRINTER,0,&usRet);
+    ParaManuAltKitchReadAll(s_ManAltTbl);
 
-    for(cnt = 0;cnt < KPS_NUMBER_OF_PRINTER;cnt++){
-        memset(&ParaShPrt_Term, 0, sizeof(ParaShPrt_Term));
+    for(USHORT cnt = 0; cnt < KPS_NUMBER_OF_PRINTER; cnt++){
+        PARASHAREDPRT   ParaShPrt_Term = { 0 };
+
         ParaShPrt_Term.uchMajorClass = CLASS_PARASHRPRT;
         ParaShPrt_Term.uchAddress = (UCHAR)(SHR_KP1_DEF_ADR + cnt);
-        CliParaRead(&ParaShPrt_Term);   /* Prog50 Addr(33+cnt) */
+        ParaSharedPrtRead(&ParaShPrt_Term);   /* Prog50 Addr(33+cnt) */
         s_KPTbl[cnt] = ParaShPrt_Term.uchTermNo;
     }
 }
 
 
-static  BOOL    _PrtGetAltInfo(SHORT nPrtNo,BOOL bManual,SHORT *pAltTerm,SHORT *pAltPrt){
-    SHORT   nPrt;
+static  BOOL    _PrtGetAltInfo(SHORT nPrtNo, USHORT usType, SHORT *pAltTerm, SHORT *pAltPrt){
+    BOOL    bRet = FALSE;
 
-    *pAltTerm = 0;
-    *pAltPrt = 0;
+    if (pAltTerm) *pAltTerm = 0;
+    if (pAltPrt) *pAltPrt = 0;
 
-    if( !KPS_CHK_KPNUMBER(nPrtNo) )
-        return  FALSE;
+    if (KPS_CHK_KPNUMBER(nPrtNo)) {
+        SHORT   nPrt = 0;
 
-    if(bManual)
-        nPrt = (SHORT)s_ManAltTbl[nPrtNo - 1];
-    else
-        nPrt = (SHORT)s_AutoAltTbl[nPrtNo - 1];
+        switch (usType) {
+        case (USHORT)KPS_MASK16_ALT_MAN:
+            nPrt = s_ManAltTbl[nPrtNo - 1];
+            break;
+        case (USHORT)KPS_MASK16_ALT_AUTO:
+            nPrt = s_AutoAltTbl[nPrtNo - 1];
+            break;
+        }
 
-    if( !KPS_CHK_KPNUMBER(nPrt) )
-        return  FALSE;
-    if(0 == s_KPTbl[nPrt - 1])
-        return  FALSE;
+        if (KPS_CHK_KPNUMBER(nPrt)) {
+            if (KPS_CHK_KPNUMBER(s_KPTbl[nPrt - 1])) {
+                if (pAltTerm) *pAltTerm = s_KPTbl[nPrt - 1];
+                if (pAltPrt) *pAltPrt = nPrt;
+                bRet = TRUE;
+            }
+        }
+    }
 
-    *pAltTerm = (SHORT)s_KPTbl[nPrt - 1];
-    *pAltPrt =  nPrt;
-    return  TRUE;
+    return  bRet;
 }
 
 
-static VOID _PrtMakeAltInfo(SHORT nPrtNo,BOOL bManual,USHORT * pAltInfo){
+static USHORT _PrtMakeAltInfo(SHORT nPrtNo, USHORT usType) {
+    USHORT usAltInfo = 0;
 
-    if( !KPS_CHK_KPNUMBER(nPrtNo) ){
-        *pAltInfo = 0;
-        return;
+    if( KPS_CHK_KPNUMBER(nPrtNo) ) {
+        usAltInfo = nPrtNo | usType;
     }
 
-    *pAltInfo = nPrtNo;
-
-    if(bManual)
-        *pAltInfo |= KPS_MASK16_ALT_MAN;
-    else
-        *pAltInfo |= KPS_MASK16_ALT_AUTO;
+    return usAltInfo;
 }
 
 
@@ -134,16 +128,16 @@ SHORT   PrtSendKps(TCHAR *auchSndBuffer, USHORT usSndBufLen,
                     UCHAR uchUniqueAddress, USHORT *pusPrintStatus, UCHAR uchTarget,SHORT nKPNo){
 
     SHORT   nCliKpsPrtSts;
-    USHORT  usOutPrinterInfo = 0,usDummy;
+    USHORT  usOutPrinterInfo = 0;
     SHORT   nTargetTerm = 0;
 
     _PrtMakeAltTbl();
 
     /* ManualAlt ??? */
     usOutPrinterInfo = (USHORT)nKPNo;
-    if(_PrtGetAltInfo(nKPNo,TRUE,&nTargetTerm,&usDummy) == TRUE){
+    if(_PrtGetAltInfo(nKPNo, KPS_MASK16_ALT_MAN, &nTargetTerm, NULL)) {
         /* manual alternation (set flag) */
-        _PrtMakeAltInfo(nKPNo,TRUE,&usOutPrinterInfo);
+        usOutPrinterInfo = _PrtMakeAltInfo(nKPNo, KPS_MASK16_ALT_MAN);
     }else{
         /* normal */
         nTargetTerm = (SHORT)uchTarget;
@@ -154,16 +148,16 @@ SHORT   PrtSendKps(TCHAR *auchSndBuffer, USHORT usSndBufLen,
                        uchUniqueAddress, pusPrintStatus, (UCHAR)nTargetTerm,usOutPrinterInfo);
 
     /* if manual alternate print has succeed, assume required printer is alive */
-    if ((usOutPrinterInfo & KPS_MASK16_ALT_MAN) && (nCliKpsPrtSts == KPS_PERFORM)) {
+    if ((usOutPrinterInfo & (USHORT)KPS_MASK16_ALT_MAN) && (nCliKpsPrtSts == KPS_PERFORM)) {
         *pusPrintStatus = 0x01 << ((usOutPrinterInfo - 1) & 0x000f);
     }
 
     /* if print failed, retry with auto alternate printer */
-    if (nCliKpsPrtSts == KPS_PRINTER_DOWN  && !(usOutPrinterInfo & KPS_MASK16_ALT_MAN)){
+    if (nCliKpsPrtSts == KPS_PRINTER_DOWN  && !(usOutPrinterInfo & (USHORT)KPS_MASK16_ALT_MAN)){
         /* get terminal No */
-        if(_PrtGetAltInfo(nKPNo,FALSE,&nTargetTerm,&usDummy)){
+        if(_PrtGetAltInfo(nKPNo, KPS_MASK16_ALT_AUTO, &nTargetTerm, NULL)) {
             /* auto alternation */
-            _PrtMakeAltInfo(nKPNo,FALSE,&usOutPrinterInfo);
+            usOutPrinterInfo = _PrtMakeAltInfo(nKPNo, KPS_MASK16_ALT_AUTO);
             /* retry */
             nCliKpsPrtSts = CliKpsPrintEx(auchSndBuffer,usSndBufLen,
                        uchUniqueAddress, pusPrintStatus, (UCHAR)nTargetTerm,usOutPrinterInfo);

@@ -1,4 +1,13 @@
 /*========================================================================*\
+*---------------------------------------------------------------------------
+*  Georgia Southern University, Rsearch Services and Sponsored Programs
+*    (C) Copyright 2002 - 2020
+*
+*  NHPOS, donated by NCR Corp to Georgia Southern University, August, 2002.
+*  Developemnt with NCR 7448 then ported to Windows XP and generic x86 hardware
+*  along with touch screen support.
+*
+*---------------------------------------------------------------------------
 *   Title              : Client/Server Kitchen Printer module, Program List
 *   Category           : Client/Server Kitchen Printer module, NCR2170 US HOSPITAL FOR US MODEL
 *   Program Name       : CSKPIN.C
@@ -71,6 +80,8 @@
 ** GenPOS **
 *   Apr-24-15 : 02.02.01 :R.Chambers   :moved KPSSHRINF KpsShrInf from cskp.c to here.
 *   Jan-11-18 : 02.02.02 : R.Chambers  :implementing Alt PLU Mnemonic in Kitchen Printing.
+*   Dec-24-23 : 02.04.00 : R.Chambers  :made KpsItemPrint() static, read pointer now ULONG.
+*   Dec-31-23 : 02.04.00 : R.Chambers  :moved global g_uchPortStatus from cskp.c to this file.
 \*=======================================================================*/
 #include	<windows.h>
 #include	<tchar.h>
@@ -101,6 +112,15 @@ static TCHAR   auchKpsPrintBuffer[KPS_PRINT_BUFFER_SIZE];      /* buffer for out
 static TCHAR   auchTmpBuff[KPS_FRAME_SIZE];
 
 static KPSSHRINF KpsShrInf;         /* shared buffer    Add R3.0 */
+
+static SHORT KpsItemPrint(UCHAR uchPrinterNo, SHORT hsFileHandle, ULONG ulReadPointer);
+static SHORT KpsHeader(UCHAR uchPrinterNo, SHORT hsFileHandle, ULONG ulReadPointer);
+static SHORT KpsTrailer(UCHAR uchPrinterNo, SHORT hsFileHandle, ULONG ulReadPointer);
+static SHORT KpsGetBuffFile(ULONG ulOffset, VOID* pData, ULONG ulSize, SHORT hsFileHandle, ULONG* pulActualBytesRead);
+static VOID  KpsPutBuffFile(ULONG ulOffset, VOID* pData, USHORT usSize, SHORT hsFileHandle);
+static SHORT KpsTranEdit(UCHAR uchPrinterNo, KPSBUFFER* pBuffer, UCHAR uchPrinter, UCHAR* pauchDownPriter);
+
+USHORT  g_uchPortStatus = 0;                             /* com ports status table *//* ### NEW 2172 Rel1.0 */
 
 /*
 *==========================================================================
@@ -184,12 +204,11 @@ SHORT KpsLockCheck(UCHAR uchUniqueAddress)
 */
 VOID THREADENTRY  KpsPrintProcess(VOID)
 {
-    USHORT  *pusMessage;
-    DATE_TIME DateTime;
-    SHORT   sWork;
     BOOL    bMsgFromMonProc = FALSE;
 
     for(;;) {
+        USHORT  *pusMessage;
+
         uchKpsPrinting = 0;
 
         /* wake up monitor thread */
@@ -215,6 +234,8 @@ VOID THREADENTRY  KpsPrintProcess(VOID)
         uchKpsPrinting = 1;
 
         if (KpsRcvQue.pFirstQue != NULL) {
+            SHORT   sWork;
+            DATE_TIME DateTime;
             PifGetDateTime(&DateTime);
             if ((sWork = KpsCheckTime(&KpsRcvQue.pFirstQue->Date_Time, &DateTime)) >= 0) {
                 if (sWork > 5) {
@@ -259,6 +280,7 @@ VOID THREADENTRY  KpsPrintProcess(VOID)
                 }
             }
         } else {
+            DATE_TIME DateTime = { 0 };
             PifGetDateTime(&DateTime);
             KpsProcQue.pFirstQue->Date_Time = DateTime;  /* copy structure */
             KpsPrintEdit(KpsProcQue.pFirstQue);
@@ -326,22 +348,13 @@ VOID  THREADENTRY KpsTimerProcess(VOID)
 VOID  KpsMoniter(USHORT usInit)
 {
     SYSCONFIG CONST *pSysconfig = PifSysConfig();                /* get system configration */
-	int		nSize;
-    SHORT   nPortCnt;   /* ### CAUTION!!! PortCnt != KPrinterNo (in Saratoga) */
-    SHORT   hsPort;
-    SHORT   sStatus;
-    USHORT  usTime;
-    USHORT  usRetryCounter;
-    UCHAR   uchMask;
-    UCHAR   cuchCode = 0;
-    UCHAR   auchReadBuffer[KPS_READ_BUFFER_SIZE];
-	UCHAR	uchTmpKPBuff[KPS_PRINT_BUFFER_SIZE*2];
 
     /* make(initialize) COM - printer table */
     _KpsMakePortTable(); /* ### ADD 2172 Rel1.0 */
 
-    for (nPortCnt = 0; nPortCnt < KPS_NUMBER_OF_PRINTER; nPortCnt++) {
-        uchMask = (UCHAR)(0x01 << nPortCnt);
+    /* ### CAUTION!!! PortCnt != KPrinterNo (in Saratoga) */
+    for (SHORT nPortCnt = 0; nPortCnt < KPS_NUMBER_OF_PRINTER; nPortCnt++) {
+        USHORT   const uchMask = (0x01 << nPortCnt);
         /* --- determine this K/P is already stated POWER DOWN or not --- */
         if (g_auchKpsSysConfig[nPortCnt] == (UCHAR)(~DEVICE_KITCHEN_PRINTER)) {
             g_uchPortStatus &= ~uchMask;    /* set printer status is down */
@@ -354,9 +367,16 @@ VOID  KpsMoniter(USHORT usInit)
 
 			KpsSetProtocol(usPortId, &Protocol);      /* Set protocol data */
 
-            for (usRetryCounter = 0; usRetryCounter < KPS_RETRY_COUNTER; usRetryCounter++) {
+            for (USHORT usRetryCounter = 0; usRetryCounter < KPS_RETRY_COUNTER; usRetryCounter++) {
+	            int		nSize;
+                USHORT  usTime;
+                SHORT   sStatus;
+                UCHAR   cuchCode = 0;
+                UCHAR   auchReadBuffer[KPS_READ_BUFFER_SIZE];
+	            UCHAR	uchTmpKPBuff[KPS_PRINT_BUFFER_SIZE*2];
+
                 if (g_hasKpsPort[nPortCnt] < 0) { /* specified K/P is not assigned port */
-                    hsPort = PifOpenNetComIoEx (usPortId, &Protocol);
+                    SHORT   hsPort = PifOpenNetComIoEx (usPortId, &Protocol);
                     if (hsPort < 0) {                   /* re-connection is failed */
                         g_uchPortStatus &= ~uchMask;    /* set printer status is down */
 						if ((usRetryCounter+1) >= KPS_RETRY_COUNTER) {
@@ -404,8 +424,7 @@ VOID  KpsMoniter(USHORT usInit)
                 cuchCode = 0;
                 auchKpsPrintBuffer[cuchCode++] = KPS_ESC;
                 auchKpsPrintBuffer[cuchCode++] = KPS_ESC_STATUS;
-				nSize = WideCharToMultiByte(pSysconfig->unCodePage,
-				0, auchKpsPrintBuffer, cuchCode, uchTmpKPBuff, sizeof(uchTmpKPBuff), NULL, NULL);
+				nSize = WideCharToMultiByte(pSysconfig->unCodePage, 0, auchKpsPrintBuffer, cuchCode, uchTmpKPBuff, sizeof(uchTmpKPBuff), NULL, NULL);
                 sStatus = PifWriteNetComIoEx(g_hasKpsPort[nPortCnt], uchTmpKPBuff, (USHORT)nSize);         /* There is no argument */
                 if (sStatus >= 0) {
                     sStatus = PifReadNetComIoEx(g_hasKpsPort[nPortCnt], (VOID *)auchReadBuffer, KPS_READ_BUFFER_SIZE);
@@ -451,8 +470,7 @@ VOID  KpsMoniter(USHORT usInit)
 							auchKpsPrintBuffer[cuchCode++] = KPS_NO_PAPER;
 							auchKpsPrintBuffer[cuchCode++] = '4';
 							auchKpsPrintBuffer[cuchCode++] = KPS_NO_PAPER_STOP;
-							nSize = WideCharToMultiByte(pSysconfig->unCodePage,
-							0, auchKpsPrintBuffer, cuchCode, uchTmpKPBuff, sizeof(uchTmpKPBuff), NULL, NULL);
+							nSize = WideCharToMultiByte(pSysconfig->unCodePage, 0, auchKpsPrintBuffer, cuchCode, uchTmpKPBuff, sizeof(uchTmpKPBuff), NULL, NULL);
 							if ((sStatus = PifWriteNetComIoEx(g_hasKpsPort[nPortCnt], uchTmpKPBuff, (USHORT)nSize)) < 0) {
 								if ((sStatus == PIF_ERROR_COM_POWER_FAILURE) 
 									|| (sStatus == PIF_ERROR_COM_ACCESS_DENIED)) {
@@ -473,8 +491,7 @@ VOID  KpsMoniter(USHORT usInit)
 							auchKpsPrintBuffer[cuchCode++] = KPS_ESC;
 							auchKpsPrintBuffer[cuchCode++] = KPS_ESC_DRAWER;    /* Dummy Command */
 							auchKpsPrintBuffer[cuchCode++] = KPS_0;             /* Dummy Command */
-							nSize = WideCharToMultiByte(pSysconfig->unCodePage,
-							0, auchKpsPrintBuffer, cuchCode, uchTmpKPBuff, sizeof(uchTmpKPBuff), NULL, NULL);
+							nSize = WideCharToMultiByte(pSysconfig->unCodePage, 0, auchKpsPrintBuffer, cuchCode, uchTmpKPBuff, sizeof(uchTmpKPBuff), NULL, NULL);
 							sStatus = PifWriteNetComIoEx(g_hasKpsPort[nPortCnt], uchTmpKPBuff, (USHORT)nSize);
 							if (sStatus >= 0) {
 								sStatus = PifReadNetComIoEx(g_hasKpsPort[nPortCnt], (VOID *)auchReadBuffer, KPS_READ_BUFFER_SIZE);
@@ -538,12 +555,16 @@ VOID  KpsEachTran(KPSBUFFER *pKpsBuffer)
 {
     USHORT  usPrinterCnt;   /* ### CAUTION!!! PrinterCnt -> 0 - 7 PrinterNo -> 1 - 8 */
     SHORT   sStatus;
-    UCHAR   uchOutputKPNo;  /* Output K/P Number(1 - 8), R3.1 Add */
 
     for(;;) {
+        // cycle through the kitchen printer list to see if there are any with
+        // transactions ready to print. If so then print the transaction and
+        // move on to the next printer.
+        // if there is an error try to use an alternate printer.
         for (usPrinterCnt = 0; usPrinterCnt < KPS_NUMBER_OF_PRINTER; usPrinterCnt++) {
-            uchOutputKPNo = pKpsBuffer->auchOutputPrinter[usPrinterCnt] & (UCHAR)0x0f;
-            if (uchOutputKPNo != 0) {
+            /* Output K/P Number(1 - 8) after removing any flags, R3.1 Add */
+            UCHAR uchOutputKPNo = pKpsBuffer->auchOutputPrinter[usPrinterCnt] & (UCHAR)0x0f;
+            if (KPS_CHK_KPNUMBER(uchOutputKPNo)) {
                 pKpsBuffer->ulReadPoint = KPS_DATA * 2;
                 if (KpsTranEdit((UCHAR)uchOutputKPNo,       /* ### CAUTION! Printer No */
                                 pKpsBuffer,
@@ -586,17 +607,15 @@ VOID  KpsEachTran(KPSBUFFER *pKpsBuffer)
 */
 VOID  KpsEachItem(KPSBUFFER *pKpsBuffer)
 {        
-	ULONG	ulActualBytesRead; //RPH 11-10-3 SR# 201
     USHORT  usPrinterCnt;
     SHORT   sStatus;
-    UCHAR   uchPrintSelection;
-    UCHAR   uchGetData;
-    UCHAR   uchOutputKPNo;   /* Output K/P Number, R3.1 Add */
 
     for (;;) {
         for (usPrinterCnt = 0; usPrinterCnt < KPS_NUMBER_OF_PRINTER; usPrinterCnt++) {
-            uchOutputKPNo = pKpsBuffer->auchOutputPrinter[usPrinterCnt] & (UCHAR)0x0f;
-            if (uchOutputKPNo == 0) {
+            UCHAR uchPrintSelection =  (UCHAR)(0x01 << usPrinterCnt);   /*####*/
+            /* Output K/P Number, R3.1 Add */
+            UCHAR uchOutputKPNo = pKpsBuffer->auchOutputPrinter[usPrinterCnt] & (UCHAR)0x0f;
+            if (!KPS_CHK_KPNUMBER(uchOutputKPNo)) {
                 continue;
             }
             /*uchOpPrtNo = (UCHAR)(0x01 << (uchOutputKPNo - 1));
@@ -605,15 +624,16 @@ VOID  KpsEachItem(KPSBUFFER *pKpsBuffer)
                 KpsAltCheck((UCHAR)usPrinterCnt, pKpsBuffer);
                 continue;
             }
-            /*####*/uchPrintSelection =  (UCHAR)(0x01 << usPrinterCnt);
             pKpsBuffer->ulReadPoint = KPS_DATA;
             for (;;) {
+                UCHAR   uchGetData;
+	            ULONG	ulActualBytesRead; //RPH 11-10-3 SR# 201
                 //RPH 11-10-3 SR# 201
 				KpsGetBuffFile(pKpsBuffer->ulReadPoint + KPS_PRINT_SEL,
                                &uchGetData,
                                sizeof(UCHAR),
                                pKpsBuffer->hsKpsBuffFH, &ulActualBytesRead);
-                if (uchGetData & KPS_PRINT_SEL_MASK) {  /* Is this item a remote print item ? */
+                if (uchGetData & (UCHAR)KPS_PRINT_SEL_MASK) {  /* Is this item a remote print item ? */
                     if (uchGetData & uchPrintSelection) {   /* Does this item print on this remote printer ? */
                         if (KpsItemEdit((UCHAR)uchOutputKPNo,
                                         pKpsBuffer,
@@ -677,26 +697,20 @@ VOID  KpsEachItem(KPSBUFFER *pKpsBuffer)
 */
 VOID  KpsPrintEditRecover(KPSBUFFER *pKpsBuffer)
 {
-	ULONG	ulActualBytesRead;//RPH 11-10-3 SR# 201
     USHORT  usTime;
     SHORT   sStatus = KPS_PRINT_ERROR;
-    USHORT  usRetLen;
     UCHAR   uchPrinterNo;
     UCHAR   uchPrinterCnt;
     UCHAR   uchOpPrtNo;
     UCHAR   uchPrtNoFmAppl;
     UCHAR   cuchI;
     UCHAR   uchGetData;
-    UCHAR   auchManuAlt[KPS_NUMBER_OF_PRINTER];
+    UCHAR   auchManuAlt[KPS_NUMBER_OF_PRINTER] = { 0 };
 
-    CliParaAllRead(CLASS_PARAMANUALTKITCH,          /* Major Class */
-                   auchManuAlt,                     /* Read Buffer */
-                   KPS_NUMBER_OF_PRINTER,           /* Data Length */
-                   0,                               /* Start Pointer */
-                   &usRetLen);                      /* Read Length */
+    ParaManuAltKitchReadAll(auchManuAlt);
 
     for (cuchI = 0; cuchI < KPS_NUMBER_OF_PRINTER; cuchI++) {
-        if ((0 < auchManuAlt[cuchI]) && (auchManuAlt[cuchI] <= KPS_NUMBER_OF_PRINTER)) {
+        if (KPS_CHK_KPNUMBER(auchManuAlt[cuchI])) {
             /*if (0 != (uchKpsPrinterStatus & (0x01 << (UCHAR)(auchManuAlt[cuchI] - 1))) )*/
             if (_KpsIsEnable((SHORT)auchManuAlt[cuchI])) { /* ### MOD 2172 rel1.0 */
                 if (pKpsBuffer->auchRequestRecover[cuchI]) {
@@ -727,6 +741,7 @@ VOID  KpsPrintEditRecover(KPSBUFFER *pKpsBuffer)
                 /*if (uchKpsPrinterStatus & uchOpPrtNo)   * <> 0 */
                 if( _KpsIsEnable((SHORT)uchPrinterNo) ){ /* ### MOD 2172 Rel1.0 */
                     if (ParaMDCCheck(MDC_KPTR_ADR, ODD_MDC_BIT0)) { /* 1 = each item */
+                        ULONG	ulActualBytesRead;//RPH 11-10-3 SR# 201
                         for (;;) {
                             //RPH 11-10-3 SR# 201
 							KpsGetBuffFile(pKpsBuffer->ulReadPoint + KPS_PRINT_SEL,
@@ -798,10 +813,8 @@ VOID  KpsPrintEditRecover(KPSBUFFER *pKpsBuffer)
 *               Edit 1 transaction.
 *==========================================================================
 */
-SHORT   KpsTranEdit(UCHAR uchPrinterNo, KPSBUFFER *pBuffer, UCHAR uchPrinter,
-                    UCHAR *pauchDownPriter)
+static SHORT   KpsTranEdit(UCHAR uchPrinterNo, KPSBUFFER *pBuffer, UCHAR uchPrinter, UCHAR *pauchDownPriter)
 {
-	ULONG	 ulActualBytesRead;//RPH 11-10-3 SR# 201
     USHORT   uchIli;
     USHORT   uchPrinterSelection;
     SHORT    sStatus = KPS_PERFORM;
@@ -810,6 +823,7 @@ SHORT   KpsTranEdit(UCHAR uchPrinterNo, KPSBUFFER *pBuffer, UCHAR uchPrinter,
 
     KpsShrInit();
     while (pBuffer->ulReadPoint < pBuffer->ulWritePoint) {
+	    ULONG	 ulActualBytesRead;//RPH 11-10-3 SR# 201
         //RPH 11-10-3 SR# 201
 		KpsGetBuffFile(pBuffer->ulReadPoint,
                        &uchIli,
@@ -903,7 +917,7 @@ SHORT   KpsTranEdit(UCHAR uchPrinterNo, KPSBUFFER *pBuffer, UCHAR uchPrinter,
 */
 SHORT KpsItemEdit(UCHAR uchPrinterNo, KPSBUFFER *pBuffer, UCHAR uchPrinter, UCHAR *pauchDownPriter)
 {
-    SHORT  sStatus;
+    SHORT  sStatus = KPS_SUCCESS;
     UCHAR  uchFeed;
 
     /* check if during alternation printing */
@@ -932,13 +946,14 @@ SHORT KpsItemEdit(UCHAR uchPrinterNo, KPSBUFFER *pBuffer, UCHAR uchPrinter, UCHA
         }
     }
 
-    if(_KpsIsAlt(pBuffer->usOutPrinterInfo))
+    if (_KpsIsAlt(pBuffer->usOutPrinterInfo)) {
         sStatus = KpsAlt(uchPrinterNo, (UCHAR)(pBuffer->usOutPrinterInfo & 0x0ff));
 
-    if(sStatus == KPS_PRINT_ERROR){
-        /*uchKpsPrinterStatus &= ~(0x01 << (uchPrinterNo - 1));*/
-        _KpsSetPrinterSts(uchPrinterNo,FALSE);/* ### MOD 2172 Rel1.0 */
-        return(sStatus);
+        if(sStatus == KPS_PRINT_ERROR){
+            /*uchKpsPrinterStatus &= ~(0x01 << (uchPrinterNo - 1));*/
+            _KpsSetPrinterSts(uchPrinterNo,FALSE);/* ### MOD 2172 Rel1.0 */
+            return(sStatus);
+        }
     }
 
     if ((sStatus = KpsHeader(uchPrinterNo, pBuffer->hsKpsBuffFH, KPS_HEADER)) != KPS_PRINT_ERROR) {
@@ -958,7 +973,7 @@ SHORT KpsItemEdit(UCHAR uchPrinterNo, KPSBUFFER *pBuffer, UCHAR uchPrinter, UCHA
 *==========================================================================
 **    Synopsis:   SHORT KpsItemPrint(UCHAR uchPrinterNo,
 *                                    SHORT hsFileHandle,
-*                                    USHORT usReadPointer)
+*                                    ULONG ulReadPointer)
 *
 *       Input:    USHORT    uchPrinterNo            * Printer No to be printed by appl *
 *                 SHORT     hsFileHandle            * file handle *
@@ -974,9 +989,9 @@ SHORT KpsItemEdit(UCHAR uchPrinterNo, KPSBUFFER *pBuffer, UCHAR uchPrinter, UCHA
 *               Print 1 Item.
 *==========================================================================
 */
-SHORT KpsItemPrint(UCHAR uchPrinterNo, SHORT hsFileHandle, USHORT usReadPointer)
+static SHORT KpsItemPrint(UCHAR uchPrinterNo, SHORT hsFileHandle, ULONG ulReadPointer)
 {
-    TCHAR   *pBuffer;
+    TCHAR   * pBuffer = auchTmpBuff;
 	ULONG	ulActualBytesRead;//RPH 11-10-3 SR# 201
     USHORT  cuchCode;
     USHORT  uchData;
@@ -986,8 +1001,7 @@ SHORT KpsItemPrint(UCHAR uchPrinterNo, SHORT hsFileHandle, USHORT usReadPointer)
     /* get data from buffer file */
 
     //RPH 11-10-3 SR# 201
-	KpsGetBuffFile(usReadPointer, auchTmpBuff,
-                   sizeof(auchTmpBuff), hsFileHandle, &ulActualBytesRead);
+	KpsGetBuffFile(ulReadPointer, auchTmpBuff, sizeof(auchTmpBuff), hsFileHandle, &ulActualBytesRead);
 	{              
 		USHORT  usIli;         /* Ili */
 		usIli = auchTmpBuff[0];      /* SAVE ILI containing number of bytes to be printed */
@@ -998,7 +1012,6 @@ SHORT KpsItemPrint(UCHAR uchPrinterNo, SHORT hsFileHandle, USHORT usReadPointer)
         return(KPS_PERFORM);
     }
 
-    pBuffer = auchTmpBuff;         
     sIli -= 2;
     pBuffer++;              /* POINT TO PRINTER SELECTION */
     sIli -= 2;
@@ -1020,7 +1033,7 @@ SHORT KpsItemPrint(UCHAR uchPrinterNo, SHORT hsFileHandle, USHORT usReadPointer)
 
     /*********************** ADD R3.0 *********************/
     /* ### MOD Saratoga (042000) if (uchKpsPrinterType & (UCHAR)(0x01 << (uchPrinterNo - 1)))*/
-    if(_KpsIsEpson((SHORT)uchPrinterNo)){
+    if(_KpsIsEpson(uchPrinterNo)){
         auchKpsPrintBuffer[cuchCode-1] |= KPS_FONT_B;    /* Font B */
     }
     /*********************** End ADD R3.0 ******************/
@@ -1113,7 +1126,7 @@ SHORT KpsAlt(UCHAR uchPrinterNo, UCHAR uchPrinter)
 *==========================================================================
 **    Synopsis:   SHORT KpsHeader(UCHAR uchPrinterNo,
 *                                 SHORT hsFileHandle,
-*                                 USHORT ReadPointer)
+*                                 ULONG ulReadPointer)
 *
 *       Input:    USHORT    uchPrinterNo            * Printer No to be printed by appl *
 *                 SHORT     hsFileHandle            * file handle *
@@ -1129,7 +1142,7 @@ SHORT KpsAlt(UCHAR uchPrinterNo, UCHAR uchPrinter)
 *               Print Header.
 *==========================================================================
 */
-SHORT  KpsHeader(UCHAR uchPrinterNo, SHORT hsFileHandle, USHORT usReadPointer)
+static SHORT  KpsHeader(UCHAR uchPrinterNo, SHORT hsFileHandle, ULONG ulReadPointer)
 {
 	TCHAR	*tchOperator;
     TCHAR   *puchHeaderAddr;
@@ -1142,8 +1155,7 @@ SHORT  KpsHeader(UCHAR uchPrinterNo, SHORT hsFileHandle, USHORT usReadPointer)
 	KpsTransactionPrint(uchPrinterNo, KPS_TRANS_BGN);
 
     //RPH 11-10-3 SR# 201
-	KpsGetBuffFile(usReadPointer, auchTmpBuff,
-                   sizeof(auchTmpBuff), hsFileHandle, &ulActualBytesRead);
+	KpsGetBuffFile(ulReadPointer, auchTmpBuff, sizeof(auchTmpBuff), hsFileHandle, &ulActualBytesRead);
                    
     puchHeaderAddr = auchTmpBuff;
 
@@ -1200,7 +1212,7 @@ SHORT  KpsHeader(UCHAR uchPrinterNo, SHORT hsFileHandle, USHORT usReadPointer)
 *==========================================================================
 **    Synopsis:   SHORT KpsTrailer(UCHAR uchPrinterNo,
 *                                  SHORT hsFileHandle,
-*                                  USHORT ReadPointer)
+*                                  ULONG ulReadPointer)
 *
 *       Input:    USHORT    uchPrinterNo            * Printer No to be printed by appl *
 *                 SHORT     hsFileHandle            * file handle *
@@ -1216,13 +1228,13 @@ SHORT  KpsHeader(UCHAR uchPrinterNo, SHORT hsFileHandle, USHORT usReadPointer)
 *               Print Trailer.
 *==========================================================================
 */
-SHORT  KpsTrailer(UCHAR uchPrinterNo, SHORT hsFileHandle, USHORT usReadPointer)
+static SHORT  KpsTrailer(UCHAR uchPrinterNo, SHORT hsFileHandle, ULONG ulReadPointer)
 {
 	ULONG	ulActualBytesRead;//RPH 11-11-3 SR# 201
 
     /* get data from buffer file */
     //RPH 11-11-3 SR# 201
-	KpsGetBuffFile(usReadPointer, auchTmpBuff, sizeof(auchTmpBuff), hsFileHandle, &ulActualBytesRead);
+	KpsGetBuffFile(ulReadPointer, auchTmpBuff, sizeof(auchTmpBuff), hsFileHandle, &ulActualBytesRead);
     return Kps_Print(uchPrinterNo, KPS_ESC_BLACK, KPS_S_WIDE, auchTmpBuff, KPS_TRAILER_SIZE);
 }
 /*
@@ -1360,18 +1372,16 @@ SHORT KpsTransactionPrint(UCHAR uchPrinterNo, UCHAR uchType)
 */
 SHORT KpsVoidPrint(UCHAR uchPrinterNo)
 {
-	PARASPEMNEMO   Data = {0};
-    UCHAR          cuchData;
+    TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN + 1] = { 0 }; /* PARA_... defined in "paraequ.h" */
+    UCHAR  cuchData;
 
     /* SET VOID MODIFIER */
-    Data.uchMajorClass = CLASS_PARASPECIALMNEMO;
-    Data.uchAddress = SPC_VOID_ADR;
-    CliParaRead(&Data);
+    RflGetSpecMnem(aszSpecMnem, SPC_VOID_ADR);
     for (cuchData = 0; cuchData < PARA_SPEMNEMO_LEN; cuchData++ ) {
-		if (Data.aszMnemonics[cuchData] == 0) {
+		if (aszSpecMnem[cuchData] == 0) {
             break;
         }
-		auchKpsPrintBuffer[cuchData] = Data.aszMnemonics[cuchData];
+		auchKpsPrintBuffer[cuchData] = aszSpecMnem[cuchData];
     }
     return Kps_Print(uchPrinterNo, KPS_ESC_RED, KPS_W_WIDE, auchKpsPrintBuffer, cuchData);
 }
@@ -1392,19 +1402,18 @@ SHORT KpsVoidPrint(UCHAR uchPrinterNo)
 */
 VOID KpsMakeOutPutPrinter(KPSBUFFER *pKpsBuffer, UCHAR *puchPrinterStatus)
 {
-    USHORT  usRetLen, usOutputStatus = 0;
     UCHAR   auchManuAlt[KPS_NUMBER_OF_PRINTER];
     UCHAR   auchAutoAlt[KPS_NUMBER_OF_PRINTER];
     UCHAR   cuchI;
 
-    CliParaAllRead(CLASS_PARAMANUALTKITCH, auchManuAlt, KPS_NUMBER_OF_PRINTER, 0, &usRetLen);
-    CliParaAllRead(CLASS_PARAAUTOALTKITCH, auchAutoAlt, KPS_NUMBER_OF_PRINTER, 0, &usRetLen);
+    ParaManuAltKitchReadAll(auchManuAlt);
+    ParaAutoAltKitchReadAll(auchAutoAlt);
 
     /* Check Manual Alternation */
     /* *puchPrinterStatus = uchKpsPrinterStatus;*/
     *puchPrinterStatus = (UCHAR)_KpsPortSts2PrtSts(); /* clear output status table *//* ### MOD 2172 Rel1.0 */
     for (cuchI = 0; cuchI < KPS_NUMBER_OF_PRINTER; cuchI++) {
-        if ((0 < auchManuAlt[cuchI]) && (auchManuAlt[cuchI] < (KPS_NUMBER_OF_PRINTER + 1))) {
+        if (KPS_CHK_KPNUMBER(auchManuAlt[cuchI])) {
             /*if (0 == (uchKpsPrinterStatus & (0x01 << (UCHAR)(auchManuAlt[cuchI] - 1))) ) */
             if (!_KpsIsEnable((SHORT)auchManuAlt[cuchI]) ) { /* ### MOD 2172 Rel1.0 */
                 pKpsBuffer->auchOutputPrinter[cuchI] = 0;
@@ -1510,19 +1519,17 @@ SHORT Kps_Print(UCHAR uchPrinterNo, UCHAR uchColor, UCHAR uchChrtype, TCHAR *puc
 */
 VOID KpsAltCheck(UCHAR uchPrinterNo, KPSBUFFER *pKpsBuffer)
 {
-    USHORT  usRetLen;
-    UCHAR   auchAutoAlt[KPS_NUMBER_OF_PRINTER];
+    UCHAR   auchAutoAlt[KPS_NUMBER_OF_PRINTER] = { 0 };
 
-    CliParaAllRead(CLASS_PARAAUTOALTKITCH, auchAutoAlt, KPS_NUMBER_OF_PRINTER, 0, &usRetLen);
+    ParaAutoAltKitchReadAll(auchAutoAlt);
 
     /* --- determine manual alternation is specified --- */
     if (0x80 == (pKpsBuffer->auchOutputPrinter[uchPrinterNo] & 0xf0)) {
         /* --- execute manual alternation print --- */
         pKpsBuffer->auchRequestRecover[uchPrinterNo] = (UCHAR)(pKpsBuffer->auchOutputPrinter[uchPrinterNo]);
         pKpsBuffer->auchOutputPrinter[uchPrinterNo] = 0;
-
-    /* --- determine auto alternation is specified --- */
-    } else if ((0 < auchAutoAlt[uchPrinterNo]) && (auchAutoAlt[uchPrinterNo] <= KPS_NUMBER_OF_PRINTER)) {
+    } else if (KPS_CHK_KPNUMBER(auchAutoAlt[uchPrinterNo])) {
+        /* --- determine auto alternation is specified --- */
 
         /* --- Is now printing auto alternation print ? --- */
         if (pKpsBuffer->auchOutputPrinter[uchPrinterNo] == auchAutoAlt[uchPrinterNo]) {
@@ -1566,7 +1573,7 @@ VOID  KpsClearPrtError(VOID)
 	SHORT nPortCnt;
 
 	for (nPortCnt = 0; nPortCnt < KPS_NUMBER_OF_PRINTER; nPortCnt++) {
-		if (auchKpsDownPrinter[nPortCnt] & KPS_DOWN_PRINTER) 
+		if (auchKpsDownPrinter[nPortCnt] & (UCHAR)KPS_DOWN_PRINTER) 
 			return;
 	}
 
@@ -1778,7 +1785,7 @@ SHORT KpsPowerDownRecover(UCHAR uchReqPrinter)
     UCHAR   uchPortCnt;
     UCHAR   cuchCode;
     UCHAR   auchPrintBuffer[KPS_PRINT_BUFFER_SIZE*2];
-    UCHAR   auchPortStsVal[KPS_NUMBER_OF_PRINTER]; /* ### MOD 2172 Rel1.0 (auchPrinterNo) */
+    CHAR    auchPortStsVal[KPS_NUMBER_OF_PRINTER] = { 0 }; /* ### MOD 2172 Rel1.0 (auchPrinterNo) */
 
     if (KpsWaitPowerDown() != KPS_PERFORM) {
         return KPS_OPEND_ERROR;
@@ -2160,10 +2167,9 @@ SHORT  KpsWaitPowerDown(VOID)
 SHORT   KpsCheckAsMaster(VOID)
 {
     NBMESSAGE   NbInf;
-    SYSCONFIG CONST FAR  *pSysconfig;
+    SYSCONFIG CONST *pSysconfig = PifSysConfig();    /* get system configration */;
 
     NbReadAllMessage(&NbInf);
-    pSysconfig = PifSysConfig();                /* get system configration */
     if (CLI_TGT_MASTER == pSysconfig->auchLaddr[CLI_POS_UA]) {
         if (!(NbInf.fsSystemInf & NB_MTUPTODATE)) {
             return KPS_NOT_AS_MASTER;
@@ -2318,7 +2324,7 @@ SHORT   KpsCheckTime(DATE_TIME *pOld_Date_Time, DATE_TIME *pNow_Date_Time)
   Now returns Success/Error size of read is returned in pulActualBytesRead
 *==========================================================================
 */
-SHORT KpsGetBuffFile(ULONG ulOffset, VOID *pData,
+static SHORT KpsGetBuffFile(ULONG ulOffset, VOID *pData,
                       ULONG ulSize, SHORT hsFileHandle, ULONG *pulActualBytesRead)
 {
     ULONG   ulActPos;
@@ -2367,7 +2373,7 @@ SHORT KpsGetBuffFile(ULONG ulOffset, VOID *pData,
 *           Put data to Kps buffer file.
 *==========================================================================
 */
-VOID KpsPutBuffFile(ULONG ulOffset, VOID *pData,
+static VOID KpsPutBuffFile(ULONG ulOffset, VOID *pData,
                     USHORT usSize, SHORT hsFileHandle)
 {
     ULONG   ulActPos;
