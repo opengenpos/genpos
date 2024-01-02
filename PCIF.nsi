@@ -10,7 +10,7 @@ Name "OpenGenPOS PCIF 3rd Party Toolkit"
 #       See as well the copyright macro ALL_Q_COPYRIGHT.
 #       See as well macro for OutFile below containing installer file name.
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 2.4.0.002
+!define VERSION 2.4.0.003
 !define COMPANY NCR
 !define URL https://github.com/opengenpos
 
@@ -39,7 +39,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile PCIF_rel_02_04_00_002.exe
+OutFile PCIF_rel_02_04_00_003.exe
 InstallDir $PROGRAMFILES\NCR\NeighborhoodPOS\PCIF2.4
 CRCCheck force
 XPStyle on
@@ -51,7 +51,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "GENPOS PCIF Toolkit Installer"
-VIAddVersionKey LegalCopyright "Copyright (C) 2002-2022, Georgia Southern University"
+VIAddVersionKey LegalCopyright "Copyright (C) 2002-2023, Georgia Southern University"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 RequestExecutionLevel admin

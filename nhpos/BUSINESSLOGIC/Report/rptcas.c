@@ -2272,9 +2272,10 @@ SHORT  ItemGenerateAc21Report (UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile,
             RptCashierEdit(RptElementStream, uchMinorClass, &TtlCas);
 			fprintf (fpRptElementStreamFile, "</table>\n");
         }
-	}
+	    fprintf (fpRptElementStreamFile, "</body>\n</html>\n");
+        fflush(fpRptElementStreamFile);
+    }
 
-	fprintf (fpRptElementStreamFile, "</body>\n</html>\n");
 	fpRptElementStreamFile = NULL;
 
 	uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;

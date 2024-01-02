@@ -123,6 +123,11 @@ SHORT RptEODRead( UCHAR uchType )
    
 
 	fpFile = ItemOpenHistorialReportsFolderHtml (AC_EOD_RPT, CLASS_TTLSAVDAY, RPT_EOD_ADR, 0, 0, 0);
+    NHPOS_ASSERT_TEXT(fpFile != NULL, "**ERROR: RptEODRead() ItemOpenHistorialReportsFolderHtml() failed.");
+    if (!fpFile) {
+        return -1;
+    }
+
 	do {     // do once to allow break if an error is seen during processing.
 
 		sReturn = SUCCESS;

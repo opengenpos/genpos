@@ -183,6 +183,10 @@
 #define PLUTOTAL_DB_ERROR_MSDEDOWN		16389		//The HRESULT returns this value when the MSDE engine
 													//is not running on the terminal, I looked into the MSDN for 
 													// a better way to define this, but could not JHHJ
+                                                    //
+                                                    //NOTE: Also this error may indicate SQLite OBDC driver not installed
+                                                    //      if using the SQLIte PLU database functionality. This appears
+                                                    //      to be a general error meaning an OBDC driver error. RJC
 
 #if     (defined _WIN32_WCE || defined WIN32) && _MSC_VER >= 800
 #pragma pack(push, 8)

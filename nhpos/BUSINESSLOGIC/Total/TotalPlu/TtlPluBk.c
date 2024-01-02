@@ -49,6 +49,7 @@
 #include <para.h>
 #include <pararam.h>
 #include <csstbpar.h>
+#include <rfl.h>
 #include <regstrct.h>
 #include <transact.h>
 #include <ttl.h>
@@ -86,12 +87,9 @@ VOID	_InitBackUp(VOID){
 */
 SHORT   TtlReqBackEachPlu(const SHORT nClass){
 	SHORT			nTblID;
-    TTLBACKUP_REQ   RequestBuff;
-    TTLBACKUP_RES   ResponseBuff;
-    USHORT          usMaxLen;
+	TTLBACKUP_REQ   RequestBuff = { 0 };
+    TTLBACKUP_RES   ResponseBuff = { 0 };
     SHORT           sError = 0;
-	LONG			lTotalPluDataLen;
-	PARAFLEXMEM		paraFlexMem;	/* ### ADD (041100) */
 	ULONG			ulSts;
 
 	/* minor class ---> table id */
@@ -106,24 +104,16 @@ SHORT   TtlReqBackEachPlu(const SHORT nClass){
 	switch(nTblID){
     case	PLUTOTAL_ID_PTD_CUR:
 	case	PLUTOTAL_ID_PTD_SAV:
-	    paraFlexMem.uchMajorClass = CLASS_PARAFLEXMEM;
-	    paraFlexMem.uchAddress    = FLEX_PLU_ADR;       /* Dec/14/2000 */
-	    CliParaRead(&paraFlexMem);
-		if(paraFlexMem.uchPTDFlag == FALSE){
-			PluTotalDelFile(nTblID);	/* delete PTD(cur & sav) file */
+		if(RflGetPtdFlagByType(FLEX_PLU_ADR) == FALSE){
+			if (PluTotalDelFile(nTblID) != PLUTOTAL_SUCCESS) {	/* delete PTD(cur & sav) file */
+				NHPOS_NONASSERT_NOTE("==ACTION", "**ERROR: TtlReqBackEachPlu() delete PTD(cur & sav) file failed.");
+			}
 			return	TTL_SUCCESS;
 		}
 		break;
 	default:
 		break;
 	}
-
-	memset(&RequestBuff, 0,sizeof(TTLBACKUP_REQ));
-	memset(&ResponseBuff,0,sizeof(TTLBACKUP_RES));
-    RequestBuff.uchFileType = TTL_BAK_PLU;  /* What file ? */
-    RequestBuff.ulOffSet    = 0L;           /* start offset */
-    RequestBuff.usCount     = 0;            /* request counter */
-    RequestBuff.sFileSubType= nTblID;       /* FileSubType */
 
 	//This function creates a copy of the PLU database file for use with 
 	//synchronization. SR 725 JHHJ
@@ -136,11 +126,17 @@ SHORT   TtlReqBackEachPlu(const SHORT nClass){
 		NHPOS_ASSERT_TEXT((ulSts == TTL_SUCCESS), xBuff);
 	}
 
+    RequestBuff.uchFileType = TTL_BAK_PLU;  /* What file ? */
+    RequestBuff.ulOffSet    = 0L;           /* start offset */
+    RequestBuff.usCount     = 0;            /* request counter */
+    RequestBuff.sFileSubType= nTblID;       /* FileSubType */
+
 	do {
+		LONG			lTotalPluDataLen = 0;
+		USHORT          usMaxLen = sizeof(TTLBACKUP_RES);   /* buffer size maximum  REQUEST READ */
+
         RequestBuff.usCount ++;             /* counter increment */
-        usMaxLen = sizeof(TTLBACKUP_RES);   /* buffer size maximum */
-                                            /* REQUEST READ */
-        sError = SstReqBackUp(CLI_FCBAKTOTAL, (UCHAR *)&RequestBuff, sizeof(TTLBACKUP_REQ), (UCHAR *)&ResponseBuff, &usMaxLen);
+        sError = SstReqBackUp(CLI_FCBAKTOTAL, &RequestBuff, sizeof(TTLBACKUP_REQ), &ResponseBuff, &usMaxLen);
         if (TTL_SUCCESS == sError) {        /* reading success ? */
                                             /* handle exist ? */
             if (RequestBuff.usCount != ResponseBuff.F.usCount) {

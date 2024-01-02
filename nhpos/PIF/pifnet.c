@@ -2496,19 +2496,23 @@ static SHORT  PifGetClusterPrefix (TCHAR  *aszLocalName, TCHAR  *wszHostName, TC
     len = _tcslen(aszLocalName);
     for (i = 0; i < len; i++) {
         if (aszLocalName[i] == _T('-')) {
+            // found the suffix indicator now determine the terminal number
             break;
         }
     }
 
     if (i + 1 < len ) {
+        // if there is a suffix indicator and suffix then provide the terminal number
 		sRet = i;
 		_tcscpy (wszHostSuffix, aszLocalName + i + 2);
 		aszLocalName[i+1] = _T('\0');
 		_tcscpy(wszHostName, aszLocalName);
     }
 	else {
+        // if there is not a suffix indicator and suffix then assume suffix of 1, Master Terminal
 		_tcscpy (wszHostSuffix, _T("1"));
-		sRet = -1;
+        _tcscpy(wszHostName, aszLocalName);
+        sRet = -1;
 	}
 	return sRet;
 }
@@ -2568,10 +2572,26 @@ static SHORT PifGetDestHostAddress(UCHAR *puchDestAddr, UCHAR *puchSrcAddr)
 
 		PifGetLocalHostName(aszLocalName);
 		if (0 > PifGetClusterPrefix (aszLocalName, wszHostName, wszHostSuffix)) {
+            NHPOS_ASSERT_TEXT(0, "** ERROR - host name incorrect format. no suffix found. Forcing.");
 			PifLog(MODULE_PIF_NETOPEN, LOG_EVENT_PIFNET_BAD_NAME);
-			sRet = PIF_ERROR_NET_NOT_FOUND;
-			puchDestAddr[0] = INADDR_ANY;
-		}
+
+            // host does not have a suffix so is not in the form of HOST-nn where nn is the terminal number.
+            // we will assume this is supposed to be a single Master Terminal. check that the terminal
+            // requested is terminal 1. It may be terminal 2 and we want to provide an error in that case.
+            if (puchSrcAddr[3] != 1) {
+			    sRet = PIF_ERROR_NET_NOT_FOUND;
+			    puchDestAddr[0] = INADDR_ANY;
+            }
+            //
+            // WARNING: PC name may be stale if terminal is off and this function may fail.
+            if (puchSrcAddr[3] == 1 && 0 == PifGetHostAddrByName(wszHostName, puchDestAddr)) {
+                dwError = WSAGetLastError();
+                PifLog(MODULE_PIF_NETOPEN, LOG_EVENT_HOST_LOOKUP_FAIL);
+                PifLog(MODULE_ERROR_NO(MODULE_PIF_NETOPEN), (USHORT)dwError);
+                sRet = PIF_ERROR_NET_UNREACHABLE;
+                puchDestAddr[0] = INADDR_ANY;
+            }
+        }
 		else {
 			usSrc = (USHORT)puchSrcAddr[3];
 			if (usSrc/100) {

@@ -69,7 +69,17 @@ extern "C" {  /* Assume C declarations for C++ */
 #define EVS_DELETE              (3)
 
 #ifdef _DEBUG
+// lets make the default to not do any kind of a 
+// debugbreak() in the case of EVS events since enabling
+// this will result in multiple breaks happening from
+// within the window display source code.
+// Trust me, it's painful to do debugging with it
+// enabled.  Nov-02-2023  Richard Chambers
+#if 1
+#define EVS_DEBUG_NOP
+#else
 #define EVS_DEBUG_NOP          __debugbreak();   // replaced _asm {  nop   }; to allow ARM compiles for Windows on Arm
+#endif
 #endif
 /*
 *===========================================================================

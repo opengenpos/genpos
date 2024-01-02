@@ -139,7 +139,8 @@ SHORT   TtlPLUOpenDB(VOID){
 		switch(ulSts)
 		{
 		case PLUTOTAL_DB_ERROR_MSDEDOWN:
-			nSts = PLUTOTAL_DB_ERROR_MSDEDOWN;
+            NHPOS_ASSERT_TEXT(0, "**ERROR**: TtlPLUOpenDB() PLUTOTAL_DB_ERROR_MSDEDOWN - FAULT_ERROR_MSDE_OPEN_DB. SQL Server or SQLite ODBC driver.");
+            nSts = PLUTOTAL_DB_ERROR_MSDEDOWN;
 			break;
 		default:
 			nSts = TTL_FAIL;
@@ -312,7 +313,7 @@ SHORT  TtlPLUCreate(ULONG ulPLUNum, BOOL fPTD, UCHAR uchMethod){
 			switch(ulStatus)
 			{
 				case PLUTOTAL_DB_ERROR_MSDEDOWN:
-					NHPOS_ASSERT_TEXT(0, "**ERROR**: PluTotalOpen() PLUTOTAL_DB_ERROR_MSDEDOWN - FAULT_ERROR_MSDE_OPEN_DB");
+					NHPOS_ASSERT_TEXT(0, "**ERROR**: PluTotalOpen() PLUTOTAL_DB_ERROR_MSDEDOWN - FAULT_ERROR_MSDE_OPEN_DB. SQL Server or SQLite ODBC driver.");
 					goto TTLPLUCONNEC_ERR;
 				default:
 					goto TTLPLUCREATE_ERR;

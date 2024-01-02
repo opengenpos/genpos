@@ -5748,21 +5748,11 @@ UNINIRAM Para = {                 /* Uninitialize RAM */
     {   /* A/C 88 SET SALES PROMOTION MESSAGE */
 
     /* Addr. 1st Line */
-//    { 0x12, 'Y', 0x12, 'O', 0x12, 'U', 0x12, 'R', 0x12, ' ', 0x12, 'R',
-//      0x12, 'E', 0x12, 'C', 0x12, 'E', 0x12, 'I', 0x12, 'P', 0x12, 'T'},
-		{'~','Y','~','O','~','U','~','R','~',' ','~','R',
-		 '~','E','~','C','~','E','~','I','~','P','~','T'},
+		{'Y','O','U','R',' ','R','E','C','E','I','P','T'},
     /* Addr. 2st Line */
-//    { 0x12, ' ', 0x12, 'T', 0x12, 'H', 0x12, 'A', 0x12, 'N', 0x12, 'K',
-//      0x12, ' ', 0x12, ' ', 0x12, 'Y', 0x12, 'O', 0x12, 'U', 0x12, ' '},
-		{'~',' ','~','T','~','H','~','A','~','N','~','K',
-		 '~',' ','~',' ','~','Y','~','O','~','U','~',' '},
-
+		{' ','T','H','A','N','K',' ',' ','Y','O','U',' '},
     /* Addr. 3st Line */
-//    { 0x12, ' ', 0x12, 'N', 0x12, 'C', 0x12, 'R', 0x12, ' ', 0x12, ' ',
-//      0x12, 'S', 0x12, 'T', 0x12, 'O', 0x12, 'R', 0x12, 'E', 0x12, ' '}
-		{'~',' ','~','N','~','C','~','R','~',' ','~',' ',
-		 '~','S','~','T','~','O','~','R','~','E','~',' '}
+		{' ','N','C','R',' ',' ','S','T','O','R','E',' '}
     },
     {   /* A/C 89 SET CURRENCY CONVERSION RATE */
 		0L, 0L,
@@ -5899,7 +5889,7 @@ UNINIRAM Para = {                 /* Uninitialize RAM */
     {   /* A/C 130 PIG RULE TABLE */
 		0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L
     },
-    {   /* A/C 160 SET ORDER ENTRY PROMPT TABLE, 2172 */
+    {   /* A/C 160 SET ORDER ENTRY PROMPT TABLE, NCR2172, AC160 - Para.ParaOep[MAX_TABLE_NO][MAX_TABLE_ADDRESS] */
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -5951,15 +5941,17 @@ UNINIRAM Para = {                 /* Uninitialize RAM */
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     },
-    {   /* A/C 162 SET FLEXIBLE DRIVE THROUGH PARAMETER TABLE */
-		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
-		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
-		0,0,0,0
+    {   /* A/C 162 SET FLEXIBLE DRIVE THROUGH PARAMETER TABLE, AC162 - Para.ParaFlexDrive[MAX_FLEXDRIVE_SIZE] */
+        // AC 162 default for Store/Recall System type - two counter terminals, no drive thru terminals
+		0,0, 0,0,                                    // Delivery #1, #2  Payment #1, #2
+        0,12, 0,12, 0,12, 0,12, 0,12, 0,12,          // System Type, Terminal Type for terminals 1 through 6
+		0,0, 0,0, 0,0, 0,0, 0,0, 0,0,                // System Type, Terminal Type for terminals 7 through 12
+        0,0, 0,0, 0,0, 0,0                           // System Type, Terminal Type for terminals 13 through 16
     },
     {   /* A/C 133 SERVICE TIME PARAMETER */
 		0, 0
     },
-    {   /* A/C 154 LABOR COST VALUE */
+    {   /* A/C 154 LABOR COST VALUE, AC154 - Para.ParaLaborCost[MAX_LABORCOST_SIZE] */
 		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
 		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
 		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
@@ -5968,7 +5960,7 @@ UNINIRAM Para = {                 /* Uninitialize RAM */
 		0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
 		0,0,0,0
     },
-    {   /* A/C 137 BEVERAGE DISPENSER PARAMETER */
+    {   /* A/C 137 BEVERAGE DISPENSER PARAMETER, AC137 - Para.ParaDispPara[MAX_DISPPARA_SIZE] */
 		{ 0, 0}, { 0, 0}, { 0, 0}, { 0, 0},
 		{ 0, 0}, { 0, 0}, { 0, 0}, { 0, 0},
 		{ 0, 0}, { 0, 0}, { 0, 0}, { 0, 0},
