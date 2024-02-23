@@ -172,6 +172,7 @@ SHORT UifAC23EnterDataType(KEYMSG *pKeyMsg)
 							FILE    *fpFile = ItemOpenHistorialReportsFolderHtml (AC_REGFIN_READ_RPT, uchMinorClass, 0, 0, 0, 0);
 
 							if (fpFile) {
+								RptDescriptionSet(RptDescriptionCreate(AC_REGFIN_READ_RPT, uchMinorClass, RPT_ALL_READ, fpFile, RPTREGFIN_OUTPUT_HTML, RptElementStream));
 								ItemGenerateAc23Report(CLASS_TTLREGFIN, uchMinorClass, RPT_ALL_READ, fpFile, 0);
 								ItemCloseHistorialReportsFolder(fpFile);
 							}

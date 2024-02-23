@@ -50,7 +50,19 @@
 # historical reports folder is a folder where copies of reports created by some
 # actions are placed. this functionality is typically used with some type of
 # cloud storage client such as DropBox, Microsoft OneDrive, or Google Drive.
-# several output formats are available: csv (Comma Separated Values), report (text).
+#
+# web reports folder is a folder that can be separate from the historical reports
+# folder where copies of reports created by some actions are placed. this functionality
+# is typically used with web server to allow management reports to be generated and
+# viewed or printed using a web browser.
+#
+# several output formats are available:
+#  - csv (Comma Separated Values)
+#  - report (text)
+#  - html (web page)
+#  - xml (xml document)
+#  - json (JSON text)
+#  - hubwork (Hubworks compatible output)
 # the output may use the provisioned mnemonics or standard identifiers. these
 # are the identifiers for the various data fields such as transaction mnemonics.
 # directives processed by function ProcessXmlFileHistoricalFolder().
@@ -59,6 +71,11 @@
 #<output>csv</output>
 #<mnemonics>0</mnemonics>
 #</historicalfolder>
+#<webfolder>
+#<webreportsfolder>C:\OneDrive\GenPOS</webreportsfolder>
+#<output>html/output>
+#<mnemonics>0</mnemonics>
+#</webfolder>
 
 # directives that provide settings for bar code printing on receipts.
 <barcode>

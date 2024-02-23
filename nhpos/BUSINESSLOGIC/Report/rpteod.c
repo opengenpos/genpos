@@ -128,7 +128,9 @@ SHORT RptEODRead( UCHAR uchType )
         return -1;
     }
 
-	do {     // do once to allow break if an error is seen during processing.
+    RptDescriptionSet(RptDescriptionCreate(AC_EOD_RPT, CLASS_TTLSAVDAY, RPT_EOD_ADR, fpFile, RPTREGFIN_OUTPUT_HTML, RptElementStream));
+
+    do {     // do once to allow break if an error is seen during processing.
 
 		sReturn = SUCCESS;
 		/* Check to Execute Individual Financial Report */

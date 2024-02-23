@@ -1496,7 +1496,8 @@ typedef struct {
 	WCHAR   tcsTerminalIdKeyword[48];     // identification string keyword, Amtrak traintrip.ini keyword with value for terminal id
 	WCHAR   tcsReceiptPrinterInitString[48];  // initialization string used by some printers.  set in PARAMINI with initstring tag.  see ProcessXmlFileStartUpReceiptPrinterRules()
 	WCHAR   tcsReportsHistoricalFolder[256];  // folder to place historical reports. use with Microsoft OneDrive or Google Drive.
-	WCHAR   tcsReportsHistoricalType[8];      // type of file to create when generating historical reports..
+	WCHAR   tcsReportsHistoricalType[8];      // type of file to create when generating historical reports.
+    ULONG   ulReportsHistoricalMnemonics;     // flags for mnemonics options
 } SYSCONFIG;
 
 // following struct used by PIF_NET_GET_USER_INFO control function

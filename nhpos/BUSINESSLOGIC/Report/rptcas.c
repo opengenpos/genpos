@@ -407,7 +407,12 @@ SHORT RptCashierEdit(RptElementFunc RptElement, UCHAR uchMinorClass, TTLCASHIER 
         uchRptMldAbortStatus = (UCHAR)MldDispItem(&RptCashier, 0); /* display on LCD          */ 
         RptCashier.usPrintControl &= PRT_JOURNAL;            /* Reset Receipt print status so only goes to Electronic Journal if set */
     }
-    PrtPrintItem(NULL, &RptCashier);                                        /* Print */     
+    if (! RptCheckReportOnStream()) PrtPrintItem(NULL, &RptCashier);                                        /* Print */
+
+    if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+        fprintf(RptDescriptionGetStream(), "<h3>Operator %d: %S</h3>\n", RptCashier.ulCashierNumber, RptCashier.aszCashMnemo);
+        fprintf(RptDescriptionGetStream(), "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\n");
+    }
 
     RptFeed(RPT_DEFALTFEED);
 
@@ -1491,6 +1496,10 @@ SHORT RptCashierEdit(RptElementFunc RptElement, UCHAR uchMinorClass, TTLCASHIER 
                    (LONG)(pTtlCas->usPostRecCo), CLASS_RPTREGFIN_PRTNO, 0);
     }
                                                                       
+    if (fpRptElementStreamFile && RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+        fprintf(fpRptElementStreamFile, "</table>\n");
+    }
+    
     if (uchRptMldAbortStatus) {                         /* aborted by MLD */
         return (RPT_ABORTED);
     }
@@ -2216,6 +2225,10 @@ SHORT  ItemGenerateAc21Report (UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile,
             return( CasConvertError(sNo) );
         }
     }
+    else {
+        NHPOS_ASSERT_TEXT(0, "**ERROR: uchType invalid call to ItemGenerateAc21Report().");
+        return (CasConvertError(CAS_NOT_ALLOWED));
+    }
 
     uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
 
@@ -2223,16 +2236,7 @@ SHORT  ItemGenerateAc21Report (UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile,
 		fpRptElementStreamFile = fpFile;
 
 	if (fpRptElementStreamFile) {
-		SHORT   sCasNo;
-
-#if 0
-		fprintf (fpRptElementStreamFile, "<h3>From: %d/%d/%d %d:%d:%d</br>",TtlData.FromDate.usMonth, TtlData.FromDate.usMDay,
-			TtlData.FromDate.usYear + 2000, TtlData.FromDate.usHour, TtlData.FromDate.usMin);
-		fprintf (fpRptElementStreamFile, "To: %d/%d/%d %d:%d:%d</h2>\n",TtlData.ToDate.usMonth, TtlData.ToDate.usMDay,
-			TtlData.ToDate.usYear + 2000, TtlData.ToDate.usHour, TtlData.ToDate.usMin);
-#endif
-
-        for (sCasNo = 0; sCasNo < sNo; sCasNo++) {
+        for (SHORT sCasNo = 0; sCasNo < sNo; sCasNo++) {
 			TTLCASHIER  TtlCas = {0};                    /* Assign Register Financial Total Save Area */
 
             TtlCas.uchMajorClass = CLASS_TTLCASHIER;                            /* Set Major */
@@ -2267,16 +2271,9 @@ SHORT  ItemGenerateAc21Report (UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile,
                 // RptPrtError( TtlConvertError(sReturn));                  /* Print converted Error Code */
                 continue;
             }
-			fprintf (fpRptElementStreamFile, "<h3>Operator %d</h3>\n", TtlCas.ulCashierNumber);
-			fprintf (fpRptElementStreamFile, "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\n");
             RptCashierEdit(RptElementStream, uchMinorClass, &TtlCas);
-			fprintf (fpRptElementStreamFile, "</table>\n");
         }
-	    fprintf (fpRptElementStreamFile, "</body>\n</html>\n");
-        fflush(fpRptElementStreamFile);
     }
-
-	fpRptElementStreamFile = NULL;
 
 	uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;
 

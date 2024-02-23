@@ -1733,7 +1733,7 @@ static SHORT ProcessXmlFileStartUpProcessRules (ReadFileLineControl *pMyXmlFileC
 	return sRetStatus;
 }
 
-static SHORT ProcessXmlFileHistoricalFolder (ReadFileLineControl *pMyXmlFileControl, TCHAR *aszLine, USHORT usLineChars)
+static SHORT ProcessXmlFileReportsFolder(ReadFileLineControl * pMyXmlFileControl, TCHAR * endTag, TCHAR * dirTag, TCHAR * aszLine, USHORT usLineChars)
 {
 	SHORT        sRetStatus;
 	TCHAR        *ptcsToken = 0, *ptcsTokenEnd = 0;
@@ -1742,7 +1742,7 @@ static SHORT ProcessXmlFileHistoricalFolder (ReadFileLineControl *pMyXmlFileCont
 	sRetStatus = ReadAndProvideFileLine (pMyXmlFileControl, aszLine, usLineChars);
 	while (sRetStatus >= 0) {
 		if (aszLine[0] != _T('#')) {
-			if (_tcsstr (aszLine, _T("/historicalfolder")) != 0) {
+			if (_tcsstr (aszLine, endTag) != 0) {
 				break;
 			}
 
@@ -1754,7 +1754,7 @@ static SHORT ProcessXmlFileHistoricalFolder (ReadFileLineControl *pMyXmlFileCont
 
 			// Process directives for the historial folder which describes the path as well as what can be put there.
 			// The historical folder can be accessed with PifOpenFile (fn, "h");  which indicates FLHISFOLDER.
-			if ((ptcsToken = _tcsstr (aszLine, _T("<historicalreportsfolder>"))) != 0) {
+			if ((ptcsToken = _tcsstr (aszLine, dirTag)) != 0) {
 				ptcsToken = _tcschr (ptcsToken, _T('>'));
 				ptcsToken++;
 				ptcsTokenEnd = _tcschr (ptcsToken, _T('<'));
@@ -1772,8 +1772,20 @@ static SHORT ProcessXmlFileHistoricalFolder (ReadFileLineControl *pMyXmlFileCont
 				if (ptcsTokenEnd) {
 					*ptcsTokenEnd = 0;    // put an end of string indicator at end of the token.
 				}
+				tcharTrimLeading(ptcsToken);
+				tcharTrimRight(ptcsToken);
 				memset (pSysConfig->tcsReportsHistoricalType, 0, sizeof(pSysConfig->tcsReportsHistoricalType));
 				_tcsncpy (pSysConfig->tcsReportsHistoricalType, ptcsToken, TCHARSIZEOF(pSysConfig->tcsReportsHistoricalType) - 1);
+			} else if ((ptcsToken = _tcsstr(aszLine, _T("<mnemonics>"))) != 0) {
+				ULONG   ulMnemonicsType = 0;
+				ptcsToken = _tcschr(ptcsToken, _T('>'));
+				ptcsToken++;
+				ptcsTokenEnd = _tcschr(ptcsToken, _T('<'));
+				if (ptcsTokenEnd) {
+					*ptcsTokenEnd = 0;    // put an end of string indicator at end of the token.
+					ulMnemonicsType = _ttoi(ptcsToken);
+				}
+				pSysConfig->ulReportsHistoricalMnemonics = ulMnemonicsType;
 			}
 		}
 		sRetStatus = ReadAndProvideFileLine (pMyXmlFileControl, aszLine, usLineChars);
@@ -1781,6 +1793,22 @@ static SHORT ProcessXmlFileHistoricalFolder (ReadFileLineControl *pMyXmlFileCont
 
 	return sRetStatus;
 }
+
+static SHORT ProcessXmlFileHistoricalFolder(ReadFileLineControl* pMyXmlFileControl, TCHAR* aszLine, USHORT usLineChars)
+{
+	TCHAR* endTag = _T("</historicalfolder>");
+	TCHAR* dirTag = _T("<historicalreportsfolder>");
+
+	return ProcessXmlFileReportsFolder(pMyXmlFileControl, endTag, dirTag, aszLine, usLineChars);
+}
+
+static SHORT ProcessXmlFileWebFolder(ReadFileLineControl* pMyXmlFileControl, TCHAR* aszLine, USHORT usLineChars)
+{
+	TCHAR* endTag = _T("</webfolder>");
+	TCHAR* dirTag = _T("<webreportsfolder>");
+	return ProcessXmlFileReportsFolder(pMyXmlFileControl, endTag, dirTag, aszLine, usLineChars);
+}
+
 
 static SHORT ProcessXmlFileStartUpBarcodeRules (ReadFileLineControl *pMyXmlFileControl, TCHAR *aszLine, USHORT usLineChars)
 {
@@ -2298,6 +2326,8 @@ VOID THREADENTRY UifProcessIniFile (VOID)
 					ProcessXmlFileLoggingRules (&myXmlFileControl, aszLine, usLineChars);
 				} else if (_tcsstr (aszLine, _T("historicalfolder")) != 0) {
 					ProcessXmlFileHistoricalFolder (&myXmlFileControl, aszLine, usLineChars);
+				} else if (_tcsstr(aszLine, _T("webfolder")) != 0) {
+					ProcessXmlFileWebFolder(&myXmlFileControl, aszLine, usLineChars);
 				} else {
 					ProcessXmlFileStartUpSpecialDirectives (&myXmlFileControl, aszLine, usLineChars);
 				}

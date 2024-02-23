@@ -522,9 +522,11 @@ extern    UCHAR   uchRptOpeCount;
 #pragma pack()
 #endif
 
-
+// RPTREGFIN_OUTPUT_NONE in this enum must be 0 to allow initializing struct containing this enum
+// to zero to indicate no output type set.
 typedef enum { RPTREGFIN_OUTPUT_NONE = 0, RPTREGFIN_OUTPUT_CSV = 1, RPTREGFIN_OUTPUT_XML, RPTREGFIN_OUTPUT_HTML, RPTREGFIN_OUTPUT_HUBWORKS } RptElementOutputType;
 typedef VOID  (*RptElementFunc) ( USHORT uchTransAddr, TOTAL *pTtlData, D13DIGITS Amount13, DCURRENCY  lAmount, UCHAR uchMinor, UCHAR uchRate);
+typedef enum { RPTFLAGS_LOG_NONE = 0, RPTFLAGS_LOG_01 = 0x0001 } RptElementFlags;
 
 typedef struct {
 		UCHAR    uchMinor;      // minor class such as CLASS_RPTREGFIN_PRTTTLCNT used with RptElement()
@@ -539,11 +541,13 @@ typedef struct {
 
 typedef struct {
 	FILE     *fpOut;                    // the output stream to be used with stdio.h output
+    RptElementFlags     uFlags;         // flags and indicators of various states
 	RptElementFunc      pOutputFunc;    // pointer to the output function to use
 	RptElementOutput    rptDescrip;     // indicates the type of output such as XML, HTML, CSV, etc.
 	USHORT   usPGACNo;                  // indicates the Action Code such as AC99, AC23, etc.
 	UCHAR    uchMinorClass;             // indicates the type of totals such as CLASS_TTLSAVDAY
-//	UCHAR    uchType;                   // indicates the type of report such as RPT_EOD_ALLREAD
+	UCHAR    uchType;                   // indicates the type of report such as RPT_EOD_ALLREAD
+    UCHAR    uchUifACRptOnOffMldSave;   // save area for current uchUifACRptOnOffMld when created.
 } RptDescription;
 
 /*------------------------------------------------------------------------*\
@@ -563,14 +567,22 @@ typedef struct {
 
 extern  FILE *fpRptElementStreamFile;    // set before using RptElementStream()
 
-RptDescription RptDescriptionCreate (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile, RptElementOutputType tOutputType);
+RptDescription RptDescriptionCreate (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile, RptElementOutputType tOutputType, RptElementFunc pOutputFunc);
+RptDescription RptDescriptionCreateMini(FILE* fpFile, RptElementOutputType tOutputType, RptElementFunc pOutputFunc);
 RptDescription RptDescriptionSet (RptDescription  rptDescrip);
+RptElementFlags RptDescriptionSetFlag(RptElementFlags  uFlag);
+int RptDescriptionCheckFlag(RptElementFlags  uFlag);
+int RptDescriptionCheckType(RptElementOutputType tOutputType);
 RptDescription RptDescriptionGet (VOID);
+FILE* RptDescriptionGetStream(VOID);
 RptDescription RptDescriptionSwap (RptDescription  rptDescrip);
 RptDescription RptDescriptionClear (VOID);
+RptDescription RptDescriptionClose(VOID);
 
-FILE * ItemOpenHistorialReportsFolderHubworks (SHORT  iYear, SHORT  iMonth, SHORT  iDay);
-FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);
+FILE * ItemOpenHistorialReportsFolderHubworks (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);
+FILE* ItemOpenHistorialReportsFolderHtml(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);
+FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);
+FILE * ItemOpenHistorialReportsFolder(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);
 VOID   ItemCloseHistorialReportsFolder (FILE *fpFile);
 
 VOID    RptInitialize( VOID );
@@ -589,6 +601,7 @@ UCHAR   RptFCMDCChk(USHORT usMDC_Adr);      /* Saratoga */
 SHORT RptPauseCheck(VOID);
 SHORT RptPkeyCheck(KEYMSG *pData);
 SHORT RptCheckReportOnMld(VOID);
+SHORT RptCheckReportOnStream(VOID);
 
 SHORT RptTerminalConnectStatus(USHORT (*RptSampleConfigurationLine) (TCHAR *tsLineData));
 SHORT RptTerminalConfiguration(USHORT (*RptSampleConfigurationLine) (TCHAR *tsLineData));
