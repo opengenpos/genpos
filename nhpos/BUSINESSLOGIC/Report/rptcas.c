@@ -403,34 +403,36 @@ SHORT RptCashierEdit(RptElementFunc RptElement, UCHAR uchMinorClass, TTLCASHIER 
     RptCashier.ulCashierNumber = pTtlCas->ulCashierNumber;                  /* Set Cashier No */
     RptCashierGetName (RptCashier.aszCashMnemo, RptCashier.ulCashierNumber); /* Copy Mnemo */
     RptCashier.usPrintControl = usRptPrintStatus;                           /* Print Control Bit */
-    if (RptCheckReportOnMld()) {
-        uchRptMldAbortStatus = (UCHAR)MldDispItem(&RptCashier, 0); /* display on LCD          */ 
-        RptCashier.usPrintControl &= PRT_JOURNAL;            /* Reset Receipt print status so only goes to Electronic Journal if set */
-    }
-    if (! RptCheckReportOnStream()) PrtPrintItem(NULL, &RptCashier);                                        /* Print */
-
     if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
         fprintf(RptDescriptionGetStream(), "<h3>Operator %d: %S</h3>\n", RptCashier.ulCashierNumber, RptCashier.aszCashMnemo);
         fprintf(RptDescriptionGetStream(), "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\n");
     }
+    else {
+        if (RptCheckReportOnMld()) {
+            uchRptMldAbortStatus = (UCHAR)MldDispItem(&RptCashier, 0); /* display on LCD          */ 
+            RptCashier.usPrintControl &= PRT_JOURNAL;            /* Reset Receipt print status so only goes to Electronic Journal if set */
+        }
 
-    RptFeed(RPT_DEFALTFEED);
+        if (! RptCheckReportOnStream()) PrtPrintItem(NULL, &RptCashier);                                        /* Print */
+        RptFeed(RPT_DEFALTFEED);
 
-    /* V3.3 */
-	// Current Daily report or Current PTD report ?
-    if ((uchMinorClass == CLASS_TTLCURDAY) || (uchMinorClass == CLASS_TTLCURPTD))  {
-		TtlGetNdate (&pTtlCas->ToDate);
+        /* V3.3 */
+	    // Current Daily report or Current PTD report ?
+        if ((uchMinorClass == CLASS_TTLCURDAY) || (uchMinorClass == CLASS_TTLCURPTD))  {
+		    TtlGetNdate (&pTtlCas->ToDate);
+        }
+        RptPrtTime(TRN_PFROM_ADR, &pTtlCas->FromDate);                  /* PERIOD FROM     */
+        RptPrtTime(TRN_PTO_ADR, &pTtlCas->ToDate);                      /* PERIOD TO       */  
+        if (UieReadAbortKey() == UIE_ENABLE) {                          /* if Abort ?      */
+            return(RPT_ABORTED);
+        }                                                           
+        if(RptPauseCheck() == RPT_ABORTED){
+             return(RPT_ABORTED);
+        }
+
+        RptFeed(RPT_DEFALTFEED);                                        /* Feed            */                                                 
     }
-    RptPrtTime(TRN_PFROM_ADR, &pTtlCas->FromDate);                  /* PERIOD FROM     */
-    RptPrtTime(TRN_PTO_ADR, &pTtlCas->ToDate);                      /* PERIOD TO       */  
-    if (UieReadAbortKey() == UIE_ENABLE) {                          /* if Abort ?      */
-        return(RPT_ABORTED);
-    }                                                           
-    if(RptPauseCheck() == RPT_ABORTED){
-         return(RPT_ABORTED);
-    }
 
-    RptFeed(RPT_DEFALTFEED);                                        /* Feed            */                                                 
     lSubTotal = 0L;
     lSalesTotal = 0L;
     RptElement(TRN_DAIGGT_ADR, NULL, NULL13DIGITS,                  /* DAILY GROSS     */

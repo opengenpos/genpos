@@ -573,6 +573,7 @@ RptDescription RptDescriptionSet (RptDescription  rptDescrip);
 RptElementFlags RptDescriptionSetFlag(RptElementFlags  uFlag);
 int RptDescriptionCheckFlag(RptElementFlags  uFlag);
 int RptDescriptionCheckType(RptElementOutputType tOutputType);
+RptElementOutputType RptDescriptionGetType(void);
 RptDescription RptDescriptionGet (VOID);
 FILE* RptDescriptionGetStream(VOID);
 RptDescription RptDescriptionSwap (RptDescription  rptDescrip);
@@ -580,6 +581,7 @@ RptDescription RptDescriptionClear (VOID);
 RptDescription RptDescriptionClose(VOID);
 
 FILE * ItemOpenHistorialReportsFolderHubworks (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);
+FILE* ItemOpenHistorialReportsFolderXml(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);
 FILE* ItemOpenHistorialReportsFolderHtml(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);
 FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);
 FILE * ItemOpenHistorialReportsFolder(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay);

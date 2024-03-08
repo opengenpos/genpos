@@ -390,6 +390,11 @@ int RptDescriptionCheckType(RptElementOutputType tOutputType)
 	return (dataRptElementStream.rptDescrip.usType == tOutputType);
 }
 
+RptElementOutputType RptDescriptionGetType(void)
+{
+	return dataRptElementStream.rptDescrip.usType;
+}
+
 RptDescription RptDescriptionGet (VOID)
 {
 	return dataRptElementStream;
@@ -432,7 +437,6 @@ VOID RptElementStream (USHORT uchTransAddr, TOTAL *pTtlData,
                 D13DIGITS Amount13, DCURRENCY lAmount, 
                 UCHAR uchMinor, UCHAR uchBonusRate)
 {
-	USHORT     iLoop;
 	wchar_t    aszPrintLine[256] = {0};
 	wchar_t    aszTransMnemo[24] = {0};
 	RptDescription dataRptDescription = RptDescriptionGet();
@@ -695,6 +699,8 @@ VOID RptElementStandardXml (USHORT uchTransAddr, TOTAL *pTtlData,
 	}
 }
 
+// Hubworks output file is a special XML file whose format and tags is specified by
+// the Hubworks cloud point of sale ecosystem. See https://hubworks.com/
 FILE * ItemOpenHistorialReportsFolderHubworks (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
 {
 	CONST SYSCONFIG    *pSysConfig = PifSysConfig();       /* get system config */
@@ -713,6 +719,95 @@ FILE * ItemOpenHistorialReportsFolderHubworks (USHORT usPGACNo, UCHAR uchMinorCl
 	if (pFile) {
 		fpRptElementStreamFile = pFile;
 		uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+		fprintf(fpRptElementStreamFile, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
+		fprintf(fpRptElementStreamFile, "<HubWorks>\r\n<DailyKeys>\r\n");
+	}
+
+	return pFile;
+}
+
+static struct {
+	USHORT  usPGACNo;
+	char* nameFile;       // prefix for the output file name used for the various types of reports
+	char* nameTitle;      // name to use as part of the title.
+	char* nameReport;     // name to use for the xml identifier
+} ReportNameList[] = {
+	{ AC_CASH_READ_RPT, "ac21out_", "AC 21 Operator", "ac21report" },            // AC 21 Operator report file name and title.
+	{ AC_REGFIN_READ_RPT, "ac23out_", "AC 23 Financial", "ac23report"},          // AC 23 Financial report file name and title.
+	{ AC_HOURLY_READ_RPT, "ac24out_", "AC 24 Hourly Activity", "ac24report" },   // AC 24 Hourly Activity report file name and title.
+	{ AC_DEPTSALE_READ_RPT, "ac26out_", "AC 26 Department", "ac26report" },      // AC 26 Department report file name and title.
+	{ AC_PLUSALE_READ_RPT, "ac29out_", "AC 29 PLU Sales", "ac29report" },        // AC 29 PLU report file name and title.
+	{ AC_CPN_READ_RPT, "ac30out_", "AC 30 Coupon", "ac30report" },               // AC 30 Coupon report file name and title.
+	{ AC_EOD_RPT, "ac99out_", "AC 99 End of Day", "ac99report" },                // AC 99 End of Day report file name and title.
+	{ 0, "ac00out_", "AC 00" }                                // place holder or default file name and title.
+};
+
+static char* docPathRootWeb = "C:\\FlashDisk\\NCR\\Saratoga\\Web";
+
+
+FILE* ItemOpenHistorialReportsFolderXml(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
+{
+	CONST SYSCONFIG* pSysConfig = PifSysConfig();       /* get system config */
+	FILE* pFile = NULL;
+	SHORT  iLoop;
+	char   name[64] = { 0 };
+	char   pathBuffer[512] = { 0 };
+	char* docPathFormat = NULL;
+
+	switch (uchMinorClass) {
+	case CLASS_TTLCURDAY:
+		docPathFormat = "\\%sCurDaily_%4.4d%2.2d%2.2d.xml";
+		break;
+	case CLASS_TTLCURPTD:
+		docPathFormat = "\\%sCurPTD_%4.4d%2.2d%2.2d.xml";
+		break;
+	case CLASS_TTLSAVDAY:
+		docPathFormat = "\\%sSavedDaily_%4.4d%2.2d%2.2d.xml";
+		break;
+	case CLASS_TTLSAVPTD:
+		docPathFormat = "\\%sSavedPTD_%4.4d%2.2d%2.2d.xml";
+		break;
+	default:
+		{
+			sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderXml() - Bad uchMinorClass %d", uchMinorClass);
+			NHPOS_ASSERT_TEXT(0, pathBuffer)
+		}
+	return NULL;
+	break;
+	}
+
+	for (iLoop = 0; iLoop < sizeof(ReportNameList) / sizeof(ReportNameList[0]); iLoop++) {
+		if (ReportNameList[iLoop].usPGACNo == usPGACNo || ReportNameList[iLoop].usPGACNo == 0) {
+			break;
+		}
+	}
+
+	if (iLoop >= sizeof(ReportNameList) / sizeof(ReportNameList[0])) {
+		sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderHtml() - ReportNameList[] not found. Bad usPGACNo %d", usPGACNo);
+		NHPOS_ASSERT_TEXT(0, pathBuffer)
+			return NULL;
+	}
+
+	if (iYear == 0) {
+		DATE_TIME       DT;
+
+		PifGetDateTime(&DT);
+		iYear = DT.usYear;
+		iMonth = DT.usMonth;
+		iDay = DT.usMDay;
+	}
+
+	sprintf(name, docPathFormat, ReportNameList[iLoop].nameFile, iYear, iMonth, iDay);
+	if (strlen(pathBuffer) < 2) {
+		strcpy(pathBuffer, docPathRootWeb);
+	}
+	strcat(pathBuffer, name);
+
+	if (pFile) {
+		fpRptElementStreamFile = pFile;
+		uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+		fprintf(fpRptElementStreamFile, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
+		fprintf(fpRptElementStreamFile, "<%s>\r\n", ReportNameList[iLoop].nameReport);
 	}
 
 	return pFile;
@@ -730,20 +825,8 @@ FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass,
 	SHORT  iLoop;
 	char   name[64] = {0};
 	char   pathBuffer[512] = {0};
-	char   *docHeading = "<!DOCTYPE html>\n<html>\r\n<head>\r\n<title>AC 23 Financial Totals Report</title>\r\n</head>\r\n<body>\r\n";
-	char   *docPathFormat = "\\ac23out_%4.4d%2.2d%2.2d.html";
-	char   *docPathRoot = "C:\\FlashDisk\\NCR\\Saratoga\\Web";
-	struct {
-		USHORT  usPGACNo;
-		char    *nameFile;       // prefix for the output file name used for the various types of reports
-		char    *nameTitle;      // name to use as part of the title.
-	} ReportNameList[] = {
-		{ AC_REGFIN_READ_RPT, "ac23out_", "AC 23 Financial" },    // AC 23 Financial report file name and title.
-		{ AC_CASH_READ_RPT, "ac21out_", "AC 21 Operator" },       // AC 21 Operator report file name and title.
-		{ AC_EOD_RPT, "ac99out_", "AC 99 End of Day" },           // AC 99 End of Day report file name and title.
-		{ AC_DEPTSALE_READ_RPT, "ac26out_", "AC 26 Department" }, // AC 26 Department report file name and title.
-		{ 0, "ac00out_", "AC 00" }                                // place holder or default file name and title.
-	};
+	char   *docHeading = NULL;
+	char   *docPathFormat = NULL;
 
 	switch (uchMinorClass) {
 		case CLASS_TTLCURDAY:
@@ -775,15 +858,6 @@ FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass,
 		pathBuffer[iLoop] = pSysConfig->tcsReportsHistoricalFolder[iLoop];
 	}
 
-	if (iYear == 0) {
-		DATE_TIME       DT;
-
-		PifGetDateTime(&DT);
-		iYear = DT.usYear;
-		iMonth = DT.usMonth;
-		iDay = DT.usMDay;
-	}
-
 	for (iLoop = 0; iLoop < sizeof(ReportNameList)/sizeof(ReportNameList[0]); iLoop++) {
 		if (ReportNameList[iLoop].usPGACNo == usPGACNo || ReportNameList[iLoop].usPGACNo == 0) {
 			break;
@@ -796,9 +870,18 @@ FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass,
 		return NULL;
 	}
 
+	if (iYear == 0) {
+		DATE_TIME       DT;
+
+		PifGetDateTime(&DT);
+		iYear = DT.usYear;
+		iMonth = DT.usMonth;
+		iDay = DT.usMDay;
+	}
+
 	sprintf (name, docPathFormat, ReportNameList[iLoop].nameFile, iYear, iMonth, iDay);
 	if (strlen (pathBuffer) < 2) {
-		strcpy (pathBuffer, docPathRoot);
+		strcpy (pathBuffer, docPathRootWeb);
 	}
 	strcat (pathBuffer, name);
 	pFile = fopen (pathBuffer, "w+b");
@@ -830,19 +913,7 @@ FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UC
 	SHORT  iLoop;
 	char   name[64] = { 0 };
 	char   pathBuffer[512] = { 0 };
-	char* docPathFormat = "\\ac23out_%4.4d%2.2d%2.2d.csv";
-	char* docPathRoot = "C:\\FlashDisk\\NCR\\Saratoga\\Web";
-	struct {
-		USHORT  usPGACNo;
-		char* nameFile;       // prefix for the output file name used for the various types of reports
-		char* nameTitle;      // name to use as part of the title.
-	} ReportNameList[] = {
-		{ AC_REGFIN_READ_RPT, "ac23out_", "AC 23 Financial" },    // AC 23 Financial report file name and title.
-		{ AC_CASH_READ_RPT, "ac21out_", "AC 21 Operator" },       // AC 21 Operator report file name and title.
-		{ AC_EOD_RPT, "ac99out_", "AC 99 End of Day" },           // AC 99 End of Day report file name and title.
-		{ AC_DEPTSALE_READ_RPT, "ac26out_", "AC 26 Department" }, // AC 26 Department report file name and title.
-		{ 0, "ac00out_", "AC 00" }                                // place holder or default file name and title.
-	};
+	char* docPathFormat = NULL;
 
 	switch (uchMinorClass) {
 	case CLASS_TTLCURDAY:
@@ -893,7 +964,7 @@ FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UC
 
 	sprintf(name, docPathFormat, ReportNameList[iLoop].nameFile, iYear, iMonth, iDay);
 	if (strlen(pathBuffer) < 2) {
-		strcpy(pathBuffer, docPathRoot);
+		strcpy(pathBuffer, docPathRootWeb);
 	}
 	strcat(pathBuffer, name);
 	pFile = fopen(pathBuffer, "w+b");
@@ -913,19 +984,18 @@ FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UC
 FILE* ItemOpenHistorialReportsFolder(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
 {
 	CONST SYSCONFIG* pSysConfig = PifSysConfig();       /* get system config */
-	int   iStatus = 0;
+	FILE* fpFile = NULL;
 	TCHAR* reportTypes[] = {
 		L"",
 		L"csv",
 		L"html",
+		L"xml",
 		L"report",
 		L"hubwork"
 	};
 
 	for (int i = 0; i < sizeof(reportTypes)/sizeof(reportTypes[0]); i++) {
 		if (_tcsicmp(pSysConfig->tcsReportsHistoricalType, reportTypes[i]) == 0) {
-			FILE* fpFile = NULL;
-			iStatus = i;
 			switch (i) {
 			case 1:      // cvs type of output
 				fpFile = ItemOpenHistorialReportsFolderCsv(usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
@@ -941,9 +1011,16 @@ FILE* ItemOpenHistorialReportsFolder(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR
 				}
 				return fpFile;
 				break;
-			case 3:      // text report type of output
+			case 3:      // xml report type of output
+				fpFile = ItemOpenHistorialReportsFolderXml(usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
+				if (fpFile) {
+					RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, RPTREGFIN_OUTPUT_XML, RptElementStream));
+				}
+				return fpFile;
 				break;
-			case 4:      // Hubworks data file type of output
+			case 4:      // text report type of output
+				break;
+			case 5:      // Hubworks data file type of output
 				fpFile = ItemOpenHistorialReportsFolderHubworks(usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
 				if (fpFile) {
 					RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, RPTREGFIN_OUTPUT_HUBWORKS, RptElementStream));
@@ -957,15 +1034,34 @@ FILE* ItemOpenHistorialReportsFolder(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR
 		}
 	}
 
-	return iStatus;
+	return fpFile;
 }
 
 VOID ItemCloseHistorialReportsFolder (FILE *fpFile)
 {
-	if (fpRptElementStreamFile && RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
-		fprintf(fpRptElementStreamFile, "</body>\n</html>\n");
+	if (fpRptElementStreamFile) {
+		switch (RptDescriptionGetType()) {
+		case RPTREGFIN_OUTPUT_HTML:
+			fprintf(fpRptElementStreamFile, "</body>\n</html>\n");
+			break;
+		case RPTREGFIN_OUTPUT_HUBWORKS:
+			fprintf(fpRptElementStreamFile, "</DailyKeys>\r\n</HubWorks>\r\n");
+			break;
+		case RPTREGFIN_OUTPUT_XML:
+//			for (iLoop = 0; iLoop < sizeof(ReportNameList) / sizeof(ReportNameList[0]); iLoop++) {
+//				if (ReportNameList[iLoop].usPGACNo == usPGACNo || ReportNameList[iLoop].usPGACNo == 0) {
+//					break;
+//				}
+//			}
+
+			fprintf(fpRptElementStreamFile, "</ac23report>\r\n");
+			break;
+		default:
+			break;
+		}
 		fflush(fpRptElementStreamFile);
 	}
+
 	if (fpFile) {
 		fclose (fpFile);
 		fpRptElementStreamFile = NULL;
