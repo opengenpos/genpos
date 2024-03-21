@@ -74,7 +74,7 @@
 /*------------------------------------------------------------------------*\
 P P I   M a i n t e n a n c e
 \*------------------------------------------------------------------------*/
-static CONST TCHAR CONST aszMldAC71[][64] = {
+static CONST TCHAR  aszMldAC71[][64] = {
 	_T("....*....1....*....2....*....3....*....4"),
 	_T("\t%s %s"),
 	/*                            "\tQTY PRICE  ", */
@@ -82,7 +82,7 @@ static CONST TCHAR CONST aszMldAC71[][64] = {
 	_T("")
 };
 
-static CONST TCHAR CONST aszMldAC71_AddSettingsTitle[][64] = {
+static CONST TCHAR  aszMldAC71_AddSettingsTitle[][64] = {
 	_T("....*....1....*....2....*....3....*....4"),
 	_T(" %s \t%s"),
 	/*                            "\tQTY PRICE  ", */
@@ -90,7 +90,7 @@ static CONST TCHAR CONST aszMldAC71_AddSettingsTitle[][64] = {
 	_T("")
 };
 
-static CONST TCHAR CONST aszMldAC71_AddSettings[][64] = {
+static CONST TCHAR  aszMldAC71_AddSettings[][64] = {
 	_T("....*....1....*....2....*....3....*....4"),
 	_T("\t%s %s"),
 	/*                            "\tQTY PRICE  ", */
