@@ -1733,7 +1733,7 @@ static SHORT ProcessXmlFileStartUpProcessRules (ReadFileLineControl *pMyXmlFileC
 	return sRetStatus;
 }
 
-static SHORT ProcessXmlFileReportsFolder(ReadFileLineControl * pMyXmlFileControl, TCHAR * endTag, TCHAR * dirTag, TCHAR * aszLine, USHORT usLineChars)
+static SHORT ProcessXmlFileReportsFolder(ReadFileLineControl * pMyXmlFileControl, TCHAR * endTag, TCHAR * aszLine, USHORT usLineChars)
 {
 	SHORT        sRetStatus;
 	TCHAR        *ptcsToken = 0, *ptcsTokenEnd = 0;
@@ -1754,7 +1754,7 @@ static SHORT ProcessXmlFileReportsFolder(ReadFileLineControl * pMyXmlFileControl
 
 			// Process directives for the historial folder which describes the path as well as what can be put there.
 			// The historical folder can be accessed with PifOpenFile (fn, "h");  which indicates FLHISFOLDER.
-			if ((ptcsToken = _tcsstr (aszLine, dirTag)) != 0) {
+			if ((ptcsToken = _tcsstr (aszLine, _T("<folder>"))) != 0) {
 				ptcsToken = _tcschr (ptcsToken, _T('>'));
 				ptcsToken++;
 				ptcsTokenEnd = _tcschr (ptcsToken, _T('<'));
@@ -1797,16 +1797,19 @@ static SHORT ProcessXmlFileReportsFolder(ReadFileLineControl * pMyXmlFileControl
 static SHORT ProcessXmlFileHistoricalFolder(ReadFileLineControl* pMyXmlFileControl, TCHAR* aszLine, USHORT usLineChars)
 {
 	TCHAR* endTag = _T("</historicalfolder>");
-	TCHAR* dirTag = _T("<historicalreportsfolder>");
-
-	return ProcessXmlFileReportsFolder(pMyXmlFileControl, endTag, dirTag, aszLine, usLineChars);
+	return ProcessXmlFileReportsFolder(pMyXmlFileControl, endTag, aszLine, usLineChars);
 }
 
 static SHORT ProcessXmlFileWebFolder(ReadFileLineControl* pMyXmlFileControl, TCHAR* aszLine, USHORT usLineChars)
 {
 	TCHAR* endTag = _T("</webfolder>");
-	TCHAR* dirTag = _T("<webreportsfolder>");
-	return ProcessXmlFileReportsFolder(pMyXmlFileControl, endTag, dirTag, aszLine, usLineChars);
+	return ProcessXmlFileReportsFolder(pMyXmlFileControl, endTag, aszLine, usLineChars);
+}
+
+static SHORT ProcessXmlFilePrintFolder(ReadFileLineControl* pMyXmlFileControl, TCHAR* aszLine, USHORT usLineChars)
+{
+	TCHAR* endTag = _T("</printfolder>");
+	return ProcessXmlFileReportsFolder(pMyXmlFileControl, endTag, aszLine, usLineChars);
 }
 
 
@@ -2328,6 +2331,8 @@ VOID THREADENTRY UifProcessIniFile (VOID)
 					ProcessXmlFileHistoricalFolder (&myXmlFileControl, aszLine, usLineChars);
 				} else if (_tcsstr(aszLine, _T("webfolder")) != 0) {
 					ProcessXmlFileWebFolder(&myXmlFileControl, aszLine, usLineChars);
+				} else if (_tcsstr(aszLine, _T("printfolder")) != 0) {
+					ProcessXmlFilePrintFolder(&myXmlFileControl, aszLine, usLineChars);
 				} else {
 					ProcessXmlFileStartUpSpecialDirectives (&myXmlFileControl, aszLine, usLineChars);
 				}

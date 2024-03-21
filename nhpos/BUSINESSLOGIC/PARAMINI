@@ -12,6 +12,7 @@
 # 07/28/2016  R. Chambers added mercurypaymenttest flag in customersettings section for Mercury Payments testing
 # 10/25/2016  R. Chambers added historicalfolder section for Supervisor Reports to special folder.
 # 08/01/2017  R. Chambers added notallowpartialauth flag in customersettings section disable allowing Partial Authorization for EPT
+# 03/21/2024  R. Chambers enhanced historical reports folder area to allow multiple report formats to different folder destinations. 
 
 # Specify a delay in seconds before processing will start.
 # Default delay is 5 seconds.
@@ -62,20 +63,25 @@
 #  - html (web page)
 #  - xml (xml document)
 #  - json (JSON text)
-#  - hubwork (Hubworks compatible output)
+#  - hubwork (Hubworks upload compatible output)
 # the output may use the provisioned mnemonics or standard identifiers. these
 # are the identifiers for the various data fields such as transaction mnemonics.
 # directives processed by function ProcessXmlFileHistoricalFolder().
 #<historicalfolder>
-#<historicalreportsfolder>C:\OneDrive\GenPOS</historicalreportsfolder>
-#<output>csv</output>
+#<folder>C:\OneDrive\GenPOS</folder>
+#<output>xml</output>
 #<mnemonics>0</mnemonics>
 #</historicalfolder>
 #<webfolder>
-#<webreportsfolder>C:\OneDrive\GenPOS</webreportsfolder>
-#<output>html/output>
+#<folder>C:\OneDrive\GenPOS</folder>
+#<output>html</output>
 #<mnemonics>0</mnemonics>
 #</webfolder>
+#<printfolder>
+#<folder>C:\OneDrive\GenPOS</folder>
+#<output>report</output>
+#<mnemonics>0</mnemonics>
+#</printfolder>
 
 # directives that provide settings for bar code printing on receipts.
 <barcode>
