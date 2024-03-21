@@ -423,11 +423,11 @@ RptDescription RptDescriptionClear (VOID)
 
 RptDescription RptDescriptionClose(VOID)
 {
-	RptDescription    rptDescriptionNull = { 0 };
-
 	if (dataRptElementStream.fpOut) {
 		fclose(dataRptElementStream.fpOut);
 	}
+
+	uchUifACRptOnOffMld = dataRptElementStream.uchUifACRptOnOffMldSave;  // restore the AC Report MLD output state
 
 	return RptDescriptionClear();
 }
@@ -738,6 +738,7 @@ static struct {
 	{ AC_DEPTSALE_READ_RPT, "ac26out_", "AC 26 Department", "ac26report" },      // AC 26 Department report file name and title.
 	{ AC_PLUSALE_READ_RPT, "ac29out_", "AC 29 PLU Sales", "ac29report" },        // AC 29 PLU report file name and title.
 	{ AC_CPN_READ_RPT, "ac30out_", "AC 30 Coupon", "ac30report" },               // AC 30 Coupon report file name and title.
+	{ AC_MAJDEPT_RPT, "ac122out_", "AC 122 Major Department", "ac122report" },   // AC 122 Major Department report file name and title.
 	{ AC_EOD_RPT, "ac99out_", "AC 99 End of Day", "ac99report" },                // AC 99 End of Day report file name and title.
 	{ 0, "ac00out_", "AC 00" }                                // place holder or default file name and title.
 };

@@ -254,23 +254,17 @@ SHORT  RptCpnIndProc(UCHAR uchMinorClass, USHORT usCpnNumber, UCHAR uchType)
 SHORT  RptCpnAllProc(UCHAR uchMinorClass, UCHAR uchType)
 {    
     SHORT    sReturn;
-    CPNIF    CpnIf;
-    RPTCPN   RptCpn;
-    TTLCPN   TtlCpn;
-    PARAFLEXMEM      FlexMem;
+    CPNIF    CpnIf = { 0 };
+    RPTCPN   RptCpn = { 0 };
+    TTLCPN   TtlCpn = { 0 };
+    USHORT   usCpnNumberMax = RflGetMaxRecordNumberByType(FLEX_CPN_ADR);
     USHORT   usCpnNumber;
 
     if (uchRptMldAbortStatus) {                         /* aborted by MLD */
         return (RPT_ABORTED);
     }
-    FlexMem.uchMajorClass = CLASS_PARAFLEXMEM;                          /* Set Major for # of Record */
-    FlexMem.uchAddress = FLEX_CPN_ADR;                                 /* Set Address for # of Record */
-    CliParaRead(&FlexMem);                                              /* Get # of Record */
 
-    memset(&RptCpn, 0, sizeof(RptCpn));
-    TtlCpn.uchMajorClass = CLASS_TTLCPN;            /* Set Major Class for TtlCpn */
     RptCpn.uchMajorClass = CLASS_RPTCPN;            /* Coupon Report Set */
-    TtlCpn.uchMinorClass = uchMinorClass;           /* Set Minor Class for TtlCpn */
     RptCpn.uchMinorClass = CLASS_RPTCPN_ITEM;       /* Coupon Report Set */
     RptFeed(RPT_DEFALTFEED);                        /* Line Feed           */
     if(RptPauseCheck() == RPT_ABORTED){
@@ -294,7 +288,9 @@ SHORT  RptCpnAllProc(UCHAR uchMinorClass, UCHAR uchType)
     }    
     usRptPrintStatus = RptCpn.usPrintControl;
 
-    for (usCpnNumber = 1; usCpnNumber <= FlexMem.ulRecordNumber; usCpnNumber++){  /* Saratoga */
+    TtlCpn.uchMajorClass = CLASS_TTLCPN;            /* Set Major Class for TtlCpn */
+    TtlCpn.uchMinorClass = uchMinorClass;           /* Set Minor Class for TtlCpn */
+    for (usCpnNumber = 1; usCpnNumber <= usCpnNumberMax; usCpnNumber++){  /* Saratoga */
         TtlCpn.usCpnNumber = usCpnNumber;                              /* Set Cpn No for TtlCpn     */
         if ((sReturn = SerTtlTotalRead(&TtlCpn)) != TTL_SUCCESS) {         /* Call Func for Total data    */
             return(TtlConvertError(sReturn));                               /* Return Error */
@@ -346,6 +342,89 @@ SHORT  RptCpnAllProc(UCHAR uchMinorClass, UCHAR uchType)
     }
     return(SUCCESS);
 }                                                                        
+
+SHORT  ItemGenerateAc30Report(UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR uchType, FILE* fpFile)
+{
+    static const TCHAR  auchPrtThrmSupCPNFile1[] = _T("  %4d   %-12s   %12ld   %12l$\r\n");
+
+    SHORT       sReturn;
+    UCHAR       uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
+
+    uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+
+    if (fpFile)
+        fpRptElementStreamFile = fpFile;
+
+    if (fpRptElementStreamFile) {
+        CPNIF    CpnIf = { 0 };
+        RPTCPN   RptCpn = { 0 };
+        TTLCPN   TtlCpn = { 0 };
+        USHORT   usCpnNumberMax = RflGetMaxRecordNumberByType(FLEX_CPN_ADR);
+        USHORT   usCpnNumber;
+        TCHAR  aszRepoNumb[8 + 1] = { 0 };
+        TCHAR  aszBuffer[128] = { 0 };
+#if 0
+        if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+            switch (pTtlData->uchMinorClass) {
+            case CLASS_TTLCURDAY:
+                fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Current Daily Totals Terminal %d</h2>\n", pTtlData->usTerminalNumber);
+                break;
+            case CLASS_TTLCURPTD:
+                fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Current Period To Day Totals Terminal %d</h2>\n", pTtlData->usTerminalNumber);
+                break;
+            case CLASS_TTLSAVDAY:
+                fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Saved Daily Totals Terminal %d</h2>\n", pTtlData->usTerminalNumber);
+                break;
+            case CLASS_TTLSAVPTD:
+                fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Saved Period To Day Totals Terminal %d</h2>\n", pTtlData->usTerminalNumber);
+                break;
+            }
+
+            fprintf(fpRptElementStreamFile, "<h3>From: %d/%d %d:%d:%d</br>", pTtlData->FromDate.usMonth, pTtlData->FromDate.usMDay,
+                pTtlData->FromDate.usHour, pTtlData->FromDate.usMin, 0);
+            fprintf(fpRptElementStreamFile, "To: %d/%d %d:%d:%d</h3>\r\n", pTtlData->ToDate.usMonth, pTtlData->ToDate.usMDay,
+                pTtlData->ToDate.usHour, pTtlData->ToDate.usMin, 0);
+
+            fprintf(fpRptElementStreamFile, "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\r\n");
+        }
+#endif
+
+        TtlCpn.uchMajorClass = CLASS_TTLCPN;            /* Set Major Class for TtlCpn */
+        TtlCpn.uchMinorClass = uchMinorClass;           /* Set Minor Class for TtlCpn */
+        RptCpn.uchMajorClass = CLASS_RPTCPN;            /* Coupon Report Set */
+        RptCpn.uchMinorClass = CLASS_RPTCPN_ITEM;       /* Coupon Report Set */
+        for (usCpnNumber = 1; usCpnNumber <= usCpnNumberMax; usCpnNumber++) {  /* Saratoga */
+            TtlCpn.usCpnNumber = usCpnNumber;                              /* Set Cpn No for TtlCpn     */
+            if ((sReturn = SerTtlTotalRead(&TtlCpn)) != TTL_SUCCESS) {         /* Call Func for Total data    */
+                return(TtlConvertError(sReturn));                               /* Return Error */
+            }
+            if (((TtlCpn.CpnTotal.lAmount == 0) && (TtlCpn.CpnTotal.sCounter == 0)) &&
+                (CliParaMDCCheck(MDC_COUPON_ADR, EVEN_MDC_BIT0))) {    /* Not Print out ?      */
+                continue;   /* next Coupon Number */
+            }
+            gTotalCpn.lAmount += TtlCpn.CpnTotal.lAmount;   /* Total Amount Culc */
+            gTotalCpn.lCounter += TtlCpn.CpnTotal.sCounter; /* Total Counter Culc */
+            RptCpn.usCpnNumber = usCpnNumber;             /* Coupon Number Set */
+            RptCpn.CpnTotal.lAmount = TtlCpn.CpnTotal.lAmount;       /* Amount Set */
+            RptCpn.CpnTotal.lCounter = (LONG)TtlCpn.CpnTotal.sCounter;     /* Counter Set */
+
+            CpnIf.uchCpnNo = usCpnNumber;                  /* Coupon Number Set */
+            CliOpCpnIndRead(&CpnIf, 0);                     /* Mnemonic Get */
+            _tcsncpy(RptCpn.aszMnemo, CpnIf.ParaCpn.aszCouponMnem, PARA_CPN_LEN); /* Copy Mnemonics    */
+
+            RflSPrintf(aszBuffer, TCHARSIZEOF(aszBuffer), auchPrtThrmSupCPNFile1, RptCpn.usCpnNumber, RptCpn.aszMnemo, RptCpn.CpnTotal.lCounter, RptCpn.CpnTotal.lAmount);
+            fprintf(fpRptElementStreamFile, "%S", aszBuffer);
+
+            RptFeed(RPT_DEFALTFEED);                                            /* Line Feed           */
+        }
+
+        RptCpnGrandTtlPrt(&gTotalCpn, uchType);    /* Total Print */
+    }
+
+    uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;
+
+    return SUCCESS;
+}
 
 /*
 *===========================================================================

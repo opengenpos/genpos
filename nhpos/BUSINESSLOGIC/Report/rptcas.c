@@ -2209,7 +2209,7 @@ SHORT RptRegCasVAT(TTLCASHIER *pTtlData)
 }
 
 
-SHORT  ItemGenerateAc21Report (UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile, ULONG ulCashierNo)
+SHORT  ItemGenerateAc21Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile, ULONG ulCashierNo)
 {
 	SHORT       sReturn;
 	SHORT       sNo;

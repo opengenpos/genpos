@@ -158,6 +158,19 @@ SHORT UifAC122EnterDataType(KEYMSG *pKeyMsg)
                     return(LDT_KEYOVER_ADR);                            /* Return Wrong Data Error */
                 }
                 if (pKeyMsg->SEL.INPUT.lData == RPT_TYPE_DALY) {        /* Daily Function Case */
+#if 0
+                    // save the currently selected display/print option, generate an html version
+                    // of the report and then restore the user selected display/print option to
+                    // generate the report to the user selected device.
+                    UCHAR   uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
+                    FILE* fpFile = ItemOpenHistorialReportsFolder(AC_MAJDEPT_RPT, CLASS_TTLCURDAY, RPT_ALL_MDEPT_READ, 0, 0, 0);
+
+                    if (fpFile) {
+                        ItemGenerateAc122Report(CLASS_TTLDEPT, CLASS_TTLCURDAY, RPT_ALL_MDEPT_READ, fpFile, 0);
+                        ItemCloseHistorialReportsFolder(fpFile);
+                    }
+                    uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;
+#endif
                     sError = RptDEPTRead(CLASS_TTLCURDAY, RPT_ALL_MDEPT_READ, 0);
                 } else {                                                /* PTD Function Case */
                     sError = RptDEPTRead(CLASS_TTLCURPTD, RPT_ALL_MDEPT_READ, 0);

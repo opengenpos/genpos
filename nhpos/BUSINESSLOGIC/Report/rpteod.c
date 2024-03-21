@@ -187,7 +187,7 @@ SHORT RptEODRead( UCHAR uchType )
 		if ((!CliParaMDCCheck(MDC_EOD2_ADR, EVEN_MDC_BIT0)) &&          /* Execute Cashier Report */
 			(RptEODChkFileExist(FLEX_CAS_ADR) == RPT_FILE_EXIST)) {     /* File Exist */
 			RptInitialize();                                            /* Clear Report Work */
-			ItemGenerateAc21Report (CLASS_TTLSAVDAY, RPT_EOD_ALLREAD, fpFile, 0);
+			ItemGenerateAc21Report (CLASS_TTLCASHIER, CLASS_TTLSAVDAY, RPT_EOD_ALLREAD, fpFile, 0);
 			if ((sReturn = RptCashierRead(CLASS_TTLSAVDAY, RPT_EOD_ALLREAD, 0, 0)) == RPT_ABORTED) {  /* Aborted by User */
 				break;
 			}

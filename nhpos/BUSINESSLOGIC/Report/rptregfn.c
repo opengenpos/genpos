@@ -2098,7 +2098,6 @@ SHORT  ItemGenerateAc23Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
 		fpRptElementStreamFile = fpFile;
 
 	if (fpRptElementStreamFile) {
-#if 1
 		for ( ; usStartTerminalNo <= usEndTerminalNo; usStartTerminalNo++) {
 			/* Get Register Financial Total, either CLASS_TTLINDFIN or CLASS_TTLREGFIN */
 			TtlData.uchMajorClass = uchMajorClass;                /* Set Major Data Class */
@@ -2111,21 +2110,6 @@ SHORT  ItemGenerateAc23Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
 
  			sReturn = RptRegFinEdit(RptElementStream, &TtlData, 0, uchMinorClass);
 		}
-#else
-#if 0
-		fprintf (fpRptElementStreamFile, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
-		fprintf (fpRptElementStreamFile, "<HubWorks>\r\n<DailyKeys>\r\n");
-
-		sReturn = RptRegFinEdit(RptElementHubworks, &TtlData, 0, uchMinorClass);
-		fprintf (fpRptElementStreamFile, "</DailyKeys>\r\n</HubWorks>\r\n");
-#else
-		fprintf (fpRptElementStreamFile, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
-		fprintf (fpRptElementStreamFile, "<ac23report>\r\n");
-
-		sReturn = RptRegFinEdit(RptElementStandardXml, &TtlData, 0, uchMinorClass);
-		fprintf (fpRptElementStreamFile, "</ac23report>\r\n");
-#endif
-#endif
 	}
 
 	uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;

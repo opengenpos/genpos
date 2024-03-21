@@ -121,7 +121,7 @@ static int BuiltInDataQueryAc23Report (UCHAR uchMinorClass, TCHAR *tcBuffer, Dat
 
 
 		fpFile = fopen ("C:\\FlashDisk\\NCR\\Saratoga\\ac23out.html", "w+b");
-		ItemGenerateAc23Report (/* CLASS_TTLREGFIN */ 190, uchMinorClass, /* RPT_ALL_READ */ 1, fpFile, 0);
+		ItemGenerateAc23Report (CLASS_TTLREGFIN, uchMinorClass, RPT_ALL_READ, fpFile, 0);
 		pDataQueryObject->fpFile = fpFile;
 
 		if (pDataQueryObject->sContentType == BL_DATAQUERY_CONTENT_XML) {
@@ -168,7 +168,7 @@ static int BuiltInDataQueryAc21Report (UCHAR uchMinorClass, TCHAR *tcBuffer, Dat
 
 		// open the file for 
 		fpFile = fopen ("C:\\FlashDisk\\NCR\\Saratoga\\ac21out.html", "w+b");
-		ItemGenerateAc21Report (uchMinorClass, /* RPT_ALL_READ */ 1, fpFile, 0L);
+		ItemGenerateAc21Report (CLASS_TTLCASHIER, uchMinorClass, RPT_ALL_READ, fpFile, 0L);
 		pDataQueryObject->fpFile = fpFile;
 
 		if (pDataQueryObject->sContentType == BL_DATAQUERY_CONTENT_XML) {

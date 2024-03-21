@@ -715,7 +715,7 @@ VOID    RptCashierUnLock(UCHAR uchType, ULONG ulCashierNumber);
 SHORT	RptRegCasVAT(TTLCASHIER *pTtlData);
 SHORT   RptChkCashierNo( DCURRENCY ulCashierNumber );
 
-SHORT  ItemGenerateAc21Report (UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile, ULONG ulCashierNo);
+SHORT  ItemGenerateAc21Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile, ULONG ulCashierNo);
 
 /***** GUEST CHECK FILE REPORT *****/
 
@@ -806,6 +806,8 @@ VOID   RptCpnGrandTtlPrt(LTOTAL *pTotal, UCHAR uchType);
 SHORT  RptCpnReset(UCHAR uchMinorClass, UCHAR uchType);
 SHORT RptCpnLock(VOID);
 VOID  RptCpnUnLock(VOID);
+
+SHORT  ItemGenerateAc30Report(UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR uchType, FILE* fpFile);
 
 /****** PLU Group Summary Report ******/
 //GroupReport - CSMALL

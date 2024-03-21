@@ -57,6 +57,7 @@
 #include <uifsup.h>
 #include <uifpgequ.h>
 #include <mldmenu.h>
+#include <mldsup.h>
 
 #include "uifsupex.h"                       /* Unique Extern Header for UI */
 
@@ -246,13 +247,28 @@ SHORT UifAC30EnterRptType(KEYMSG *pKeyMsg)
                                        (UCHAR)RPT_TYPE_ALL, /* Report Type  */
                                        0, 0L, 0);
 
-                             /* Daily Report */
-                             if(uchUifACDataType == RPT_TYPE_DALY){
-                                 RptCpnRead(CLASS_TTLCURDAY,RPT_ALL_READ,0);
-                             }
-                             /* PTD Report */
-                             else{
-                                 RptCpnRead(CLASS_TTLCURPTD,RPT_ALL_READ,0);
+                             {
+                                UCHAR uchMinorClass = CLASS_TTLCURDAY;
+                                 /* Daily Report */
+                                 if(uchUifACDataType == RPT_TYPE_DALY){
+                                     uchMinorClass = CLASS_TTLCURDAY;
+                                 }
+                                 else {
+                                    /* PTD Report */
+                                    uchMinorClass = CLASS_TTLCURPTD;
+                                 }
+                                 // save the currently selected display/print option, generate an html version
+                                 // of the report and then restore the user selected display/print option to
+                                 // generate the report to the user selected device.
+                                 UCHAR   uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
+                                 FILE* fpFile = ItemOpenHistorialReportsFolder(AC_CPN_READ_RPT, uchMinorClass, RPT_ALL_READ, 0, 0, 0);
+
+                                 if (fpFile) {
+                                     ItemGenerateAc30Report(CLASS_TTLCPN, uchMinorClass, RPT_ALL_READ, fpFile);
+                                     ItemCloseHistorialReportsFolder(fpFile);
+                                 }
+                                 uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;
+                                 RptCpnRead(uchMinorClass, RPT_ALL_READ, 0);
                              }
 
                              UieExit(aACEnter);   /* Return to UifACEnter() */

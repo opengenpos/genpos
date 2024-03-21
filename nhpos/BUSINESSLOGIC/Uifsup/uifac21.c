@@ -177,11 +177,6 @@ SHORT UifAC21EnterData(KEYMSG *pKeyMsg)
             }
 
             if (uchUifACDataType == RPT_TYPE_DALY) {                                /* Daily Report Case */
-				FILE  *fpFile = fopen ("C:\\FlashDisk\\NCR\\Saratoga\\ac21out.html", "w+b");
-
-				sError = ItemGenerateAc21Report (CLASS_TTLCURDAY, RPT_IND_READ, fpFile, (ULONG)pKeyMsg->SEL.INPUT.lData);
-				fclose (fpFile);
-
 				sError = RptCashierRead(CLASS_TTLCURDAY, RPT_IND_READ, (ULONG)pKeyMsg->SEL.INPUT.lData, 0);
             } else {    /* V3.3 */
                 sError = RptCashierRead(CLASS_TTLCURPTD, RPT_IND_READ, (ULONG)pKeyMsg->SEL.INPUT.lData, 0);
@@ -264,7 +259,7 @@ SHORT UifAC21EnterUserType(KEYMSG *pKeyMsg)
 					FILE    *fpFile = ItemOpenHistorialReportsFolder (AC_CASH_READ_RPT, CLASS_TTLCURDAY, RPT_ALL_READ, 0, 0, 0);
 
                     if (fpFile) {
-                        sError = ItemGenerateAc21Report(CLASS_TTLCURDAY, RPT_ALL_READ, fpFile, 0);
+                        sError = ItemGenerateAc21Report(CLASS_TTLCASHIER, CLASS_TTLCURDAY, RPT_ALL_READ, fpFile, 0);
                         ItemCloseHistorialReportsFolder(fpFile);
                     }
 					uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;

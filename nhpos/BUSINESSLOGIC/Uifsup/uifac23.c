@@ -169,10 +169,9 @@ SHORT UifAC23EnterDataType(KEYMSG *pKeyMsg)
 							// of the report and then restore the user selected display/print option to
 							// generate the report to the user selected device.
 							UCHAR   uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
-							FILE    *fpFile = ItemOpenHistorialReportsFolder (AC_REGFIN_READ_RPT, uchMinorClass, 0, 0, 0, 0);
+							FILE    *fpFile = ItemOpenHistorialReportsFolder (AC_REGFIN_READ_RPT, uchMinorClass, RPT_ALL_READ, 0, 0, 0);
 
 							if (fpFile) {
-								RptDescriptionSet(RptDescriptionCreate(AC_REGFIN_READ_RPT, uchMinorClass, RPT_ALL_READ, fpFile, RPTREGFIN_OUTPUT_HTML, RptElementStream));
 								ItemGenerateAc23Report(CLASS_TTLREGFIN, uchMinorClass, RPT_ALL_READ, fpFile, 0);
 								ItemCloseHistorialReportsFolder(fpFile);
 							}
