@@ -1766,6 +1766,8 @@ static SHORT ProcessXmlFileReportsFolder(ReadFileLineControl * pMyXmlFileControl
 				memset (pSysConfig->tcsReportsHistoricalFolder, 0, sizeof(pSysConfig->tcsReportsHistoricalFolder));
 				_tcsncpy (pSysConfig->tcsReportsHistoricalFolder, ptcsToken, TCHARSIZEOF(pSysConfig->tcsReportsHistoricalFolder) - 1);
 			} else if ((ptcsToken = _tcsstr (aszLine, _T("<output>"))) != 0) {
+				// the strings that are allowed for the different output types must agree with the
+				// output types that are supported by the functionality in function ItemOpenHistorialReportsFolder().
 				ptcsToken = _tcschr (ptcsToken, _T('>'));
 				ptcsToken++;
 				ptcsTokenEnd = _tcschr (ptcsToken, _T('<'));

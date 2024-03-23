@@ -266,16 +266,24 @@ VOID RptElement(USHORT uchTransAddr, TOTAL *pTtlData,
     PrtPrintItem(NULL,&FinData);                            /* print out              */ 
 }
 
+//----------------------------------------------------------------------------------------
+// The following tables are used to print the report data in a particular format suitable
+// for the report type (csv, html, xml, etc.).
+// Some of the line item format types are used by more than one report. For example
+// the CLASS_RPTREGFIN_xxx format types are used by both the AC 21 Cashier Report and
+// the AC 23 Financial Report.
 RptElementOutputClassType  rptTypeOutputXml [] = {
-		{ CLASS_RPTREGFIN_PRTTTLCNT, L"<Key name=\"%s\" value=\"%L$\" count=\"%d\" />" },
-		{ CLASS_RPTREGFIN_PRTDGG, L"<Key name=\"%s\" value=\"%l$\" />" },
-		{ CLASS_RPTREGFIN_PRTCGG, L"<Key name=\"%s\" value=\"%L$\" />" },
-		{ CLASS_RPTREGFIN_PRTBONUS, L"<Key name=\"%s\" value=\"%l$\" count=\"%d\" />" },
-		{ CLASS_RPTREGFIN_PRTNO, L"<Key name=\"%s\" value=\"%ld\" />" },
-		{ CLASS_RPTREGFIN_PRTCNT, L"<Key name=\"%s\" value=\"%ld\" />" },
-		{ CLASS_RPTREGFIN_PRTFCP0, L"<Key name=\"%s\" value=\"%ld\" />" },
-		{ CLASS_RPTREGFIN_PRTFCP2, L"<Key name=\"%s\" value=\"%ld\" />" },
-		{ CLASS_RPTREGFIN_PRTFCP3, L"<Key name=\"%s\" value=\"%ld\" />" },
+		{ CLASS_RPTREGFIN_PRTTTLCNT, L"<Key name=\"%s\" value=\"%L$\" count=\"%d\" />" },    // AC 21 Cashier Report and AC 23 Financial Report
+		{ CLASS_RPTREGFIN_PRTDGG, L"<Key name=\"%s\" value=\"%l$\" />" },                    // AC 21 Cashier Report and AC 23 Financial Report
+		{ CLASS_RPTREGFIN_PRTCGG, L"<Key name=\"%s\" value=\"%L$\" />" },                    // AC 21 Cashier Report and AC 23 Financial Report
+		{ CLASS_RPTREGFIN_PRTBONUS, L"<Key name=\"%s\" value=\"%l$\" count=\"%d\" />" },     // AC 21 Cashier Report and AC 23 Financial Report
+		{ CLASS_RPTREGFIN_PRTNO, L"<Key name=\"%s\" value=\"%ld\" />" },                     // AC 21 Cashier Report and AC 23 Financial Report
+		{ CLASS_RPTREGFIN_PRTCNT, L"<Key name=\"%s\" value=\"%ld\" />" },                    // AC 21 Cashier Report and AC 23 Financial Report
+		{ CLASS_RPTREGFIN_PRTFCP0, L"<Key name=\"%s\" value=\"%ld\" />" },                   // AC 21 Cashier Report and AC 23 Financial Report
+		{ CLASS_RPTREGFIN_PRTFCP2, L"<Key name=\"%s\" value=\"%ld\" />" },                   // AC 21 Cashier Report and AC 23 Financial Report
+		{ CLASS_RPTREGFIN_PRTFCP3, L"<Key name=\"%s\" value=\"%ld\" />" },                   // AC 21 Cashier Report and AC 23 Financial Report
+		{ CLASS_RPTCPN_ITEM, L"<Key cpn=\"%4d\" name=\"%-12s\" count=\"%ld\" value=\"%l$\" />" },  // AC30 Coupon Report
+		{ CLASS_RPTCPN_TOTAL, L"<Key name=\"%-8.8s\" count=\"%ld\" value=\"%l$\" />" },            // AC30 Coupon Report
 		{0, NULL}
 	};
 
@@ -289,6 +297,8 @@ RptElementOutputClassType  rptTypeOutputHtml [] = {
 		{ CLASS_RPTREGFIN_PRTFCP0, L"<tr><td>%s</td><td align=\"right\">%ld</td><td align=\"right\"></td></tr>\r\n" },
 		{ CLASS_RPTREGFIN_PRTFCP2, L"<tr><td>%s</td><td align=\"right\">%ld</td><td align=\"right\"></td></tr>\r\n" },
 		{ CLASS_RPTREGFIN_PRTFCP3, L"<tr><td>%s</td><td align=\"right\">%ld</td><td align=\"right\"></td></tr>\r\n" },
+		{ CLASS_RPTCPN_ITEM, L"<tr><td align=\"right\">%d</td><td align=\"left\">%-12s</td><td align=\"right\">%ld</td><td align=\"right\">%l$</td></tr>\r\n" },
+		{ CLASS_RPTCPN_TOTAL, L"<tr><td></td><td align=\"left\">%-8.8s</td><td align=\"right\">%ld</td><td align=\"right\">%l$</td></tr>\r\n" },
 		{0, NULL}
 	};
 
@@ -302,6 +312,8 @@ RptElementOutputClassType  rptTypeOutputCsv [] = {
 		{ CLASS_RPTREGFIN_PRTFCP0, L"\"%s\",%ld,\r\n" },
 		{ CLASS_RPTREGFIN_PRTFCP2, L"\"%s\",%ld,\r\n" },
 		{ CLASS_RPTREGFIN_PRTFCP3, L"\"%s\",%ld,\r\n" },
+		{ CLASS_RPTCPN_ITEM, L"%d,\"%-12s\",%ld,%l$\r\n" },
+		{ CLASS_RPTCPN_TOTAL, L"0,\"%-8.8s\",%ld,%l$\r\n"},
 		{0, NULL}
 	};
 
@@ -501,6 +513,53 @@ VOID RptElementStream (USHORT uchTransAddr, TOTAL *pTtlData,
 		}
 	}
 }
+
+VOID RptElementStream2(USHORT uchTransAddr, USHORT usId, wchar_t *aszMnemo, TOTAL* pTtlData,
+	D13DIGITS Amount13, DCURRENCY lAmount, LONG lCounter,
+	UCHAR uchMinor, UCHAR uchBonusRate)
+{
+	wchar_t    aszPrintLine[256] = { 0 };
+	wchar_t    aszTransMnemo[24] = { 0 };
+	RptDescription dataRptDescription = RptDescriptionGet();
+
+	if (fpRptElementStreamFile == NULL) return;
+
+	if (dataRptDescription.rptDescrip.usType == RPTREGFIN_OUTPUT_HUBWORKS) {
+		return;
+	}
+
+	if (uchTransAddr != 0) {
+		RflGetTranMnem(aszTransMnemo, uchTransAddr);
+		RflCleanupMnemonic(aszTransMnemo);
+	}
+
+	for (RptElementOutputClassType* rptTypeOutput = dataRptDescription.rptDescrip.outputClass; rptTypeOutput && rptTypeOutput->aszFormat; rptTypeOutput++) {
+		if (rptTypeOutput->uchMinor == uchMinor) {
+			switch (uchMinor) {
+
+			case CLASS_RPTCPN_ITEM:
+				RflSPrintf(aszPrintLine, 250, rptTypeOutput->aszFormat, usId, aszMnemo, lCounter, lAmount);
+				fprintf(fpRptElementStreamFile, "%S\r\n", aszPrintLine);
+				break;
+
+			case CLASS_RPTCPN_TOTAL:
+				RflSPrintf(aszPrintLine, 250, rptTypeOutput->aszFormat, aszMnemo, lCounter, lAmount);
+				fprintf(fpRptElementStreamFile, "%S\r\n", aszPrintLine);
+				break;
+
+			default:
+				if (dataRptDescription.uFlags & RPTFLAGS_LOG_01) {
+					// issue log of error but only once for this report to prevent cluttering up the log file.
+					NHPOS_ASSERT_TEXT(0, "**ERROR: RPTFLAGS_LOG_01 - Unknown rptTypeOutput->uchMinor.");
+					RptDescriptionSetFlag(RPTFLAGS_LOG_01);
+				}
+				break;
+			}
+			break;
+		}
+	}
+}
+
 
 /*
  *    An actual Hubworks Daily Summary file would looks like the following. The XML file
@@ -709,7 +768,7 @@ FILE * ItemOpenHistorialReportsFolderHubworks (USHORT usPGACNo, UCHAR uchMinorCl
 	char   name[64] = {0};
 	char   pathBuffer[512] = {0};
 
-	for (iLoop = 0; iLoop < 400 && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
+	for (iLoop = 0; iLoop < TCHARSIZEOF(pSysConfig->tcsReportsHistoricalFolder) && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
 		pathBuffer[iLoop] = pSysConfig->tcsReportsHistoricalFolder[iLoop];
 	}
 	sprintf (name, "\\daily_%4.4d%2.2d%2.2d.xml", iYear, iMonth, iDay);
@@ -803,6 +862,7 @@ FILE* ItemOpenHistorialReportsFolderXml(USHORT usPGACNo, UCHAR uchMinorClass, UC
 		strcpy(pathBuffer, docPathRootWeb);
 	}
 	strcat(pathBuffer, name);
+	pFile = fopen(pathBuffer, "w+b");
 
 	if (pFile) {
 		fpRptElementStreamFile = pFile;
@@ -855,7 +915,7 @@ FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass,
 			break;
 	}
 
-	for (iLoop = 0; iLoop < 400 && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
+	for (iLoop = 0; iLoop < TCHARSIZEOF(pSysConfig->tcsReportsHistoricalFolder) && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
 		pathBuffer[iLoop] = pSysConfig->tcsReportsHistoricalFolder[iLoop];
 	}
 
@@ -938,7 +998,7 @@ FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UC
 	break;
 	}
 
-	for (iLoop = 0; iLoop < 400 && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
+	for (iLoop = 0; iLoop < TCHARSIZEOF(pSysConfig->tcsReportsHistoricalFolder) && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
 		pathBuffer[iLoop] = pSysConfig->tcsReportsHistoricalFolder[iLoop];
 	}
 
@@ -987,12 +1047,12 @@ FILE* ItemOpenHistorialReportsFolder(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR
 	CONST SYSCONFIG* pSysConfig = PifSysConfig();       /* get system config */
 	FILE* fpFile = NULL;
 	TCHAR* reportTypes[] = {
-		L"",
-		L"csv",
-		L"html",
-		L"xml",
-		L"report",
-		L"hubwork"
+		L"",             // 0 - unused slot
+		L"csv",          // 1 - Comma Separated Values output file
+		L"html",         // 2 - Hypertext web browser output file
+		L"xml",          // 3 - XML markup language output file
+		L"report",       // 4 - report text output file
+		L"hubwork"       // 5 - Hubworks ecosystem output file to work with Hubworks.com
 	};
 
 	for (int i = 0; i < sizeof(reportTypes)/sizeof(reportTypes[0]); i++) {

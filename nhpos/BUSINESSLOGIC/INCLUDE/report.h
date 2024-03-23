@@ -143,8 +143,8 @@ extern    UCHAR   uchRptOpeCount;
 #define CLASS_RPTEMPLOYEE_PRTWKTTL      57      /* print format for 1 etk total */
 #define CLASS_RPTEMPLOYEE_PRTWKNOTTL    58      /* print format for 1 etk total */
 
-#define CLASS_RPTCPN_ITEM               59      /* item print for print process */
-#define CLASS_RPTCPN_TOTAL              60      /* total print for print process */
+#define CLASS_RPTCPN_ITEM               59      /* item print for coupon item print */
+#define CLASS_RPTCPN_TOTAL              60      /* total print for total for coupon print */
 
 #define CLASS_RPTSERVICE_TTL            61      /* Print Format for Service Time File */
 #define CLASS_RPTSERVICE_SEGTTL         62      /* Print Format for Service Time File */
@@ -591,6 +591,7 @@ VOID    RptInitialize( VOID );
 VOID    RptPrtStatusSet( UCHAR uchMinorClass );
 VOID    RptPrtTime( USHORT uchTransAddr, N_DATE *pDate);
 VOID    RptElementStream (USHORT uchTransAddr, TOTAL *pTtlData, D13DIGITS Amount13, DCURRENCY lAmount, UCHAR uchMinor, UCHAR uchBonusRate);
+VOID    RptElementStream2(USHORT uchTransAddr, USHORT usId, wchar_t* aszMnemo, TOTAL* pTtlData, D13DIGITS Amount13, DCURRENCY lAmount, LONG lCounter, UCHAR uchMinor, UCHAR uchBonusRate);
 VOID    RptElementHubworks (USHORT uchTransAddr, TOTAL *pTtlData, D13DIGITS Amount13, DCURRENCY lAmount, UCHAR uchMinor, UCHAR uchBonusRate);
 VOID    RptElementStandardXml (USHORT uchTransAddr, TOTAL *pTtlData, D13DIGITS Amount13, DCURRENCY lAmount, UCHAR uchMinor, UCHAR uchBonusRate);
 VOID    RptElement( USHORT uchTransAddr, TOTAL *pTtlData, D13DIGITS Amount13, DCURRENCY  lAmount, UCHAR uchMinor, UCHAR uchRate);
