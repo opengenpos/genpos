@@ -317,29 +317,7 @@ SHORT RptRegFinEdit(RptElementFunc RptElement, TTLREGFIN *pTtlData, UCHAR uchTyp
 		{0, 0, 0, 0}
 	};
 
-    if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
-        switch (pTtlData->uchMinorClass) {
-        case CLASS_TTLCURDAY:
-            fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Current Daily Totals Terminal %d</h2>\n", pTtlData->usTerminalNumber);
-            break;
-        case CLASS_TTLCURPTD:
-            fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Current Period To Day Totals Terminal %d</h2>\n", pTtlData->usTerminalNumber);
-            break;
-        case CLASS_TTLSAVDAY:
-            fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Saved Daily Totals Terminal %d</h2>\n", pTtlData->usTerminalNumber);
-            break;
-        case CLASS_TTLSAVPTD:
-            fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Saved Period To Day Totals Terminal %d</h2>\n", pTtlData->usTerminalNumber);
-            break;
-        }
-
-        fprintf(fpRptElementStreamFile, "<h3>From: %d/%d %d:%d:%d</br>", pTtlData->FromDate.usMonth, pTtlData->FromDate.usMDay,
-            pTtlData->FromDate.usHour, pTtlData->FromDate.usMin, 0);
-        fprintf(fpRptElementStreamFile, "To: %d/%d %d:%d:%d</h3>\r\n", pTtlData->ToDate.usMonth, pTtlData->ToDate.usMDay,
-            pTtlData->ToDate.usHour, pTtlData->ToDate.usMin, 0);
-
-        fprintf(fpRptElementStreamFile, "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\r\n");
-    } else {
+    if (! RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
         RptRegFinPrtTermNumber(pTtlData->usTerminalNumber, uchIndAll);       /* TERMINAL NO         */
 
         RptPrtTime(TRN_PFROM_ADR, &pTtlData->FromDate);                     /* PERIOD FROM         */
@@ -1390,10 +1368,6 @@ SHORT RptRegFinEdit(RptElementFunc RptElement, TTLREGFIN *pTtlData, UCHAR uchTyp
         RptElement(TRN_CHKCLS_ADR, NULL, NULL13DIGITS,                  /* NO. OF CHECKS CLOSED  */
                    (LONG)(pTtlData->sNoOfChkClose), CLASS_RPTREGFIN_PRTNO, 0);
     }
-
-    if (fpRptElementStreamFile && RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
-        fprintf(fpRptElementStreamFile, "</table>\r\n");
-    }
     
     if (uchRptMldAbortStatus) {                         /* aborted by MLD */
         return (RPT_ABORTED);
@@ -2074,7 +2048,8 @@ SHORT  ItemGenerateAc23Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
 	SHORT       sReturn;
 	USHORT      usStartTerminalNo, usEndTerminalNo;
 	TTLREGFIN   TtlData = {0};                    /* Assign Register Financial Total Save Area */
-	UCHAR       uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
+
+    if (!fpFile) return -1;
 
     /* EOD PTD Report Not Display Out MLD */
 	// (uchMinorClass == CLASS_TTLSAVPTD) || (uchMinorClass == CLASS_TTLSAVDAY))
@@ -2092,13 +2067,8 @@ SHORT  ItemGenerateAc23Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
 			break;
 	}
 
-    uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
-
-	if (fpFile)
-		fpRptElementStreamFile = fpFile;
-
 	if (fpRptElementStreamFile) {
-		for ( ; usStartTerminalNo <= usEndTerminalNo; usStartTerminalNo++) {
+        for (; usStartTerminalNo <= usEndTerminalNo; usStartTerminalNo++) {
 			/* Get Register Financial Total, either CLASS_TTLINDFIN or CLASS_TTLREGFIN */
 			TtlData.uchMajorClass = uchMajorClass;                /* Set Major Data Class */
 			TtlData.uchMinorClass = uchMinorClass;                  /* Set Minor Data Class */
@@ -2108,11 +2078,37 @@ SHORT  ItemGenerateAc23Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
 				continue;                 /* Return Not in File Error */
 			}
 
- 			sReturn = RptRegFinEdit(RptElementStream, &TtlData, 0, uchMinorClass);
-		}
-	}
+            if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+                switch (uchMinorClass) {
+                case CLASS_TTLCURDAY:
+                    fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Current Daily Totals Terminal %d</h2>\n", TtlData.usTerminalNumber);
+                    break;
+                case CLASS_TTLCURPTD:
+                    fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Current Period To Day Totals Terminal %d</h2>\n", TtlData.usTerminalNumber);
+                    break;
+                case CLASS_TTLSAVDAY:
+                    fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Saved Daily Totals Terminal %d</h2>\n", TtlData.usTerminalNumber);
+                    break;
+                case CLASS_TTLSAVPTD:
+                    fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Saved Period To Day Totals Terminal %d</h2>\n", TtlData.usTerminalNumber);
+                    break;
+                }
 
-	uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;
+                fprintf(fpRptElementStreamFile, "<h3>From: %d/%d %d:%d:%d</br>", TtlData.FromDate.usMonth, TtlData.FromDate.usMDay,
+                    TtlData.FromDate.usHour, TtlData.FromDate.usMin, 0);
+                fprintf(fpRptElementStreamFile, "To: %d/%d %d:%d:%d</h3>\r\n", TtlData.ToDate.usMonth, TtlData.ToDate.usMDay,
+                    TtlData.ToDate.usHour, TtlData.ToDate.usMin, 0);
+
+                fprintf(fpRptElementStreamFile, "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\r\n");
+            }
+        
+ 			sReturn = RptRegFinEdit(RptElementStream, &TtlData, 0, uchMinorClass);
+
+            if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+                fprintf(fpRptElementStreamFile, "</table>\r\n");
+            }
+        }
+	}
 
     return SUCCESS;
 }

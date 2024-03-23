@@ -197,7 +197,8 @@ SHORT RptEODRead( UCHAR uchType )
 		if ((!CliParaMDCCheck(MDC_EOD2_ADR, EVEN_MDC_BIT3)) &&          /* Execute Waiter Report */
 			(RptEODChkFileExist(FLEX_CPN_ADR) == RPT_FILE_EXIST)) {      /* File Exist */
 			RptInitialize();                                            /* Clear Report Work */
-			if ((sReturn = RptCpnRead(CLASS_TTLSAVDAY, RPT_EOD_ALLREAD, 0)) == RPT_ABORTED) { /* Aborted by User */
+            ItemGenerateAc30Report(CLASS_TTLCPN, CLASS_TTLSAVDAY, RPT_EOD_ALLREAD, fpFile);
+            if ((sReturn = RptCpnRead(CLASS_TTLSAVDAY, RPT_EOD_ALLREAD, 0)) == RPT_ABORTED) { /* Aborted by User */
 				break;
 			}
 		}

@@ -350,12 +350,8 @@ SHORT  ItemGenerateAc30Report(UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR uc
     static const TCHAR  auchPrtThrmSupCPNFile1[] = _T("  %4d   %-12s   %12ld   %12l$\r\n");
 
     SHORT       sReturn;
-    UCHAR       uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
 
-    uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
-
-    if (fpFile)
-        fpRptElementStreamFile = fpFile;
+    if (!fpFile) return -1;
 
     if (fpRptElementStreamFile) {
         TTLCPN   TtlCpn = { 0 };
@@ -434,8 +430,6 @@ SHORT  ItemGenerateAc30Report(UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR uc
             fprintf(fpRptElementStreamFile, "</table>\r\n");
         }
     }
-
-    uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;
 
     return SUCCESS;
 }

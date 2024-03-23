@@ -403,11 +403,7 @@ SHORT RptCashierEdit(RptElementFunc RptElement, UCHAR uchMinorClass, TTLCASHIER 
     RptCashier.ulCashierNumber = pTtlCas->ulCashierNumber;                  /* Set Cashier No */
     RptCashierGetName (RptCashier.aszCashMnemo, RptCashier.ulCashierNumber); /* Copy Mnemo */
     RptCashier.usPrintControl = usRptPrintStatus;                           /* Print Control Bit */
-    if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
-        fprintf(RptDescriptionGetStream(), "<h3>Operator %d: %S</h3>\n", RptCashier.ulCashierNumber, RptCashier.aszCashMnemo);
-        fprintf(RptDescriptionGetStream(), "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\n");
-    }
-    else {
+    if (! RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
         if (RptCheckReportOnMld()) {
             uchRptMldAbortStatus = (UCHAR)MldDispItem(&RptCashier, 0); /* display on LCD          */ 
             RptCashier.usPrintControl &= PRT_JOURNAL;            /* Reset Receipt print status so only goes to Electronic Journal if set */
@@ -1497,11 +1493,7 @@ SHORT RptCashierEdit(RptElementFunc RptElement, UCHAR uchMinorClass, TTLCASHIER 
         RptElement(TRN_POST_ADR, NULL, NULL13DIGITS,               /* POST RECEIPT CO. R3.1 */
                    (LONG)(pTtlCas->usPostRecCo), CLASS_RPTREGFIN_PRTNO, 0);
     }
-                                                                      
-    if (fpRptElementStreamFile && RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
-        fprintf(fpRptElementStreamFile, "</table>\n");
-    }
-    
+                                                                          
     if (uchRptMldAbortStatus) {                         /* aborted by MLD */
         return (RPT_ABORTED);
     }
@@ -2213,8 +2205,9 @@ SHORT  ItemGenerateAc21Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
 {
 	SHORT       sReturn;
 	SHORT       sNo;
-	UCHAR       uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
     ULONG       ausRcvBuffer[MAX_NO_CASH];
+
+    if (!fpFile) return -1;
 
     /* EOD PTD Report Not Display Out MLD */
 	// (uchMinorClass == CLASS_TTLSAVPTD) || (uchMinorClass == CLASS_TTLSAVDAY))
@@ -2232,12 +2225,24 @@ SHORT  ItemGenerateAc21Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
         return (CasConvertError(CAS_NOT_ALLOWED));
     }
 
-    uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
-
-	if (fpFile)
-		fpRptElementStreamFile = fpFile;
-
-	if (fpRptElementStreamFile) {
+	if (RptDescriptionGetStream()) {
+        if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+            switch (uchMinorClass) {
+            case CLASS_TTLCURDAY:
+                fprintf(RptDescriptionGetStream(), "<h2>AC 21 Cashier Report - Current Daily Totals</h2>\n");
+                break;
+            case CLASS_TTLCURPTD:
+                fprintf(RptDescriptionGetStream(), "<h2>AC 21 Cashier Report - Current Period To Day Totals</h2>\n");
+                break;
+            case CLASS_TTLSAVDAY:
+                fprintf(RptDescriptionGetStream(), "<h2>AC 21 Cashier Report - Saved Daily Totals</h2>\n");
+                break;
+            case CLASS_TTLSAVPTD:
+                fprintf(RptDescriptionGetStream(), "<h2>AC 21 Cashier Report - Saved Period To Day Totals</h2>\n");
+                break;
+            }
+        }
+        
         for (SHORT sCasNo = 0; sCasNo < sNo; sCasNo++) {
 			TTLCASHIER  TtlCas = {0};                    /* Assign Register Financial Total Save Area */
 
@@ -2273,11 +2278,19 @@ SHORT  ItemGenerateAc21Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
                 // RptPrtError( TtlConvertError(sReturn));                  /* Print converted Error Code */
                 continue;
             }
+            if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+                wchar_t aszCashMnemo[PARA_CASHIER_LEN + 1] = { 0 };
+
+                RptCashierGetName(aszCashMnemo, TtlCas.ulCashierNumber); /* Copy Mnemo */
+                fprintf(RptDescriptionGetStream(), "<h3>Operator %d: %S</h3>\n", TtlCas.ulCashierNumber, aszCashMnemo);
+                fprintf(RptDescriptionGetStream(), "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\n");
+            }
             RptCashierEdit(RptElementStream, uchMinorClass, &TtlCas);
+            if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+                fprintf(RptDescriptionGetStream(), "</table>\n");
+            }
         }
     }
-
-	uchUifACRptOnOffMld = uchUifACRptOnOffMldSave;
 
     return SUCCESS;
 }

@@ -334,21 +334,26 @@ RptDescription RptDescriptionCreate (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR
 	RptDescription    rptDescription = {0};
 	RptElementOutput  rptDefault = { RPTREGFIN_OUTPUT_HTML, rptTypeOutputHtml, sizeof(rptTypeOutputHtml)/sizeof(rptTypeOutputHtml[0]) };
 
-	rptDescription.fpOut = fpFile;
-	rptDescription.pOutputFunc = pOutputFunc;
-	rptDescription.uchMinorClass = uchMinorClass;
-	rptDescription.uchType = uchType;
-	rptDescription.usPGACNo = usPGACNo;
-	rptDescription.rptDescrip = rptDefault;
-	for (i = 0; i < sizeof(RptRegFinOutput)/sizeof(RptRegFinOutput[0]); i++) {
-		if (tOutputType == RptRegFinOutput[i].usType) {
-			rptDescription.rptDescrip = RptRegFinOutput[i];
-			break;
+	// If we are given a valid or at least not NULL file pointer then we will
+	// set up the environment for the historical report. However if not, then
+	// we will just assume it never happened.
+	if (fpFile) {
+		rptDescription.fpOut = fpFile;
+		rptDescription.pOutputFunc = pOutputFunc;
+		rptDescription.uchMinorClass = uchMinorClass;
+		rptDescription.uchType = uchType;
+		rptDescription.usPGACNo = usPGACNo;
+		rptDescription.rptDescrip = rptDefault;
+		for (i = 0; i < sizeof(RptRegFinOutput)/sizeof(RptRegFinOutput[0]); i++) {
+			if (tOutputType == RptRegFinOutput[i].usType) {
+				rptDescription.rptDescrip = RptRegFinOutput[i];
+				break;
+			}
 		}
-	}
 
-	rptDescription.uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
-	uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+		rptDescription.uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
+		uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+	}
 
 	return rptDescription;
 }
@@ -1100,6 +1105,8 @@ FILE* ItemOpenHistorialReportsFolder(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR
 
 VOID ItemCloseHistorialReportsFolder (FILE *fpFile)
 {
+	if (!fpFile) return -1;
+
 	if (fpRptElementStreamFile) {
 		switch (RptDescriptionGetType()) {
 		case RPTREGFIN_OUTPUT_HTML:
