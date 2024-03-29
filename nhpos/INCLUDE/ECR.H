@@ -412,6 +412,7 @@ extern "C"{
 #define     STD_FOLDER_ICONFILES       _T("C:\\FlashDisk\\NCR\\Saratoga\\Icons")
 #define     STD_FOLDER_WEBFOLDER       _T("C:\\FlashDisk\\NCR\\Saratoga\\Web")
 #define     STD_FOLDER_PRINTFOLDER     _T("C:\\FlashDisk\\NCR\\Saratoga\\PrintFiles")
+#define		STD_FOLDER_QUERYFOLDER	   _T("C:\\FlashDisk\\NCR\\Saratoga\\QueryFiles")
 #define     STD_FOLDER_SAVTTLFILES     _T("C:\\FlashDisk\\NCR\\Saratoga\\Database\\SavedTotal")
 #define     STD_FOLDER_IMAGESFILES     _T("C:\\FlashDisk\\NCR\\Saratoga\\Database\\Images")
 #define     STD_FOLDER_LOGFOLDER       _T("C:\\FlashDisk\\NCR\\Saratoga\\Log")

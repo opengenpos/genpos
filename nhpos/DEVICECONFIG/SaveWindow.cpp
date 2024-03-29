@@ -437,7 +437,7 @@ BOOL CListWindow::OnInitDialog()
 	TCHAR iconbuff[MAX_PATH+1];
 	if(!m_bexport)
 	{
-		destination=_T("C:\\FlashDisk\\NCR\\Saratoga\\Icons");
+		destination=_T("C:\\FlashDisk\\NCR\\Saratoga\\Icons");   // should be STD_FOLDER_ICONFILES
 	}
 	else
 	{

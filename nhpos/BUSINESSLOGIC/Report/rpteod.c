@@ -75,6 +75,7 @@
 #include <csstbgcf.h>
 #include <csstbttl.h>
 #include <report.h>
+#include <mldsup.h>
 #include <regstrct.h>
 #include <transact.h>
 #include <prt.h>
@@ -122,13 +123,14 @@ SHORT RptEODRead( UCHAR uchType )
     }
    
 
-	fpFile = ItemOpenHistorialReportsFolderHtml (AC_EOD_RPT, CLASS_TTLSAVDAY, RPT_EOD_ADR, 0, 0, 0);
-    NHPOS_ASSERT_TEXT(fpFile != NULL, "**ERROR: RptEODRead() ItemOpenHistorialReportsFolderHtml() failed.");
+	fpFile = ItemOpenHistorialReportsFolder (RPTREGFIN_FOLDER_ANY, AC_EOD_RPT, CLASS_TTLSAVDAY, RPT_EOD_ADR, 0, 0, 0);
+    NHPOS_ASSERT_TEXT(fpFile != NULL, "**ERROR: RptEODRead() ItemOpenHistorialReportsFolder() failed.");
     if (!fpFile) {
         return -1;
     }
 
-    RptDescriptionSet(RptDescriptionCreate(AC_EOD_RPT, CLASS_TTLSAVDAY, RPT_EOD_ADR, fpFile, RPTREGFIN_OUTPUT_HTML, RptElementStream));
+    RptDescriptionSet(RptDescriptionCreate(AC_EOD_RPT, CLASS_TTLSAVDAY, RPT_EOD_ADR, fpFile, RPTREGFIN_FOLDER_ANY, RPTREGFIN_OUTPUT_HTML, RptElementStream));
+    uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
 
     do {     // do once to allow break if an error is seen during processing.
 

@@ -172,7 +172,7 @@ int CHttpserverApp::csIssueRequest ()
 		{
 			CHAR tcBuffer[4096];
 
-			csFileName.Format (_T("C:\\FlashDisk\\NCR\\Saratoga\\Web\\%s"), m_csGetFileName);
+			csFileName.Format (_T("C:\\FlashDisk\\NCR\\Saratoga\\Web\\%s"), m_csGetFileName);   // should be STD_FOLDER_WEBFOLDER
 			csFileName.Replace (_T("/"), _T("\\"));
 			csFileName.Replace (_T("\\.."), _T("\\"));
 			csFileName.Replace (_T("\\\\"), _T("\\"));

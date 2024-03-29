@@ -2485,6 +2485,11 @@ VOID THREADENTRY UifCreateMain(VOID)
 	{
 		_tmkdir(STD_FOLDER_PRINTFOLDER);
 	}
+	if (!(0 == _tchdir(STD_FOLDER_QUERYFOLDER)))
+	{
+		_tmkdir(STD_FOLDER_QUERYFOLDER);
+	}
+
 	//  Log the fact that we are starting up into the PifLog
 	//  Next we count up the Consecutive Number in case we are recovering from a power fail
 	//  and we want to make sure that we are not using the same consecutive number from a

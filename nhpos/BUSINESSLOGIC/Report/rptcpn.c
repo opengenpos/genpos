@@ -373,6 +373,8 @@ SHORT  ItemGenerateAc30Report(UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR uc
         }
 
         if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+            wchar_t  aszMnemo[PARA_TRANSMNEMO_LEN + 1] = { 0 };
+
             switch (uchMinorClass) {
             case CLASS_TTLCURDAY:
                 fprintf(fpRptElementStreamFile, "<h2>AC 30 Coupon Report - Current Daily Totals</h2>\n");
@@ -388,10 +390,17 @@ SHORT  ItemGenerateAc30Report(UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR uc
                 break;
             }
 
-            fprintf(fpRptElementStreamFile, "<h3>From: %d/%d %d:%d:%d</br>", TtlCpn.FromDate.usMonth, TtlCpn.FromDate.usMDay,
-                TtlCpn.FromDate.usHour, TtlCpn.FromDate.usMin, 0);
-            fprintf(fpRptElementStreamFile, "To: %d/%d %d:%d:%d</h3>\r\n", TtlCpn.ToDate.usMonth, TtlCpn.ToDate.usMDay,
-                TtlCpn.ToDate.usHour, TtlCpn.ToDate.usMin, 0);
+            if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT2)) {  /* DD/MM/YY */
+                fprintf(fpRptElementStreamFile, "<h3>%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</br>", RflGetTranMnem(aszMnemo, TRN_PFROM_ADR), TtlCpn.FromDate.usMDay, TtlCpn.FromDate.usMonth,
+                    TtlCpn.FromDate.usYear, TtlCpn.FromDate.usHour, TtlCpn.FromDate.usMin);
+                fprintf(fpRptElementStreamFile, "%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</h3>\r\n", RflGetTranMnem(aszMnemo, TRN_PTO_ADR), TtlCpn.ToDate.usMDay, TtlCpn.ToDate.usMonth,
+                    TtlCpn.ToDate.usYear, TtlCpn.ToDate.usHour, TtlCpn.ToDate.usMin);
+            } else {  /* MM/DD/YY */
+                fprintf(fpRptElementStreamFile, "<h3>%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</br>", RflGetTranMnem(aszMnemo, TRN_PFROM_ADR), TtlCpn.FromDate.usMonth, TtlCpn.FromDate.usMDay,
+                    TtlCpn.FromDate.usYear, TtlCpn.FromDate.usHour, TtlCpn.FromDate.usMin);
+                fprintf(fpRptElementStreamFile, "%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</h3>\r\n", RflGetTranMnem(aszMnemo, TRN_PTO_ADR), TtlCpn.ToDate.usMonth, TtlCpn.ToDate.usMDay,
+                    TtlCpn.ToDate.usYear, TtlCpn.ToDate.usHour, TtlCpn.ToDate.usMin);
+            }
 
             fprintf(fpRptElementStreamFile, "<table border=\"1\" cellpadding=\"8\">\r\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\r\n");
         }

@@ -47,11 +47,18 @@
             D E F I N E    D E C L A R A T I O N s                        
 ;========================================================================
 **/
-#define RPT_DISPLAY_STREAM   2
-#define RPT_DISPLAY_ON       1
-#define RPT_DISPLAY_OFF      0      // must be same as FALSE for use with RptCheckReportOnMld().
+// following defines are used to indicate report print state using the
+// global variable uchUifACRptOnOffMld used in reports to determine if
+// displaying the report to the screen or printing it. we've since added
+// the historical reports folder functionality with the output going to a file.
+#define RPT_DISPLAY_STREAM   2      // indicates report generated and written to a file
+#define RPT_DISPLAY_ON       1      // indicates report generated and displayed in window
+#define RPT_DISPLAY_OFF      0      // indicates report generated and printe. must be same as FALSE for use with RptCheckReportOnMld().
 
 /* Print to file on/off Flag */  //ESMITH PRTFILE
+// see also defines for PRT_SENDTO_MASKFUNC and the PRT_SENDTO_ indicators as 
+// well as functions MaintSetPrintMode() and PrtSetPrintMode().
+// this functionality is older attempt to print reports to a file.
 #define RPT_PRINTFILE_ON	1      
 #define RPT_PRINTFILE_OFF	0
 

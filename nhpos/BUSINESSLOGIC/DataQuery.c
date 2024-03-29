@@ -111,6 +111,7 @@ static int BuiltInDataQueryAc23Report (UCHAR uchMinorClass, TCHAR *tcBuffer, Dat
 
 	if (pDataQueryObject->ulBufferSize > 255 && pDataQueryObject->ptcsBuffer != 0) {
 		FILE  *fpFile = NULL;
+		CHAR  outDir[256] = { 0 };
 		int   jLength = 0;
 
 		if (pDataQueryObject->sContentType == BL_DATAQUERY_CONTENT_XML) {
@@ -119,9 +120,11 @@ static int BuiltInDataQueryAc23Report (UCHAR uchMinorClass, TCHAR *tcBuffer, Dat
 			jLength += _stprintf (pDataQueryObject->ptcsBuffer, _T("{ \"ac23dailysav\" : "));
 		}
 
-
-		fpFile = fopen ("C:\\FlashDisk\\NCR\\Saratoga\\ac23out.html", "w+b");
+		sprintf(outDir, "%S%s", STD_FOLDER_QUERYFOLDER, "\\ac23out.html");
+		fpFile = fopen (outDir, "w+b");
+		fpFile = ItemOpenHistorialReportsFolder(RPTREGFIN_FOLDER_QUERY, CLASS_TTLREGFIN, uchMinorClass, RPT_ALL_READ, 0, 0, 0);
 		ItemGenerateAc23Report (CLASS_TTLREGFIN, uchMinorClass, RPT_ALL_READ, fpFile, 0);
+		RptDescriptionClear();     // clear the no longer needed description without closing any files
 		pDataQueryObject->fpFile = fpFile;
 
 		if (pDataQueryObject->sContentType == BL_DATAQUERY_CONTENT_XML) {
@@ -158,6 +161,7 @@ static int BuiltInDataQueryAc21Report (UCHAR uchMinorClass, TCHAR *tcBuffer, Dat
 
 	if (pDataQueryObject->ulBufferSize > 255 && pDataQueryObject->ptcsBuffer != 0) {
 		FILE  *fpFile = NULL;
+		CHAR  outDir[256] = { 0 };
 		int   jLength = 0;
 
 		if (pDataQueryObject->sContentType == BL_DATAQUERY_CONTENT_XML) {
@@ -167,8 +171,12 @@ static int BuiltInDataQueryAc21Report (UCHAR uchMinorClass, TCHAR *tcBuffer, Dat
 		}
 
 		// open the file for 
-		fpFile = fopen ("C:\\FlashDisk\\NCR\\Saratoga\\ac21out.html", "w+b");
+		sprintf(outDir, "%S%s", STD_FOLDER_QUERYFOLDER, "\\ac21out.html");
+		fpFile = fopen(outDir, "w+b");
+
+		fpFile = ItemOpenHistorialReportsFolder(RPTREGFIN_FOLDER_QUERY, CLASS_TTLCASHIER, uchMinorClass, RPT_ALL_READ, 0, 0, 0);
 		ItemGenerateAc21Report (CLASS_TTLCASHIER, uchMinorClass, RPT_ALL_READ, fpFile, 0L);
+		RptDescriptionClear();     // clear the no longer needed description without closing any files
 		pDataQueryObject->fpFile = fpFile;
 
 		if (pDataQueryObject->sContentType == BL_DATAQUERY_CONTENT_XML) {

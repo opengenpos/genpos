@@ -2079,6 +2079,8 @@ SHORT  ItemGenerateAc23Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
 			}
 
             if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+                wchar_t  aszMnemo[PARA_TRANSMNEMO_LEN + 1] = { 0 };
+
                 switch (uchMinorClass) {
                 case CLASS_TTLCURDAY:
                     fprintf(fpRptElementStreamFile, "<h2>AC 23 Financial Report - Current Daily Totals Terminal %d</h2>\n", TtlData.usTerminalNumber);
@@ -2094,11 +2096,18 @@ SHORT  ItemGenerateAc23Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
                     break;
                 }
 
-                fprintf(fpRptElementStreamFile, "<h3>From: %d/%d %d:%d:%d</br>", TtlData.FromDate.usMonth, TtlData.FromDate.usMDay,
-                    TtlData.FromDate.usHour, TtlData.FromDate.usMin, 0);
-                fprintf(fpRptElementStreamFile, "To: %d/%d %d:%d:%d</h3>\r\n", TtlData.ToDate.usMonth, TtlData.ToDate.usMDay,
-                    TtlData.ToDate.usHour, TtlData.ToDate.usMin, 0);
-
+                if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT2)) {  /* DD/MM/YY */
+                    fprintf(fpRptElementStreamFile, "<h3>%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</br>", RflGetTranMnem(aszMnemo, TRN_PFROM_ADR), TtlData.FromDate.usMDay, TtlData.FromDate.usMonth,
+                        TtlData.FromDate.usYear, TtlData.FromDate.usHour, TtlData.FromDate.usMin);
+                    fprintf(fpRptElementStreamFile, "%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</h3>\r\n", RflGetTranMnem(aszMnemo, TRN_PTO_ADR), TtlData.ToDate.usMDay, TtlData.ToDate.usMonth,
+                        TtlData.ToDate.usYear, TtlData.ToDate.usHour, TtlData.ToDate.usMin);
+                }
+                else {  /* MM/DD/YY */
+                    fprintf(fpRptElementStreamFile, "<h3>%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</br>", RflGetTranMnem(aszMnemo, TRN_PFROM_ADR), TtlData.FromDate.usMonth, TtlData.FromDate.usMDay,
+                        TtlData.FromDate.usYear, TtlData.FromDate.usHour, TtlData.FromDate.usMin);
+                    fprintf(fpRptElementStreamFile, "%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</h3>\r\n", RflGetTranMnem(aszMnemo, TRN_PTO_ADR), TtlData.ToDate.usMonth, TtlData.ToDate.usMDay,
+                        TtlData.ToDate.usYear, TtlData.ToDate.usHour, TtlData.ToDate.usMin);
+                }
                 fprintf(fpRptElementStreamFile, "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\r\n");
             }
         

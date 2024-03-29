@@ -256,7 +256,7 @@ SHORT UifAC21EnterUserType(KEYMSG *pKeyMsg)
 					// of the report and then restore the user selected display/print option to
 					// generate the report to the user selected device.
 					UCHAR   uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
-					FILE    *fpFile = ItemOpenHistorialReportsFolder (AC_CASH_READ_RPT, CLASS_TTLCURDAY, RPT_ALL_READ, 0, 0, 0);
+					FILE    *fpFile = ItemOpenHistorialReportsFolder (RPTREGFIN_FOLDER_ANY, AC_CASH_READ_RPT, CLASS_TTLCURDAY, RPT_ALL_READ, 0, 0, 0);
 
                     if (fpFile) {
                         sError = ItemGenerateAc21Report(CLASS_TTLCASHIER, CLASS_TTLCURDAY, RPT_ALL_READ, fpFile, 0);

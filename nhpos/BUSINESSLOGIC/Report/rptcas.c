@@ -2279,10 +2279,25 @@ SHORT  ItemGenerateAc21Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR u
                 continue;
             }
             if (RptDescriptionCheckType(RPTREGFIN_OUTPUT_HTML)) {
+                wchar_t  aszMnemo[PARA_TRANSMNEMO_LEN + 1] = { 0 };
                 wchar_t aszCashMnemo[PARA_CASHIER_LEN + 1] = { 0 };
 
                 RptCashierGetName(aszCashMnemo, TtlCas.ulCashierNumber); /* Copy Mnemo */
                 fprintf(RptDescriptionGetStream(), "<h3>Operator %d: %S</h3>\n", TtlCas.ulCashierNumber, aszCashMnemo);
+
+                if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT2)) {  /* DD/MM/YY */
+                    fprintf(fpRptElementStreamFile, "<h3>%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</br>", RflGetTranMnem(aszMnemo, TRN_PFROM_ADR), TtlCas.FromDate.usMDay, TtlCas.FromDate.usMonth,
+                        TtlCas.FromDate.usYear, TtlCas.FromDate.usHour, TtlCas.FromDate.usMin);
+                    fprintf(fpRptElementStreamFile, "%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</h3>\r\n", RflGetTranMnem(aszMnemo, TRN_PTO_ADR), TtlCas.ToDate.usMDay, TtlCas.ToDate.usMonth,
+                        TtlCas.ToDate.usYear, TtlCas.ToDate.usHour, TtlCas.ToDate.usMin);
+                }
+                else {  /* MM/DD/YY */
+                    fprintf(fpRptElementStreamFile, "<h3>%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</br>", RflGetTranMnem(aszMnemo, TRN_PFROM_ADR), TtlCas.FromDate.usMonth, TtlCas.FromDate.usMDay,
+                        TtlCas.FromDate.usYear, TtlCas.FromDate.usHour, TtlCas.FromDate.usMin);
+                    fprintf(fpRptElementStreamFile, "%S: %2.2d/%2.2d/%2.2d %2.2d:%2.2d</h3>\r\n", RflGetTranMnem(aszMnemo, TRN_PTO_ADR), TtlCas.ToDate.usMonth, TtlCas.ToDate.usMDay,
+                        TtlCas.ToDate.usYear, TtlCas.ToDate.usHour, TtlCas.ToDate.usMin);
+                }
+
                 fprintf(RptDescriptionGetStream(), "<table border=\"1\" cellpadding=\"8\">\n<tr><th>Name</th><th>Amount</th><th>Count</th></tr>\n");
             }
             RptCashierEdit(RptElementStream, uchMinorClass, &TtlCas);

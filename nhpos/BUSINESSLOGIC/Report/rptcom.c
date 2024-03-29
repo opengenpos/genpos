@@ -318,21 +318,21 @@ RptElementOutputClassType  rptTypeOutputCsv [] = {
 	};
 
 RptElementOutput  RptRegFinOutput[] = {
-		{ RPTREGFIN_OUTPUT_NONE, rptTypeOutputHtml, sizeof(rptTypeOutputHtml) / sizeof(rptTypeOutputHtml[0]) },
-		{ RPTREGFIN_OUTPUT_CSV, rptTypeOutputCsv, sizeof(rptTypeOutputCsv)/sizeof(rptTypeOutputCsv[0]) },
-		{ RPTREGFIN_OUTPUT_XML, rptTypeOutputXml, sizeof(rptTypeOutputXml)/sizeof(rptTypeOutputXml[0]) },
-		{ RPTREGFIN_OUTPUT_HTML, rptTypeOutputHtml, sizeof(rptTypeOutputHtml) / sizeof(rptTypeOutputHtml[0])},
-		{ RPTREGFIN_OUTPUT_HUBWORKS,  rptTypeOutputCsv, sizeof(rptTypeOutputCsv) / sizeof(rptTypeOutputCsv[0])}
+		{ RPTREGFIN_OUTPUT_NONE, RPTREGFIN_FOLDER_ANY, rptTypeOutputHtml, sizeof(rptTypeOutputHtml) / sizeof(rptTypeOutputHtml[0]) },
+		{ RPTREGFIN_OUTPUT_CSV, RPTREGFIN_FOLDER_ANY, rptTypeOutputCsv, sizeof(rptTypeOutputCsv)/sizeof(rptTypeOutputCsv[0]) },
+		{ RPTREGFIN_OUTPUT_XML, RPTREGFIN_FOLDER_ANY, rptTypeOutputXml, sizeof(rptTypeOutputXml)/sizeof(rptTypeOutputXml[0]) },
+		{ RPTREGFIN_OUTPUT_HTML, RPTREGFIN_FOLDER_ANY, rptTypeOutputHtml, sizeof(rptTypeOutputHtml) / sizeof(rptTypeOutputHtml[0])},
+		{ RPTREGFIN_OUTPUT_HUBWORKS, RPTREGFIN_FOLDER_ANY, rptTypeOutputCsv, sizeof(rptTypeOutputCsv) / sizeof(rptTypeOutputCsv[0])}
 	};
 
 FILE *fpRptElementStreamFile = NULL;
 RptDescription dataRptElementStream = {0};
 
-RptDescription RptDescriptionCreate (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile, RptElementOutputType tOutputType, RptElementFunc pOutputFunc)
+RptDescription RptDescriptionCreate (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile, RptElementOutputFolder tFolder, RptElementOutputType tOutputType, RptElementFunc pOutputFunc)
 {
 	SHORT    i;
 	RptDescription    rptDescription = {0};
-	RptElementOutput  rptDefault = { RPTREGFIN_OUTPUT_HTML, rptTypeOutputHtml, sizeof(rptTypeOutputHtml)/sizeof(rptTypeOutputHtml[0]) };
+	RptElementOutput  rptDefault = { RPTREGFIN_OUTPUT_HTML, RPTREGFIN_FOLDER_ANY, rptTypeOutputHtml, sizeof(rptTypeOutputHtml)/sizeof(rptTypeOutputHtml[0]) };
 
 	// If we are given a valid or at least not NULL file pointer then we will
 	// set up the environment for the historical report. However if not, then
@@ -347,23 +347,23 @@ RptDescription RptDescriptionCreate (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR
 		for (i = 0; i < sizeof(RptRegFinOutput)/sizeof(RptRegFinOutput[0]); i++) {
 			if (tOutputType == RptRegFinOutput[i].usType) {
 				rptDescription.rptDescrip = RptRegFinOutput[i];
+				rptDescription.rptDescrip.usFolder = tFolder;
 				break;
 			}
 		}
 
 		rptDescription.uchUifACRptOnOffMldSave = uchUifACRptOnOffMld;
-		uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
 	}
 
 	return rptDescription;
 }
 
 // Minimal RptDescription created for generating html or csv reports mainly.
-RptDescription RptDescriptionCreateMini(FILE* fpFile, RptElementOutputType tOutputType, RptElementFunc pOutputFunc)
+RptDescription RptDescriptionCreateMini(FILE* fpFile, RptElementOutputFolder tFolder, RptElementOutputType tOutputType, RptElementFunc pOutputFunc)
 {
 	SHORT    i;
 	RptDescription    rptDescription = { 0 };
-	RptElementOutput  rptDefault = { RPTREGFIN_OUTPUT_HTML, rptTypeOutputHtml, sizeof(rptTypeOutputHtml) / sizeof(rptTypeOutputHtml[0]) };
+	RptElementOutput  rptDefault = { RPTREGFIN_OUTPUT_HTML, RPTREGFIN_FOLDER_ANY, rptTypeOutputHtml, sizeof(rptTypeOutputHtml) / sizeof(rptTypeOutputHtml[0]) };
 
 	rptDescription.fpOut = fpFile;
 	rptDescription.pOutputFunc = pOutputFunc;
@@ -371,6 +371,7 @@ RptDescription RptDescriptionCreateMini(FILE* fpFile, RptElementOutputType tOutp
 	for (i = 0; i < sizeof(RptRegFinOutput) / sizeof(RptRegFinOutput[0]); i++) {
 		if (tOutputType == RptRegFinOutput[i].usType) {
 			rptDescription.rptDescrip = RptRegFinOutput[i];
+			rptDescription.rptDescrip.usFolder = tFolder;
 			break;
 		}
 	}
@@ -765,17 +766,12 @@ VOID RptElementStandardXml (USHORT uchTransAddr, TOTAL *pTtlData,
 
 // Hubworks output file is a special XML file whose format and tags is specified by
 // the Hubworks cloud point of sale ecosystem. See https://hubworks.com/
-FILE * ItemOpenHistorialReportsFolderHubworks (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
+static FILE * ItemOpenHistorialReportsFolderHubworks (char* pathBuffer, USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
 {
 	CONST SYSCONFIG    *pSysConfig = PifSysConfig();       /* get system config */
 	FILE   *pFile = NULL;
-	SHORT  iLoop;
 	char   name[64] = {0};
-	char   pathBuffer[512] = {0};
 
-	for (iLoop = 0; iLoop < TCHARSIZEOF(pSysConfig->tcsReportsHistoricalFolder) && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
-		pathBuffer[iLoop] = pSysConfig->tcsReportsHistoricalFolder[iLoop];
-	}
 	sprintf (name, "\\daily_%4.4d%2.2d%2.2d.xml", iYear, iMonth, iDay);
 	strcat (pathBuffer, name);
 	pFile = fopen (pathBuffer, "w+b");
@@ -804,19 +800,18 @@ static struct {
 	{ AC_CPN_READ_RPT, "ac30out_", "AC 30 Coupon", "ac30report" },               // AC 30 Coupon report file name and title.
 	{ AC_MAJDEPT_RPT, "ac122out_", "AC 122 Major Department", "ac122report" },   // AC 122 Major Department report file name and title.
 	{ AC_EOD_RPT, "ac99out_", "AC 99 End of Day", "ac99report" },                // AC 99 End of Day report file name and title.
-	{ 0, "ac00out_", "AC 00" }                                // place holder or default file name and title.
+	{ 0, "ac00out_", "AC 00", "AC00report" }                                // place holder or default file name and title.
 };
 
-static char* docPathRootWeb = "C:\\FlashDisk\\NCR\\Saratoga\\Web";
+static char* docPathRootWeb = "C:\\FlashDisk\\NCR\\Saratoga\\Web";    // should be same as STD_FOLDER_WEBFOLDER
 
 
-FILE* ItemOpenHistorialReportsFolderXml(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
+static FILE* ItemOpenHistorialReportsFolderXml(char* pathBuffer, USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
 {
 	CONST SYSCONFIG* pSysConfig = PifSysConfig();       /* get system config */
 	FILE* pFile = NULL;
 	SHORT  iLoop;
 	char   name[64] = { 0 };
-	char   pathBuffer[512] = { 0 };
 	char* docPathFormat = NULL;
 
 	switch (uchMinorClass) {
@@ -848,7 +843,7 @@ FILE* ItemOpenHistorialReportsFolderXml(USHORT usPGACNo, UCHAR uchMinorClass, UC
 	}
 
 	if (iLoop >= sizeof(ReportNameList) / sizeof(ReportNameList[0])) {
-		sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderHtml() - ReportNameList[] not found. Bad usPGACNo %d", usPGACNo);
+		sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderXml() - ReportNameList[] not found. Bad usPGACNo %d", usPGACNo);
 		NHPOS_ASSERT_TEXT(0, pathBuffer)
 			return NULL;
 	}
@@ -884,13 +879,12 @@ FILE* ItemOpenHistorialReportsFolderXml(USHORT usPGACNo, UCHAR uchMinorClass, UC
  *    ItemGenerateAc23Report() - generate AC23 Financial Totals Report
  *    ItemGenerateAc21Report() - generate AC21 Operator Totals report
 */
-FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
+static FILE * ItemOpenHistorialReportsFolderHtml (char* pathBuffer, USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
 {
 	CONST SYSCONFIG    *pSysConfig = PifSysConfig();       /* get system config */
 	FILE   *pFile = NULL;
 	SHORT  iLoop;
 	char   name[64] = {0};
-	char   pathBuffer[512] = {0};
 	char   *docHeading = NULL;
 	char   *docPathFormat = NULL;
 
@@ -918,10 +912,6 @@ FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass,
 			}
 			return NULL;
 			break;
-	}
-
-	for (iLoop = 0; iLoop < TCHARSIZEOF(pSysConfig->tcsReportsHistoricalFolder) && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
-		pathBuffer[iLoop] = pSysConfig->tcsReportsHistoricalFolder[iLoop];
 	}
 
 	for (iLoop = 0; iLoop < sizeof(ReportNameList)/sizeof(ReportNameList[0]); iLoop++) {
@@ -956,12 +946,12 @@ FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass,
 		fpRptElementStreamFile = pFile;
 		uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
 		if (docHeading) {
-			fprintf (fpRptElementStreamFile, docHeading, ReportNameList[iLoop].nameTitle);
+			fprintf(fpRptElementStreamFile, docHeading, ReportNameList[iLoop].nameTitle);
 		}
 	}
 	else {
-		sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderHtml() file open - usPGACNo %d  uchMinorClass %d  uchType %d", usPGACNo, uchMinorClass, uchType);
-		NHPOS_ASSERT_TEXT(pFile != NULL, pathBuffer);
+	sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderHtml() file open - usPGACNo %d  uchMinorClass %d  uchType %d", usPGACNo, uchMinorClass, uchType);
+	NHPOS_ASSERT_TEXT(pFile != NULL, pathBuffer);
 	}
 
 	return pFile;
@@ -972,13 +962,12 @@ FILE * ItemOpenHistorialReportsFolderHtml (USHORT usPGACNo, UCHAR uchMinorClass,
  *    ItemGenerateAc23Report() - generate AC23 Financial Totals Report
  *    ItemGenerateAc21Report() - generate AC21 Operator Totals report
 */
-FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
+static FILE* ItemOpenHistorialReportsFolderCsv(char* pathBuffer, USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
 {
 	CONST SYSCONFIG* pSysConfig = PifSysConfig();       /* get system config */
 	FILE* pFile = NULL;
 	SHORT  iLoop;
 	char   name[64] = { 0 };
-	char   pathBuffer[512] = { 0 };
 	char* docPathFormat = NULL;
 
 	switch (uchMinorClass) {
@@ -1003,10 +992,6 @@ FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UC
 	break;
 	}
 
-	for (iLoop = 0; iLoop < TCHARSIZEOF(pSysConfig->tcsReportsHistoricalFolder) && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
-		pathBuffer[iLoop] = pSysConfig->tcsReportsHistoricalFolder[iLoop];
-	}
-
 	if (iYear == 0) {
 		DATE_TIME       DT;
 
@@ -1023,7 +1008,7 @@ FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UC
 	}
 
 	if (iLoop >= sizeof(ReportNameList) / sizeof(ReportNameList[0])) {
-		sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderHtml() - ReportNameList[] not found. Bad usPGACNo %d", usPGACNo);
+		sprintf(pathBuffer, "**ERROR: ItemOpenHistorialReportsFolderCsv() - ReportNameList[] not found. Bad usPGACNo %d", usPGACNo);
 		NHPOS_ASSERT_TEXT(0, pathBuffer)
 			return NULL;
 	}
@@ -1047,7 +1032,7 @@ FILE* ItemOpenHistorialReportsFolderCsv(USHORT usPGACNo, UCHAR uchMinorClass, UC
 	return pFile;
 }
 
-FILE* ItemOpenHistorialReportsFolder(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
+FILE* ItemOpenHistorialReportsFolder(RptElementOutputFolder tFolder, USHORT usPGACNo, UCHAR uchMinorClass, UCHAR uchType, SHORT  iYear, SHORT  iMonth, SHORT  iDay)
 {
 	CONST SYSCONFIG* pSysConfig = PifSysConfig();       /* get system config */
 	FILE* fpFile = NULL;
@@ -1059,51 +1044,96 @@ FILE* ItemOpenHistorialReportsFolder(USHORT usPGACNo, UCHAR uchMinorClass, UCHAR
 		L"report",       // 4 - report text output file
 		L"hubwork"       // 5 - Hubworks ecosystem output file to work with Hubworks.com
 	};
+	char   pathBuffer[512] = { 0 };
 
-	for (int i = 0; i < sizeof(reportTypes)/sizeof(reportTypes[0]); i++) {
-		if (_tcsicmp(pSysConfig->tcsReportsHistoricalType, reportTypes[i]) == 0) {
-			switch (i) {
-			case 1:      // cvs type of output
-				fpFile = ItemOpenHistorialReportsFolderCsv(usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
-				if (fpFile) {
-					RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, RPTREGFIN_OUTPUT_CSV, RptElementStream));
+	if (uchUifACRptOnOffMld == RPT_DISPLAY_ON) return NULL;   // display to window so not a printed report
+
+	switch (tFolder) {
+	case RPTREGFIN_FOLDER_WEB:
+		for (int iLoop = 0; STD_FOLDER_WEBFOLDER[iLoop]; iLoop++) {
+			pathBuffer[iLoop] = STD_FOLDER_WEBFOLDER[iLoop];
+		}
+		fpFile = ItemOpenHistorialReportsFolderHtml(pathBuffer, usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
+		if (fpFile) {
+			RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, tFolder, RPTREGFIN_OUTPUT_HTML, RptElementStream));
+			uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+		}
+		return fpFile;
+		break;
+	case RPTREGFIN_FOLDER_QUERY:
+		for (int iLoop = 0; STD_FOLDER_QUERYFOLDER[iLoop]; iLoop++) {
+			pathBuffer[iLoop] = STD_FOLDER_QUERYFOLDER[iLoop];
+		}
+		fpFile = ItemOpenHistorialReportsFolderHtml(pathBuffer, usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
+		if (fpFile) {
+			RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, tFolder, RPTREGFIN_OUTPUT_HTML, RptElementStream));
+			uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+		}
+		return fpFile;
+		break;
+	case RPTREGFIN_FOLDER_PRINT:
+//		for (int iLoop = 0; STD_FOLDER_PRINTFOLDER[iLoop]; iLoop++) {
+//			pathBuffer[iLoop] = STD_FOLDER_PRINTFOLDER[iLoop];
+//		}
+//		break;
+	case RPTREGFIN_FOLDER_TEMP:
+	case RPTREGFIN_FOLDER_ANY:
+	case RPTREGFIN_FOLDER_HIST:
+	default:
+		for (int iLoop = 0; iLoop < TCHARSIZEOF(pSysConfig->tcsReportsHistoricalFolder) && pSysConfig->tcsReportsHistoricalFolder[iLoop]; iLoop++) {
+			pathBuffer[iLoop] = pSysConfig->tcsReportsHistoricalFolder[iLoop];
+		}
+
+		for (int i = 0; i < sizeof(reportTypes)/sizeof(reportTypes[0]); i++) {
+			if (_tcsicmp(pSysConfig->tcsReportsHistoricalType, reportTypes[i]) == 0) {
+				switch (i) {
+				case 1:      // cvs type of output
+					fpFile = ItemOpenHistorialReportsFolderCsv(pathBuffer, usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
+					if (fpFile) {
+						RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, tFolder, RPTREGFIN_OUTPUT_CSV, RptElementStream));
+						uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+					}
+					return fpFile;
+					break;
+				case 2:      // html web page type of output
+					fpFile = ItemOpenHistorialReportsFolderHtml(pathBuffer, usPGACNo, uchMinorClass, uchType,  iYear, iMonth, iDay);
+					if (fpFile) {
+						RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, tFolder, RPTREGFIN_OUTPUT_HTML, RptElementStream));
+						uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+					}
+					return fpFile;
+					break;
+				case 3:      // xml report type of output
+					fpFile = ItemOpenHistorialReportsFolderXml(pathBuffer, usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
+					if (fpFile) {
+						RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, tFolder, RPTREGFIN_OUTPUT_XML, RptElementStream));
+						uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+					}
+					return fpFile;
+					break;
+				case 4:      // text report type of output
+					break;
+				case 5:      // Hubworks data file type of output
+					fpFile = ItemOpenHistorialReportsFolderHubworks(pathBuffer, usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
+					if (fpFile) {
+						RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, tFolder, RPTREGFIN_OUTPUT_HUBWORKS, RptElementStream));
+						uchUifACRptOnOffMld = RPT_DISPLAY_STREAM;
+					}
+					return fpFile;
+					break;
+				default:
+					break;
 				}
-				return fpFile;
-				break;
-			case 2:      // html web page type of output
-				fpFile = ItemOpenHistorialReportsFolderHtml(usPGACNo, uchMinorClass, uchType,  iYear, iMonth, iDay);
-				if (fpFile) {
-					RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, RPTREGFIN_OUTPUT_HTML, RptElementStream));
-				}
-				return fpFile;
-				break;
-			case 3:      // xml report type of output
-				fpFile = ItemOpenHistorialReportsFolderXml(usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
-				if (fpFile) {
-					RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, RPTREGFIN_OUTPUT_XML, RptElementStream));
-				}
-				return fpFile;
-				break;
-			case 4:      // text report type of output
-				break;
-			case 5:      // Hubworks data file type of output
-				fpFile = ItemOpenHistorialReportsFolderHubworks(usPGACNo, uchMinorClass, uchType, iYear, iMonth, iDay);
-				if (fpFile) {
-					RptDescriptionSet(RptDescriptionCreate(usPGACNo, uchMinorClass, uchType, fpFile, RPTREGFIN_OUTPUT_HUBWORKS, RptElementStream));
-				}
-				return fpFile;
-				break;
-			default:
 				break;
 			}
-			break;
 		}
+		break;
 	}
 
 	return fpFile;
 }
 
-VOID ItemCloseHistorialReportsFolder (FILE *fpFile)
+SHORT ItemCloseHistorialReportsFolder (FILE *fpFile)
 {
 	if (!fpFile) return -1;
 
@@ -1141,6 +1171,8 @@ VOID ItemCloseHistorialReportsFolder (FILE *fpFile)
 	}
 	uchUifACRptOnOffMld = RPT_DISPLAY_OFF;
 	RptDescriptionClear();
+
+	return SUCCESS;
 }
 //---------------------------------------------------------------------------
 
