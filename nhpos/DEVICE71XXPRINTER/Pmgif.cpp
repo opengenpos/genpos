@@ -85,8 +85,15 @@ static const PrinterEscCode EscPaperCut = { "\x1b|75fP", 6 };     // perform pap
 static const PrinterEscCode EscFeedlines = { "\x1b|1lF", 5 };     // perform line feed of paper. hard coded to 1 line.
 static const PrinterEscCode EscInitPrinter = { "\x1b|3fT", 5 };   // perform printer initialization.
 
-static USHORT  PmgEditEsc(UCHAR *, USHORT, USHORT *, USHORT *pusBuffLen);
-static USHORT  PmgEditOposEsc(UCHAR *, USHORT, USHORT *, USHORT *);
+typedef struct {
+    UCHAR* pucBuffDest;
+    UCHAR* pucBuffSrc;
+    UCHAR* pucBuffStart;
+    USHORT usBuffLen;
+    USHORT usDestLen;
+} PmgEditBuff;
+
+static USHORT  PmgEditOposEsc(PmgEditBuff *p);
 static UCHAR  PmgStrAdjust(UCHAR *pszDest, USHORT usDestLen, UCHAR *pszSource, UCHAR uchMaxColumn, BOOL fAutoFeed);
 static USHORT PmgWideAdjust(USHORT usPrtType, UCHAR *pucDest, UCHAR *pucSrc, SHORT sLen);
 
@@ -465,7 +472,6 @@ USHORT  DevPmgPrint(USHORT usPrtType, UCHAR *pucBuff, USHORT usLen)
 {
     BOOL        fDataFlag;
 
-
     switch (PmgChkConfig(usPrtType)) {
     case PMG_TRUE:
         break;
@@ -496,103 +502,47 @@ USHORT  DevPmgPrint(USHORT usPrtType, UCHAR *pucBuff, USHORT usLen)
 	fDataFlag = FALSE;
 	while (usLen > 0) {
 		USHORT   sTmpLen, sTmpBufLen;
+        UCHAR       pBuffDest[64] = { 0 };
+        PmgEditBuff pBuff = { 0 };
 
-        /*--- edit print buffer ---*/
-		// PmgEditOposEsc()  PmgEditEsc()
-        if (PmgEditOposEsc(pucBuff, usLen, &sTmpLen, &sTmpBufLen) == FALSE) {
-			if (sTmpLen < 1) {
-				/*--- set next pointer ---*/
-				pucBuff += sTmpBufLen;
-				usLen -= sTmpBufLen;
-				continue;
-			}
+       /*--- edit print buffer ---*/
+        pBuff.pucBuffDest = pBuffDest;
+        pBuff.pucBuffSrc = pBuff.pucBuffStart = pucBuff;
+        pBuff.usBuffLen = usLen;
+        if (PmgEditOposEsc(&pBuff) == FALSE) {
+            sTmpLen = pBuff.usDestLen;
+            sTmpBufLen = pBuff.pucBuffSrc - pucBuff;
 			// this is an escape code sequence at the beginning of the buffer.
             /*--- check data flag ---*/
             if (fDataFlag == TRUE) {
                 /*--- check 1 line feed code ---*/
-                if (*pucBuff == LF) {
+                if (*pBuffDest == LF) {
                     fDataFlag = FALSE;
 
                 /*--- check line feed code ---*/
-                } else if (strncmp((CHAR *)pucBuff, "\033d", 2) == 0) {
-                    switch (pucBuff[1]) {
+                } else if (strncmp((CHAR *)pBuffDest, "\033d", 2) == 0) {
+                    switch (pBuffDest[1]) {
                     case 0:                     /* 0 line feed  */
                         break;
                     case 1:                     /* 1 line feed  */
                         fDataFlag = FALSE;
                         break;
                     default:                    /* n line feed  */
-                        pucBuff[2]--;
+                        pBuffDest[2]--;
                         fDataFlag = FALSE;
 
                         /*--- insert escape data ---*/
-                        PmgInsSpoolData(usPrtType, pucBuff, sTmpLen, FALSE);
+                        PmgInsSpoolData(usPrtType, pBuffDest, sTmpLen, FALSE);
                         break;
                     }
                 } else {
                     /*--- insert escape data ---*/
-                    PmgInsSpoolData(usPrtType, pucBuff, sTmpLen, FALSE);
+                    PmgInsSpoolData(usPrtType, pBuffDest, sTmpLen, FALSE);
                 }
             } else {
                 /*--- insert escape data ---*/
-                PmgInsSpoolData(usPrtType, pucBuff, sTmpLen, FALSE);
+                PmgInsSpoolData(usPrtType, pBuffDest, sTmpLen, FALSE);
             }
-        } else {
-			UCHAR    *pucTmpBuff;
-			SPOOLCNT *pSpoolCtrl = PmgGetSpoolCtrl(usPrtType);                /* spool control block      */
-			UCHAR    szSrcBuff[MAX_PRINT_CHAR];
-			UCHAR    szDestBuff[MAX_PRINT_CHAR];
-			USHORT   sTmpBufLen2, sTmpLen2, sTmpLen3, sTmpLen4, sTmpLen5;
-
-			/*--- copy source data to temp buff ---*/
-            memcpy(&szSrcBuff, pucBuff, sTmpLen);
-            szSrcBuff[sTmpLen] = 0;
-
-            /*--- adjust ascii data ---*/
-            if ((pSpoolCtrl->fbModeInput & SPLMD_VALIDATION) == 0) {
-                sTmpLen2 = PmgStrAdjust(szDestBuff, sizeof(szDestBuff), szSrcBuff, pSpoolCtrl->ucMaxChar, RFL_FEED_ON);
-            } else {
-                sTmpLen2 = PmgStrAdjust(szDestBuff, sizeof(szDestBuff), szSrcBuff, pSpoolCtrl->ucValidChar, RFL_FEED_ON);
-            }
-
-            /*--- insert spool buffer, if spool full then wait ---*/
-            pucTmpBuff = szDestBuff;
-            while (sTmpLen2 > 0) {
-				UCHAR   szWorkBuff[MAX_PRINT_CHAR * 2];
-				UCHAR   *pszWorkBuff = szWorkBuff;
-
-				/*--- search LF & devide 1 line ---*/
-				PmgEditOposEsc(pucTmpBuff, sTmpLen2, &sTmpLen3, &sTmpBufLen2);
-                sTmpLen4 = PmgWideAdjust(usPrtType, szWorkBuff, pucTmpBuff, sTmpLen3);
-                while (sTmpLen4 > 0) {
-
-                    if (sTmpLen4 > MAX_PRT_COMM) {
-                        if (pszWorkBuff[MAX_PRT_COMM-1] == ESC) sTmpLen5 = MAX_PRT_COMM-1;
-                        else if (pszWorkBuff[MAX_PRT_COMM-2] == ESC) sTmpLen5 = MAX_PRT_COMM-2;
-                        else sTmpLen5 = MAX_PRT_COMM;
-                        PmgInsSpoolData(usPrtType, pszWorkBuff, sTmpLen5, TRUE);
-
-                    } else {
-                        sTmpLen5 = sTmpLen4;
-                        PmgInsSpoolData(usPrtType, pszWorkBuff, sTmpLen5, FALSE);
-
-                    }
-
-					if (sTmpBufLen2 > sTmpLen4) break;
-                    pszWorkBuff += sTmpBufLen2;
-                    sTmpLen4 -= sTmpBufLen2;
-                }
-				if (sTmpBufLen2 > sTmpLen2) break;
-				pucTmpBuff += sTmpBufLen2;
-                sTmpLen2 -= sTmpBufLen2;
-
-                if (*pucTmpBuff == LF) {
-                    pucTmpBuff++;
-                    sTmpLen2--;
-                }
-            }
-
-            fDataFlag = TRUE;
         }
 
         /*--- set next pointer ---*/
@@ -1254,222 +1204,141 @@ USHORT  DevPmgFont( USHORT usPrtType, USHORT usFont)
 *
 **************************************************************************
 */
-
-static USHORT PmgEditEsc(UCHAR *pucBuff, USHORT usLen, USHORT *pusOutLen, USHORT *pusBuffLen)
-{
-    USHORT  i;
-    SHORT   sEscLen;                /* length of escape     */
-
-
-    for (i=0; i<usLen; i++) {
-#if defined (USE_2170_ORIGINAL)
-        if (pucBuff[i] == LF) {
-            sEscLen = 1;
-            break;
-        }
-#else
-        /* --- Fix a glitch (03/31/2001)
-            To eject slip paper properly, use "Eject Slip Paper"
-            command instead of "Reverse Feed".
-        --- */
-        if ((pucBuff[i] == LF) || (pucBuff[i] == 0x0C)) {
-            sEscLen = 1;
-            break;
-        }
-#endif
-        if (pucBuff[i] == ESC) {
-            switch (pucBuff[i+1]) {
-#if defined (DEVICE_7158) || defined (DEVICE_7194) || defined (DEVICE_7161) || defined (DEVICE_7196)
-            case 'c':                       /* select code table        */
-                sEscLen = 4;
-                break;
-#endif
-            case 't':                       /* select code table        */
-            case 'd':                       /* feed                     */
-            case 'h':                       /* feed direction           */
-            case '3':                       /* make size of slow feed   */
-            case 'J':                       /* slow feed                */
-            case '!':
-#if defined (DEVICE_7158) || defined (DEVICE_7194) || defined (DEVICE_7161) || defined (DEVICE_7196)
-            case 'e':                       /* print and reverse feed n lines*/
-#endif
-                sEscLen = 3;
-                break;
-            case '<':                       /* return home              */
-            case 'i':                       /* full cut                 */
-            case 'm':                       /* partial cut              */
-            case 'o':                       /* electro stamp            */
-            case 'q':                       /* open platen              */
-                sEscLen = 2;
-                break;
-            default:
-                sEscLen = 0;
-                break;
-            }
-            if (sEscLen != 0) break;
-        }
-        if (pucBuff[i] == GS) {
-            switch (pucBuff[i+1]) {
-            case '/':                       /* print down load bit image    */
-                sEscLen = 3;
-                break;
-            default:
-                sEscLen = 0;
-                break;
-            }
-            if (sEscLen != 0) break;
-        }
-    }
-
-    if (i != 0) {
-		// if not at beginning of line then length of text up to the escape sequence.
-		*pusBuffLen = *pusOutLen = i;
-        return(TRUE);
-    } else {
-		// if at beginning of line then length of escape sequence only
-		*pusBuffLen = *pusOutLen = sEscLen;
-        return(FALSE);
-    }
-}
-
 static bool IsEscCodeType(UCHAR *pucBuff, PrinterEscCode escCode)
 {
 	return strncmp((char *)pucBuff, escCode.pEsc, escCode.usLen) == 0;
 }
 
-
-static USHORT PmgEditOposEsc(UCHAR *pucBuff, USHORT usLen, USHORT *pusOutLen, USHORT *pusBuffLen)
+static USHORT PmgEditOposEsc(PmgEditBuff *pBuff)
 {
-	USHORT  i;
-	SHORT   sEscLen = 0;                /* length of escape     */
+    UCHAR* pX, *pY;
 
-	*pusBuffLen = *pusOutLen = 0;
+    for (pX = pBuff->pucBuffSrc, pY = pBuff->pucBuffDest; pX < pBuff->pucBuffStart + pBuff->usBuffLen; ) {
 
-	for (i = 0; i < usLen; i++) {
-#if defined (USE_2170_ORIGINAL)
-		if (pucBuff[i] == LF) {
-			sEscLen = 1;
-			break;
-		}
+        /* --- Fix a glitch (03/31/2001)
+        To eject slip paper properly, use "Eject Slip Paper"
+        command instead of "Reverse Feed".
+        --- */
+        if ((*pX == LF) || (*pX == 0x0C)) {
+            *pY = *pX;
+            pX += 1;
+            pY += 1;
+            break;
+        }
+
+        // the printer appears to treat a carriage return
+        // as a line feed resulting in a carriage return, line feed
+        // sequence printing as a line of text followed by a blank line.
+        // this may be a printer setting however testing with a
+        // NCR 7197 thermal printer shows this removal of a carriage
+        // return is needed.
+        if (*pX == CR) {
+            pX += 1;
+            break;
+        }
+        else if (*pX != ESC) {
+            *pY++ = *pX++;
+        } else {
+            if (IsEscCodeType(pX, EscPaperCut)) {
+                // replace the OPOS paper cut
+                // with the NCR 7197 paper cut command.
+                // we need to feed a couple of lines before doing the
+                // papercut in order to move the last printed line
+                // past the knife.
+                pX += EscPaperCut.usLen;
+                *pY++ = DC4; *pY++ = 6;
+                *pY++ = ESC; *pY++ = 'm';
+                break;
+            }
+            else if (IsEscCodeType(pX, EscFeedlines)) {
+                // replace the OPOS line feed
+                // with the NCR 7197 line feed command.
+                pX += EscFeedlines.usLen;
+                *pY++ = DC4; *pY++ = 1;
+                break;
+            }
+            else if (IsEscCodeType(pX, EscSizeSnglWH)) {
+                // keep the escape character and then replace the OPOS single wide text
+                // with the NCR 7197 single wide text command.
+                pX += EscSizeSnglWH.usLen;
+                *pY++ = ESC; *pY++ = '!'; *pY++ = 0x00;    // first char was GS
+                break;
+            }
+            else if (IsEscCodeType(pX, EscSizeDblW)) {
+                // keep the escape character and then replace the OPOS double wide text
+                // with the NCR 7197 double wide text command.
+                pX += EscSizeDblW.usLen;
+                *pY++ = ESC; *pY++ = '!'; *pY++ = 0x20;    // first char was GS
+                break;
+            }
+            else if (IsEscCodeType(pX, EscSizeDblWH)) {
+                // keep the escape character and then replace the OPOS double wide double high text
+                // with the NCR 7197 double wide double high text command.
+                pX += EscSizeDblWH.usLen;
+                *pY++ = ESC; *pY++ = '!'; *pY++ = 0x30;    // first char was GS
+                break;
+            }
+            else if (IsEscCodeType(pX, EscAlignLeft)) {
+                //#define DO_ALIGN
+
+                                // keep the escape character and then replace the OPOS left align
+                                // with the NCR 7197 left align command.
+#if defined(DO_ALIGN)
+                pX += EscAlignLeft.usLen;
+                *pY++ = ESC; *pY++ = 'a'; *pY++ = '0';
 #else
-		/* --- Fix a glitch (03/31/2001)
-		To eject slip paper properly, use "Eject Slip Paper"
-		command instead of "Reverse Feed".
-		--- */
-		if ((pucBuff[i] == LF) || (pucBuff[i] == 0x0C)) {
-			*pusBuffLen = 1;
-			sEscLen = 1;
-			break;
-		}
-
-		// the printer appears to treat a carriage return
-		// as a line feed resulting in a carriage return, line feed
-		// sequence printing as a line of text followed by a blank line.
-		// this may be a printer setting however testing with a
-		// NCR 7197 thermal printer shows this removal of a carriage
-		// return is needed.
-		if (pucBuff[i] == CR) {
-			*pusBuffLen = 1;
-			sEscLen = 0;
-			break;
-		}
+                for (USHORT usI = 0; usI < EscAlignLeft.usLen; usI++) {
+                    *pY++ = *pX++;
+                }
 #endif
-		if (pucBuff[i] == ESC) {
-			if (IsEscCodeType(pucBuff + i, EscPaperCut)) {
-				// replace the OPOS paper cut
-				// with the NCR 7197 paper cut command.
-				// we need to feed a couple of lines before doing the
-				// papercut in order to move the last printed line
-				// past the knife.
-				*pusBuffLen = 0;
-				pucBuff[i] = DC4; pucBuff[i + 1] = 6;
-				sEscLen = 2;
-				*pusBuffLen += EscPaperCut.usLen;
-				pucBuff[i + 2] = ESC; pucBuff[i + 3] = 'm';
-				sEscLen += 2;
-				break;
-			}
-			else if (IsEscCodeType(pucBuff + i, EscFeedlines)) {
-				// replace the OPOS line feed
-				// with the NCR 7197 line feed command.
-				*pusBuffLen = EscFeedlines.usLen;
-				pucBuff[i] = DC4; pucBuff[i+1] = 1;
-				sEscLen = 2;
-				break;
-			}
-			else if (IsEscCodeType(pucBuff + i, EscSizeSnglWH)) {
-				// keep the escape character and then replace the OPOS single wide text
-				// with the NCR 7197 single wide text command.
-				*pusBuffLen = EscSizeSnglWH.usLen;
-				pucBuff[i] = GS; pucBuff[i+1] = '!'; pucBuff[i+2] = 0x00;
-				sEscLen = 3;
-				break;
-			}
-			else if (IsEscCodeType(pucBuff + i, EscSizeDblW)) {
-				// keep the escape character and then replace the OPOS double wide text
-				// with the NCR 7197 double wide text command.
-				*pusBuffLen = EscSizeDblW.usLen;
-				pucBuff[i] = GS; pucBuff[i+1] = '!'; pucBuff[i+2] = 0x1;
-				sEscLen = 3;
-				break;
-			}
-			else if (IsEscCodeType(pucBuff + i, EscSizeDblWH)) {
-				// keep the escape character and then replace the OPOS double wide double high text
-				// with the NCR 7197 double wide double high text command.
-				*pusBuffLen = EscSizeDblWH.usLen;
-				pucBuff[i] = GS; pucBuff[i+1] = '!'; pucBuff[i+2] = 0x11;
-				sEscLen = 3;
-				break;
-			}
-			else if (IsEscCodeType(pucBuff + i, EscAlignLeft)) {
-				// keep the escape character and then replace the OPOS left align
-				// with the NCR 7197 left align command.
-				*pusBuffLen = EscAlignLeft.usLen;
-//				pucBuff[i] = ESC; pucBuff[i+1] = 'a'; pucBuff[i+2] = '0';
-				sEscLen = 0;
-				break;
-			}
-			else if (IsEscCodeType(pucBuff + i, EscAlignRight)) {
-				// replace the OPOS right align
-				// with the NCR 7197 right align command.
-				*pusBuffLen = EscAlignRight.usLen;
-//				pucBuff[i] = ESC; pucBuff[i+1] = 'a'; pucBuff[i+2] = '2';
-				sEscLen = 0;
-				break;
-			}
-			else if (IsEscCodeType(pucBuff + i, EscAlignCenter)) {
-				// replace the OPOS center align
-				// with the NCR 7197 center align command.
-				*pusBuffLen = EscAlignCenter.usLen;
-//				pucBuff[i] = ESC; pucBuff[i + 1] = DC4; pucBuff[i + 2] = '1';  // set column command
-//				pucBuff[i] = ESC; pucBuff[i + 1] = 'a'; pucBuff[i + 2] = '1';
-				sEscLen = 0;
-				break;
-			}
-			else if (IsEscCodeType(pucBuff + i, EscInitPrinter)) {
-				// replace the OPOS initialize printer
-				// with the NCR 7197 initialize printer command.
-				*pusBuffLen = EscInitPrinter.usLen;
-//				pucBuff[i] = ESC; pucBuff[i + 1] = 0x40;
-				pucBuff[i] = DLE;
-				pucBuff[i+1] = ESC; pucBuff[i + 2] = 0x16; pucBuff[i + 3] = 0x01;
-				sEscLen = 5;
-				break;
-			}
-		}
-	}
+                break;
+            }
+            else if (IsEscCodeType(pX, EscAlignRight)) {
+                // replace the OPOS right align
+                // with the NCR 7197 right align command.
+#if defined(DO_ALIGN)
+                pX += EscAlignRight.usLen;
+                *pY++ = ESC; *pY++ = 'a'; *pY++ = '2';
+#else
+                for (USHORT usI = 0; usI < EscAlignRight.usLen; usI++) {
+                    *pY++ = *pX++;
+                }
+#endif
+                break;
+            }
+            else if (IsEscCodeType(pX, EscAlignCenter)) {
+                // replace the OPOS center align
+                // with the NCR 7197 center align command.
+#if defined(DO_ALIGN)
+                pX += EscAlignCenter.usLen;
+                //				pucBuff[i] = ESC; pucBuff[i + 1] = DC4; pucBuff[i + 2] = '1';  // set column command
+                *pY++ = ESC; *pY++ = 'a'; *pY++ = '1';
+#else
+                for (USHORT usI = 0; usI < EscAlignCenter.usLen; usI++) {
+                    *pY++ = *pX++;
+                }
+#endif
+                break;
+            }
+            else if (IsEscCodeType(pX, EscInitPrinter)) {
+                // replace the OPOS initialize printer
+                // with the NCR 7197 initialize printer command.
+                pX += EscInitPrinter.usLen;
+                //				pucBuff[i] = ESC; pucBuff[i + 1] = 0x40;
+                *pY++ = DLE;
+                *pY++ = ESC; *pY++ = 0x16; *pY++ = 0x01;
+                break;
+            }
+        }
+    }
 
-	if (i != 0) {
-		// if not at beginning of line then text up to the escape sequence.
-		*pusBuffLen = *pusOutLen = i;
-		return(FALSE);
-	}
-	else {
-		// if at beginning of line then length of escape sequence only
-		*pusOutLen = sEscLen;
-		return(FALSE);
-	}
+    pBuff->pucBuffSrc = pX;
+    pBuff->usDestLen = pY - pBuff->pucBuffDest;
+    pBuff->pucBuffDest = pY;
+
+    return 0;
 }
+
 
 /*
 **************************************************************************
