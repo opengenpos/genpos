@@ -10,7 +10,7 @@ Name "OpenGenPOS PCIF 3rd Party Toolkit"
 #       See as well the copyright macro ALL_Q_COPYRIGHT.
 #       See as well macro for OutFile below containing installer file name.
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 2.4.0.003
+!define VERSION 2.4.0.004
 !define COMPANY NCR
 !define URL https://github.com/opengenpos
 
@@ -39,7 +39,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile PCIF_rel_02_04_00_003.exe
+OutFile PCIF_rel_02_04_00_004.exe
 InstallDir $PROGRAMFILES\NCR\NeighborhoodPOS\PCIF2.4
 CRCCheck force
 XPStyle on
@@ -51,7 +51,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "GENPOS PCIF Toolkit Installer"
-VIAddVersionKey LegalCopyright "Copyright (C) 2002-2023, Georgia Southern University"
+VIAddVersionKey LegalCopyright "Copyright (C) 2002-2024, Georgia Southern University"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 RequestExecutionLevel admin
@@ -71,8 +71,8 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\Include
     File PEP\PCIF\Include\*.h
 
-    SetOutPath $INSTDIR\include.vb
-    File PEP\PCIF\include.vb\*.bas
+#    SetOutPath $INSTDIR\include.vb
+#    File PEP\PCIF\include.vb\*.bas
 
     SetOutPath $INSTDIR\lib
     File PEP\lib\release\*.exp
@@ -94,10 +94,10 @@ Section -Main SEC0000
     File PEP\PCIF\SAMPLE.CPP_20\RES\*.rc2
     File PEP\PCIF\SAMPLE.CPP_20\RES\*.bmp
  
-    SetOutPath $INSTDIR\Sample.vb
-    File /r PEP\PCIF\Sample.vb\*.frm
-    File /r PEP\PCIF\Sample.vb\*.vbp
-    File /r PEP\PCIF\Sample.vb\*.vbw
+#    SetOutPath $INSTDIR\Sample.vb
+#    File /r PEP\PCIF\Sample.vb\*.frm
+#    File /r PEP\PCIF\Sample.vb\*.vbp
+#    File /r PEP\PCIF\Sample.vb\*.vbw
 
     SetOutPath $INSTDIR\SAMPLE_EPT.CPP_20
     File PEP\PCIF\SAMPLE_EPT.CPP_20\*.cpp
