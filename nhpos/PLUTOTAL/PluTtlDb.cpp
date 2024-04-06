@@ -15,7 +15,9 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 int         CnPluTotalDb::s_nObjCnt;                // object counter
-CnAdoXPRec* CnPluTotalDb::s_pRec[RECORDSET_NUM];    // record sets
+//CnAdoXPRec* CnPluTotalDb::s_pRec[RECORDSET_NUM];    // record sets
+CnAdoXPRec* CnPluTotalDb::__pRecS;	// recordset (ADOCE)
+CnAdoXPRec* CnPluTotalDb::__pRecO;	// recordset (ADOCE)
 const int   CnPluTotalDb::s_IdxNum         = 3;
 
 //////////////////////////////////////////////////////////////////////

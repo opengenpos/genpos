@@ -35,9 +35,9 @@ typedef struct {
 
 const	int	c_nTblNumMax = 10;
 
-#define	RECORDSET_NUM	(2)				// max recoredset num
-#define	__pRecS		s_pRec[0]					// cursor
-#define	__pRecO		s_pRec[1]					// one shot
+//#define	RECORDSET_NUM	(2)				// max recoredset num
+//#define	__pRecS		s_pRec[0]					// cursor
+//#define	__pRecO		s_pRec[1]					// one shot
 
 class	CnAdoXPRec;
 
@@ -45,7 +45,9 @@ class CnPluTotalDb
 {
 private:
 	static	int			s_nObjCnt;					// object counter
-	static	CnAdoXPRec	* s_pRec[RECORDSET_NUM];	// recordset (ADOCE)
+//	static	CnAdoXPRec* s_pRec[RECORDSET_NUM];	// recordset (ADOCE)
+	static	CnAdoXPRec* __pRecS;	// recordset (ADOCE)
+	static	CnAdoXPRec* __pRecO;	// recordset (ADOCE)
 protected:
 	CnVariant			m_vAC_DbFileName;			// ACTIVE CONNECTION (ADOCE)
 public:
