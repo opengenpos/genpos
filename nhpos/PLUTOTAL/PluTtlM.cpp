@@ -1643,14 +1643,14 @@ ULONG   CnPluTotal::CloseDBFile(){
         m_fDbFile.Close();
     m_nCurrentDbFile = -1;
 
-    PutLog(TEXT("$$$ CnPluTotalDb::CloseDbFile"),0,(ULONG)PLUTOTAL_SUCCESS,NULL);
+    PutLog(TEXT("$$$ CnPluTotalDb::CloseDbFile"),(ULONG)0,(ULONG)PLUTOTAL_SUCCESS,NULL);
     return  PLUTOTAL_SUCCESS;
 }
 
 
 ULONG   CnPluTotal::ReadDbFile(const ULONG ulOffset, const ULONG ulBytes,VOID *pBuf,ULONG *pulReadBytes){
 
-	DWORD dwLength;
+    ULONGLONG dwLength;
 
 	// set seek function for recovery, 02/15/01
     PutLog(TEXT("$$$ CnPluTotalDb::ReadDbFile Seek0"),ulOffset,PLUTOTAL_SUCCESS,NULL);
@@ -1664,7 +1664,7 @@ ULONG   CnPluTotal::ReadDbFile(const ULONG ulOffset, const ULONG ulBytes,VOID *p
         ::OutputDebugString(msg);
     }END_CATCH
     if (ulOffset > dwLength) {
-        PutLog(TEXT("$$$ CnPluTotalDb::ReadDbFile"),0,(ULONG)PLUTOTAL_EOF);
+        PutLog(TEXT("$$$ CnPluTotalDb::ReadDbFile"),(ULONG)0,(ULONG)PLUTOTAL_EOF);
         return  PLUTOTAL_EOF;
 	}
     TRY{
@@ -1709,7 +1709,7 @@ ULONG   CnPluTotal::ReadDbFile(const ULONG ulOffset, const ULONG ulBytes,VOID *p
 
 ULONG   CnPluTotal::WriteDbFile(const ULONG ulOffset, const ULONG ulBytes,const VOID *pBuf){
 
-	DWORD dwLength;
+    ULONGLONG dwLength;
 
 	// set seek function for recovery, 02/15/01
     PutLog(TEXT("$$$ CnPluTotalDb::WriteDbFile Seek0"),ulOffset,(ULONG)PLUTOTAL_SUCCESS,NULL);
@@ -1886,6 +1886,20 @@ void    CnPluTotal::PutLog(LPCTSTR szLabel,const ULONG ulBytes,const ULONG ulSts
 #endif
 }
 
+void    CnPluTotal::PutLog(LPCTSTR szLabel, const ULONGLONG ullBytes, const ULONG ulSts, CFileException* pEx) {
+#ifdef  _CNPLUTOTAL_DBFILE_TRACE
+    TCHAR   tBuf[512], fname[256], tErrMsg[255];
+    if (pEx != NULL) {
+        memset(tErrMsg, 0, sizeof(tErrMsg));
+        pEx->GetErrorMessage(tErrMsg, 255);
+        wsprintf(tBuf, TEXT("{ %ld bytes } (%ld)\n---> %s"), ulBytes, ulSts, tErrMsg);
+    }
+    else
+        wsprintf(tBuf, TEXT("{ %ld bytes } (%ld)"), ulBytes, ulSts);
+    wsprintf(fname, TEXT(" [%s] "), (LPCTSTR)(m_fDbFile.GetFilePath()));
+    dbgtrc.PutLog(szLabel, fname, tBuf);
+#endif
+}
 
 int CnPluTotal::SearchTbl(const SHORT sTblID,int *nTblIdx){
     int idx = 0;

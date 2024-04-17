@@ -131,7 +131,8 @@ public:
 	void			PutLog(LPCTSTR szLabel,const SHORT nTblID,const PLUTOTAL_REC &RecData,const ULONG ulSts);
 	void			PutLog(LPCTSTR szLabel,const SHORT nTblID,const char aucPluNumber,const ULONG ulSts);
 	void			PutLog(LPCTSTR szLabel,const SHORT nTblID,const PLUTOTAL_STATUS StatusRec,const ULONG ulSts);
-	void			PutLog(LPCTSTR szLabel,const ULONG ulBytes,const ULONG ulSts,CFileException * pEx = NULL);
+	void			PutLog(LPCTSTR szLabel, const ULONG ulBytes, const ULONG ulSts, CFileException* pEx = NULL);
+	void			PutLog(LPCTSTR szLabel, const ULONGLONG ullBytes, const ULONG ulSts, CFileException* pEx = NULL);
 
 	// *** DEBUG & TESTS (041500)
 	ULONG			__DbgMakeTestData(const SHORT nTblID,const LONG lFrom,const LONG lTo,const LONG lStep = 1);
