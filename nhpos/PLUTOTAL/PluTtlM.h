@@ -60,6 +60,8 @@ protected:
 	__StatusBuf		m_StatusBuf[STSTBL_NUM];
 
 protected:
+	virtual BOOL	MakeParmsPluTotals(COleSafeArray& saFields);
+	virtual BOOL	MakeParmsPluStatus(COleSafeArray& saFields);
 	virtual	BOOL	MakeParams(const SHORT nTblID,COleSafeArray &vFields);
 
 	BOOL			Var2PluTtlRec(const CnVariant vRecData,PLUTOTAL_REC * pRecData);

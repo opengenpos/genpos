@@ -226,6 +226,59 @@ BOOL    CnPluTotal::GetTblFormat(){
     return TRUE;
 }
 
+#define  MAKEPARMS  1
+BOOL CnPluTotal::MakeParmsPluTotals(COleSafeArray& saFields) {
+    long    lIdx[1] = { 0 };    // bound
+
+    saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);
+    lIdx[0] = 0;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_PLUNUMBER, VT_BSTR));
+
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_ADJINDEX, VT_BSTR));
+
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_TOTAL, VT_BSTR));
+
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_COUNTER, VT_BSTR));
+
+#if defined(DCURRENCY_LONGLONG)
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_TOTALVOID, VT_BSTR));
+
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_COUNTERVOID, VT_BSTR));
+#endif
+
+    return TRUE;
+}
+
+BOOL CnPluTotal::MakeParmsPluStatus(COleSafeArray& saFields) {
+    long    lIdx[1] = { 0 };    // bound
+
+    saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_STSREC_FLD_NUM, NULL, 0);
+
+    lIdx[0] = 0;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_RESETSTATUS, VT_BSTR));
+
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_FROMDATE, VT_BSTR));
+
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_TODATE, VT_BSTR));
+
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_PLUALLTOTAL, VT_BSTR));
+
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_PLUAMOUNT, VT_BSTR));
+
+    lIdx[0]++;
+    saFields.PutElement(lIdx, COleVariant(SQLVAR_VERSION, VT_BSTR));
+
+    return TRUE;
+}
 
 BOOL    CnPluTotal::MakeParams(const SHORT nTblID,COleSafeArray &saFields){
 //    COleSafeArray   vFldNames;      // field names
@@ -239,6 +292,9 @@ BOOL    CnPluTotal::MakeParams(const SHORT nTblID,COleSafeArray &saFields){
         case PLUTOTAL_ID_PTD_CUR    :
         case PLUTOTAL_ID_PTD_SAV    :
         case PLUTOTAL_ID_TMP_CUR:       /* */
+#if defined(MAKEPARMS)
+            MakeParmsPluTotals(saFields);
+#else
             // *** Total table
 			saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL,0);
             lIdx[0] = 0; vWrk.Clear(); vWrk.SetString(SQLVAR_PLUNUMBER,VT_BSTR);
@@ -261,12 +317,16 @@ BOOL    CnPluTotal::MakeParams(const SHORT nTblID,COleSafeArray &saFields){
             saFields.PutElement(lIdx,&vWrk);
 #endif
             vWrk.Clear();                               // V1.0.0.4
+#endif
             break;
         case PLUTOTAL_ID_DAILY_CUR_S:
         case PLUTOTAL_ID_DAILY_SAV_S:
         case PLUTOTAL_ID_PTD_CUR_S  :
         case PLUTOTAL_ID_PTD_SAV_S  :
         case PLUTOTAL_ID_TMP_CUR_S:							/* */
+#if defined(MAKEPARMS)
+            MakeParmsPluStatus(saFields);
+#else
             saFields.CreateOneDim(VT_VARIANT, 5,NULL,0); // ### ADD (03272000)
 
             // *** Status table
@@ -290,6 +350,7 @@ BOOL    CnPluTotal::MakeParams(const SHORT nTblID,COleSafeArray &saFields){
             vWrk.SetString(SQLVAR_VERSION,VT_BSTR);
             saFields.PutElement(lIdx,&vWrk);
             vWrk.Clear();                               // V1.0.0.4
+#endif
             break;
         default:
             saFields.Clear();
@@ -735,6 +796,9 @@ ULONG   CnPluTotal::MoveTableN(const SHORT nFromTblID,const SHORT nToTblID){
     if(lRecCnt > 0){
         COleSafeArray   saFields;
         COleVariant     vWrk;
+#if defined(MAKEPARMS)
+        MakeParmsPluTotals(saFields);
+#else
         saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);
         lIdx[0] = 0; vWrk.Clear(); vWrk.SetString(SQLVAR_PLUNUMBER,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
@@ -750,6 +814,7 @@ ULONG   CnPluTotal::MoveTableN(const SHORT nFromTblID,const SHORT nToTblID){
         saFields.PutElement(lIdx,&vWrk);
         lIdx[0]++; vWrk.Clear(); vWrk.SetString(SQLVAR_COUNTERVOID,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
+#endif
 #endif
         TCHAR   strPluNo[PLUTOTAL_PLUNO_LEN+1];
         COleVariant     vValues;
@@ -864,6 +929,9 @@ ULONG   CnPluTotal::ExportTableToFile (const SHORT nFromTblID, const TCHAR *pFil
     if(lRecCnt > 0 && hsPluTtlExportHandle >= 0) {
         COleSafeArray   saFields;
         COleVariant     vWrk;
+#if defined(MAKEPARMS)
+        MakeParmsPluTotals(saFields);
+#else
         saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);
         lIdx[0] = 0; vWrk.Clear(); vWrk.SetString(SQLVAR_PLUNUMBER,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
@@ -879,6 +947,7 @@ ULONG   CnPluTotal::ExportTableToFile (const SHORT nFromTblID, const TCHAR *pFil
         saFields.PutElement(lIdx,&vWrk);
         lIdx[0]++; vWrk.Clear(); vWrk.SetString(SQLVAR_COUNTERVOID,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
+#endif
 #endif
 
         COleVariant     vValues;
@@ -996,7 +1065,10 @@ ULONG   CnPluTotal::InsertN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
 
         // field names
         COleSafeArray   saFields;
-        saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);    
+#if defined(MAKEPARMS)
+        MakeParmsPluTotals(saFields);
+#else
+        saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);
 
         lIdx[0] = 0; vWrk.Clear(); vWrk.SetString(SQLVAR_PLUNUMBER,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
@@ -1012,6 +1084,7 @@ ULONG   CnPluTotal::InsertN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
         saFields.PutElement(lIdx,&vWrk);
         lIdx[0]++; vWrk.Clear(); vWrk.SetString(SQLVAR_COUNTERVOID,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
+#endif
 #endif
 
         // field values
@@ -1172,6 +1245,9 @@ ULONG   CnPluTotal::FindN(const SHORT nTblID,const TCHAR pPluNo[],const BYTE byA
         long    lIdx[] = {0,0,0};
 
         COleSafeArray   saFields;
+#if defined(MAKEPARMS)
+        MakeParmsPluTotals(saFields);
+#else
         saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);
 
         lIdx[0] = 0; vWrk.Clear(); vWrk.SetString(SQLVAR_PLUNUMBER,VT_BSTR);
@@ -1188,6 +1264,7 @@ ULONG   CnPluTotal::FindN(const SHORT nTblID,const TCHAR pPluNo[],const BYTE byA
         saFields.PutElement(lIdx,&vWrk);
         lIdx[0]++; vWrk.Clear(); vWrk.SetString(SQLVAR_COUNTERVOID,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
+#endif
 #endif
 
         vWrk.Clear();                               // V1.0.0.4
@@ -1423,6 +1500,9 @@ ULONG   CnPluTotal::LoadStatus(const SHORT nStsTblID,PLUTOTAL_STATUS * pStatusRe
     }
 
     COleSafeArray   saFields;
+#if defined(MAKEPARMS)
+    MakeParmsPluStatus(saFields);
+#else
     COleVariant     vWrk;
     long    lIdx[] = {0,0,0};
     // field names
@@ -1440,6 +1520,7 @@ ULONG   CnPluTotal::LoadStatus(const SHORT nStsTblID,PLUTOTAL_STATUS * pStatusRe
     lIdx[0]++; vWrk.Clear(); vWrk.SetString(SQLVAR_VERSION,VT_BSTR);
     saFields.PutElement(lIdx,&vWrk);
     vWrk.Clear();                           // V1.0.0.4
+#endif
 
     // get values
     COleVariant vValues;
@@ -1505,6 +1586,9 @@ ULONG   CnPluTotal::SaveStatus(const SHORT nStsTblID,const PLUTOTAL_STATUS &Stat
     COleSafeArray   saFields;
     COleVariant     vWrk;
     long    lIdx[] = {0,0,0};
+#if defined(MAKEPARMS)
+    MakeParmsPluStatus(saFields);
+#else
     // field names
     saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_STSREC_FLD_NUM,NULL,0);  
     lIdx[0] = 0; vWrk.Clear(); vWrk.SetString(SQLVAR_RESETSTATUS,VT_BSTR);
@@ -1519,6 +1603,7 @@ ULONG   CnPluTotal::SaveStatus(const SHORT nStsTblID,const PLUTOTAL_STATUS &Stat
     saFields.PutElement(lIdx,&vWrk);
     lIdx[0]++; vWrk.Clear(); vWrk.SetString(SQLVAR_VERSION,VT_BSTR);
     saFields.PutElement(lIdx,&vWrk);
+#endif
 
     // field values
     COleSafeArray   saValues;
@@ -2069,7 +2154,10 @@ ULONG   CnPluTotal::__DbgMakeTestData(const SHORT nTblID,const LONG lFrom,const 
 
         // field names
         COleSafeArray   saFields;
-        saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);    
+#if defined(MAKEPARMS)
+        MakeParmsPluTotals(saFields);
+#else
+        saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);
         lIdx[0] = 0; vWrk.Clear(); vWrk.SetString(SQLVAR_PLUNUMBER,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
         lIdx[0]++; vWrk.Clear(); vWrk.SetString(SQLVAR_ADJINDEX,VT_BSTR);
@@ -2084,6 +2172,7 @@ ULONG   CnPluTotal::__DbgMakeTestData(const SHORT nTblID,const LONG lFrom,const 
         saFields.PutElement(lIdx,&vWrk);
         lIdx[0]++; vWrk.Clear(); vWrk.SetString(SQLVAR_COUNTERVOID,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
+#endif
 #endif
 
         // field values
