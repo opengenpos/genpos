@@ -6194,12 +6194,17 @@ SHORT  CDeviceEngine::HandleIOCTL (WPARAM wParam, LPARAM lParam)
 	if (wParam == FRAMEWORK_IOCTL_DRAWER_OPEN) {
 		switch(lParam){
 		case 1:
-			if(m_pOPOSControl->m_cashDrawer.GetState() != OPOS_S_CLOSED){
+			if (!m_pOPOSControl || !m_pOPOSControl->m_hWnd) {
+				bResult = TRUE;
+			} else if (m_pOPOSControl->m_cashDrawer.GetState() != OPOS_S_CLOSED){
 				bResult = (m_pOPOSControl->m_cashDrawer.OpenDrawer() == OPOS_SUCCESS);
 			}
 			break;
 		case 2:
-			if(m_pOPOSControl->m_cashDrawer2.GetState() != OPOS_S_CLOSED){
+			if (!m_pOPOSControl || !m_pOPOSControl->m_hWnd) {
+				bResult = TRUE;
+			}
+			else if(m_pOPOSControl->m_cashDrawer2.GetState() != OPOS_S_CLOSED){
 				bResult = (m_pOPOSControl->m_cashDrawer2.OpenDrawer() == OPOS_SUCCESS);
 			}
 			break;
