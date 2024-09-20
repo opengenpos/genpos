@@ -502,7 +502,7 @@ VOID MaintFSCWrite( VOID )
     /* check keyboard */
     if (uchFSCMaxAddr < 1) {
         NHPOS_ASSERT_TEXT(0, "==ERROR: MaintFSCWrite() called with invalid keyboard type.");
-        return(LDT_PROHBT_ADR);                                /* out of address */
+        return;                                /* out of address */
     }
 
     /* write data */
@@ -573,7 +573,7 @@ VOID MaintFSCReport( VOID )
     /* check keyboard */
     if (uchFSCMaxAddr < 1) {
         NHPOS_ASSERT_TEXT(0, "==ERROR: MaintFSCReport() called with invalid keyboard type.");
-        return(LDT_PROHBT_ADR);                                /* out of address */
+        return;                                /* out of address */
     }
 
     /* control header item */

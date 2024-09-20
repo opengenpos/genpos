@@ -72,4 +72,6 @@ extern UCHAR   uchMaintEtkCtl;              /* for ETK File Maintenance */
 extern USHORT  usMaintFieldNo;              /* for ETK File Maintenance */
 extern USHORT  usMaintACNumber;             /* action code save area,   Saratoga */
 
+UCHAR  MaintQueryKeyBoardFscMax(VOID);
+
 /* --- End of Header File --- */
