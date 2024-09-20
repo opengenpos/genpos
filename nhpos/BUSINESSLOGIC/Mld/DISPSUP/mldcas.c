@@ -98,7 +98,7 @@ CONST UCHAR FARCONST aszMldAC20[][64] = {
 ""
 };
 */
-static CONST MLDMENU CONST aszMldAC20[] = {
+static CONST MLDMENU aszMldAC20[] = {
 	{ -1,_T("") },
 	{ LCD_CAS_ADDR1_ADR, _T(" 1 %s\t%4s ") },
 	{ LCD_CAS_ADDR2_ADR, _T(" 2 %s\t%4s ") },
