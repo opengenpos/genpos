@@ -57,6 +57,7 @@
 #include <csstbpar.h>
 #include <cscas.h>
 #include	"..\Sa\UIE\uiedev.h"
+#include "..\item\include\itmlocal.h"
 
 
 /*
