@@ -182,6 +182,10 @@
 
 /*--------------------------------------
     Response Message Keep
+    Changes to this struct should be synchronized
+    with changes to the struct SERPREVIOUS use in
+    Server subsystem that handles communications
+    between terminals.
 ---------------------------------------*/
 typedef struct {
     SHORT       sError;                      /* Receive Error Code   */
@@ -377,7 +381,6 @@ SHORT   IspRecvCheckPara(UCHAR uchMajorClass);  /* Check parameter     */
 SHORT   IspAfterProcess(UCHAR uchMajorClass);   /* Exec. after process */
 VOID    IspRecvMasEnterCM(VOID);                /* Saratoga */
 VOID    IspRecvMasMntCom(VOID);                 /* Saratoga */
-SHORT   IspLabelAnalysis(VOID *pPlu);           /* saratoga */
 
 /*-----------------------------------------------------------------------
     ISPOPRSB.C  ( 0x0500 Op. Para Functions)

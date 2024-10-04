@@ -94,6 +94,8 @@ CONST TCHAR FARCONST aszParaStoReg[]    = _T("STR REG");
 
 static VOID (PIFENTRY *pPifSaveFarData)(VOID) = PifSaveFarData; /* saratoga */
 
+static SHORT   IspLabelAnalysis(PLUIF* pPlu);           /* saratoga */
+
 /*
 *===========================================================================
 ** Synopsis:    SHORT    IspCheckDataFlexMem(VOID * pFlex);
@@ -221,15 +223,12 @@ static SHORT   IspCheckDataFlexMem (ISPFLEXMEM  *pFM)
 */
 VOID    IspRecvOpr(VOID)
 {
-    CLIREQOPPARA    *pReqMsgH = 0;
+    CLIREQOPPARA    * const pReqMsgH = (CLIREQOPPARA*)IspRcvBuf.auchData;
     CLIREQDATA      *pReqBuff = 0;
     PLUIF           *pPlu = 0;
-    CLIRESOPPARA    ResMsgH;
+    CLIRESOPPARA    ResMsgH = { 0 };
     SHORT           i, sFlag = 0;
 	SHORT           sRetStatus = 0;
-
-    pReqMsgH = (CLIREQOPPARA *)IspRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESOPPARA));
 
     ResMsgH.usFunCode     = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo       = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -600,7 +599,7 @@ VOID    IspRecvOpr(VOID)
         break;
 
     case CLI_FCOPOEPPLUREAD :      /* OP OPE PLU read */
-        ResMsgH.sReturn = CliOpOepPluRead((PLUIF_OEP *)pPlu, husIspOpHand, '20'); /* '20' passed because function was updated
+        ResMsgH.sReturn = CliOpOepPluRead((PLUIF_OEP *)pPlu, husIspOpHand, 20); /* '20' passed because function was updated
 																						but this call does not need parameter.
 																						Parameter is to hold number of items
 																						requested, in function, was a hard-coded 20,
@@ -857,9 +856,9 @@ SHORT     IspAfterProcess(UCHAR uchMajorClass)
 {
     SHORT   sError;
 	SYSCONFIG *pSysConfig;
-	PARATERMINALINFO TermInfo;
-	PARACTLTBLMENU   MenuPage;
-	PARASTOREGNO    ParaRegNo;
+    PARATERMINALINFO TermInfo = { 0 };
+	PARACTLTBLMENU   MenuPage = { 0 };
+	PARASTOREGNO    ParaRegNo = { 0 };
 
     sError = ISP_SUCCESS;
 
@@ -968,11 +967,9 @@ SHORT     IspAfterProcess(UCHAR uchMajorClass)
 */
 VOID    IspRecvMasEnterCM(VOID)
 {
-    CLIREQPLUECM   *pReqMsgH;
-    CLIRESPLUECM   ResMsgH;
+    CLIREQPLUECM   * const pReqMsgH = (CLIREQPLUECM *)IspRcvBuf.auchData;
+    CLIRESPLUECM   ResMsgH = { 0 };
 
-    pReqMsgH = (CLIREQPLUECM *)IspRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESPLUECM));
     ResMsgH.usFunCode     = pReqMsgH->usFunCode;
     ResMsgH.sResCode      = STUB_SUCCESS;
     ResMsgH.usSeqNo       = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -1037,11 +1034,9 @@ VOID    IspRecvMasEnterCM(VOID)
 */
 VOID    IspRecvMasMntCom(VOID)
 {
-    CLIREQPLUCOM   *pReqMsgH;
-    CLIRESPLUCOM   ResMsgH;
+    CLIREQPLUCOM   * const pReqMsgH = (CLIREQPLUCOM*)IspRcvBuf.auchData;
+    CLIRESPLUCOM   ResMsgH = { 0 };
 
-    pReqMsgH = (CLIREQPLUCOM *)IspRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESPLUCOM));
     ResMsgH.usFunCode     = pReqMsgH->usFunCode;
     ResMsgH.sResCode      = STUB_SUCCESS;
     ResMsgH.usSeqNo       = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -1082,11 +1077,10 @@ VOID    IspRecvMasMntCom(VOID)
 *               and executes the appropriate procedure.
 *===========================================================================
 */
-SHORT   IspLabelAnalysis(VOID *pData)
+static SHORT   IspLabelAnalysis(PLUIF* pPlu)
 {
 	LABELANALYSIS   PluLabel = {0};
     SHORT           i;
-    PLUIF           *pPlu = (PLUIF *)pData;
 
     for (i = 0; i < OP_PLU_LEN; i++) {
         if ((pPlu->auchPluNo[i] == 0) && (i > 0)) {

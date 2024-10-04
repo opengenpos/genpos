@@ -157,6 +157,10 @@
 
 /*--------------------------------------
     Response Message Keep
+    Changes to this struct should be synchronized
+    with changes to the struct ISPPREVIOUS use in
+    Isp subsystem that handles communications
+    between terminal and remote device (PC).
 ---------------------------------------*/
 typedef struct {
     SHORT       sError;                     /* Receive Error Code */
