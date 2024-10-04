@@ -591,6 +591,7 @@ typedef struct {
 	All response messages must have this same structure at
 	the beginning of the response data area.  There may be
 	additional structure members after this area.
+    First two members should be same as CLIREQCOM.
 ---------------------------------------*/
 typedef struct {
     USHORT  usFunCode;  // the function code specified in the request such as CLI_FCKPSPRINT or CLI_FCSPSPRINT
@@ -611,7 +612,7 @@ typedef struct {
     Cashier Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     ULONG   ulCashierNo;                    /* cashier number */  
     WCHAR   auchCasName[CLI_CASHIERNAME];   /* cashier name */
@@ -638,7 +639,7 @@ typedef struct {
 // see also functions Cas_AssignCasparaToCasif() and Cas_AssignCasifToCaspara().
 // see also function IspRecvCas()
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard response header, CLIRESCOM, four members
     USHORT  usSeqNo;
     SHORT   sResCode;
     SHORT   sReturn;
@@ -661,7 +662,7 @@ typedef struct {
     Waiter Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     ULONG   ulWaiterNo;                     /* waiter number */
     WCHAR   auchWaiName[CLI_WAITERNAME];    /* waiter name */
@@ -676,7 +677,7 @@ typedef struct {
     Waiter Message (Response)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard response header, CLIRESCOM, four members
     USHORT  usSeqNo;
     SHORT   sResCode;
     SHORT   sReturn;
@@ -692,7 +693,7 @@ typedef struct {
     GCF Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     USHORT  usGCN;                          /* Guest Check Number */
     USHORT  usGCType;                       /* Guest Check Type */
@@ -705,7 +706,7 @@ typedef struct {
     GCF Message (Response)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard response header, CLIRESCOM, four members
     USHORT  usSeqNo;
     SHORT   sResCode;
     SHORT   sReturn;
@@ -718,7 +719,7 @@ typedef struct {
  *  GCF message for filtered and unique id
  */
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     USHORT  usGCN;                          /* Guest Check Number */
     USHORT  usGCType;                       /* Guest Check Type */
@@ -733,7 +734,7 @@ typedef struct {
     Total (update) Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     USHORT  usTransNo;                      /* Transaction Number */
 } CLIREQTOTAL;
@@ -742,7 +743,7 @@ typedef struct {
     Total (update) Message (Response)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard response header, CLIRESCOM, four members
     USHORT  usSeqNo;
     SHORT   sResCode;
     SHORT   sReturn;
@@ -753,7 +754,7 @@ typedef struct {
     Total (reset & issue) Message (Request)
 ---------------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     UCHAR   uchMajorClass;                  /* major class */
     UCHAR   uchMinorClass;                  /* minor class */
@@ -768,7 +769,7 @@ typedef struct {
     TTL Cashier Tender Amount,  Saratoga
 ---------------------------------------*/
 typedef struct {
-    USHORT      usFunCode;
+    USHORT      usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT      usSeqNo;
     ULONG       ulCashierNumber;    /* Cashier Number   */
 } CLIREQCASTEND;
@@ -777,7 +778,7 @@ typedef struct {
     TTL Cashier Tender Amount,  Saratoga
 ---------------------------------------*/
 typedef struct {
-    USHORT      usFunCode;
+    USHORT      usFunCode;        // standard response header, CLIRESCOM, four members
     USHORT      usSeqNo;
     SHORT       sResCode;
     SHORT       sReturn;
@@ -793,7 +794,7 @@ typedef struct {
     OP Para Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     UCHAR   uchMajorClass;                 
     USHORT  usHndorOffset;             /* LockHandle or Start offset */
@@ -805,7 +806,7 @@ typedef struct {
     OP Para Message (Response)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard response header, CLIRESCOM, four members
     USHORT  usSeqNo;
     SHORT   sResCode;
     SHORT   sReturn;
@@ -819,7 +820,7 @@ typedef struct {
     OP Connection Engine Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     USHORT  usTerminalNo;            /* no of terminals */ 
     USHORT  usBufferLengthBytes;     /* no of bytes of data */ 
@@ -861,7 +862,7 @@ typedef struct {                        /* broadcast final data structure */
     KPS (print) Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
 
     /* ### ADD 2172 Rel1.0 (Saratoga) */
@@ -884,7 +885,7 @@ typedef struct {
     KPS (alternate) Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
 } CLIREQALTKP;
 
@@ -935,7 +936,7 @@ typedef struct {
 } CLIINQDATE;
 
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     USHORT  fsStatus;                       /* Inquiry Status */
     CLIINQDATE  Date;                       /* Inquiry Date */
@@ -972,7 +973,7 @@ typedef struct {
     PassWord Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     WCHAR   auchPassWord[CLI_PASSWORD];   
     SHORT   fsCheckTotal;
@@ -994,7 +995,7 @@ typedef struct {
     ISP Date/Time Read/Write (Request)    V3.3
 ---------------------------------------*/
 typedef struct {
-    USHORT      usFunCode;
+    USHORT      usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT      usSeqNo;
     CLIDATETIME DateTime;
 } CLIREQISPTOD;
@@ -1014,19 +1015,19 @@ typedef struct {
     Reset Log Message (Request),    V3.3
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     UCHAR   uchAction;
 } CLIREQISPLOG;
 
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     WCHAR   aszMnemonic[CLI_ISPLOG_LEN];
 } CLIREQISPLOG2;
 
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
     USHORT   usFlagsAndAction;               // action is lower byte, flags upper byte
     WCHAR   aszMnemonic[CLI_ISPLOG_LEN];
@@ -1036,7 +1037,7 @@ typedef struct {
     Read File Message (Request) ESMITH LAYOUT
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNum;
     USHORT  usFile;
     ULONG   ulPosition;
@@ -1056,43 +1057,6 @@ typedef struct {
     ULONG   ulPosition;
     UCHAR   auchData[OP_BACKUP_WORK_SIZE];
 } CLIRESREAD;
-
-/*--------------------------------------
-    Structs for Signature Capture file operations (CLI_FCSIGCAP_OP)
----------------------------------------*/
-#define CLI_FCSIGCAP_OP_INITFILE     1    // Initialize the Signature Capture File with specified values
-typedef struct {
-    USHORT  usFunCode;
-    USHORT  usSeqNum;
-    USHORT  usSubCommand;    // this is the sub command as to the actual operation to perform
-	union {
-		struct {
-			USHORT    usMaxBlobCount;     // Maximum number of blobs to put into the file
-		} InitFile;
-		struct {
-			ULONG     ulIndexCurr;        // points to current item in the file
-		} ReadWriteFile;
-	} CommandUnion;
-} CLIREQSIGCAP_OP;
-
-/*--------------------------------------
-    Read File Message (Response) ESMITH LAYOUT
----------------------------------------*/
-typedef struct {
-    USHORT  usFunCode;
-    USHORT  usSeqNum;
-    SHORT   sResCode;
-    USHORT  usSubCommand;    // This is the command that is being responded to
-    LONG    lReturn;
-	union   {
-		struct {
-			USHORT    usMaxBlobCount;     // Maximum number of blobs available in the file
-			ULONG     ulIndexFirst;
-			ULONG     ulIndexLast;
-			ULONG     ulBlobMaxSize;      // Indicates the maximum size of a blob stored in the file
-		} FileHeader;
-	} ResponseUnion;
-} CLIRESSIGCAP_OP;
 
 /*--------------------------------------
     ISP System Parameter Message (Response)    V3.3
@@ -1160,7 +1124,7 @@ typedef struct {
     Display on Fly Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
 } CLIREQDFL;
 
@@ -1178,7 +1142,7 @@ typedef struct {
     Shared Print Message (Request)
 ---------------------------------------*/
 typedef struct {
-    USHORT  usFunCode;
+    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
     USHORT  usSeqNo;
 } CLIREQSHR;
 
