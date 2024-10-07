@@ -284,7 +284,7 @@ typedef struct {
     UCHAR       uchClass;          // indicates type of file to transfer such as OP_OEP_FILE
     UCHAR       uchSubClass;       // indicates the sub type of file for file classes that have multiple files
     ULONG       offulFilePosition;
-    USHORT      usSeqNo;
+    ULONG       ulSeqNo;
 	USHORT      usTransferOptions;
     USHORT      usRecordNo;        // Normally max number of records to be transferred from a file header but not for some files.
     UCHAR       uchPTDFlag;

@@ -1628,7 +1628,7 @@ SHORT   OpResOep(UCHAR  *puchRcvData,
     }
 
     pOp_BackUpSnd->offulFilePosition = pOp_BackUpRcv->offulFilePosition;
-    pOp_BackUpSnd->usSeqNo   = pOp_BackUpRcv->usSeqNo;
+    pOp_BackUpSnd->ulSeqNo   = pOp_BackUpRcv->ulSeqNo;
     pOp_BackUpSnd->usRecordNo = OepFileHed.usNumberOfMaxOep;
     
     Op_ReadOepFile(pOp_BackUpRcv->offulFilePosition, puchSndData + sizeof(OP_BACKUP), usActualDataLen);
@@ -1659,7 +1659,7 @@ SHORT   OpReqOep(USHORT usFcCode, USHORT usLockHnd)
 	USHORT          usOepIndexNumber = 0;
     UCHAR           auchRcvBuf[OP_BROADCAST_SIZE];
     OPOEP_FILEHED  OepFileHed;
-    SHORT           sStatus;
+    SHORT           sStatus, sBadSeqNoCount = 0;
 
     /*  LOCK CHECK */
     if (Op_LockCheck(usLockHnd) == OP_LOCK) {
@@ -1693,7 +1693,7 @@ SHORT   OpReqOep(USHORT usFcCode, USHORT usLockHnd)
 		Op_Backup.uchSubClass = usOepIndexNumber;
 
 		Op_Backup.offulFilePosition = 0L;
-		Op_Backup.usSeqNo = 1;
+		Op_Backup.ulSeqNo = 1;
 
 		usRcvLen = OP_BROADCAST_SIZE;
 		pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;
@@ -1724,15 +1724,16 @@ SHORT   OpReqOep(USHORT usFcCode, USHORT usLockHnd)
 				NHPOS_NONASSERT_TEXT(xBuff);
 			}
 
-			if (pOp_BackupRcv->usSeqNo != Op_Backup.usSeqNo) {
-				char  xBuff[128];
-				if (Op_Backup.usSeqNo == pOp_BackupRcv->usSeqNo + 1) {
-					sprintf (xBuff, "OpReqOep(): OP_COMM_IGNORE usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-					NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
-					continue;
+			if (pOp_BackupRcv->ulSeqNo != Op_Backup.ulSeqNo) {
+				char  xBuff[136];
+                ++sBadSeqNoCount;
+                if (Op_Backup.ulSeqNo == pOp_BackupRcv->ulSeqNo + 1) {
+					sprintf (xBuff, "OpReqOep(): OP_COMM_IGNORE uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+					NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
+                    if (sBadSeqNoCount < 5) continue;
 				}
-				sprintf (xBuff, "OpReqOep(): OP_COMM_ERROR usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-				NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
+				sprintf (xBuff, "OpReqOep(): OP_COMM_ERROR uchClass = %d uchSubClass = %d usSentSeqNo 0x%x usRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+				NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
 				PifLog(MODULE_OP_BACKUP, LOG_EVENT_OP_REQPARA_RQST_SEQNO);
 				PifLog (MODULE_DATA_VALUE(MODULE_OP_BACKUP), OP_OEP_FILE);
 				PifLog (MODULE_LINE_NO(MODULE_OP_BACKUP), (USHORT)__LINE__);
@@ -1748,7 +1749,7 @@ SHORT   OpReqOep(USHORT usFcCode, USHORT usLockHnd)
 				break;
 			}
 
-			Op_Backup.usSeqNo++;
+			Op_Backup.ulSeqNo++;
 
 			Op_WriteOepFile(pOp_BackupRcv->offulFilePosition, &auchRcvBuf[sizeof(OP_BACKUP)], (USHORT)(usRcvLen - sizeof(OP_BACKUP)));
 
@@ -1783,7 +1784,7 @@ SHORT   OpReqDept(USHORT usFcCode, USHORT usLockHnd)
     USHORT          usRcvLen;
     UCHAR           auchRcvBuf[OP_BROADCAST_SIZE];
     OPDEPT_FILEHED  DeptFileHed;
-    SHORT           sStatus;
+    SHORT           sStatus, sBadSeqNoCount = 0;
 
     /*  LOCK CHECK */
     if (Op_LockCheck(usLockHnd) == OP_LOCK) {
@@ -1803,7 +1804,7 @@ SHORT   OpReqDept(USHORT usFcCode, USHORT usLockHnd)
 
     Op_Backup.uchClass = OP_DEPT_FILE;
     Op_Backup.offulFilePosition = 0L;
-    Op_Backup.usSeqNo = 1;
+    Op_Backup.ulSeqNo = 1;
 
     usRcvLen = OP_BROADCAST_SIZE;
     pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;
@@ -1823,15 +1824,16 @@ SHORT   OpReqDept(USHORT usFcCode, USHORT usLockHnd)
                 break;
             }
         }
-        if (pOp_BackupRcv->usSeqNo != Op_Backup.usSeqNo) {
-			char  xBuff[128];
-			if (Op_Backup.usSeqNo == pOp_BackupRcv->usSeqNo + 1) {
-				sprintf (xBuff, "OpReqDept(): OP_COMM_IGNORE usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-				NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
-				continue;
+        if (pOp_BackupRcv->ulSeqNo != Op_Backup.ulSeqNo) {
+			char  xBuff[136];
+            ++sBadSeqNoCount;
+            if (Op_Backup.ulSeqNo == pOp_BackupRcv->ulSeqNo + 1) {
+				sprintf (xBuff, "OpReqDept(): OP_COMM_IGNORE uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+				NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
+                if (sBadSeqNoCount < 5) continue;
 			}
-			sprintf (xBuff, "OpReqDept(): OP_COMM_ERROR usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-			NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
+			sprintf (xBuff, "OpReqDept(): OP_COMM_ERROR uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+			NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
 			PifLog(MODULE_OP_BACKUP, LOG_EVENT_OP_REQPARA_RQST_SEQNO);
 			PifLog (MODULE_DATA_VALUE(MODULE_OP_BACKUP), OP_DEPT_FILE);
 			PifLog (MODULE_LINE_NO(MODULE_OP_BACKUP), (USHORT)__LINE__);
@@ -1844,7 +1846,7 @@ SHORT   OpReqDept(USHORT usFcCode, USHORT usLockHnd)
             break;
         }
 
-        Op_Backup.usSeqNo++;
+        Op_Backup.ulSeqNo++;
 
         Op_WriteDeptFile(pOp_BackupRcv->offulFilePosition, &auchRcvBuf[sizeof(OP_BACKUP)], (USHORT)(usRcvLen - sizeof(OP_BACKUP)));
 
@@ -1940,7 +1942,7 @@ SHORT   OpResDept(UCHAR  *puchRcvData,
         pOp_BackUpSnd->offulFilePosition = pOp_BackUpRcv->offulFilePosition;
     }
 
-    pOp_BackUpSnd->usSeqNo   = pOp_BackUpRcv->usSeqNo;
+    pOp_BackUpSnd->ulSeqNo   = pOp_BackUpRcv->ulSeqNo;
     pOp_BackUpSnd->usRecordNo = DeptFileHed.usNumberOfMaxDept;
     
     Op_ReadDeptFile(pOp_BackUpRcv->offulFilePosition, puchSndData + sizeof(OP_BACKUP), (USHORT)(*pusSndLen - sizeof(OP_BACKUP)));
@@ -1970,7 +1972,7 @@ SHORT   OpReqCpn(USHORT usFcCode, USHORT usLockHnd)
     USHORT          usRcvLen;
     UCHAR           auchRcvBuf[OP_BROADCAST_SIZE];
     OPCPN_FILEHED   CpnFileHed;
-    SHORT           sStatus;
+    SHORT           sStatus, sBadSeqNoCount = 0;
 
     /*  LOCK CHECK */
     if (Op_LockCheck(usLockHnd) == OP_LOCK) {
@@ -1990,7 +1992,7 @@ SHORT   OpReqCpn(USHORT usFcCode, USHORT usLockHnd)
 
     Op_Backup.uchClass = OP_CPN_FILE;
     Op_Backup.offulFilePosition = 0L;
-    Op_Backup.usSeqNo = 1;
+    Op_Backup.ulSeqNo = 1;
 
     usRcvLen = OP_BROADCAST_SIZE;
     pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;
@@ -2012,15 +2014,16 @@ SHORT   OpReqCpn(USHORT usFcCode, USHORT usLockHnd)
             }
         }
 
-        if (pOp_BackupRcv->usSeqNo != Op_Backup.usSeqNo) {
-			char  xBuff[128];
-			if (Op_Backup.usSeqNo == pOp_BackupRcv->usSeqNo + 1) {
-				sprintf (xBuff, "OpReqCpn(): OP_COMM_IGNORE usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-				NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
-				continue;
+        if (pOp_BackupRcv->ulSeqNo != Op_Backup.ulSeqNo) {
+			char  xBuff[136];
+            ++sBadSeqNoCount;
+            if (Op_Backup.ulSeqNo == pOp_BackupRcv->ulSeqNo + 1) {
+				sprintf (xBuff, "OpReqCpn(): OP_COMM_IGNORE uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+				NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
+                if (sBadSeqNoCount < 5) continue;
 			}
-			sprintf (xBuff, "OpReqCpn(): OP_COMM_ERROR usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-			NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
+			sprintf (xBuff, "OpReqCpn(): OP_COMM_ERROR uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+			NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
 			PifLog(MODULE_OP_BACKUP, LOG_EVENT_OP_REQPARA_RQST_SEQNO);
 			PifLog (MODULE_DATA_VALUE(MODULE_OP_BACKUP), OP_CPN_FILE);
 			PifLog (MODULE_LINE_NO(MODULE_OP_BACKUP), (USHORT)__LINE__);
@@ -2033,7 +2036,7 @@ SHORT   OpReqCpn(USHORT usFcCode, USHORT usLockHnd)
             break;
         }
 
-        Op_Backup.usSeqNo++;
+        Op_Backup.ulSeqNo++;
 
         Op_WriteCpnFile(pOp_BackupRcv->offulFilePosition, &auchRcvBuf[sizeof(OP_BACKUP)], (USHORT)(usRcvLen - sizeof(OP_BACKUP)));
 
@@ -2131,7 +2134,7 @@ SHORT   OpResCpn(UCHAR  *puchRcvData,
         pOp_BackUpSnd->offulFilePosition = pOp_BackUpRcv->offulFilePosition;
     }
 
-    pOp_BackUpSnd->usSeqNo   = pOp_BackUpRcv->usSeqNo;
+    pOp_BackUpSnd->ulSeqNo   = pOp_BackUpRcv->ulSeqNo;
     pOp_BackUpSnd->usRecordNo = CpnFileHed.usNumberOfCpn;
     
     Op_ReadCpnFile(pOp_BackUpRcv->offulFilePosition, puchSndData + sizeof(OP_BACKUP), (USHORT)(*pusSndLen - sizeof(OP_BACKUP)));
@@ -2161,7 +2164,7 @@ SHORT   OpReqCstr(USHORT usFcCode, USHORT usLockHnd)
     USHORT          usRcvLen;
     UCHAR           auchRcvBuf[OP_BROADCAST_SIZE];
     OPCSTR_FILEHED  CstrFileHed;
-    SHORT           sStatus;
+    SHORT           sStatus, sBadSeqNoCount = 0;
 
     /*  LOCK CHECK */
     if (Op_LockCheck(usLockHnd) == OP_LOCK) {
@@ -2182,7 +2185,7 @@ SHORT   OpReqCstr(USHORT usFcCode, USHORT usLockHnd)
 
     Op_Backup.uchClass = OP_CSTR_FILE;
     Op_Backup.offulFilePosition = 0L;
-    Op_Backup.usSeqNo = 1;
+    Op_Backup.ulSeqNo = 1;
 
     usRcvLen = OP_BROADCAST_SIZE;
     pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;
@@ -2203,15 +2206,16 @@ SHORT   OpReqCstr(USHORT usFcCode, USHORT usLockHnd)
             }
         }
 
-        if (pOp_BackupRcv->usSeqNo != Op_Backup.usSeqNo) {
-			char  xBuff[128];
-			if (Op_Backup.usSeqNo == pOp_BackupRcv->usSeqNo + 1) {
-				sprintf (xBuff, "OpReqCstr(): OP_COMM_IGNORE usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-				NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
-				continue;
+        if (pOp_BackupRcv->ulSeqNo != Op_Backup.ulSeqNo) {
+			char  xBuff[136];
+            ++sBadSeqNoCount;
+            if (Op_Backup.ulSeqNo == pOp_BackupRcv->ulSeqNo + 1) {
+				sprintf (xBuff, "OpReqCstr(): OP_COMM_IGNORE uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+				NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
+                if (sBadSeqNoCount < 5) continue;
 			}
-			sprintf (xBuff, "OpReqCstr(): OP_COMM_ERROR usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-			NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
+			sprintf (xBuff, "OpReqCstr(): OP_COMM_ERROR uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+			NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
 			PifLog(MODULE_OP_BACKUP, LOG_EVENT_OP_REQPARA_RQST_SEQNO);
 			PifLog (MODULE_DATA_VALUE(MODULE_OP_BACKUP), OP_CSTR_FILE);
 			PifLog (MODULE_LINE_NO(MODULE_OP_BACKUP), (USHORT)__LINE__);
@@ -2224,7 +2228,7 @@ SHORT   OpReqCstr(USHORT usFcCode, USHORT usLockHnd)
             break;
         }
 
-        Op_Backup.usSeqNo++;
+        Op_Backup.ulSeqNo++;
 
         Op_WriteCstrFile(pOp_BackupRcv->offulFilePosition, &auchRcvBuf[sizeof(OP_BACKUP)], (USHORT)(usRcvLen - sizeof(OP_BACKUP)));
 
@@ -2321,7 +2325,7 @@ SHORT   OpResCstr(UCHAR  *puchRcvData,
         pOp_BackUpSnd->offulFilePosition = pOp_BackUpRcv->offulFilePosition;
     }
 
-    pOp_BackUpSnd->usSeqNo   = pOp_BackUpRcv->usSeqNo;
+    pOp_BackUpSnd->ulSeqNo   = pOp_BackUpRcv->ulSeqNo;
     pOp_BackUpSnd->usRecordNo = CstrFileHed.usNumberOfCstr;
     
     Op_ReadCstrFile(pOp_BackUpRcv->offulFilePosition, puchSndData + sizeof(OP_BACKUP), (USHORT)(*pusSndLen - sizeof(OP_BACKUP)));
@@ -2552,7 +2556,7 @@ SHORT   OpReqPpi(USHORT usFcCode, USHORT usLockHnd)
     USHORT          usRcvLen;
     UCHAR           auchRcvBuf[OP_BROADCAST_SIZE];
     OPPPI_FILEHED   PpiFileHed;
-    SHORT           sStatus;
+    SHORT           sStatus, sBadSeqNoCount = 0;
 
     /*  LOCK CHECK */
     if (Op_LockCheck(usLockHnd) == OP_LOCK) {
@@ -2572,7 +2576,7 @@ SHORT   OpReqPpi(USHORT usFcCode, USHORT usLockHnd)
 
     Op_Backup.uchClass = OP_PPI_FILE;
     Op_Backup.offulFilePosition = 0L;
-    Op_Backup.usSeqNo = 1;
+    Op_Backup.ulSeqNo = 1;
 
     usRcvLen = OP_BROADCAST_SIZE;
     pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;
@@ -2593,15 +2597,16 @@ SHORT   OpReqPpi(USHORT usFcCode, USHORT usLockHnd)
             }
         }
 
-        if (pOp_BackupRcv->usSeqNo != Op_Backup.usSeqNo) {
-			char  xBuff[128];
-			if (Op_Backup.usSeqNo == pOp_BackupRcv->usSeqNo + 1) {
-				sprintf (xBuff, "OpReqPpi(): OP_COMM_IGNORE usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-				NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
-				continue;
+        if (pOp_BackupRcv->ulSeqNo != Op_Backup.ulSeqNo) {
+			char  xBuff[136];
+            ++sBadSeqNoCount;
+            if (Op_Backup.ulSeqNo == pOp_BackupRcv->ulSeqNo + 1) {
+				sprintf (xBuff, "OpReqPpi(): OP_COMM_IGNORE uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+				NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
+                if (sBadSeqNoCount < 5) continue;
 			}
-			sprintf (xBuff, "OpReqPpi(): OP_COMM_ERROR usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-			NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
+			sprintf (xBuff, "OpReqPpi(): OP_COMM_ERROR uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+			NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
 			PifLog(MODULE_OP_BACKUP, LOG_EVENT_OP_REQPARA_RQST_SEQNO);
 			PifLog (MODULE_DATA_VALUE(MODULE_OP_BACKUP), OP_PPI_FILE);
 			PifLog (MODULE_LINE_NO(MODULE_OP_BACKUP), (USHORT)__LINE__);
@@ -2614,7 +2619,7 @@ SHORT   OpReqPpi(USHORT usFcCode, USHORT usLockHnd)
             break;
         }
 
-        Op_Backup.usSeqNo++;
+        Op_Backup.ulSeqNo++;
 
         Op_WritePpiFile(pOp_BackupRcv->offulFilePosition, &auchRcvBuf[sizeof(OP_BACKUP)], (USHORT)(usRcvLen - sizeof(OP_BACKUP)));
 
@@ -2711,7 +2716,7 @@ SHORT   OpResPpi(UCHAR  *puchRcvData,
         pOp_BackUpSnd->offulFilePosition = pOp_BackUpRcv->offulFilePosition;
     }
 
-    pOp_BackUpSnd->usSeqNo   = pOp_BackUpRcv->usSeqNo;
+    pOp_BackUpSnd->ulSeqNo   = pOp_BackUpRcv->ulSeqNo;
     pOp_BackUpSnd->usRecordNo = PpiFileHed.usNumberOfPpi;
 
     Op_ReadPpiFile(pOp_BackUpRcv->offulFilePosition, puchSndData + sizeof(OP_BACKUP), (USHORT)(*pusSndLen - sizeof(OP_BACKUP)));
@@ -2858,7 +2863,7 @@ SHORT   OpReqMld(USHORT usFcCode, USHORT usLockHnd)
     USHORT          usRcvLen;
     UCHAR           auchRcvBuf[OP_BROADCAST_SIZE];
     OPMLD_FILEHED   MldFileHed;
-    SHORT           sStatus;
+    SHORT           sStatus, sBadSeqNoCount = 0;
 
     /*  LOCK CHECK */
     if (Op_LockCheck(usLockHnd) == OP_LOCK) {
@@ -2878,7 +2883,7 @@ SHORT   OpReqMld(USHORT usFcCode, USHORT usLockHnd)
 
     Op_Backup.uchClass = OP_MLD_FILE;
     Op_Backup.offulFilePosition = 0L;
-    Op_Backup.usSeqNo = 1;
+    Op_Backup.ulSeqNo = 1;
 
     usRcvLen = OP_BROADCAST_SIZE;
     pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;
@@ -2899,15 +2904,16 @@ SHORT   OpReqMld(USHORT usFcCode, USHORT usLockHnd)
             }
         }
 
-        if (pOp_BackupRcv->usSeqNo != Op_Backup.usSeqNo) {
-			char  xBuff[128];
-			if (Op_Backup.usSeqNo == pOp_BackupRcv->usSeqNo + 1) {
-				sprintf (xBuff, "OpReqMld(): OP_COMM_IGNORE usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-				NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
-				continue;
+        if (pOp_BackupRcv->ulSeqNo != Op_Backup.ulSeqNo) {
+			char  xBuff[136];
+            ++sBadSeqNoCount;
+            if (Op_Backup.ulSeqNo == pOp_BackupRcv->ulSeqNo + 1) {
+				sprintf (xBuff, "OpReqMld(): OP_COMM_IGNORE uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+				NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
+                if (sBadSeqNoCount < 5) continue;
 			}
-			sprintf (xBuff, "OpReqMld(): OP_COMM_ERROR usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-			NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
+			sprintf (xBuff, "OpReqMld(): OP_COMM_ERROR uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+			NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
 			PifLog(MODULE_OP_BACKUP, LOG_EVENT_OP_REQPARA_RQST_SEQNO);
 			PifLog (MODULE_DATA_VALUE(MODULE_OP_BACKUP), OP_MLD_FILE);
 			PifLog (MODULE_LINE_NO(MODULE_OP_BACKUP), (USHORT)__LINE__);
@@ -2920,7 +2926,7 @@ SHORT   OpReqMld(USHORT usFcCode, USHORT usLockHnd)
             break;
         }
 
-        Op_Backup.usSeqNo++;
+        Op_Backup.ulSeqNo++;
 
         Op_WriteMldFile(pOp_BackupRcv->offulFilePosition, &auchRcvBuf[sizeof(OP_BACKUP)], (USHORT)(usRcvLen - sizeof(OP_BACKUP)));
 
@@ -3011,7 +3017,7 @@ SHORT   OpResMld(UCHAR  *puchRcvData,
 			pOp_BackUpSnd->offulFilePosition = pOp_BackUpRcv->offulFilePosition;
 		}
 
-		pOp_BackUpSnd->usSeqNo   = pOp_BackUpRcv->usSeqNo;
+		pOp_BackUpSnd->ulSeqNo   = pOp_BackUpRcv->ulSeqNo;
 		pOp_BackUpSnd->usRecordNo = MldFileHed.usNumberOfAddress;
 
 		Op_ReadMldFile(pOp_BackUpRcv->offulFilePosition, puchSndData + sizeof(OP_BACKUP), (USHORT)(*pusSndLen - sizeof(OP_BACKUP)));
@@ -3032,7 +3038,7 @@ SHORT   OpReqFileTransfer (USHORT usFcCode, TCHAR CONST *ptcsFileName, UCHAR uch
     OP_BACKUP       Op_Backup, *pOp_BackupRcv;
     USHORT          usRcvLen;
     UCHAR           auchRcvBuf[OP_BROADCAST_SIZE];
-    SHORT           sStatus;
+    SHORT           sStatus, sBadSeqNoCount = 0;
 	SHORT           hsBiometricsFile;
 
     /*  LOCK CHECK */
@@ -3051,7 +3057,7 @@ SHORT   OpReqFileTransfer (USHORT usFcCode, TCHAR CONST *ptcsFileName, UCHAR uch
 
     Op_Backup.uchClass = uchClass;
     Op_Backup.offulFilePosition = 0L;
-    Op_Backup.usSeqNo = 1;
+    Op_Backup.ulSeqNo = 1;
 
     usRcvLen = OP_BROADCAST_SIZE;
     pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;
@@ -3070,15 +3076,16 @@ SHORT   OpReqFileTransfer (USHORT usFcCode, TCHAR CONST *ptcsFileName, UCHAR uch
             }
         }
 
-        if (pOp_BackupRcv->usSeqNo != Op_Backup.usSeqNo) {
-			char  xBuff[128];
-			if (Op_Backup.usSeqNo == pOp_BackupRcv->usSeqNo + 1) {
-				sprintf (xBuff, "OpReqFileTransfer(): OP_COMM_IGNORE usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-				NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
-				continue;
+        if (pOp_BackupRcv->ulSeqNo != Op_Backup.ulSeqNo) {
+			char  xBuff[136];
+            ++sBadSeqNoCount;
+            if (Op_Backup.ulSeqNo == pOp_BackupRcv->ulSeqNo + 1) {
+				sprintf (xBuff, "OpReqFileTransfer(): OP_COMM_IGNORE uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+				NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
+                if (sBadSeqNoCount < 5) continue;
 			}
-			sprintf (xBuff, "OpReqFileTransfer(): OP_COMM_ERROR usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-			NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
+			sprintf (xBuff, "OpReqFileTransfer(): OP_COMM_ERROR uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+			NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
 			PifLog(MODULE_OP_BACKUP, LOG_EVENT_OP_REQPARA_RQST_SEQNO);
 			PifLog (MODULE_DATA_VALUE(MODULE_OP_BACKUP), OP_BIOMETRICS_FILE);
 			PifLog (MODULE_LINE_NO(MODULE_OP_BACKUP), (USHORT)__LINE__);
@@ -3086,7 +3093,7 @@ SHORT   OpReqFileTransfer (USHORT usFcCode, TCHAR CONST *ptcsFileName, UCHAR uch
             break;
         }
 
-        Op_Backup.usSeqNo++;
+        Op_Backup.ulSeqNo++;
 
 		PifSeekFile (hsBiometricsFile, pOp_BackupRcv->offulFilePosition,  &ulActualPosition);
 		PifWriteFile (hsBiometricsFile, &auchRcvBuf[sizeof(OP_BACKUP)], (USHORT)(usRcvLen - sizeof(OP_BACKUP)));
@@ -3163,7 +3170,7 @@ static SHORT   OpResFileTransfer (UCHAR  *puchRcvData,
 
 	hsBiometricsFile = PifOpenFile (ptcsFileName, "or");
 	if (hsBiometricsFile < 0) {
-		pOp_BackUpSnd->usSeqNo   = pOp_BackUpRcv->usSeqNo;
+		pOp_BackUpSnd->ulSeqNo   = pOp_BackUpRcv->ulSeqNo;
 		pOp_BackUpSnd->usRecordNo = 0;
 		pOp_BackUpSnd->uchStatus = OP_END;    // indicate end of file
         PifReleaseSem(husOpSem);
@@ -3183,7 +3190,7 @@ static SHORT   OpResFileTransfer (UCHAR  *puchRcvData,
 			pOp_BackUpSnd->offulFilePosition = pOp_BackUpRcv->offulFilePosition;
 		}
 
-		pOp_BackUpSnd->usSeqNo   = pOp_BackUpRcv->usSeqNo;
+		pOp_BackUpSnd->ulSeqNo   = pOp_BackUpRcv->ulSeqNo;
 		pOp_BackUpSnd->usRecordNo = (pOp_BackUpSnd->offulFilePosition & sizeof(OP_BACKUP)) + 1;  // ignored in OpReqFileTransfer().
 
 		PifSeekFile (hsBiometricsFile, pOp_BackUpRcv->offulFilePosition,  &ulActualPosition);
@@ -3354,7 +3361,7 @@ SHORT   OpReqHostsIP(USHORT usFcCode, USHORT usLockHnd)
 	OP_BACKUP   Op_Backup = { 0 };
 	UCHAR       auchRcvBuf[OP_BROADCAST_SIZE] = { 0 };
 	SHORT       sStatus = OP_PERFORM;
-	SHORT       len, i;
+    SHORT       len, i, sBadSeqNoCount = 0;
 	TCHAR       uchHostName[PIF_LEN_HOST_NAME + 1] = { 0 };
     
     /*  LOCK CHECK */
@@ -3377,7 +3384,7 @@ SHORT   OpReqHostsIP(USHORT usFcCode, USHORT usLockHnd)
 
     Op_Backup.uchClass = OP_HOSTS_FILE;
     Op_Backup.offulFilePosition = 0L;
-    Op_Backup.usSeqNo = 1;
+    Op_Backup.ulSeqNo = 1;
     for(;;) {
 		OP_BACKUP   * const pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;
 		HOSTSIP     * const pOpHostsIP = (HOSTSIP *)&auchRcvBuf[sizeof(OP_BACKUP)];
@@ -3397,15 +3404,16 @@ SHORT   OpReqHostsIP(USHORT usFcCode, USHORT usLockHnd)
 
 		usRcvLen   -= sizeof(OP_BACKUP);
 
-        if (pOp_BackupRcv->usSeqNo != Op_Backup.usSeqNo) {
-			char  xBuff[128];
-			if (Op_Backup.usSeqNo == pOp_BackupRcv->usSeqNo + 1) {
-				sprintf (xBuff, "OpReqHostsIP(): OP_COMM_IGNORE usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-				NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
-				continue;
+        if (pOp_BackupRcv->ulSeqNo != Op_Backup.ulSeqNo) {
+			char  xBuff[136];
+            ++sBadSeqNoCount;
+			if (Op_Backup.ulSeqNo == pOp_BackupRcv->ulSeqNo + 1) {
+				sprintf (xBuff, "OpReqHostsIP(): OP_COMM_IGNORE usFcCode = 0x%x uchClass = %d uchSubClass = %d usSentSeqNo 0x%x usRecvSeqNo 0x%x", usFcCode, Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+				NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
+				if (sBadSeqNoCount < 5) continue;
 			}
-			sprintf (xBuff, "OpReqHostsIP(): OP_COMM_ERROR usSentSeqNo 0x%x, usRecvSeqNo 0x%x", Op_Backup.usSeqNo, pOp_BackupRcv->usSeqNo);
-			NHPOS_ASSERT_TEXT((pOp_BackupRcv->usSeqNo == Op_Backup.usSeqNo), xBuff);
+			sprintf (xBuff, "OpReqHostsIP(): OP_COMM_ERROR usFcCode = 0x%x uchClass = %d uchSubClass = %d ulSentSeqNo 0x%x ulRecvSeqNo 0x%x", usFcCode, Op_Backup.uchClass, Op_Backup.uchSubClass, Op_Backup.ulSeqNo, pOp_BackupRcv->ulSeqNo);
+			NHPOS_ASSERT_TEXT((pOp_BackupRcv->ulSeqNo == Op_Backup.ulSeqNo), xBuff);
 			PifLog(MODULE_OP_BACKUP, LOG_EVENT_OP_REQPARA_RQST_SEQNO);
 			PifLog (MODULE_DATA_VALUE(MODULE_OP_BACKUP), OP_HOSTS_FILE);
 			PifLog (MODULE_LINE_NO(MODULE_OP_BACKUP), (USHORT)__LINE__);
@@ -3433,7 +3441,7 @@ SHORT   OpReqHostsIP(USHORT usFcCode, USHORT usLockHnd)
 
         Op_Backup.uchClass = pOp_BackupRcv->uchClass;
         Op_Backup.offulFilePosition = pOp_BackupRcv->offulFilePosition;
-        Op_Backup.usSeqNo++;
+        Op_Backup.ulSeqNo++;
         if (pOp_BackupRcv->uchStatus == OP_END) {        /* Last Message */
             break;
         }
@@ -3504,7 +3512,7 @@ SHORT   OpResHostsIP(UCHAR  *puchRcvData,
     puchSndData += sizeof(OP_BACKUP);
     pOp_BackUpSnd->uchClass = pOp_BackUpRcv->uchClass;
     pOp_BackUpSnd->offulFilePosition = pOp_BackUpRcv->offulFilePosition; 
-    pOp_BackUpSnd->usSeqNo = pOp_BackUpRcv->usSeqNo;
+    pOp_BackUpSnd->ulSeqNo = pOp_BackUpRcv->ulSeqNo;
     
     PifGetLocalHostName(uchHostName);
 
@@ -3523,7 +3531,7 @@ SHORT   OpResHostsIP(UCHAR  *puchRcvData,
 		TCHAR       uchHosts[PIF_LEN_HOST_NAME + 1] = { 0 };
 		UCHAR       uchIPAddress[PIF_LEN_IP + 1] = { 0 };
 
-        usNo = (USHORT)((i + 1) + (pOp_BackUpRcv->usSeqNo - 1) * OP_MAX_BROADCAST_IP);
+        usNo = (USHORT)((i + 1) + (pOp_BackUpRcv->ulSeqNo - 1) * OP_MAX_BROADCAST_IP);
 
         RflSPrintf(uchHosts, TCHARSIZEOF(uchHosts), _T("%s%d"), &uchHostName[0], usNo);
         sRet = PifGetHostsAddress(uchHosts, uchIPAddress);
