@@ -175,7 +175,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\BusinessLogic\Include;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;_USRDLL;PIF_EXPORTS;SARATOGA;UNICODE;_DEBUG;XP_PORT;TOUCHSCREEN;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeaderOutputFile>.\Debug/pif.pch</PrecompiledHeaderOutputFile>
