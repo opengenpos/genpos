@@ -171,7 +171,7 @@ protected:
 	int		GetDeviceIndex(LPCTSTR lpszDeviceName);
 	BOOL	ReadParameter(int nIndex);
 	USHORT	GetPort(int nIndex);
-	USHORT	GetBaud(int nIndex);
+	ULONG	GetBaud(int nIndex);
 	UCHAR	GetSerialFormat(int nIndex);
 
 private:

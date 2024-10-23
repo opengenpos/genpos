@@ -248,6 +248,8 @@ CDevice::CDevice()
 
 	// wait for a done signal
 
+	ASSERT(m_hDone != 0);
+
 	::WaitForSingleObject(m_hDone, INFINITE);
 	::ResetEvent(m_hDone);
 }
@@ -740,7 +742,7 @@ UINT CDevice::DoDeviceThread(LPVOID lpvData)
 
 UINT CDevice::DeviceThread()
 {
-	LONG		nStatus;
+	LONG		nStatus = 0;
 	BOOL		bDoMyJob = TRUE;
 
 #if defined(_WIN32_WCE)
@@ -987,7 +989,8 @@ HANDLE CDevice::OnOpen(LPCTSTR lpszDeviceName)
 {
 	BOOL	bResult;
 	int		nIndex;
-	USHORT	usPort, usBaud;
+	USHORT	usPort;
+	ULONG   ulBaud;
 	UCHAR	uchFormat;
 	BOOL	bScale;
 
@@ -1020,7 +1023,7 @@ HANDLE CDevice::OnOpen(LPCTSTR lpszDeviceName)
 	// make up parameter
 
 	usPort    = GetPort(nIndex);
-	usBaud    = GetBaud(nIndex);
+	ulBaud    = GetBaud(nIndex);
 	uchFormat = GetSerialFormat(nIndex);
 	bScale    = (m_Caps[nIndex].dwDeviceType & SCF_TYPE_SCALE) ? TRUE : FALSE;
 
@@ -1033,7 +1036,7 @@ HANDLE CDevice::OnOpen(LPCTSTR lpszDeviceName)
 
 	// initialize the scanner/scale thread
 
-	bResult = m_pUieScan->UieScannerInit(usPort, usBaud, uchFormat, m_hScanner, bScale);
+	bResult = m_pUieScan->UieScannerInit(usPort, ulBaud, uchFormat, m_hScanner, bScale);
 
 	// examine status
 
@@ -1940,10 +1943,9 @@ int CDevice::GetDeviceIndex(LPCTSTR lpszDeviceName)
 BOOL CDevice::ReadParameter(int nIndex)
 {
 	DWORD	dwResult;
-	PScData	pSc;
 	DWORD	dwDataType;
-	TCHAR	auchData[16];
-	DWORD	dwBytesRead;
+	TCHAR	auchData[16] = { 0 };
+	DWORD	dwBytesRead = 0;
 
 	// invalid index ?
 
@@ -1954,7 +1956,7 @@ BOOL CDevice::ReadParameter(int nIndex)
 
 	// get my parameters
 
-	for (pSc = s_scTable; pSc->dwId; pSc++)
+	for (PScData	pSc = s_scTable; pSc->dwId; pSc++)
 	{
 		dwResult = OnGetParameter(
 					m_sName[nIndex], 
@@ -2032,7 +2034,7 @@ USHORT CDevice::GetPort(int nIndex)
 //
 /////////////////////////////////////////////////////////////////////////////
 
-USHORT CDevice::GetBaud(int nIndex)
+ULONG CDevice::GetBaud(int nIndex)
 {
 	ULONG	ulBaud;
 

@@ -43,7 +43,7 @@
 static  PIF_DEVICE_IF   UieScale;
 
 static	USHORT			s_usPort;
-static	USHORT			s_usBaud;
+static	ULONG			s_ulBaud;
 static	UCHAR			s_uchFormat;
 static	HANDLE			s_hScale;
 
@@ -64,7 +64,7 @@ static SHORT   UieScaleStatus(UCHAR *puchBuffer, SHORT sLength);
 ** Return:      nothing
 *===========================================================================
 */
-BOOL UieScaleInit(USHORT usPort, USHORT usBaud, UCHAR uchFormat, HANDLE hScale)
+BOOL UieScaleInit(USHORT usPort, ULONG ulBaud, UCHAR uchFormat, HANDLE hScale)
 {
     SHORT       sResult;
 	USHORT      usTimer;
@@ -72,13 +72,13 @@ BOOL UieScaleInit(USHORT usPort, USHORT usBaud, UCHAR uchFormat, HANDLE hScale)
 
 	// save scale handle
 	s_usPort    = usPort;
-	s_usBaud    = usBaud;
+	s_ulBaud    = ulBaud;
 	s_uchFormat = uchFormat;
 	s_hScale    = hScale;
 
     /* --- make protocol data --- */
     Protocol.fPip             = PIF_COM_PROTOCOL_NON;
-    Protocol.ulComBaud = usBaud;
+    Protocol.ulComBaud = ulBaud;
     Protocol.uchComByteFormat = uchFormat;
     Protocol.uchComTextFormat = PIF_COM_FORMAT_TEXT;
 
@@ -159,7 +159,7 @@ SHORT UieReadScale(UIE_SCALE *pData)
 			PifLog(MODULE_LINE_NO(MODULE_UIE_SCALE), (USHORT)__LINE__);
             PifCloseCom(UieScale.usHandle);
             PifSleep(50);                               /* 50msec sleep */
-            if (!UieScaleInit(s_usPort, s_usBaud, s_uchFormat, s_hScale))
+            if (!UieScaleInit(s_usPort, s_ulBaud, s_uchFormat, s_hScale))
 				return UIE_SCALE_ERROR_COM;
         }
 

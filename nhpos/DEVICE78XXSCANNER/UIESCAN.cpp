@@ -140,7 +140,7 @@ CUieScan::CUieScan()
 	m_infoStatus.sType      = UIE_SCANNER_UNKNOWN;
 	m_infoStatus.fchRequest = 0;
 	m_infoStatus.fPip       = PIF_COM_PROTOCOL_NON;
-	m_infoStatus.usBaud     = UIE_SCANNER1_BAUD;
+	m_infoStatus.ulBaud     = UIE_SCANNER1_BAUD;
 	m_infoStatus.uchByte    = UIE_SCANNER1_BYTE;
 	m_infoStatus.uchText    = PIF_COM_FORMAT_TEXT;
 	m_infoStatus.chPhase    = UIE_SCANNER_SCALE_NONE;
@@ -165,11 +165,11 @@ CUieScan::~CUieScan()
 ** Return:      nothing
 *===========================================================================
 */
-BOOL CUieScan::UieScannerInit(USHORT usPort, USHORT usBaud, UCHAR uchFormat,
+BOOL CUieScan::UieScannerInit(USHORT usPort, ULONG ulBaud, UCHAR uchFormat,
 	HANDLE hScanner, BOOL bScale)
 {
 	m_infoStatus.usPort  = usPort;
-	m_infoStatus.usBaud  = usBaud;
+	m_infoStatus.ulBaud  = ulBaud;
 	m_infoStatus.uchByte = uchFormat;
 
 	m_hScanner = hScanner;
@@ -536,7 +536,7 @@ UINT CUieScan::UieScannerThread(VOID *pvData)
 
     /* --- open serial port for scanner --- */
     Protocol.fPip             = pCom->fPip;
-    Protocol.ulComBaud = pCom->usBaud;
+    Protocol.ulComBaud = pCom->ulBaud;
     Protocol.uchComByteFormat = pCom->uchByte;
     Protocol.uchComTextFormat = pCom->uchText;
 

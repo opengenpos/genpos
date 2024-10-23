@@ -96,7 +96,7 @@ typedef struct _UIECOM {
     SHORT   sType;                          /* type of scanner            */
     UCHAR   fchRequest;                     /* request status             */
     SHORT   fPip;                           /* type of protocol           */
-    USHORT  usBaud;                         /* baud rate                  */
+    ULONG   ulBaud;                         /* baud rate                  */
     UCHAR   uchByte;                        /* byte format                */
     UCHAR   uchText;                        /* text format                */
     CHAR    chPhase;                        /* phase of scale function    */
@@ -121,7 +121,7 @@ public:
 	virtual ~CUieScan();
 
 public:
-	BOOL    UieScannerInit(USHORT usPort, USHORT usBaud, UCHAR uchFormat, HANDLE hScanner, BOOL bScale);
+	BOOL    UieScannerInit(USHORT usPort, ULONG ulBaud, UCHAR uchFormat, HANDLE hScanner, BOOL bScale);
 	BOOL    UieScannerTerm(VOID);
 	BOOL    UieNotonFile(USHORT usControl);
 	BOOL    UieScannerEnable(VOID);

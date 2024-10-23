@@ -166,7 +166,7 @@ CDevice::CDevice()
 {
 	// initialize
 
-	m_bInitialized = FALSE;
+	m_bInitialized = m_bOpened = FALSE;
 
 	m_sName[0].LoadString(IDS_DEVICENAME1);
 
@@ -936,7 +936,8 @@ HANDLE CDevice::OnOpen(LPCTSTR lpszDeviceName)
 {
 	BOOL	bResult;
 	int		nIndex;
-	USHORT	usPort, usBaud;
+	USHORT	usPort;
+	ULONG   ulBaud;
 	UCHAR	uchFormat;
 	BOOL	bScale;
 
@@ -959,7 +960,7 @@ HANDLE CDevice::OnOpen(LPCTSTR lpszDeviceName)
 
 	// make up parameter
 	usPort    = GetPort(nIndex);
-	usBaud    = GetBaud(nIndex);
+	ulBaud    = GetBaud(nIndex);
 	uchFormat = GetSerialFormat(nIndex);
 	bScale    = (BOOL)(m_Caps[nIndex].dwDeviceType & SCF_TYPE_SCALE);
 
@@ -969,7 +970,7 @@ HANDLE CDevice::OnOpen(LPCTSTR lpszDeviceName)
 	}
 
 	// initialize the scale thread
-	bResult = UieScaleInit(usPort, usBaud, uchFormat, m_hScale);
+	bResult = UieScaleInit(usPort, ulBaud, uchFormat, m_hScale);
 	if (! bResult) {
 		return INVALID_HANDLE_VALUE;
 	}
@@ -1739,7 +1740,7 @@ USHORT CDevice::GetPort(int nIndex)
 //
 /////////////////////////////////////////////////////////////////////////////
 
-USHORT CDevice::GetBaud(int nIndex)
+ULONG CDevice::GetBaud(int nIndex)
 {
 	ULONG	ulBaud;
 

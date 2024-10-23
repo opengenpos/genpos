@@ -51,7 +51,7 @@ extern "C"{
 *   Function Prototype Declarations
 *===========================================================================
 */
-BOOL    UieScaleInit(USHORT usPort, USHORT usBaud, UCHAR uchFormat, HANDLE hScale);
+BOOL    UieScaleInit(USHORT usPort, ULONG ulBaud, UCHAR uchFormat, HANDLE hScale);
 BOOL    UieScaleTerm(VOID);
 SHORT   UieReadScale(UIE_SCALE *pData);
 
