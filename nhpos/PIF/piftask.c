@@ -1039,8 +1039,8 @@ static VOID  PifLogBase (USHORT usModuleId, USHORT usExceptionCode)
 {
     TCHAR wszFilePathName[MAX_PATH];
     DWORD dwThreadId, dwReturn, dwNumberOfBytes = 0;
-    TCHAR  wszLog[64+1];
-    CHAR    szLog[64+1];
+	TCHAR  wszLog[64 + 1] = { 0 };
+	CHAR    szLog[64 + 1] = { 0 };
     USHORT  i;
     DATE_TIME DateTime;
     HANDLE  hHandle;
@@ -1274,10 +1274,10 @@ ULONG   PIFENTRY PifLogNoAbort(UCHAR *lpCondition, UCHAR *lpFilename, UCHAR *lpF
 
 VOID   PIFENTRY PifTransactionLog(UCHAR *lpCondition, UCHAR *lpTransactionLog, UCHAR *lpFilename, ULONG ulLineNo)
 {
-    TCHAR wszFilePathName[MAX_PATH];
+	TCHAR wszFilePathName[MAX_PATH] = { 0 };
     DWORD dwThreadId, dwReturn, dwNumberOfBytes = 0;
-    TCHAR  wszLog[256];
-    CHAR    szLog[LOGTRANS_LOGLINE+1];
+	TCHAR  wszLog[256] = { 0 };
+	CHAR    szLog[LOGTRANS_LOGLINE + 1] = { 0 };
     USHORT  usRetryCount = 5;
     SYSTEMTIME  DateTime;
     HANDLE  hHandle;
@@ -1435,7 +1435,7 @@ VOID   PIFENTRY PifDebugDump (UCHAR *aszTag, UCHAR *aszFileName, int nLineNo, VO
 
 		while(*charCounter != 0x00)
 		{
-			*charCounter++;
+			charCounter++;
 			lengthOfFileName++;
 		}
 
