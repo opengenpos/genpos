@@ -2259,10 +2259,22 @@ int CFrameworkWndText::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 #endif
 
-	bState = m_Font.CreateFontIndirect(&controlAttributes.lfControlFont);
-    // create brush object
+	// following source has a check to see if we are calling this and
+	// the window object with its font and brush has already been created.
+	// it appears that for some layouts and layout settings, a window may
+	// be created even though it already exists.
+	// From experiments we have seen this with a single receipt window.
+	//    Richard Chambers, Oct-09-2024
 
-	bState = m_Brush.CreateSolidBrush(m_colorText);
+	HGDIOBJ hw = m_Font.GetSafeHandle();
+	if (hw == NULL) {
+		bState = m_Font.CreateFontIndirect(&controlAttributes.lfControlFont);
+	}
+
+	hw = m_Brush.GetSafeHandle();
+	if (hw == NULL) {
+		bState = m_Brush.CreateSolidBrush(m_colorText);
+	}
 
 	if(m_nIdentifier == LCDWIN_ID_REG102 || m_nIdentifier == LCDWIN_ID_REG209 || m_nIdentifier == LCDWIN_ID_REG104) {
 		if (m_nIdentifier == LCDWIN_ID_REG104) {
