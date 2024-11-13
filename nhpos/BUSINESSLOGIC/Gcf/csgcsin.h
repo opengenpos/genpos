@@ -122,32 +122,29 @@ typedef struct {                    /* Guest Check Index entry */
    GCF_INDEXDATE  GcfCreateTime;
 }GCF_INDEXFILE;
 
-typedef struct {                    /* Guest Check Drive Through entry */
-   UCHAR    uchDriveNO;             /* DriveThrouth Number */
-}GCF_DRIVEFILE;                 
 
-typedef struct {                            /* First Data Block */
-   USHORT   offusNextBKNO;                  /* Next Block No */
-   USHORT   offusSelfBKNO;                  /* Self Block No */
-   USHORT   usDataLen;                      /* Data length */
-   UCHAR    auchData[(GCF_DATABLOCK - 6)];  /* Storage location for data */
-}GCF_FSTDATAFILE;
-
-typedef struct {                            /* Second Data Block */
-   USHORT   offusNextBKNO;                  /* Next Block No */
-   USHORT   offusSelfBKNO;                  /* Self Block No */
-   UCHAR    auchData[(GCF_DATABLOCK - 4)];  /* Storage location for data */
-}GCF_SNDDATAFILE;
-
+// Each Guest Check is stored in a series of blocks that are in a
+// linked list. The data is stored a a stream of bytes into the blocks
+// so an item in a Guest Check may start in one block and end in a second.
+//
+// Each block is of size GCF_DATA_BLOCK_SIZE bytes which
+// includes a header that contains the indexes for the linked list
+// followed by a block of Guest Check data. The header in the first block
+// contains the actual length of the stream of Guest Check bytes.
+//
+// The Guest Check index points to the first data block which then points
+// to the next block in the linked list.
 typedef struct {                    /* First Data Block Header */
     USHORT  offusNextBKNO;          /* Next Block No */
     USHORT  offusSelfBKNO;          /* Self Block No */
-    USHORT  usDataLen;
+    USHORT  usDataLen;              /* total Guest Check data length in bytes */
+    /* Guest Check data contained in the first block starts here */
 }GCF_DATAHEAD;
 
 typedef struct {                    /* Second Data Block Header */
     USHORT  offusNextBKNO;          /* Next Block No */
     USHORT  offusSelfBKNO;          /* Self Block No */
+    /* Guest Check data contained in second and succeeding blocks starts here */
 }GCF_DATAHEAD_SEC;
 
 typedef struct {                    /* Back up header */
