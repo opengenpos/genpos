@@ -30,6 +30,10 @@
 *
 * Oct-05-99:01.00.00:M.Teraki   : Initial (for Win32)
 * Dec-07-99:01.00.00:hrkato     : Saratoga
+* 
+*** OpenGenPOS ***
+* Nov-17-24:02.04.01:R.Chambers : ISP_MAX_TMPSIZE defined as SERISP_MAX_TMPBUF in ecr.h
+* Nov-17-24:02.04.01:R.Chambers : ISPNETCONFIG replaced by new PIFNETCONFIG in pif.h
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -47,7 +51,7 @@
 *===========================================================================
 */
 
-#define ISP_MAX_TMPSIZE    CONSOLIMAXSIZE+256  /* Temporary buffer size     */
+#define ISP_MAX_TMPSIZE    SERISP_MAX_TMPBUF  /* Temporary buffer size     */
 
 /*
 ------------------------------------------------
@@ -197,24 +201,11 @@ typedef struct {
     CLIREQDATA  *pSavBuff;                   /* Saved data pointer   */
 } ISPPREVIOUS;
 
-/*--------------------------------------
-    NET work configuration structure
----------------------------------------*/
-typedef struct {
-    UCHAR       auchFaddr[PIF_LEN_IP];       /* IP Address */
-    USHORT      usHandle;                    /* NET work handle */
-    UCHAR       fchStatus;                   /* NET work status */
-	USHORT      fchSatStatus;              /* Satellite Status */
-} ISPNETCONFIG;
 
 /*--------------------------------------
     TIMER control structure
 ---------------------------------------*/
-typedef struct {
-    UCHAR       uchHour;
-    UCHAR       uchMin;
-    UCHAR       uchSec;
-} ISPTIMER;
+typedef PIFTIMER ISPTIMER;
 
 /*--------------------------------------
     TTL Department total structure 
@@ -262,7 +253,7 @@ extern USHORT        husIspOpHand;            /* Saves Op Handle         */
 
 extern SHORT         hsIspKeyBoardHand;       /* Saves Terminal Handle   */
 
-extern ISPNETCONFIG  IspNetConfig;            /* NET work configration   */
+extern PIFNETCONFIG  IspNetConfig;            /* NET work configration   */
 extern ISPPREVIOUS   IspResp;                 /* Response Structure      */
 extern ISPTIMER      IspTimer;                /* Timer Keep              */
 extern SHORT         sIspExeError;            /* Error Code of ESR       */

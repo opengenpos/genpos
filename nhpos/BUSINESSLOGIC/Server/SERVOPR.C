@@ -1097,8 +1097,8 @@ VOID    SerRecvOprPlu(VOID)
 */
 VOID    SerRecvOprPara(VOID)
 {
-    CLIREQOPPARA    *pReqMsgH;
-    CLIRESOPPARA    ResMsgH;
+    CLIREQOPPARA    *pReqMsgH = (CLIREQOPPARA *)SerRcvBuf.auchData;
+	CLIRESOPPARA    ResMsgH = { 0 };
     CLIREQDATA      *pSavBuff, *pRcvBuff;
     USHORT          usDataLen, fsBcasInfUA;
     SERINQSTATUS    InqData;
@@ -1109,13 +1109,11 @@ VOID    SerRecvOprPara(VOID)
 	SHORT           sSerSendStatus;
 
 
-    pReqMsgH = (CLIREQOPPARA *)SerRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESOPPARA));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
     ResMsgH.sResCode  = STUB_MULTI_SEND;
 
-    usDataLen = SER_MAX_TMPBUF - sizeof(CLIRESOPPARA) - 2;
+    usDataLen = SERISP_MAX_LEN(sizeof(CLIRESOPPARA));
     pSavBuff = (CLIREQDATA *)&SerRcvBuf.auchData[sizeof(CLIREQOPPARA)];
     pRcvBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESOPPARA)];
     pFinSend = (CLIOPFINBLK *)pRcvBuff->auchData;

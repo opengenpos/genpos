@@ -1700,7 +1700,7 @@ SHORT TrnGetGC(USHORT usGCFNo, SHORT sType, USHORT usType)
 
     sStatus = CliGusReadLockFH(usGCFNo,                 /* get target GCF */
                                TrnInformation.hsTranConsStorage,
-                               sizeof(USHORT) + sizeof(USHORT),
+                               CLIGCFFILE_DATASTART,
                                TrnInformation.usTranConsStoFSize,
                                usType, &ulActualBytesRead);
 
@@ -1725,7 +1725,7 @@ SHORT TrnGetGC(USHORT usGCFNo, SHORT sType, USHORT usType)
 		ULONG   ulSize = 0;
         /* set GCF qual to TrnInformation */
 
-		ulSize = sizeof(USHORT) + sizeof(USHORT);
+		ulSize = CLIGCFFILE_DATASTART;
 		//11-1103- SR 201 JHHJ
 		TrnReadFile_MemoryForce (ulSize, &(TrnInformation.TranGCFQual), sizeof(TRANGCFQUAL), TrnInformation.hsTranConsStorage, &ulActualBytesRead);
 #if 0
@@ -1862,7 +1862,7 @@ static ULONG TrnUpdateGuestCheckDataFile (USHORT usType)
 		following contains the transaction items, and the third
 		section contains the index data for each item.
 	**/
-	ulSize = sizeof(USHORT) + sizeof(USHORT); // usFSize and usActLen
+	ulSize = CLIGCFFILE_DATASTART; // usFSize and usActLen
 
 	// save the current tender id value to be recovered later if GC read back in.
 	TrnInformation.TranGCFQual.usCheckTenderId = ItemTenderLocalCheckTenderid (3, 0);
@@ -1954,7 +1954,7 @@ SHORT TrnConnEngineSendGC(USHORT usGCFNo)
 	ulSize = TrnUpdateGuestCheckDataFile (GCF_COUNTER_TYPE);
 	TrnInformation.TranCurQual.flPrintStatus = flPrintStatus;
 
-	ConnEngineSendTransactionFH (1, 0, usGCFNo, TrnInformation.hsTranConsStorage, sizeof(USHORT) + sizeof(USHORT), ulSize);
+	ConnEngineSendTransactionFH (1, 0, usGCFNo, TrnInformation.hsTranConsStorage, CLIGCFFILE_DATASTART, ulSize);
 
 	return 0;
 }
@@ -1966,14 +1966,14 @@ SHORT TrnSaveGC(USHORT usType, USHORT usGCFNo)
     USHORT  usInitVli = 0;
 
 	ulSize = TrnUpdateGuestCheckDataFile (usType);
-	ConnEngineSendTransactionFH (1, 0, usGCFNo, TrnInformation.hsTranConsStorage, sizeof(USHORT) + sizeof(USHORT), ulSize);
+	ConnEngineSendTransactionFH (1, 0, usGCFNo, TrnInformation.hsTranConsStorage, CLIGCFFILE_DATASTART, ulSize);
 
 	NHPOS_ASSERT(ulSize <= 0xFFFF);//MAXWORD
 	{
 		int  iLoop;
 		sStatus = GCF_COMERROR;
 		for (iLoop = 0; iLoop < 2 && 0 > sStatus; iLoop++) {
-			sStatus = CliGusStoreFileFH(usType, usGCFNo, TrnInformation.hsTranConsStorage, sizeof(USHORT) + sizeof(USHORT), ulSize);        /* send GCF */
+			sStatus = CliGusStoreFileFH(usType, usGCFNo, TrnInformation.hsTranConsStorage, CLIGCFFILE_DATASTART, ulSize);        /* send GCF */
 			if (0 > sStatus) {
 				GusConvertError( sStatus );
 				PifSleep (50);
@@ -2278,9 +2278,9 @@ SHORT TrnSendTotal( VOID )
 	pTtlTumTranQual->TtlTranVli = usSize;
 
     /* set CUR qual and MODE qual to item storage file */
-    TrnWriteFile(sizeof(USHORT), uchWork, sizeof(uchWork), TrnInformation.hsTranItemStorage);
+    TrnWriteFile(SERTMPFILE_DATASTART, uchWork, sizeof(uchWork), TrnInformation.hsTranItemStorage);
 
-    sRetStatus = CliTtlUpdateFileFH(sizeof(USHORT), TrnInformation.hsTranItemStorage, usSize);  /* TOTAL MODULE i/F */
+    sRetStatus = CliTtlUpdateFileFH(SERTMPFILE_DATASTART, TrnInformation.hsTranItemStorage, usSize);  /* TOTAL MODULE i/F */
 	if (sRetStatus != 0) {
 		char  xBuff[128];
 		sprintf (xBuff, "**WARNING: TrnSendTotal() CliTtlUpdateFileFH() sRetStatus = %d, usConsNo %d %d, Guest No. %d", sRetStatus, TrnInformation.TranCurQual.usConsNo, TrnInformation.TranGCFQual.usConsNo, TrnInformation.TranGCFQual.usGuestNo);

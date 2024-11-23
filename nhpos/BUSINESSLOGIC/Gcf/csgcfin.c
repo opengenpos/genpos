@@ -1532,8 +1532,8 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,
 SHORT   Gcf_DataBlockCopyFH(GCF_FILEHED *pGcf_FileHed, 
                             GCNUM      usStartBlockNO, 
                             SHORT       hsFileHandle, 
-                            USHORT      usStartPoint, 
-                            USHORT      usRcvSize,
+                            ULONG       ulStartPoint, 
+                            ULONG       ulRcvSize,
                             USHORT      *pusCopyBlock,
 							ULONG		*pulBytesRead)
 {                                       
@@ -1547,7 +1547,7 @@ SHORT   Gcf_DataBlockCopyFH(GCF_FILEHED *pGcf_FileHed,
     GCF_DATAHEAD        *pGcfDataHead = (GCF_DATAHEAD *) uchRcvBuffer;
     GCF_DATAHEAD_SEC    *pGcfDataHeadSec = (GCF_DATAHEAD_SEC *) uchRcvBuffer;
 
-    offulWritePoint = ( ULONG)usStartPoint;
+    offulWritePoint = ulStartPoint;
     *pusCopyBlock = 0;
 	//RPH SR# 201
 	*pulBytesRead = 0;
@@ -1564,7 +1564,7 @@ SHORT   Gcf_DataBlockCopyFH(GCF_FILEHED *pGcf_FileHed,
 		return(0);                 /* Return Len = 0 */
     }
 
-    if (0 == usRcvSize ) {   /* If lock only, then get block count */
+    if (0 == ulRcvSize ) {   /* If lock only, then get block count */
         for ( ulWorkSize = 0; GcfDataHead.usDataLen != 0 ; ulWorkSize++ ){
             (*pusCopyBlock)++;
             if (ulWorkSize) {
@@ -1582,10 +1582,10 @@ SHORT   Gcf_DataBlockCopyFH(GCF_FILEHED *pGcf_FileHed,
 		return(0);    /* Return len = 0 */
     }
 
-	NHPOS_ASSERT(GcfDataHead.usDataLen <= usRcvSize);
+	NHPOS_ASSERT(GcfDataHead.usDataLen <= ulRcvSize);
 
-    if (GcfDataHead.usDataLen > usRcvSize) {
-        ulWorkSize = ulWorkRetSize = usRcvSize;
+    if (GcfDataHead.usDataLen > ulRcvSize) {
+        ulWorkSize = ulWorkRetSize = ulRcvSize;
     } else {
         ulWorkSize = ulWorkRetSize = GcfDataHead.usDataLen;
     }

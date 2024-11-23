@@ -116,22 +116,13 @@ typedef struct {
     SHORT       sError;                     /* SERVER ERROR CODE such as STUB_BUSY or STUB_SUCCESS */
     USHORT      usRetryCo;                  /* ERROR retry count.  see CstComErrHandle()  */
     SHORT       sRetCode;                   /* Function Return Code, value of pResp->sReturn put here by CstComRespHandle() */
-    USHORT      usAuxLen;                   /* Received Data Length */
+    USHORT      usAuxLen;                   /* Received Data Length or for files the current offset into the file. */
     CLIRESCOM   *pResMsgH;                  /* Response Message Pointer */
     USHORT      usResMsgHLen;               /* Response Message Length */
     UCHAR       *pauchResData;              /* Response Data Bufer */
     USHORT      usResLen;                   /* Response Dara Buffer Length */
 } CLICOMIF;
 
-/*--------------------------------------
-    NET work configuration structure
----------------------------------------*/
-typedef struct {
-    UCHAR       auchFaddr[PIF_LEN_IP];      /* IP Address saved */
-    USHORT      usHandle;                   /* NET work handle saved */
-    UCHAR       fchStatus;                  /* NET work status */
-    USHORT      fchSatStatus;              /* Satellite Status */
-} CLINETCONFIG;
 
 /*  Define for other   */
 #define  CLI_BAK_ETK_PARAM_FILE      0      /* PARAMETK */
@@ -290,7 +281,7 @@ extern USHORT          husCliExeNet;       /* Semapho, ISP - APPLI */
 extern USHORT          husCliExePara;      /* Semapho, ISP - APPL, para */
 extern USHORT          husCliComDesc;      /* Semapho, ISP - APPL, descri. */
 //extern CLICOMIF        CliMsg;             /* Message Structure */
-extern CLINETCONFIG    CliNetConfig;       /* Net Configration Structure */
+extern PIFNETCONFIG    CliNetConfig;       /* Net Configration Structure */
 extern USHORT          fsCliComDesc;       /* Descriptor control */
 extern USHORT          usCliCpmReqNo;      /* CPM Request counter */
 

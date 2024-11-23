@@ -260,8 +260,8 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,  /* Change R3.0 */
 SHORT   Gcf_DataBlockCopyFH(GCF_FILEHED *pGcf_FileHed, 
                             GCNUM      usStartBlockNO, 
                             SHORT       hsFileHandle, 
-                            USHORT      usStartPoint, 
-                            USHORT      usRcvSize,
+                            ULONG       ulStartPoint, 
+                            ULONG       ulRcvSize,
                             USHORT      *pusCopyBlock,
 							ULONG		*pulBytesRead);
                                         

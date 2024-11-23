@@ -2479,8 +2479,7 @@ SHORT   ItemMiscCheckTrans(UIFREGMISC *UifMisc)
 	uchGCFData.TranItemizers = *pItem;
 	uchGCFData.usVli = pTrnInfo->usTranConsStoVli;
 
-    TrnWriteFile(sizeof(USHORT) + sizeof(USHORT), &uchGCFData.TranGCFQual,
-        sizeof(TRANGCFQUAL) + sizeof(TRANITEMIZERS) + sizeof(USHORT), pTrnInfo->hsTranConsStorage);
+    TrnWriteFile(CLIGCFFILE_DATASTART, &uchGCFData.TranGCFQual, sizeof(TRANGCFQUAL) + sizeof(TRANITEMIZERS) + sizeof(USHORT), pTrnInfo->hsTranConsStorage);
 
     /* save GC to GC module, V3.3 */
     if (RflGetSystemType () == FLEX_POST_CHK) {
@@ -2569,7 +2568,7 @@ SHORT   ItemMiscCheckTransGC2GC(ITEMMISC *pMiscTo)
 	}
     /* --- Get Dest. Guest Check into Post Receipt File Area --- */
     sStatus = CliGusReadLockFH(pMiscTo->usGuestNo, TrnInfo->hsTranPostRecStorage,
-        sizeof(USHORT) + sizeof(USHORT), TrnInfo->usTranConsStoFSize, GCF_REORDER, &ulActualBytesRead);
+        CLIGCFFILE_DATASTART, TrnInfo->usTranConsStoFSize, GCF_REORDER, &ulActualBytesRead);
 
     /* --- Create New Guest Check --- */
     sDel = 0;
@@ -2606,8 +2605,7 @@ SHORT   ItemMiscCheckTransGC2GC(ITEMMISC *pMiscTo)
 		} uchBuffer;
 
 		memset(&uchBuffer, 0, sizeof(uchBuffer));
-        TrnReadFile_MemoryForce(sizeof(USHORT) + sizeof(USHORT),
-            &(uchBuffer.gcfQual), sizeof(TRANGCFQUAL), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+        TrnReadFile_MemoryForce(CLIGCFFILE_DATASTART, &(uchBuffer.gcfQual), sizeof(TRANGCFQUAL), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
 
         /* --- Check Mismatch between Destination GC and Target GC --- */
         if ((sStatus = ItemMiscCheckTransGC2GCCheck(&(uchBuffer.gcfQual))) != ITM_SUCCESS) {
@@ -2622,7 +2620,7 @@ SHORT   ItemMiscCheckTransGC2GC(ITEMMISC *pMiscTo)
         pMiscTo->ulID = WorkGCF->ulCashierID;
 
         /* --- Add Transaction Itemizers --- */
-        TrnReadFile_MemoryForce(sizeof(USHORT) + sizeof(USHORT) + sizeof(TRANGCFQUAL), &(uchBuffer.gcfItemizers), sizeof(TRANITEMIZERS), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+        TrnReadFile_MemoryForce(CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL), &(uchBuffer.gcfItemizers), sizeof(TRANITEMIZERS), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
         TrnSplAddGC2GCItemizers(&(uchBuffer.gcfItemizers));
 
         if (RflGetSystemType () == FLEX_POST_CHK) {
@@ -3200,7 +3198,7 @@ VOID    ItemMiscCancelGCF( VOID)
 				// reading the data from the guest check file, updating the two data items for the slip printer
 				// and then writing the data back to the guest check file.
 				//RPH SR#201
-				while( (sSize = CliGusIndReadFH( TranGCFQualL->usGuestNo, pTrnInfo->hsTranConsStorage, sizeof(USHORT) + sizeof(USHORT),
+				while( (sSize = CliGusIndReadFH( TranGCFQualL->usGuestNo, pTrnInfo->hsTranConsStorage, CLIGCFFILE_DATASTART,
                                                    pTrnInfo->usTranConsStoFSize, &ulActualBytesRead) ) < 0){
 
                     usRtnLead = GusConvertError( sSize );
@@ -3213,9 +3211,7 @@ VOID    ItemMiscCancelGCF( VOID)
 							pTrnInfo->hsTranConsStorage);
 
                 sType = GCF_COUNTER_TYPE;                               
-                while ( ( sErrStatus = CliGusStoreFileFH( sType, TranGCFQualL->usGuestNo, pTrnInfo->hsTranConsStorage,
-                                                          sizeof(USHORT) + sizeof(USHORT),
-                                                          ulActualBytesRead ) ) != GCF_SUCCESS ) {
+                while ( ( sErrStatus = CliGusStoreFileFH( sType, TranGCFQualL->usGuestNo, pTrnInfo->hsTranConsStorage, CLIGCFFILE_DATASTART, ulActualBytesRead ) ) != GCF_SUCCESS ) {
 
                     usRtnLead = GusConvertError( sErrStatus );
                     UieErrorMsg( usRtnLead, UIE_WITHOUT );

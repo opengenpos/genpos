@@ -45,6 +45,8 @@
 *   Mar-11-00:K.Iwata     : Mod CLIREQKITPRINT
 *	Jul-10-03:C.Wunn	  :Add CLI_ETKINDJOBREAD_RESHLEN
 *   Dec-11-14:R.Chambers  :Removed CLI_ETKINDJOBREAD_RESHLEN
+** OpenGenPOS **
+*   Nov-17-24:R.Chambers  : eliminated CLI_MAX_IPDATA, moved SERTMPFILE_DATASTART to ech.h
 \*=======================================================================*/
 /*=======================================================================*\
 :   PVCS ENTRY
@@ -86,7 +88,6 @@
 #define     CLI_CASHIERNAME     20      /* Cashier name, V3.3 */
 #define     CLI_CASHIERSTATUS    6      /* cashier status, V3.3 */
 #define     CLI_WAITERNAME      10      /* Waiter name */
-#define     CLI_MAX_IPDATA      8       /* Maximumm IP address data */
 #define     CLI_PASSWORD        10      /* Maximum PC passward */
 
 #define     CLI_PLU_MAX_NO       5      /* Maximum No of PLU,   Saratoga 
@@ -537,8 +538,6 @@
 #define SERV_PERFORM                    0   /* create success */
 #define SERV_ERROR                     -1   /* create fail */
 
-#define SERTMPFILE_DATASTART  sizeof(USHORT)   // size information stored in first few bytes of the hsSerTmpFile, aszSerTmpFileName file.
-
 
 //----------------------------------------------------------------------------
 // WARNING:  Following flags used with Operator Send Message must be
@@ -583,7 +582,7 @@
 ---------------------------------------*/
 typedef struct {
     USHORT  usFunCode;  // the function code such as CLI_FCKPSPRINT, CLI_FCSPSPRINT, or CLI_FCCASINDREAD
-    USHORT  usSeqNo;    // the sequence number for the message packet
+    USHORT  usSeqNo;    // the sequence number for the message packet. incremented with each new packet.
 } CLIREQCOM;
 
 /*--------------------------------------
@@ -601,11 +600,11 @@ typedef struct {
 } CLIRESCOM;
 
 /*--------------------------------------
-    Common Data Message 
+    Common Data Message used to format Client, Server, ISP messages
 ---------------------------------------*/
 typedef struct {
-    USHORT  usDataLen;                  /* data length */
-    UCHAR   auchData[1];                /* data */
+    USHORT  usDataLen;                  /* data length for the data, typically a message struct, that follows */
+    UCHAR   auchData[1];                /* variable length data area, typically a copy of a message struct */
 } CLIREQDATA;
 
 /*--------------------------------------

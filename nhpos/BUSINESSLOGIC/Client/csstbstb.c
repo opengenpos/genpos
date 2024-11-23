@@ -114,7 +114,7 @@ PifSemHandle    husCliWaitDone = PIF_SEM_INVALID_HANDLE;         /* semapho, STU
 PifSemHandle    husCliExeNet = PIF_SEM_INVALID_HANDLE;           /* semapho, APPLI - ISP */
 PifSemHandle    husCliExePara = PIF_SEM_INVALID_HANDLE;          /* Semapho, ISP - APPL, para */
 PifSemHandle    husCliComDesc = PIF_SEM_INVALID_HANDLE;          /* Semapho, ISP - APPL, descriptor */
-CLINETCONFIG    CliNetConfig;           /* NET control structure */
+PIFNETCONFIG    CliNetConfig;           /* NET control structure */
 USHORT          fsCliComDesc;           /* Descriptor control */
 USHORT          usCliCpmReqNo;          /* CPM Request counter */
 CLIPLUSAVHAN    CliMMMHand;             /* Save MMM handel, Saratoga */

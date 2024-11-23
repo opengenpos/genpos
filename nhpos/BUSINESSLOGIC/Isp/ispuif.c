@@ -88,7 +88,7 @@ USHORT           fsIspCleanUP = 0;            /* System control flag      */
 XGRAM            IspSndBuf;               /* Sends    buffer */
 XGRAM            IspRcvBuf;               /* Receives buffer */
 
-ISPNETCONFIG     IspNetConfig;            /* NET work configration   */
+PIFNETCONFIG     IspNetConfig;            /* NET work configration   */
 ISPPREVIOUS      IspResp;                 /* Response Structure      */
 ISPTIMER         IspTimer;                /* Timer Keep              */
 ISPRESETLOG      IspResetLog = {0};           /* pc if reset log save area, V3.3 */

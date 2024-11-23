@@ -36,6 +36,10 @@
 ** GenPOS **
 *
 *   Apr-02-15 : 02.02.01 : R.Chambers  : moved Operator Message function prototypes to cscas.h
+*
+*** OpenGenPOS ***
+* Nov-17-24:02.04.01:R.Chambers : SER_MAX_TMPSIZE defined as SERISP_MAX_TMPBUF in ecr.h
+* Nov-17-24:02.04.01:R.Chambers : SERNETCONFIG replaced by new PIFNETCONFIG in pif.h
 \*=======================================================================*/
 /*=======================================================================*\
 :   PVCS ENTRY
@@ -84,21 +88,14 @@
     MAX Definition
 ------------------------------------------
 */
-#include "storage.h"
                                                 /* size of SerTmpBuf[?] */
-#if (CONSOLIMAXSIZE > 256) 
-#define     SER_MAX_TMPBUF      (CONSOLIMAXSIZE + 256) 
-#else
-#define     SER_MAX_TMPBUF      512
-#endif 
+#define     SER_MAX_TMPBUF      SERISP_MAX_TMPBUF
 #define     SER_MAX_TIMEOUT     0               /* time out co. inquiry */
 #define     SER_MAX_TIMER       30              /* timer value, multi sending */
 #define     SER_SLEEP_TIMER     3000            /* sleep timer value (ms) */
 #define     SER_INQUIRY_TIMER   1000            /* delay (ms) if inquiry error */
 
 #define     SER_MAX_KP          8               /* maximum kp # */ /* V1.0.0.4 */
-
-#define		SERTMPFILE_DATASTART  sizeof(USHORT)   // size information stored in first few bytes of the hsSerTmpFile, aszSerTmpFileName file.
 
 /*
 ------------------------------------------
@@ -173,25 +170,11 @@ typedef struct {
     CLIREQDATA  *pSavBuff;                  /* Saved data pointer */
 } SERPREVIOUS;
 
-/*--------------------------------------
-    NET work configuration structure
----------------------------------------*/
-typedef struct {
-    UCHAR       auchFaddr[PIF_LEN_IP];      /* IP Address */
-    USHORT      usHandle;                   /* NET work handle */
-    UCHAR       fchStatus;                  /* NET work status */
-    USHORT      fchSatStatus;              /* Satellite Status */
-} SERNETCONFIG;
 
 /*--------------------------------------
     TIMER control structure
 ---------------------------------------*/
-typedef struct {
-    UCHAR       uchHour;
-    UCHAR       uchMin;
-    UCHAR       uchSec;
-	UCHAR       uchTermNo;
-} SERTIMER;
+typedef PIFTIMER  SERTIMER;
 
 
 #if     (defined(_WIN32_WCE) || defined(WIN32)) && _MSC_VER >= 800
@@ -395,7 +378,7 @@ SHORT   SerSpsTimerRead(VOID);
 
 SHORT    SerSendResponseFH(CLIRESCOM *pResMsgH,
                           USHORT usResMsgHLen,
-                          USHORT usOffsetPoint,
+                          ULONG  ulOffsetPoint,
                           USHORT usReqLen);
 
 /*********************************************************
@@ -460,7 +443,7 @@ SHORT	SerOpUpdateTotalsMsg(TTLMESSAGEUNION *pTtlMessage); //message to update to
 
 extern XGRAM           SerSndBuf;              /* Send Buffer */
 extern XGRAM           SerRcvBuf;              /* Receive Buffer */
-extern SERNETCONFIG    SerNetConfig;           /* NET work configration */
+extern PIFNETCONFIG    SerNetConfig;           /* NET work configration */
 extern USHORT          usSerStatus;            /* SERVER Status */
 extern USHORT          fsSerExeSpe;            /* Special Request from STUB */
 extern UCHAR           auchSerTmpBuf[SER_MAX_TMPBUF];  /* Data Save Buffer */ 

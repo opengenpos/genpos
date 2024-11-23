@@ -100,7 +100,7 @@ SHORT    SerRMHCheckData(VOID)
     if (pResp->usSeqNo & CLI_SEQ_SENDDATA) {
 		CLIREQDATA  *pRespData = (CLIREQDATA *)&SerRcvBuf.auchData[usMsgHLen];
 
-        if (SerResp.usSize != (usMsgHLen + PIF_LEN_IP + 4 + 2 + pRespData->usDataLen)) {
+        if (SerResp.usSize != (sizeof(XGHEADER) + usMsgHLen + 2 + pRespData->usDataLen)) {
 			CHAR  xBuff[128];
 
 			sprintf (xBuff, "==NOTE: SerRMHCheckData usFunCode 0x%x, usSeqNo 0x%x, addr 0x%x usDataLen %d", pResp->usFunCode, pResp->usSeqNo, *((ULONG *)SerRcvBuf.auchFaddr), pRespData->usDataLen);
@@ -110,7 +110,7 @@ SHORT    SerRMHCheckData(VOID)
             PifLog(MODULE_DATA_VALUE(MODULE_SER_LOG), pResp->usFunCode);
             return SERV_ILLEGAL;
         }
-    } else if (SerResp.usSize != (usMsgHLen + PIF_LEN_IP + 4)) {
+    } else if (SerResp.usSize != sizeof(XGHEADER) + usMsgHLen) {
 		CHAR  xBuff[128];
 
 		sprintf (xBuff, "==NOTE: SerRMHCheckData usFunCode 0x%x, usSeqNo 0x%x, addr 0x%x", pResp->usFunCode, pResp->usSeqNo, *((ULONG *)SerRcvBuf.auchFaddr));
@@ -630,7 +630,7 @@ SHORT    SerSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
         SerResp.uchPrevUA     = SerRcvBuf.auchFaddr[CLI_POS_UA];
     }
     usDataLen = SerResp.pSavBuff->usDataLen - SerResp.usPrevDataOff;
-    usDataMax = PIF_LEN_UDATA - PIF_LEN_IP - usResMsgHLen - sizeof(XGHEADER) - 10;
+    usDataMax = PIF_LEN_UDATA_MAX(usResMsgHLen);
 	/* Leave room for IP address, headers, and additional data (see functions
 	 * SerSendResponse and PifNetSendG/D) */
     if (usDataLen > usDataMax) {                /* still exist send data */
@@ -769,7 +769,7 @@ VOID    SerSendBakMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
         SerResp.usPrevMsgHLen = usResMsgHLen;
     }
     usDataLen = SerResp.pSavBuff->usDataLen - SerResp.usPrevDataOff;
-    usDataMax = PIF_LEN_UDATA - PIF_LEN_IP - usResMsgHLen - sizeof(XGHEADER) - 10;
+    usDataMax = PIF_LEN_UDATA_MAX(usResMsgHLen);
 	/* Leave room for IP address, headers, and additional data (see functions
 	 * SerSendResponse and PifNetSendG/D) */
     if (usDataLen > usDataMax) {                /* still exist send data */

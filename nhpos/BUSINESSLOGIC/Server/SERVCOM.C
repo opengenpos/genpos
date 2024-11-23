@@ -251,10 +251,10 @@ SHORT   SerSendResponse(CLIRESCOM *pResMsgH,
                                                 /*=== EDIT HEADER ===*/       
 //    memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, PIF_LEN_IP);
 //    SerSndBuf.auchFaddr[CLI_POS_UA] = SerRcvBuf.auchFaddr[CLI_POS_UA];
-	memcpy (SerSndBuf.auchFaddr, SerRcvBuf.auchFaddr, PIF_LEN_IP);
+	memcpy (SerSndBuf.auchFaddr, SerRcvBuf.auchFaddr, sizeof(SerSndBuf.auchFaddr));
     SerSndBuf.usFport = SerRcvBuf.usFport;
     SerSndBuf.usLport = CLI_PORT_SERVER;
-    usSendLen = PIF_LEN_IP + 4;
+    usSendLen = sizeof(XGHEADER);
                                                 /*=== EDIT MESSAGE ===*/
     memcpy(SerSndBuf.auchData, pResMsgH, usResMsgHLen);
     usSendLen += usResMsgHLen;
@@ -283,10 +283,10 @@ SHORT   SerSendResponseToIpAddress(UCHAR *auchFaddr, CLIRESCOM *pResMsgH,
     USHORT  usSendLen;
 	SHORT   sError;
                                                 /*=== EDIT HEADER ===*/       
-    memcpy(SerSndBuf.auchFaddr, auchFaddr, PIF_LEN_IP);
+    memcpy(SerSndBuf.auchFaddr, auchFaddr, sizeof(SerSndBuf.auchFaddr));
     SerSndBuf.usFport = SerRcvBuf.usFport;
     SerSndBuf.usLport = CLI_PORT_SERVER;
-    usSendLen = PIF_LEN_IP + 4;
+    usSendLen = sizeof(XGHEADER);
                                                 /*=== EDIT MESSAGE ===*/
     memcpy(SerSndBuf.auchData, pResMsgH, usResMsgHLen);
     usSendLen += usResMsgHLen;
@@ -335,11 +335,11 @@ SHORT    SerSendRequest( UCHAR uchServer,
     USHORT  usSendLen;
 	SHORT   sError;
                                                 /*=== EDIT HEADER ===*/       
-    memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, PIF_LEN_IP);
+    memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, sizeof(SerSndBuf.auchFaddr));
     SerSndBuf.auchFaddr[CLI_POS_UA] = uchServer;
     SerSndBuf.usFport = CLI_PORT_SERVER;
     SerSndBuf.usLport = CLI_PORT_SERVER;
-    usSendLen = PIF_LEN_IP + 4;
+    usSendLen = sizeof(XGHEADER);
                                                 /*=== EDIT MESSAGE ===*/
     memcpy(SerSndBuf.auchData, pReqMsgH, usReqMsgHLen);
     usSendLen += usReqMsgHLen;
@@ -392,7 +392,7 @@ SHORT   SerSendError(SHORT sError)
     CLIRESCOM   *pResMsgH = (CLIRESCOM *)SerSndBuf.auchData;
 	SHORT        sMyError;
                                                 /*=== EDIT HEADER ===*/       
-    memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, PIF_LEN_IP);
+    memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, sizeof(SerSndBuf.auchFaddr));
     SerSndBuf.auchFaddr[CLI_POS_UA] = SerRcvBuf.auchFaddr[CLI_POS_UA];
     SerSndBuf.usFport = SerRcvBuf.usFport;
     SerSndBuf.usLport = CLI_PORT_SERVER;
@@ -403,7 +403,7 @@ SHORT   SerSendError(SHORT sError)
     pResMsgH->sReturn   = STUB_SUCCESS;
 
                                                 /*=== SEND RESPONSE ===*/
-    sMyError = SerNetSend(PIF_LEN_IP + 4 + sizeof(CLIRESCOM));
+    sMyError = SerNetSend(sizeof(XGHEADER) + sizeof(CLIRESCOM));
 	if (sMyError < 0) {
 		char xBuff[128];
 		sprintf(xBuff, "SerSendError(): sMyError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sMyError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
@@ -625,7 +625,7 @@ SHORT  SerNetOpen(VOID)
     SHORT           sHandle;
 	SHORT           sRetStatus = 0;
 
-    memset(&SerNetConfig, 0, sizeof(SERNETCONFIG));
+    memset(&SerNetConfig, 0, sizeof(SerNetConfig));
 
 	if (SysCon->usTerminalPosition & PIF_CLUSTER_DISCONNECTED_SAT)
 		SerNetConfig.fchSatStatus |= SER_SAT_DISCONNECTED;
@@ -1160,7 +1160,7 @@ SHORT    SerSpsTimerRead(VOID)
 */
 SHORT    SerSendResponseFH(CLIRESCOM *pResMsgH,
                           USHORT usResMsgHLen,
-                          USHORT usOffsetPoint,
+                          ULONG  ulOffsetPoint,
                           USHORT usReqLen)
 {
     USHORT  usSendLen;
@@ -1174,7 +1174,7 @@ SHORT    SerSendResponseFH(CLIRESCOM *pResMsgH,
     memcpy(&SerSndBuf.auchData[usSendLen], &usReqLen, sizeof(USHORT));
     usSendLen += sizeof(USHORT);
 
-    SstReadFileFH((SERTMPFILE_DATASTART + usOffsetPoint + usResMsgHLen), (VOID *)&SerSndBuf.auchData[usSendLen], usReqLen, hsSerTmpFile);
+    SstReadFileFH((SERTMPFILE_DATASTART + ulOffsetPoint + usResMsgHLen), (VOID *)&SerSndBuf.auchData[usSendLen], usReqLen, hsSerTmpFile);
     usSendLen += usReqLen;
 
 	/*=== EDIT HEADER ===*/       

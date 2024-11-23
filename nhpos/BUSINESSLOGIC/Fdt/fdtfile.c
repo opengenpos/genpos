@@ -117,7 +117,7 @@ SHORT   FDTCreateFile(USHORT usNoOfItem)
 
     /* --- Store Actual Size --- */
     usInitialVli1 = usInitialVli2 = 0;
-    usVliOffset = sizeof(USHORT) + sizeof(USHORT) + sizeof(TRANGCFQUAL) + sizeof(TRANITEMIZERS);  // TRANCONSSTORAGEHEADER
+    usVliOffset = CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL) + sizeof(TRANITEMIZERS);  // TRANCONSSTORAGEHEADER
     FDTWriteFile(usVliOffset, &usInitialVli1, sizeof(USHORT), hsFile1);
     FDTWriteFile(usVliOffset, &usInitialVli2, sizeof(USHORT), hsFile2);
     PifCloseFile(hsFile1);

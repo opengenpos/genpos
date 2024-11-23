@@ -71,11 +71,8 @@
 */
 VOID    IspRecvGCF(VOID)
 {
-    CLIREQGCF       *pReqMsgH;
-    CLIRESGCF       ResMsgH;
-
-    pReqMsgH = (CLIREQGCF *)IspRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESGCF));
+    CLIREQGCF       *pReqMsgH = (CLIREQGCF *)IspRcvBuf.auchData;
+    CLIRESGCF       ResMsgH = { 0 };
 
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.sResCode  = STUB_SUCCESS;
@@ -88,7 +85,7 @@ VOID    IspRecvGCF(VOID)
 
     case    CLI_FCGCFREADLOCK:   /* Read and Lock */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESGCF)];
-        IspResp.pSavBuff->usDataLen = ISP_MAX_TMPSIZE - sizeof(CLIRESGCF) - 2;
+        IspResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
 
         ResMsgH.sReturn = SerGusReadLock(pReqMsgH->usGCN, IspResp.pSavBuff->auchData, IspResp.pSavBuff->usDataLen, GCF_REORDER);
         if (0 <= ResMsgH.sReturn) {
@@ -140,7 +137,7 @@ VOID    IspRecvGCF(VOID)
 
     case CLI_FCGCFINDREAD :	  /* GCF read ind GCN */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESGCF)];
-        IspResp.pSavBuff->usDataLen = ISP_MAX_TMPSIZE - sizeof(CLIRESGCF) - 2;
+        IspResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
 
         ResMsgH.sReturn = SerGusIndRead(pReqMsgH->usGCN, IspResp.pSavBuff->auchData, IspResp.pSavBuff->usDataLen);
         
@@ -166,7 +163,7 @@ VOID    IspRecvGCF(VOID)
 
     case CLI_FCGCFREADAGCNO	: /* GCF read all GCN # */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESGCF)];
-        IspResp.pSavBuff->usDataLen = ISP_MAX_TMPSIZE - sizeof(CLIRESGCF) - 2;
+        IspResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
     
         ResMsgH.sReturn = SerGusAllIdRead(pReqMsgH->usGCType, (USHORT *)IspResp.pSavBuff->auchData, IspResp.pSavBuff->usDataLen);
         
@@ -201,7 +198,7 @@ VOID    IspRecvGCF(VOID)
 
     case CLI_FCGCFALLIDBW :   /* GCF All ID Read By Waiter */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESGCF)];
-        IspResp.pSavBuff->usDataLen = ISP_MAX_TMPSIZE - sizeof(CLIRESGCF) - 2;
+        IspResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
 
         ResMsgH.sReturn = SerGusAllIdReadBW(pReqMsgH->usGCType, pReqMsgH->ulWaiterNo, (USHORT *)IspResp.pSavBuff->auchData, IspResp.pSavBuff->usDataLen);
         if (0 <= ResMsgH.sReturn) {
@@ -258,9 +255,7 @@ VOID    IspRecvGCF(VOID)
 */
 VOID    IspCheckGCFUnLock(VOID)
 {
-    CLIRESGCF   *pResMsgH;
-
-    pResMsgH = (CLIRESGCF *)auchIspTmpBuf;
+    CLIRESGCF   *pResMsgH = (CLIRESGCF *)auchIspTmpBuf;
 
     if ( CLI_FCGCFREADLOCK == (pResMsgH->usFunCode & CLI_RSTCONTCODE )) {
         IspCleanUpLockGCF(ISP_LOCK_INDGCF);  /* Unlock a GCF */

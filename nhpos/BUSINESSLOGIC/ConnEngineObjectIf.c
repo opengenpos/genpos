@@ -1362,8 +1362,8 @@ SHORT ConnEngineSendTransactionFH (BOOL bRecordEj, SHORT sGcfStatus, GCNUM usGCN
 	// contains the request header information so we have to have an offset that accomodates
 	// that additional data.  We do this by checking the passed in ulStartPoint to see if it
 	// is greater than the standard two USHORT variables.
-	if (ulStartPoint > sizeof(USHORT) + sizeof(USHORT))
-		ulItemsAreaOffset = ulSize - (sizeof(USHORT) + sizeof(USHORT));
+	if (ulStartPoint > CLIGCFFILE_DATASTART)
+		ulItemsAreaOffset = ulSize - CLIGCFFILE_DATASTART;
 
 
 	// we expect this file to have a Consolidated Storage layout.

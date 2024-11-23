@@ -22,6 +22,9 @@
 *   Apr-21-95:03.00.00:hkato      :R3.0
 *   Nov-29-95:03.01.00:T.Nakahata :R3.1 Initial (Mod. GusCheckAndDeleteGCF)
 *   Feb-05-96:03.01.00:M.Suzuki   :R3.1 Mod. GCF_DATA_BLOCK_SIZE
+* 
+* OpenGenPOS
+*   Nov-17-24:02.04.01:R.Chambers : GCF_DATA_BLOCK_SIZE and GCF_DATABLOCK  set to CONSOLIMAXSIZE
 \*=======================================================================*/
 /*=======================================================================*\
 :   PVCS ENTRY
@@ -158,8 +161,8 @@
 /*This block was changed due to the size of the structures now using TCHARS
 before, the 1024 was just large enough to hold the regular data without going over,
 the TCHARs pushed the size over the limit.*/
-#define  GCF_DATA_BLOCK_SIZE   4096L    /* DATA BLOCK SIZE 4096 (4K), size same as TRN_STOSIZE_BLOCK */
-#define  GCF_DATABLOCK         4096     /* DATA BLOCK SIZE 4096 (4K), size same as TRN_STOSIZE_BLOCK */
+#define  GCF_DATA_BLOCK_SIZE   CONSOLIMAXSIZE    /* DATA BLOCK SIZE 4096 (4K), size same as TRN_STOSIZE_BLOCK. See also SERISP_MAX_TMPBUF. */
+#define  GCF_DATABLOCK         CONSOLIMAXSIZE    /* DATA BLOCK SIZE 4096 (4K), size same as TRN_STOSIZE_BLOCK. See also SERISP_MAX_TMPBUF. */
 
 #define GCF_TAKEQUE_TYPE01       2      /* Get Number of Que When Assign.  Pre-Guest Buffering and UnBuffering type */
 /* #define GCF_TAKEQUE_TYPE23       ((CONSOLIMAXSIZE + GCF_DATA_BLOCK_SIZE - 1) / GCF_DATA_BLOCK_SIZE) */
@@ -239,7 +242,7 @@ SHORT   GusStoreFileFH(USHORT usType, GCNUM usGCNumber, SHORT  hsFileHandle, ULO
 
 SHORT   GusReadLockFH(GCNUM usGCNumber, SHORT  hsFileHandle, USHORT usStartPoint, USHORT usSize, USHORT usType, ULONG  *pulBytesRead);
 SHORT   GusReturnsLockClear(GCNUM  usGCNumber);
-SHORT   GusIndReadFH(GCNUM usGCNumber, SHORT  hsFileHandle, USHORT usStartPoint, USHORT usSize, ULONG	*pulBytesRead);
+SHORT   GusIndReadFH(GCNUM usGCNumber, SHORT  hsFileHandle, ULONG ulStartPoint, ULONG ulSize, ULONG	*pulBytesRead);
 
 SHORT   GusReadAllGuestChecksWithStatus (GCF_STATUS_STATE *pRcvBuffer, USHORT usRcvMaxCount, GCF_STATUS_HEADER *pGcf_FileHed);
 SHORT   GusAllIdReadFiltered (USHORT usType, ULONG ulWaiterNo, USHORT usTableNo, GCF_STATUS_STATE *pusRcvBuffer, USHORT usCount);
@@ -263,7 +266,7 @@ SHORT   GusReqBackUp(VOID);
 SHORT   GusResBackUp(UCHAR  *puchRcvData, USHORT usRcvLen, UCHAR  *puchSndData, ULONG *pulSndLen);
 
 SHORT   GusReqBackUpFH(SHORT hsFileHandle);
-SHORT   GusResBackUpFH(UCHAR  *puchRcvData, USHORT usRcvLen, SHORT  hsFileHandle, USHORT usOffset, USHORT *pusSndLen);
+SHORT   GusResBackUpFH(UCHAR  *puchRcvData, USHORT usRcvLen, SHORT  hsFileHandle, ULONG ulOffset, USHORT *pusSndLen);
 
 // The following #if is used to enable or disable
 // functionality to issues NHPOS_ASSERT log entries when

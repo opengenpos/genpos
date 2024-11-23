@@ -70,9 +70,10 @@
 */
 VOID    SerRecvBak(VOID)
 {
-    CLIREQBACKUP    *pReqMsgH;
-    CLIRESBACKUP    ResMsgH;
-    CLIREQDATA      *pSavBuff, *pRcvBuff;
+    CLIREQBACKUP    *pReqMsgH = (CLIREQBACKUP*)SerRcvBuf.auchData;
+    CLIRESBACKUP    ResMsgH = { 0 };
+    CLIREQDATA      * pSavBuff = (CLIREQDATA *)&SerRcvBuf.auchData[sizeof(CLIREQBACKUP)];
+    CLIREQDATA      * pRcvBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESBACKUP)];
     USHORT          usDataLen;
 	USHORT			usMaxTmpBuff;
     DATE_TIME       NewPifDate;
@@ -81,15 +82,11 @@ VOID    SerRecvBak(VOID)
     CLIREQDATABAK   *pReqData;
 	SHORT           sSerSendStatus;
 
-    pReqMsgH = (CLIREQBACKUP *)SerRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESBACKUP));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
     ResMsgH.sResCode  = STUB_MULTI_SEND;
 
-    usDataLen = SER_MAX_TMPBUF - sizeof(CLIRESBACKUP) - 2;
-    pSavBuff = (CLIREQDATA *)&SerRcvBuf.auchData[sizeof(CLIREQBACKUP)];
-    pRcvBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESBACKUP)];
+    usDataLen = SERISP_MAX_LEN(sizeof(CLIRESBACKUP));
 
     switch(pReqMsgH->usFunCode & CLI_RSTCONTCODE) {
 

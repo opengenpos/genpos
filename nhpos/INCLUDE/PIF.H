@@ -755,9 +755,10 @@ NOTE: See also IspRecvSysConfig() and the PCIF message format buffer
 #define PIF_LEN_PORT            (6+1) /* reserve port 0 - expected max number of physical RS-232 serial ports plus 1 */
 /* #define PIF_LEN_PORT            5 */
 
-#define PIF_LEN_UDATA           1400   //JHHJ   this define should match CLI_MAX_REQDATA in csstbfcc.h
+#define PIF_LEN_UDATA           1400   // size of the XGRAM data buffer used for communication between terminals. JHHJ   this define should match CLI_MAX_REQDATA in csstbfcc.h
 #define PIF_LEN_UDATA_EX        1400    /* 2172 */
-#define PIF_LEN_IP              4
+#define PIF_LEN_UDATA_MAX(len) (PIF_LEN_UDATA - ((len) + PIF_LEN_IP + sizeof(XGHEADER) + 10))      // not sure why the + 10 factor. Perhaps a fudge to include the response length of two bytes.
+#define PIF_LEN_IP              4      // number of UCHAR in a IPv4 network address
 #define PIF_LEN_HOST_NAME       16      /* 2172 */
 #define PIF_LEN_RMT_PORT        4
 #define PIF_LEN_OPTION          9
@@ -1007,11 +1008,65 @@ typedef struct {           // see function PifGetDateTime(DATE_TIME *pDateTime),
 } DATE_TIME;
 
 
+
+// ============================================================================
+
+/*
+ * The following couple of data structures describe the buffer used
+ * to transfer data using the UDP network protocol between terminals and
+ * between a terminal and a remote device.
+ *
+ * The struct XGRAM describes the complete buffer. It is composed of a
+ * header section, also described by the struct XGHEADER, and a large
+ * UCHAR array which contains the data transfered between the two devices
+ * with the destination IP address and NHPOS network layer port numbers
+ * indicating which NHPOS task thread is sending the message and which
+ * NHPOS task thread on the receiving terminal is to receive the message.
+ *
+ * NOTE: for normal NHPOS UDP network traffic between terminals,
+ *       the port number in the header is not the IP address port number
+ *       which is a fixed IP port used for NHPOS UDP network traffic.
+ *       The port number in the header is the NHPOS task port number used
+ *       by the NHPOS network layer to determine the NHPOS task or thread
+ *       that is supposed to receive the message such as Client, Server, etc.
+ *
+ *       However for a TCP connection, the usFport contains the destination IP port
+ *       number for the TCP connection since TCP connections are to devices
+ *       other than an NHPOS terminal such as receipt printers on a LAN.
+ *
+ * The message data area of the XGRAM struct contains the request data and
+ * the response data. The uppper part of the NHPOS Client network layer uses
+ * the CLICOMIF struct to describe the layout of the data in the message
+ * data area. The layout of the data has two different formats: (1) the
+ * data is a byte stream being transferred such as with a file transfer
+ * or (2) the data is a named data item such as a PLU or a Cashier record.
+ *
+*/
+
 typedef struct {
-    UCHAR   auchFaddr[PIF_LEN_IP];   // IPv4 host address for UDP or TCP traffic
-    USHORT  usFport;                 // Far port number for UDP or TCP traffic
-    USHORT  usLport;                 // Local port number for UDP traffic
-} XGHEADER, *PXGHEADER;
+    UCHAR   auchFaddr[PIF_LEN_IP];   // Far or destination IPv4 host address for UDP or TCP traffic
+    USHORT  usFport;                 // Far or destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
+    USHORT  usLport;                 // Local or source NHPOS network layer port or task identifier for UDP traffic
+} XGHEADER, * PXGHEADER;
+
+/*
+ * NHPOS network communication buffer that is transported via UDP and
+ * contains the source and destination NHPOS task identifiers and the
+ * block of request and response data to transport. See details above.
+*/
+typedef struct {
+    UCHAR   auchFaddr[PIF_LEN_IP];   // Far or destination IPv4 host address for UDP or TCP traffic
+    USHORT  usFport;                 // Far or destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
+    USHORT  usLport;                 // Local or source NHPOS network layer port or task identifier for UDP traffic
+    UCHAR   auchData[PIF_LEN_UDATA]; // buffer for request, CLIREQDATA, followed by response, CLIRESCOM.
+} XGRAM, * PXGRAM;
+
+typedef struct {
+    UCHAR   auchFaddr[PIF_LEN_IP];   // Far or destination IPv4 host address for UDP or TCP traffic
+    USHORT  usFport;                 // Far or destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
+    USHORT  usLport;                 // Local or source NHPOS network layer port or task identifier for UDP traffic
+    UCHAR   auchData[PIF_LEN_UDATA_EX]; // buffer for response, CLIRESCOM, followed by request, CLIREQDATA.
+} XGRAMEX, * PXGRAMEX;  /* for externel communication, 2172 */
 
 /* --- my name buffer structure --- */
 
@@ -1022,19 +1077,25 @@ typedef struct {                                /* XGNAME structure         */
     USHORT  usLport;                            /* NHPOS local port number    */
 } XGNAME, *PXGNAME;
 
+/*--------------------------------------
+    NET work configuration structure
+---------------------------------------*/
 typedef struct {
-    UCHAR   auchFaddr[PIF_LEN_IP];
-    USHORT  usFport;
-    USHORT  usLport;
-    UCHAR   auchData[PIF_LEN_UDATA];
-} XGRAM, *PXGRAM;
+    UCHAR       auchFaddr[PIF_LEN_IP];      /* IP Address saved */
+    USHORT      usHandle;                   /* NET work handle saved */
+    UCHAR       fchStatus;                  /* NET work status */
+    USHORT      fchSatStatus;              /* Satellite Status */
+} PIFNETCONFIG;
 
+/*--------------------------------------
+    TIMER control structure
+---------------------------------------*/
 typedef struct {
-    UCHAR   auchFaddr[PIF_LEN_IP];
-    USHORT  usFport;
-    USHORT  usLport;
-    UCHAR   auchData[PIF_LEN_UDATA_EX];
-} XGRAMEX, *PXGRAMEX;  /* for externel communication, 2172 */
+    UCHAR       uchHour;
+    UCHAR       uchMin;
+    UCHAR       uchSec;
+    UCHAR       uchTermNo;    // optional terminal number associated with this timer
+} PIFTIMER;
 
 // for examples of usage see kitchen printing functionality in cskpin.c
 // see function KpsSetProtocol() for initialization example.

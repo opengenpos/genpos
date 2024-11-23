@@ -2314,8 +2314,8 @@ SHORT GusReturnsLockClear(GCNUM  usGCNumber)
 */
 SHORT GusIndReadFH(GCNUM     usGCNumber,
                    SHORT      hsFileHandle,
-                   USHORT     usStartPoint,
-                   USHORT     usSize,
+                   ULONG      ulStartPoint,
+                   ULONG      ulSize,
 				   ULONG	  *pulBytesRead)
 {
     GCF_FILEHED     Gcf_FileHed;
@@ -2341,7 +2341,7 @@ SHORT GusIndReadFH(GCNUM     usGCNumber,
 
     sStatus = Gcf_Index(&Gcf_FileHed, GCF_SEARCH_ONLY, &Gcf_IndexFile, &offulIndexPoint);
 	if (sStatus == GCF_SUCCESS && (Gcf_IndexFile.fbContFlag & GCF_READ_FLAG_MASK) == 0) {
-		sStatus = Gcf_DataBlockCopyFH(&Gcf_FileHed, Gcf_IndexFile.offusBlockNo, hsFileHandle, usStartPoint, usSize, &usCopyBlock, pulBytesRead);
+		sStatus = Gcf_DataBlockCopyFH(&Gcf_FileHed, Gcf_IndexFile.offusBlockNo, hsFileHandle, ulStartPoint, ulSize, &usCopyBlock, pulBytesRead);
 	}
 	else {
 		// Create zeroed out data in the temp file so that it will be processed
@@ -2352,7 +2352,7 @@ SHORT GusIndReadFH(GCNUM     usGCNumber,
 			USHORT         usTranConsStoVli;
 			PRTIDXHDR      IdxFileInfo;
 		}        u;
-		ULONG    offulWritePoint = (ULONG)usStartPoint;
+		ULONG    offulWritePoint = ulStartPoint;
 
 		memset (&u, 0, sizeof(u));
 
@@ -2560,10 +2560,10 @@ SHORT   GusReqBackUpFH( SHORT hsFileHandle )
 SHORT   GusResBackUpFH(UCHAR  *puchRcvData,
                        USHORT usRcvLen,
                        SHORT  hsFileHandle,
-                       USHORT usOffset,
+                       ULONG  ulOffset,
                        USHORT *pusSndLen)
 {
-    GCF_BACKUP          *pReq_Backup;
+    GCF_BACKUP          *pReq_Backup = (GCF_BACKUP *)puchRcvData;
     GCF_BACKUP          *pGcf_Backup = 0;   /* decl'd for sizeof() only */
     GCF_BAKDATA         *pGcf_BKData = 0;   /* decl'd for sizeof() only */
     GCF_FILEHED         Gcf_FileHed;
@@ -2584,8 +2584,6 @@ SHORT   GusResBackUpFH(UCHAR  *puchRcvData,
         return(sStatus);
     }
 
-    pReq_Backup = (GCF_BACKUP *)puchRcvData;
-
     if (usRcvLen != sizeof(GCF_BACKUP)) {
         Gcf_CloseFileReleaseSem();
         PifLog(MODULE_GCF, LOG_ERROR_GCF_BACKUP_SIZE_ERR01);
@@ -2600,19 +2598,19 @@ SHORT   GusResBackUpFH(UCHAR  *puchRcvData,
             return(GCF_FATAL);
         }
 
-        Gcf_WriteFileFH(usOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen), &Gcf_FileHed, sizeof(GCF_FILEHED), hsFileHandle); 
+        Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen), &Gcf_FileHed, sizeof(GCF_FILEHED), hsFileHandle);
 
         sStatus = 0;
         if (FLEX_STORE_RECALL == Gcf_FileHed.usSystemtype) {
             for (i=0; i < GCF_MAX_QUEUE; i++) {
                 Gcf_ReadFile(Gcf_FileHed.offulDrvNOFile[i], auchWorkBuffer, Gcf_FileHed.usMaxGCN * sizeof(GCNUM), GCF_SEEK_READ);
 
-                Gcf_WriteFileFH(usOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen)+ sizeof(GCF_FILEHED)+ (Gcf_FileHed.usMaxGCN * i),
+                Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen)+ sizeof(GCF_FILEHED)+ (Gcf_FileHed.usMaxGCN * i),
                                 auchWorkBuffer, GCF_MAX_DRIVE_NUMBER * sizeof(GCNUM), hsFileHandle);
             }
             Gcf_ReadFile(Gcf_FileHed.offulPayTranNO, auchWorkBuffer, Gcf_FileHed.usMaxGCN * sizeof(GCNUM), GCF_SEEK_READ);
 
-            Gcf_WriteFileFH(usOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen)+ sizeof(GCF_FILEHED)+ (Gcf_FileHed.usMaxGCN * GCF_MAX_QUEUE),
+            Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen)+ sizeof(GCF_FILEHED)+ (Gcf_FileHed.usMaxGCN * GCF_MAX_QUEUE),
                             auchWorkBuffer, GCF_MAX_DRIVE_NUMBER * sizeof(GCNUM), hsFileHandle);
             sStatus = Gcf_FileHed.usMaxGCN * (GCF_MAX_QUEUE +1);
         }
@@ -2625,20 +2623,20 @@ SHORT   GusResBackUpFH(UCHAR  *puchRcvData,
 
         *pusSndLen -= sizeof(GCF_BACKUP) + 2;
 
-        Gcf_WriteFileFH(usOffset + sizeof(pGcf_Backup->usSeqNO), (USHORT *)&Gcf_IndexFile.fbContFlag, sizeof(USHORT), hsFileHandle); 
-        Gcf_WriteFileFH(usOffset + sizeof(pGcf_Backup->usSeqNO) + sizeof(pGcf_Backup->usType), &Gcf_IndexFile.usGCNO, sizeof(USHORT), hsFileHandle);
+        Gcf_WriteFileFH(ulOffset + sizeof(pGcf_Backup->usSeqNO), (USHORT *)&Gcf_IndexFile.fbContFlag, sizeof(USHORT), hsFileHandle);
+        Gcf_WriteFileFH(ulOffset + sizeof(pGcf_Backup->usSeqNO) + sizeof(pGcf_Backup->usType), &Gcf_IndexFile.usGCNO, sizeof(USHORT), hsFileHandle);
 
-        sStatus = Gcf_DataBlockCopyFH(&Gcf_FileHed, Gcf_IndexFile.offusBlockNo, hsFileHandle, (USHORT)(usOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen)),
+        sStatus = Gcf_DataBlockCopyFH(&Gcf_FileHed, Gcf_IndexFile.offusBlockNo, hsFileHandle, (ulOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen)),
                                       *pusSndLen, &usCopyBlock, &ulBytesRead);
     }
 
     *pusSndLen = sizeof(GCF_BACKUP);
 
-    Gcf_WriteFileFH(usOffset, &pReq_Backup->usSeqNO, sizeof(USHORT), hsFileHandle);
+    Gcf_WriteFileFH(ulOffset, &pReq_Backup->usSeqNO, sizeof(USHORT), hsFileHandle);
 
     if ( 0 != sStatus ) {
         *pusSndLen += (USHORT)sStatus + 2 ;
-        Gcf_WriteFileFH(usOffset + sizeof(GCF_BACKUP), ( USHORT *)&sStatus, sizeof(USHORT), hsFileHandle);
+        Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP), ( USHORT *)&sStatus, sizeof(USHORT), hsFileHandle);
     }
 
     Gcf_CloseFileReleaseSem();

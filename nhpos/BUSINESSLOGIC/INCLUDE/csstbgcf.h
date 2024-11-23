@@ -104,7 +104,7 @@ SHORT   CliGusReadLockFH(GCNUM usGCNumber,
                          USHORT usType,
 						 ULONG	*pulActualBytesRead);                    /* R3.0 */
 SHORT	CliGusReturnsLockClear(GCNUM usGCNumber);
-SHORT   CliGusIndReadFH(GCNUM usGCNumber, SHORT  hsFileHandle, USHORT usStartPoint, USHORT usSize, ULONG *pulActualBytesRead);
+SHORT   CliGusIndReadFH(GCNUM usGCNumber, SHORT  hsFileHandle, ULONG ulStartPoint, ULONG ulSize, ULONG *pulActualBytesRead);
 SHORT   CliGusDeleteDeliveryQueue(GCNUM  uchOrderNo, USHORT usType);
 SHORT   CliGusInformQueue(USHORT   usQueue, USHORT  usType, GCNUM   uchOrderNo, UCHAR   uchForBack);
 SHORT   CliGusSearchQueue(USHORT usQueue, USHORT  uchMiddleNo, USHORT uchRightNo);

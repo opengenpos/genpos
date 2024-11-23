@@ -95,7 +95,7 @@
 */
 XGRAM           SerSndBuf;                  /* Send response buffer */
 XGRAM           SerRcvBuf;                  /* Receive request buffer */
-SERNETCONFIG    SerNetConfig;               /* NET configration */
+PIFNETCONFIG    SerNetConfig;               /* NET configration */
 USHORT          usSerStatus;                /* Server status */
 USHORT          fsSerExeSpe;                /* special request flags */
 UCHAR           auchSerTmpBuf[SER_MAX_TMPBUF];  /* temporary buffer */

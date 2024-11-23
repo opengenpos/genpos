@@ -1213,25 +1213,30 @@ static USHORT  CstComMakeMultiData(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
     CLIREQCOM   *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
     USHORT      usDataSiz = 0, usDataMax;
 
-    if ((0 != pCliMsg->usReqLen) && ((0 == pSend->usSeqNo) || (pCliMsg->sError == STUB_MULTI_RECV))) {
+	// the function CstComMakeMessage() has already placed the request message into
+	// the first part of pCliSndBuf->auchData.
+	if ((0 != pCliMsg->usReqLen) && ((0 == pSend->usSeqNo) || (pCliMsg->sError == STUB_MULTI_RECV))) {
         pSend->usSeqNo ++;
         pSend->usSeqNo |= CLI_SEQ_SENDDATA;
         if (pCliMsg->usAuxLen > pCliMsg->usReqLen) {
             pCliMsg->usAuxLen = pCliMsg->usReqLen;
         }
         usDataSiz = pCliMsg->usReqLen - pCliMsg->usAuxLen;
-        usDataMax = PIF_LEN_UDATA - (pCliMsg->usReqMsgHLen + PIF_LEN_IP + sizeof(XGHEADER) + 10);
+        usDataMax = PIF_LEN_UDATA_MAX(pCliMsg->usReqMsgHLen);
         if (usDataSiz > usDataMax) {
-            usDataSiz = usDataMax;
-        } else {
-            pSend->usSeqNo |= CLI_SEQ_SENDEND;
+			// amount of data remaining to send is too large for a single packet
+			usDataSiz = usDataMax;    // send only as much as will fit in this packet.
+		}
+		else {
+			// amount of date remaining will fit in a single packet. After this we are done.
+			pSend->usSeqNo |= CLI_SEQ_SENDEND;
         }
 		// cast address to UCHAR and figure offset for data based on size of request header in number of bytes.
 		// add into message the size of data (USHORT) and the data itself after the data size.
         memcpy((UCHAR *)pSend + pCliMsg->usReqMsgHLen, &usDataSiz, 2);
         memcpy((UCHAR *)pSend + pCliMsg->usReqMsgHLen + 2, pCliMsg->pauchReqData + pCliMsg->usAuxLen, usDataSiz);
         pCliMsg->usAuxLen += usDataSiz;
-        usDataSiz += 2;
+        usDataSiz += 2;    // add in number of bytes of a USHORT for the length we inserted
     } else if ((0 != pCliMsg->usResLen) && (pCliMsg->usResLen != sizeof(CLIRESETK))) {
 		//SR 140 cwunn 7/9/2003 BK Etk allow CliMsg Response Length to be the size of a CLIRESETK, for CliETKIndJobRead()
 		pSend->usSeqNo &= CLI_SEQ_CONT;
@@ -1250,7 +1255,9 @@ static USHORT  CstComMakeMultiData(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
         }
     }
     pCliMsg->sError = STUB_SUCCESS;
-    return (CLI_MAX_IPDATA + pCliMsg->usReqMsgHLen + usDataSiz);
+	// return size of this data packet that is being sent.
+	// size is XGRAM header plus size of the request struct plus size of the response.
+	return (sizeof(XGHEADER) + pCliMsg->usReqMsgHLen + usDataSiz);
 }
         
 /*
@@ -1667,7 +1674,7 @@ static VOID    CstComSendConfirm(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
     if ((STUB_SUCCESS == pCliMsg->sError) && (pSend->usFunCode & CLI_FCWCONFIRM)) {
         pSend->usFunCode |= CLI_SETCONFIRM;
         ++ pSend->usSeqNo;
-        CstNetSend((USHORT)(CLI_MAX_IPDATA + pCliMsg->usReqMsgHLen), pCliSndBuf);
+        CstNetSend((USHORT)(sizeof(XGHEADER) + pCliMsg->usReqMsgHLen), pCliSndBuf);
     }
 }
 
@@ -3053,13 +3060,13 @@ static USHORT  CstComMakeMultiDataFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
 {
     CLIREQCOM   *pSend;
     USHORT      usDataSiz=0;
-    USHORT      usDataMax;
     USHORT      usStartPoint=0;
 
     pSend = (CLIREQCOM *)pCliSndBuf->auchData;
 
     if ((0 != pCliMsg->usReqLen) &&
         ((0 == pSend->usSeqNo) || (pCliMsg->sError == STUB_MULTI_RECV))) {
+		USHORT      usDataMax;
 
         pSend->usSeqNo ++;
         pSend->usSeqNo |= CLI_SEQ_SENDDATA;
@@ -3067,7 +3074,7 @@ static USHORT  CstComMakeMultiDataFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
             pCliMsg->usAuxLen = pCliMsg->usReqLen;
         }
         usDataSiz = pCliMsg->usReqLen - pCliMsg->usAuxLen;
-        usDataMax = PIF_LEN_UDATA - (pCliMsg->usReqMsgHLen + PIF_LEN_IP + sizeof(XGHEADER) + 10);
+        usDataMax = PIF_LEN_UDATA_MAX(pCliMsg->usReqMsgHLen);
         if (usDataSiz > usDataMax) {
             usDataSiz = usDataMax;
         } else {
@@ -3075,11 +3082,11 @@ static USHORT  CstComMakeMultiDataFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
         }
         memcpy((UCHAR *)pSend + pCliMsg->usReqMsgHLen, &usDataSiz, 2);
         if ((pCliMsg->usFunCode & CLI_RSTCONTCODE) == CLI_FCTTLUPDATE) {
-            usStartPoint = sizeof(USHORT);
+            usStartPoint = SERTMPFILE_DATASTART;
 		} else if ((pCliMsg->usFunCode & CLI_RSTCONTCODE) == CLI_FCCOPONNENGINEMSGFH) {
             usStartPoint = 0;
         } else {
-            usStartPoint = sizeof(USHORT) + sizeof(USHORT);
+            usStartPoint = CLIGCFFILE_DATASTART;
         }
 
         SstReadFileFH((pCliMsg->usAuxLen + usStartPoint), (UCHAR *)pSend + pCliMsg->usReqMsgHLen + 2, usDataSiz, (SHORT)*(pCliMsg->pauchReqData));
@@ -3103,7 +3110,7 @@ static USHORT  CstComMakeMultiDataFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
         }
     }
     pCliMsg->sError = STUB_SUCCESS;
-    return (CLI_MAX_IPDATA + pCliMsg->usReqMsgHLen + usDataSiz);
+    return (sizeof(XGHEADER) + pCliMsg->usReqMsgHLen + usDataSiz);
 }
         
 /*
@@ -3153,13 +3160,8 @@ SHORT   SstReadFAsMasterFH(USHORT usType)
 SHORT    CstComRespHandleFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf)
 {
 
-    CLIREQCOM   *pSend;
-    CLIRESCOM   *pResp;
-    USHORT      usDataSiz;
-    USHORT      usOffset = sizeof(USHORT);
-
-    pSend = (CLIREQCOM *)pCliSndBuf->auchData;
-    pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
+    CLIREQCOM   *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
+    CLIRESCOM   *pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
 
     if ((STUB_SUCCESS != pCliMsg->sError) && (STUB_MULTI_SEND != pCliMsg->sError)) {
 //		char  xBuff[128];
@@ -3186,6 +3188,8 @@ SHORT    CstComRespHandleFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcv
     memcpy(pCliMsg->pResMsgH, pResp, pCliMsg->usResMsgHLen);
     pCliMsg->sRetCode = pResp->sReturn;
     if (pResp->usSeqNo & CLI_SEQ_RECVDATA) {
+		USHORT      usDataSiz;
+
         if (pSend->usSeqNo & CLI_SEQ_SENDEND) {
             pCliMsg->usAuxLen = 0;
         }
@@ -3195,9 +3199,14 @@ SHORT    CstComRespHandleFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcv
             ((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCGCFINDREAD)  ||
             ((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCBAKGCF) ||
             ((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCGCFCHECKREAD)) {
-            if ((pSend->usFunCode & CLI_RSTCONTCODE) != CLI_FCBAKGCF) {
-                usOffset += sizeof(USHORT);
+			USHORT      usOffset = CLIGCFFILE_DATASTART;
+
+			// adjust data start position in file for Guest Check File start.
+			// see also function SerRecvBak() and use of GusResBackUpFH().
+			if ((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCBAKGCF) {
+				usOffset = SERTMPFILE_DATASTART;
             }
+
             if ((usDataSiz + pCliMsg->usAuxLen) <= pCliMsg->usResLen) {
                 SstWriteFileFH((pCliMsg->usAuxLen + usOffset), (UCHAR *)pResp + pCliMsg->usResMsgHLen + 2,
                                usDataSiz, ( SHORT)*(pCliMsg->pauchResData));

@@ -181,7 +181,7 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCFINDREADRAM:
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)];
-        SerResp.pSavBuff->usDataLen = SER_MAX_TMPBUF - sizeof(CLIRESGCF) - 2;
+        SerResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
         ResMsgH.sReturn = GusIndRead(pReqMsgH->usGCN, SerResp.pSavBuff->auchData, SerResp.pSavBuff->usDataLen);
         if (0 <= ResMsgH.sReturn) {
             SerResp.pSavBuff->usDataLen = ResMsgH.sReturn;
@@ -217,7 +217,7 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCFDVINDREAD:
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)];
-        SerResp.pSavBuff->usDataLen = SER_MAX_TMPBUF - sizeof(CLIRESGCF) - 2;
+        SerResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
         ResMsgH.sReturn = GusDeliveryIndRead(pReqMsgH->usGCType, SerResp.pSavBuff->auchData, SerResp.pSavBuff->usDataLen, &ResMsgH.usGCN);
         if (0 <= ResMsgH.sReturn) {
             SerResp.pSavBuff->usDataLen = ResMsgH.sReturn;

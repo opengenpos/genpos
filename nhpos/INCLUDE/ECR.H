@@ -294,7 +294,29 @@ extern "C"{
 // the following constant is used for the calculation of buffer sizes in several places.
 // we have moved this define from storage.h to here to eliminate the include file storage.h
 // however it would really be nice to eliminate this contant altogether.
+// 
+// NOTE: The constant CONSOLIMAXSIZE is used in the definition of a number of other defined
+//       constants that are then used for creating properly sized data buffers for such
+//       things as Guest Check block size.
+//       See usage of constants GCF_DATA_BLOCK_SIZE, TRN_STOSIZE_BLOCK, and SERISP_MAX_TMPBUF.
 #define		CONSOLIMAXSIZE		0x1000
+
+// single place where both ISP_MAX_TMPSIZE and SER_MAX_TMPBUF is defined.
+//
+// WARNING: There appear to be a number of assummed dependencies on this defined
+//          constant that may not be obvious. For instance in the Guest Check
+//          functionality the Guest Check is saved in blocks of size GCF_DATA_BLOCK_SIZE
+//          and so this value should be large enough for at least one Guest Check data block.
+//          See also define for TRN_STOSIZE_BLOCK.
+
+// sized for a GCF_DATA_BLOCK_SIZE Guest Check data block with room for header information.
+// this needs at least as large as PIF_LEN_UDATA, the size of an XGRAM?
+#define     SERISP_MAX_TMPBUF      (CONSOLIMAXSIZE + 256)
+
+
+// SERISP_MAX_LEN(s) calculates the maximum space in the data part of an XGRAM. s is sizeof(struct), e.g. sizeof(CLIRESGCF).
+#define SERISP_MAX_LEN(s) (SERISP_MAX_TMPBUF - (s) - 2)
+#define SERISP_ARG_MAX_LEN(x,s) ((x) - (s) - 2)
 
 //  The following constants are used to mark the number of
 //  characters that a particular kind of mnemonic string may
@@ -657,9 +679,13 @@ typedef unsigned long   NHPOSCOLORREF;	//colorpalette-changes
 //  size and file offset for transaction data.
 //
 //  See also typedefs in pif.h for PifFileHandle and PifSemHandle
-typedef USHORT  TrnFileSize;
-typedef USHORT  TrnVliOffset;
+typedef USHORT  TrnFileSize;         // maximum or actual file size (usFSize) most files contain this value as first data item in the file.
+typedef USHORT  TrnVliOffset;        // file read/write pointer offset from the beginning of the file.
 typedef SHORT   TrnStorageType;      // see list of TRN_TYPE_ such as TRN_TYPE_ITEMSTORAGE.
+
+#define SERTMPFILE_DATASTART  sizeof(USHORT)   // size information stored in first few bytes of the hsSerTmpFile, aszSerTmpFileName file.
+#define CLIGCFFILE_DATASTART  (sizeof(USHORT) + sizeof(USHORT))    // size information (usFSize and usActLen) stored in first few bytes of transaction file
+
 
 /*------------------------------------------
     External symbol access for files.

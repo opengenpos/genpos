@@ -917,8 +917,8 @@ BUSINESSLOGIC_API SHORT _cdecl BlProcessGuestCheck_Rtrv (GUESTCHECK_RTRV  *pGues
 			hsFileHandle = PifOpenFile(aszConnEngTmpFileName, auchTEMP_NEW_FILE_READ_WRITE);    /* saratoga */
 		}
 
-		sGcfStatus = CliGusIndReadFH (usGCFNo, hsFileHandle, sizeof(USHORT) + sizeof(USHORT), usSize, &ulActualBytesRead);
-		sStatus = ConnEngineSendTransactionFH (0, sGcfStatus, usGCFNo, hsFileHandle, sizeof(USHORT) + sizeof(USHORT), ulActualBytesRead);
+		sGcfStatus = CliGusIndReadFH (usGCFNo, hsFileHandle, CLIGCFFILE_DATASTART, usSize, &ulActualBytesRead);
+		sStatus = ConnEngineSendTransactionFH (0, sGcfStatus, usGCFNo, hsFileHandle, CLIGCFFILE_DATASTART, ulActualBytesRead);
 
 		PifCloseFile (hsFileHandle);
 	}

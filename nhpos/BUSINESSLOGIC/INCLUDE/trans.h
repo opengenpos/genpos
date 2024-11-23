@@ -38,6 +38,7 @@
 :   M.Teraki           : 99/10/01 : 01.00.00     : Initial(for Win32)     :
 :   hrkato             : 99/12/03 : 01.00.00     : Saratoga               :
 * Nov-21-15 : 02.02.01 : R.Chambers : using new typedefs for variables and source cleanup.
+* Nov-17-24 : 02.04.01 : R.Chambers: TRN_STOSIZE_BLOCK now CONSOLIMAXSIZE rather than 4096.
 \*-----------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------*\
 :   PVCS ENTRY
@@ -55,7 +56,7 @@
 
 #define TRN_1ITEM_BYTES         250          /* storage bytes for 1 item, item plus discount, saratoga */
 #define TRN_STOR_BASE_BYTES     250          /* storage base bytes for 1 transaction */
-#define TRN_STOSIZE_BLOCK       4096         // max transaction data size. also used in TrnCalStoSize() to calculate ulActualSize, size same as GCF_DATA_BLOCK_SIZE
+#define TRN_STOSIZE_BLOCK       CONSOLIMAXSIZE   // max transaction data size. also used in TrnCalStoSize() to calculate ulActualSize, size same as GCF_DATA_BLOCK_SIZE
 
 #define TRN_TEMPBUFF_SIZE       (TRN_STOSIZE_BLOCK*2)  /* temp buff max size, Saratoga */
 

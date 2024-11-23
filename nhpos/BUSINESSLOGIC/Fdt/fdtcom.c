@@ -763,7 +763,7 @@ SHORT   FDTGetTrans(GCNUM uchOrderNo, SHORT sType)
 
 	//RPH SR#201
 	sStatus = CliGusCheckAndReadFH(uchOrderNo, usTranVli, husHandle,
-        sizeof(USHORT) + sizeof(USHORT), FDTLocal.usTranSize1, &ulActualBytesRead);
+        CLIGCFFILE_DATASTART, FDTLocal.usTranSize1, &ulActualBytesRead);
     /*----- Get Terget Transaction from GCF -----*/
     if (sStatus <= 0) {
         return(sStatus);

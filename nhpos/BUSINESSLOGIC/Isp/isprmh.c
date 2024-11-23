@@ -457,7 +457,7 @@ VOID    IspSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
         IspResp.uchPrevUA     = IspRcvBuf.auchFaddr[CLI_POS_UA];
     }
     usDataLen = IspResp.pSavBuff->usDataLen - IspResp.usPrevDataOff;
-    usDataMax = PIF_LEN_UDATA - PIF_LEN_IP - usResMsgHLen - sizeof(XGHEADER) - 9;
+    usDataMax = PIF_LEN_UDATA_MAX(usResMsgHLen);
 	/* Leave room for IP address, headers, and additional data (see functions
 	 * IspSendResponse and PifNetSendG/D) */
     if (usDataLen > usDataMax) {                /* still exist send data */
@@ -832,9 +832,9 @@ SHORT    IspCheckNetRcvData(VOID)
     if (ISP_SUCCESS == IspResp.sError) {    /* Receive Success ? */
 		CLIREQCOM       *pReqM = (CLIREQCOM *)IspRcvBuf.auchData;
 		CLIREQDATA      *pBuff;        
-		USHORT          usDataLen;
+		USHORT          usDataLen = IspCheckFunCode( pReqM->usFunCode );
 
-        if ( 0 == ( usDataLen = IspCheckFunCode( pReqM->usFunCode ))) {
+        if ( 0 == usDataLen) {
             IspResp.sError = ISP_ERR_INVALID_MESSAGE ;   /* Set invalid message */
             PifLog(MODULE_ISP_LOG, LOG_ERROR_ISP_CHECKFUNCODE_FAIL);      /* Write Log */
             return IspResp.sError;
@@ -842,7 +842,7 @@ SHORT    IspCheckNetRcvData(VOID)
 
         pBuff = (CLIREQDATA *)&IspRcvBuf.auchData[usDataLen];
 
-        usDataLen += PIF_LEN_IP + 4;                /* Add Header length */
+        usDataLen += sizeof(XGHEADER);                /* Add Header length */
 
         if (pReqM->usSeqNo & CLI_SEQ_SENDDATA) {   /* Check data include or not */
             usDataLen += pBuff->usDataLen + 2;     /* Add data length */

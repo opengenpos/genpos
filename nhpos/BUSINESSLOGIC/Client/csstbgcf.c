@@ -2510,8 +2510,8 @@ SHORT	CliGusReturnsLockClear(GCNUM usGCNumber)
 */
 SHORT   CliGusIndReadFH(GCNUM usGCNumber,
                         SHORT  hsFileHandle,
-                        USHORT usStartPoint, 
-                        USHORT usSize,
+                        ULONG  ulStartPoint, 
+                        ULONG  ulSize,
 						ULONG  *pulActualBytesRead)
 {
     CLIREQGCF       ReqMsgH;
@@ -2529,10 +2529,10 @@ SHORT   CliGusIndReadFH(GCNUM usGCNumber,
     CliMsg.pResMsgH     = (CLIRESCOM *)&ResMsgH;
     CliMsg.usResMsgHLen = sizeof(CLIRESGCF);
     CliMsg.pauchResData = ( UCHAR *)&hsFileHandle;
-    CliMsg.usResLen     = usSize;
+    CliMsg.usResLen     = ulSize;
 
     if (STUB_SELF == SstReadFAsMasterFH(!CLI_FCBAKGCF)) {
-        CliMsg.sRetCode = GusIndReadFH(usGCNumber, hsFileHandle, usStartPoint, usSize, pulActualBytesRead);
+        CliMsg.sRetCode = GusIndReadFH(usGCNumber, hsFileHandle, ulStartPoint, ulSize, pulActualBytesRead);
     }
     sError = CliMsg.sRetCode;
     PifReleaseSem(husCliExeNet);

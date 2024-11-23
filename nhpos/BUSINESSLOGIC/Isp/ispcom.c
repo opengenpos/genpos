@@ -241,12 +241,11 @@ VOID    IspSendResponse(CLIRESCOM   *pResMsgH,
                         ULONG       ulReqLen)
 {
     ULONG  ulSendLen;
-                                                /*=== EDIT HEADER ===*/       
 
-    memcpy(IspSndBuf.auchFaddr, IspRcvBuf.auchFaddr, PIF_LEN_IP);
+    memcpy(IspSndBuf.auchFaddr, IspRcvBuf.auchFaddr, sizeof(IspSndBuf.auchFaddr));
     IspSndBuf.usFport = IspRcvBuf.usFport;
     IspSndBuf.usLport = CLI_PORT_ISPSERVER;
-    ulSendLen = PIF_LEN_IP + 4;
+    ulSendLen = sizeof(XGHEADER);
                                                 /*=== EDIT MESSAGE ===*/
 
     memcpy(IspSndBuf.auchData, pResMsgH, ulResMsgHLen);
@@ -276,24 +275,21 @@ VOID    IspSendResponse(CLIRESCOM   *pResMsgH,
 */
 VOID    IspSendError(SHORT sError)
 {
-    CLIREQCOM   *pReqMsgH;
-    CLIRESCOM   *pResMsgH;
-                                                 /*=== EDIT HEADER ===*/  
+    CLIREQCOM   *pReqMsgH = (CLIREQCOM *)IspRcvBuf.auchData;
+    CLIRESCOM   *pResMsgH = (CLIRESCOM *)IspSndBuf.auchData;
      
     memcpy(IspSndBuf.auchFaddr, IspRcvBuf.auchFaddr, PIF_LEN_IP);
     IspSndBuf.usFport = IspRcvBuf.usFport;
     IspSndBuf.usLport = CLI_PORT_ISPSERVER;
                                                  /*=== EDIT MESSAGE ===*/
 
-    pResMsgH = (CLIRESCOM *)IspSndBuf.auchData;
-    pReqMsgH = (CLIREQCOM *)IspRcvBuf.auchData;
     pResMsgH->usFunCode = pReqMsgH->usFunCode;   /* Set function code */
     pResMsgH->sResCode  = sError;                /* Set error code */
     pResMsgH->usSeqNo   = pReqMsgH->usSeqNo;     /* Set sequence number */
     pResMsgH->sReturn   = 0;                     /* Set success */
 
                                                  /*=== SEND RESPONSE ===*/
-    IspNetSend(PIF_LEN_IP + 4 + sizeof(CLIRESCOM));
+    IspNetSend(sizeof(XGHEADER) + sizeof(CLIRESCOM));
 }
 
 /*
@@ -413,7 +409,7 @@ SHORT    IspNetOpen(VOID)
 	XGHEADER        IPdata = {0};
     SHORT           sHandle;
 
-    memset(&IspNetConfig, 0, sizeof(ISPNETCONFIG));
+    memset(&IspNetConfig, 0, sizeof(IspNetConfig));
 
     memcpy(IspNetConfig.auchFaddr, SysCon->auchLaddr, PIF_LEN_IP);
     if (1 == usBMOption) {    /* saratoga */
@@ -645,7 +641,7 @@ VOID    IspTimerStop(VOID)
 LONG    IspTimerRead(VOID)
 {
     DATE_TIME   Timer;
-    ISPTIMER    CurTime;
+    ISPTIMER    CurTime = { 0 };
     LONG        lOLD, lNEW;
 
     PifGetDateTime(&Timer);        /* Get current TOD */
