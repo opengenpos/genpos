@@ -1582,8 +1582,8 @@ SHORT   _CreatePluTotal( SHORT nTblID, ULONG ulNumPlu )
     ULONG   i;
     PLUTOTAL_REC    Plu, PrevPlu;
     TCHAR    PluNumber[ PLUTOTAL_PLUNO_LEN + 1 ];
-    ULONG   ulStartTime, ulEndTime, ulPlu;
-    WCHAR   szMsg[ 256 ];
+    ULONGLONG   ulStartTime, ulEndTime, ulPlu;
+    WCHAR       szMsg[ 256 ];
 
     pSysConfig = PifSysConfig();
     if ( pSysConfig->ausOption[ 7 ] != 9999 )
@@ -1604,7 +1604,7 @@ SHORT   _CreatePluTotal( SHORT nTblID, ULONG ulNumPlu )
     do
     {
         PifGetTickCount( &ulPlu );
-        _stprintf( PluNumber, _T("%03lu%010lu"), ulPlu % 1000, ulPlu );
+        _stprintf( PluNumber, _T("%013llu"), ulPlu );
         Plu.sAdjIdx = ( SHORT )( i % 5 + 1 );
         _tcsncpy( Plu.auchPluNumber, PluNumber, PLUTOTAL_PLUNO_LEN );
         //memcpy( Plu.auchPluNumber, PluNumber, PLUTOTAL_PLUNO_LEN );
@@ -1636,7 +1636,7 @@ SHORT   _CreatePluTotal( SHORT nTblID, ULONG ulNumPlu )
     while (( Return == PLUTOTAL_SUCCESS ) && ( i <= 0xA00 ));
 
     PifGetTickCount( &ulEndTime );
-    wsprintf( szMsg, TEXT(" Complete [%lu]ms\r\n"), ulEndTime - ulStartTime );
+    wsprintf( szMsg, TEXT(" Complete [%llu]ms\r\n"), ulEndTime - ulStartTime );
     OutputDebugString( szMsg );
 
     wsprintf( szMsg, TEXT("Num of PLU Totals:[%lu]\r\n"), i - 1 );

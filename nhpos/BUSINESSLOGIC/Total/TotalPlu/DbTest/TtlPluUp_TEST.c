@@ -49,7 +49,6 @@ BOOL	TtlPLUupdate_Test_2(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
 	TCHAR			pluno[20];
 	TCHAR			cWrk[100];
 	//char			cWrk[100];
-    ULONG   		ulTime, ulPluNo;;
 
 	*psUpdateStat = TTL_SUCCESS;
 
@@ -123,9 +122,11 @@ BOOL	TtlPLUupdate_Test_2(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
 		//memcpy(cWrk,&RecPlu.aucMnemonic[5],2);
 		cWrk[2] = '\0';
 		CopyFilesTest(_ttoi(cWrk));
-	} else
-	if(_tcsncmp(RecPlu.aucMnemonic,_T("A0A5"),4) == 0){
-	__PutLog(1,0,NULL);
+	} else if(_tcsncmp(RecPlu.aucMnemonic,_T("A0A5"),4) == 0){
+		ULONGLONG  		ulTime;
+		ULONG   		ulPluNo;
+
+		__PutLog(1,0,NULL);
     	PifGetTickCount( &ulTime );
 		srand(ulTime);
 		for(cnt = 1;cnt <= num;cnt++){

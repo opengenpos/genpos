@@ -154,3 +154,4 @@ EXPORTS
 	PifControlNetComIoEx		@140
 	PifCloseNetComIoEx			@141
 	PifGetFilePath				@142
+	PifGetDateTimeTimer			@143

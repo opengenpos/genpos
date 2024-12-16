@@ -1731,10 +1731,11 @@ VOID * PIFENTRY PifReadQueue(USHORT usQueue);
 /* --- Time --- */
 VOID   PIFENTRY PifSleep(USHORT usMsec);
 VOID   PIFENTRY PifGetDateTime(DATE_TIME *pDateTime);
+VOID   PIFENTRY PifGetDateTimeTimer(DATE_TIME* pDateTime);
 VOID   PIFENTRY PifSetDateTime(CONST DATE_TIME *pDateTime);
 
 /* --- Get elapsed time since system was started (DollarTree SCER 2000-11-17) ---*/
-VOID   PIFENTRY PifGetTickCount( ULONG * pulElapsedTimeInMsec );
+VOID   PIFENTRY PifGetTickCount( ULONGLONG * pulElapsedTimeInMsec );
 
 /* --- File --- */
 /* See the function dfckmd() in piffile.c which is used to decode the file mode and also specifies the destination folder.

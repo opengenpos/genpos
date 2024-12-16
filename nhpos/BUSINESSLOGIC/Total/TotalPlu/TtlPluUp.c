@@ -113,8 +113,8 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
 	char aszErrorBuffer[128];
 #if defined(LOGGING)
 #pragma message("***ENABLE LOGGING***")
-    ULONG   ulStartTime, ulEndTime;
-    WCHAR   szMsg[ 256 ];
+    ULONGLONG   ulStartTime, ulEndTime;
+    WCHAR       szMsg[ 256 ];
 
     PifGetTickCount( &ulStartTime );
 #endif
@@ -322,7 +322,7 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
 #if defined(LOGGING)
     PifGetTickCount( &ulEndTime );
     wsprintf( szMsg,
-              TEXT("TtlPLUupdate Complete [%5lu]ms\r\n"),
+              TEXT("TtlPLUupdate Complete [%5llu]ms\r\n"),
               ulEndTime - ulStartTime );
     OutputDebugString( szMsg );
 #endif

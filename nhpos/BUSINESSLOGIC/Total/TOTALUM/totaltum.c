@@ -199,8 +199,8 @@ VOID THREADENTRY TtlTUMMain(VOID)
 #ifdef _WIN32_WCE
 #if defined(_DEBUG) || defined(DEBUG)
 #pragma message("***ENABLE LOGGING***")
-    ULONG   ulStartTime, ulEndTime;
-    TCHAR    szMsg[ 256 ];
+    ULONGLONG   ulStartTime, ulEndTime;
+    TCHAR       szMsg[ 256 ];
 #endif
 #endif
 
@@ -597,7 +597,7 @@ VOID THREADENTRY TtlTUMMain(VOID)
 #ifdef _WIN32_WCE
 #if defined(_DEBUG) || defined(DEBUG)
         PifGetTickCount( &ulEndTime );
-        wsprintf( szMsg, TEXT("TranUpdate Complete [%5lu]ms\r\n"), ulEndTime - ulStartTime );
+        wsprintf( szMsg, TEXT("TranUpdate Complete [%5llu]ms\r\n"), ulEndTime - ulStartTime );
         OutputDebugString( szMsg );
 #endif
 #endif
@@ -629,7 +629,7 @@ VOID THREADENTRY TtlTUMMain(VOID)
 #ifdef _WIN32_WCE
 #if defined(_DEBUG) || defined(DEBUG)
         PifGetTickCount( &ulEndTime );
-        wsprintf( szMsg, TEXT("\r\nTotalBackup Complete [%5lu]ms\r\n"), ulEndTime - ulStartTime );
+        wsprintf( szMsg, TEXT("\r\nTotalBackup Complete [%5llu]ms\r\n"), ulEndTime - ulStartTime );
         OutputDebugString( szMsg );
 #endif
 #endif

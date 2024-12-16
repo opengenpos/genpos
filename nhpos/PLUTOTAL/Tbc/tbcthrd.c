@@ -62,8 +62,8 @@ static VOID THREADENTRY TbcThread(VOID)
     */
     /* --- END: Add for Dollar Tree Scer 12/05/2000 --- */
 #if defined(DEBUG) || defined(_DEBUG)
-    ULONG   ulStartTime, ulEndTime;
-    TCHAR   outbuf[128];
+    ULONGLONG   ulStartTime, ulEndTime;
+    TCHAR       outbuf[128];
 #endif
 
     while (1) {
@@ -135,7 +135,7 @@ static VOID THREADENTRY TbcThread(VOID)
 
 #if defined(DEBUG) || defined(_DEBUG)
 			PifGetTickCount( &ulEndTime );
-			swprintf( outbuf, TEXT("Background copy END  : %lu [msec]\n"), ulEndTime - ulStartTime );
+			swprintf( outbuf, TEXT("Background copy END  : %llu [msec]\n"), ulEndTime - ulStartTime );
 			OutputDebugString(outbuf);
 #endif
 	            

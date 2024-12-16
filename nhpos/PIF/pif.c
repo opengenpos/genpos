@@ -161,6 +161,25 @@ VOID   PIFENTRY PifGetDateTime(DATE_TIME *pDateTime)
 
 }
 
+// update only DATE_TIME fields needed for a timer such as PIFTIMER
+VOID   PIFENTRY PifGetDateTimeTimer(DATE_TIME* pDateTime)
+{
+	SYSTEMTIME  SystemTime;
+
+	GetLocalTime(&SystemTime);
+
+	memset(pDateTime, 0, sizeof(DATE_TIME));
+
+	pDateTime->usYear = SystemTime.wYear;
+	pDateTime->usMonth = SystemTime.wMonth;
+	pDateTime->usWDay = SystemTime.wDayOfWeek;
+	pDateTime->usMDay = SystemTime.wDay;
+	pDateTime->usHour = SystemTime.wHour;
+	pDateTime->usMin = SystemTime.wMinute;
+	pDateTime->usSec = SystemTime.wSecond;
+	/* SystemTime.wMilliseconds */
+}
+
 /*fhfh
 **********************************************************************
 **                                                                  **
@@ -173,7 +192,7 @@ VOID   PIFENTRY PifGetDateTime(DATE_TIME *pDateTime)
 **                                                                  **
 **********************************************************************
 fhfh*/
-VOID   PIFENTRY PifSetDateTime(CONST DATE_TIME FAR *pDateTime)
+VOID   PIFENTRY PifSetDateTime(CONST DATE_TIME  *pDateTime)
 {
     DWORD dwError;
     SYSTEMTIME  SystemTime;
@@ -215,7 +234,7 @@ VOID   PIFENTRY PifSetDateTime(CONST DATE_TIME FAR *pDateTime)
 **    Added by DollerTree SCER (2000-11-17)                         **
 **********************************************************************
 fhfh*/
-VOID PIFENTRY   PifGetTickCount( ULONG FAR* pulElapsedTimeInMsec )
+VOID PIFENTRY   PifGetTickCount( ULONGLONG  * pulElapsedTimeInMsec )
 {
     /* --- determine pointer passed by user is valid or not --- */
 
@@ -223,7 +242,7 @@ VOID PIFENTRY   PifGetTickCount( ULONG FAR* pulElapsedTimeInMsec )
     {
         /* --- OK, I will tell you how long time has elapsed --- */
 
-        *pulElapsedTimeInMsec = GetTickCount();
+        *pulElapsedTimeInMsec = GetTickCount64();
 
         /* NOTE:
             The elapsed time is stored as a DWORD value. Therefore,
