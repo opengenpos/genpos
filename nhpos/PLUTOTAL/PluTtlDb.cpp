@@ -100,9 +100,9 @@ ULONG   CnPluTotalDb::CreateDbFile(){
 #ifndef _WIN32_WCE_EMULATION
     CString     szSqlCode;
 #ifdef XP_PORT
-	CoInitialize(NULL);
+	m_hr = CoInitialize(NULL);
 #endif
-    szSqlCode.Format(_T("CREATE DATABASE %s"),m_strDbFileName);
+    szSqlCode.Format(_T("CREATE DATABASE %s"),(LPCWSTR)m_strDbFileName);
 #ifdef XP_PORT
     m_hr = __pRecO->OpenRec(CnVariant(szSqlCode),ConnectionStringNoDB,adOpenKeyset,adLockOptimistic,adCmdText);
 #else //WINCE
@@ -140,7 +140,7 @@ ULONG   CnPluTotalDb::CreateDbBackUpFile(){
 #ifndef _WIN32_WCE_EMULATION
     CString     szSqlCode;
 
-	CoInitialize(NULL);
+    m_hr = CoInitialize(NULL);
 
 	szSqlCode.Format(PLUTOTAL_DB_BACKUP_BACKUP, (LPCTSTR)m_strDbFileName, (LPCTSTR)m_strDbFileName);
 
@@ -177,7 +177,7 @@ ULONG   CnPluTotalDb::CreateDbBackUpFile(){
 ULONG   CnPluTotalDb::DropDbFile(){
 #ifndef _WIN32_WCE_EMULATION
     CString     szSqlCode;
-    szSqlCode.Format(_T("DROP DATABASE %s"),m_strDbFileName);
+    szSqlCode.Format(_T("DROP DATABASE %s"), (LPCTSTR)m_strDbFileName);
 #ifdef XP_PORT
     m_hr = __pRecO->OpenRec(CnVariant(szSqlCode),ConnectionStringNoDB,adOpenKeyset,adLockOptimistic,adCmdText);
 #else //WINCE
@@ -198,7 +198,7 @@ ULONG   CnPluTotalDb::DropDbFile(){
 ULONG   CnPluTotalDb::CreateTable(const __CnTblFormat &TblFormat){
 
     CString     strSqlCode;         // SQL statement
-    strSqlCode.Format(_T("CREATE TABLE %s (%s)"),TblFormat.strName,TblFormat.strFldFormat);
+    strSqlCode.Format(_T("CREATE TABLE %s (%s)"), (LPCWSTR)TblFormat.strName, (LPCWSTR)TblFormat.strFldFormat);
 	_bstr_t strConnect = ConnectionString;
     m_hr = __pRecO->OpenRec(CnVariant(strSqlCode),strConnect,adOpenKeyset,adLockOptimistic,adCmdText);
 
@@ -226,7 +226,7 @@ ULONG   CnPluTotalDb::CreateTable(const __CnTblFormat &TblFormat){
         for(int i=0; i < CnPluTotalDb::s_IdxNum; i++){
             if(TblFormat.strIdxFld[i].IsEmpty())
                 break;
-            strIdxName.Format(_T("%s_%02d"),TblFormat.strIdxName,i);
+            strIdxName.Format(_T("%s_%02d"), (LPCTSTR)TblFormat.strIdxName,i);
             m_hr = CnPluTotalDb::CreateIndex(TblFormat.strName,strIdxName,TblFormat.strIdxFld[i]);
             if(FAILED(m_hr)){
                 CnPluTotalDb::DropTable(TblFormat.strName);
@@ -316,7 +316,7 @@ ULONG   CnPluTotalDb::CreateIndexEx(const __CnTblFormat &TblFormat)
         for(int i=0; i < CnPluTotalDb::s_IdxNum; i++){
             if(TblFormat.strIdxFld[i].IsEmpty())
                 break;
-            strIdxName.Format(_T("%s_%02d"),TblFormat.strIdxName,i);
+            strIdxName.Format(_T("%s_%02d"), (LPCTSTR)TblFormat.strIdxName,i);
             ulSts = CnPluTotalDb::CreateIndex(TblFormat.strName,strIdxName,TblFormat.strIdxFld[i]);
             if(ulSts != PLUTOTAL_SUCCESS)
             {
@@ -337,7 +337,7 @@ ULONG   CnPluTotalDb::DropIndexEx(const __CnTblFormat &TblFormat)
         {
             if ( TblFormat.strIdxFld[i].IsEmpty())
                 break;
-            strIdxName.Format( _T("%s_%02d"), TblFormat.strIdxName, i );
+            strIdxName.Format( _T("%s_%02d"), (LPCTSTR)TblFormat.strIdxName, i );
             ulSts = CnPluTotalDb::DropIndex( TblFormat.strName, strIdxName );
             if(ulSts != PLUTOTAL_SUCCESS)
             {

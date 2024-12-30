@@ -283,8 +283,10 @@ BOOL CnPluTotal::MakeParmsPluStatus(COleSafeArray& saFields) {
 BOOL    CnPluTotal::MakeParams(const SHORT nTblID,COleSafeArray &saFields){
 //    COleSafeArray   vFldNames;      // field names
 
+#if !defined(MAKEPARMS)
     COleVariant vWrk;
     long    lIdx[1];    // bound
+#endif
 
     switch(nTblID){
         case PLUTOTAL_ID_DAILY_CUR  :
@@ -928,10 +930,10 @@ ULONG   CnPluTotal::ExportTableToFile (const SHORT nFromTblID, const TCHAR *pFil
 
     if(lRecCnt > 0 && hsPluTtlExportHandle >= 0) {
         COleSafeArray   saFields;
-        COleVariant     vWrk;
 #if defined(MAKEPARMS)
         MakeParmsPluTotals(saFields);
 #else
+        COleVariant     vWrk;
         saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);
         lIdx[0] = 0; vWrk.Clear(); vWrk.SetString(SQLVAR_PLUNUMBER,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
@@ -1241,13 +1243,13 @@ ULONG   CnPluTotal::FindN(const SHORT nTblID,const TCHAR pPluNo[],const BYTE byA
     }
     else if (ulSts == PLUTOTAL_SUCCESS && 0 < lRecCnt) {
         // *** GetRow
-        COleVariant     vWrk;
-        long    lIdx[] = {0,0,0};
-
         COleSafeArray   saFields;
 #if defined(MAKEPARMS)
         MakeParmsPluTotals(saFields);
 #else
+        COleVariant     vWrk;
+        long    lIdx[] = {0,0,0};
+
         saFields.CreateOneDim(VT_VARIANT, PLUTOTAL_REC_FLD_NUM, NULL, 0);
 
         lIdx[0] = 0; vWrk.Clear(); vWrk.SetString(SQLVAR_PLUNUMBER,VT_BSTR);
@@ -1265,9 +1267,9 @@ ULONG   CnPluTotal::FindN(const SHORT nTblID,const TCHAR pPluNo[],const BYTE byA
         lIdx[0]++; vWrk.Clear(); vWrk.SetString(SQLVAR_COUNTERVOID,VT_BSTR);
         saFields.PutElement(lIdx,&vWrk);
 #endif
-#endif
 
         vWrk.Clear();                               // V1.0.0.4
+#endif
 
         ulSts = pDB->GetRec(saFields,(LPVARIANT)vValues);
         saFields.Clear();                         // V1.0.0.4
@@ -1634,6 +1636,7 @@ ULONG   CnPluTotal::SaveStatus(const SHORT nStsTblID,const PLUTOTAL_STATUS &Stat
     }
     else if (lRecCnt < 0){
 		// ignore, 09/07/01
+        ulSts = PLUTOTAL_SUCCESS;
 		PutLog(TEXT("@@@ SET STATUS, unknown"),nStsTblID,StatusRec,lRecCnt);
 	}
     else{

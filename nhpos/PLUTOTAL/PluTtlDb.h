@@ -63,7 +63,7 @@ public:
 	static const int	s_IdxNum;
 
 private:
-	CnPluTotalDb(){};
+	CnPluTotalDb() : m_hr(PLUTOTAL_SUCCESS) {};
 
 protected:
 	void	CreateObject(const LPCTSTR szDbFileName);	// init this object

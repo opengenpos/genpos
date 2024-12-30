@@ -29,8 +29,7 @@ protected:
 	BOOL	CheckDBFileHandle(const PLUTOTAL_FILE_HANDLE hdFile) const { return (BOOL)(hdFile == m_hdDbFile);};
 
 public:
-	CnPluTotalAPI(){
-		m_hdDb = PLUTOTAL_HANDLE_NULL;
+	CnPluTotalAPI() : m_hdDb (PLUTOTAL_HANDLE_NULL), m_hdDbFile(0) {
 		//m_pfDbFile = (CFile *)NULL;
 		s_nObjCnt++;
 		m_nMyObjNo = s_nObjCnt;

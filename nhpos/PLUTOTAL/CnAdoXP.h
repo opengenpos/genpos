@@ -80,12 +80,13 @@ public:
 		m_errorMessage.Empty();
 		try {
 			m_hr = m_pRecordSet->AddNew(FieldList,Values);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::AddNew hr 0x%x "), m_hr);
 		}
 		catch(_com_error &e) {
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR AddNew %s  %s"), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::AddNew hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
 			m_hr = e.Error();
 		}
 		if (FAILED(m_hr)) {
@@ -106,12 +107,13 @@ public:
 		m_bOpened = FALSE;
 		try {
 			m_hr = m_pRecordSet->Close();
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Close hr 0x%x "), m_hr);
 		}
 		catch( _com_error &e) {
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR Close %s  %s"), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Close hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
 			m_hr = e.Error();
 		}
 		if (m_pConnection) {
@@ -142,12 +144,13 @@ public:
 		try {
 			AffectEnum enAffectRecords = (enum AffectEnum)AffectRecords;
 			m_hr = m_pRecordSet->Delete(enAffectRecords);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Delete hr 0x%x "), m_hr);
 		}
 		catch(_com_error &e) {
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR Delete %s  %s"), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Delete hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
 			m_hr = e.Error();
 		}
 		if (FAILED(m_hr)) {
@@ -168,13 +171,14 @@ public:
 		try
 		{
 			m_hr = m_pRecordSet->raw_GetRows(Rows,vtMissing,Fields,pvar);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::GetRows hr 0x%x "), m_hr);
 		}
 		catch(_com_error &e)
 		{
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR GetRows %s  %s"), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::GetRows hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
 			m_hr = e.Error();
 		}
 		if (FAILED(m_hr)) {
@@ -202,12 +206,13 @@ public:
 		m_errorMessage.Empty();
 		try {
 			m_hr = m_pRecordSet->raw_GetRows(1L,vtMissing,Fields,pvar);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::GetRow hr 0x%x "), m_hr);
 		}
 		catch(_com_error &e) {
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR GetRow %s  %s"), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::GetRow hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
 			m_hr = e.Error();
 		}
 		if (FAILED(m_hr)) {
@@ -219,17 +224,6 @@ public:
 				sprintf (xBuff, "%S", (LPCTSTR)m_errorMessage);
 				NHPOS_NONASSERT_TEXT(xBuff);
 			}
-		}
-		return m_hr;
-	}
-
-	virtual	HRESULT	Move(long NumRecords, CnVariant Start) {
-		m_errorMessage.Empty();
-		try {
-			m_hr = m_pRecordSet->Move(NumRecords,Start);
-		}
-		catch(_com_error &e) {
-			m_hr = e.Error();
 		}
 		return m_hr;
 	}
@@ -287,13 +281,14 @@ public:
 				m_pConnection->ConnectionString = ActiveConnection;
 				m_pConnection->Open("", "", "", -1);
 			}
-			m_hr = m_pRecordSet->Open((VARIANT)Source, _variant_t((IDispatch *)m_pConnection),adOpenKeyset,adLockOptimistic,0);
+			m_hr = m_pRecordSet->Open(Source, _variant_t((IDispatch *)m_pConnection),adOpenKeyset,adLockOptimistic,0);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Open hr 0x%x "), m_hr);
 		}
 		catch( _com_error &e) {
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR Open %s  %s"), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Open hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
 			m_hr = e.Error();
 		}           
 		if (!FAILED(m_hr)) {
@@ -325,13 +320,14 @@ public:
 				m_pConnection->ConnectionString = ActiveConnection;
 				m_pConnection->Open("", "", "", -1);
 			}
-			m_hr = m_pRecordSet->Open((VARIANT)Source, _variant_t((IDispatch *)m_pConnection),CursorType,LockType,Options);
+			m_hr = m_pRecordSet->Open(Source, _variant_t((IDispatch *)m_pConnection),CursorType,LockType,Options);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::OpenRec hr 0x%x "), m_hr);
 		}
 		catch( _com_error &e) {
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR OpenRec %s  %s"), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::OpenRec hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
 			m_hr = e.Error();
 #if 0
 			{
@@ -371,13 +367,14 @@ public:
 	virtual	 HRESULT STDMETHODCALLTYPE Update(CnVariant Fields, CnVariant Values) {
 		m_errorMessage.Empty();
 		try {
-			m_hr = m_pRecordSet->Update((VARIANT)Fields,(VARIANT)Values);
+			m_hr = m_pRecordSet->Update(Fields,Values);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Update hr 0x%x "), m_hr);
 		}
 		catch(_com_error &e) {
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR Update %s  %s"), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Update hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
 			m_hr = e.Error();
 		}
 		if (FAILED(m_hr)) {
@@ -419,12 +416,13 @@ public:
 		m_errorMessage.Empty();
 		try {
 			m_hr = m_pRecordSet->get_RecordCount(pVal);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::get_RecordCount hr 0x%x "), m_hr);
 		}
 		catch(_com_error &e) {
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR get_RecordCount %s  %s"), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::get_RecordCount hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
 			m_hr = e.Error();
 		}
 		if (FAILED(m_hr)) {
