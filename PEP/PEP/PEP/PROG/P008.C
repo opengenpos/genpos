@@ -299,6 +299,22 @@ BOOL    P08InitDlg(HWND hDlg)
             /* ----- Set Limit Length to EditText ----- */
             SendDlgItemMessage(hDlg, wID, EM_LIMITTEXT, P08_DATA_LEN, 0L);
         }
+        wID = IDD_P08_01;
+        for (; wID <= IDD_P08_20; nCount++, wID++) {
+            /* ----- Set Initial Data to EditText ----- */
+            if (!(lpSupLevel + nCount)->usSuperNumber) {
+                usWork = ((lpSupLevel + nCount)->usSuperNumber) + P08_DATA_MIN;
+            }
+            else {
+                usWork = ((lpSupLevel + nCount)->usSuperNumber);
+            }
+
+            wsPepf(szSupText, WIDE("%03u"), usWork);
+            DlgItemRedrawText(hDlg, wID, szSupText);
+
+            /* ----- Set Limit Length to EditText ----- */
+            SendDlgItemMessage(hDlg, wID, EM_LIMITTEXT, P08_DATA_LEN, 0L);
+        }
     }
     return (fReturn);
 }
