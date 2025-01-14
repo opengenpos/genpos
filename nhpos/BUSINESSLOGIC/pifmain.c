@@ -571,7 +571,7 @@ VOID PifMain(TCHAR *pVersion)
 		char  xBuff[128];
 		sprintf (xBuff, "==NOTE: System Startup:  Terminal # %d  Terminal position 0x%4.4x  Version %S", PIF_CLUSTER_MASK_TERMINAL_NO(pSysConfig->usTerminalPositionFromName), pSysConfig->usTerminalPosition, tcsFrameworkVersionNumber);
 		NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
-		sprintf (xBuff, "        System provisioned with %d terminals  System Type %d.", RflGetNoTermsInCluster(), RflGetSystemType());
+		sprintf (xBuff, "        System provisioned with %d terminals  System Type %d  Backup = %d.", RflGetNoTermsInCluster(), RflGetSystemType(), !CliParaMDCCheck(MDC_SYSTEM4_ADR, EVEN_MDC_BIT0));
 		NHPOS_NONASSERT_TEXT(xBuff);
 		PifGetLocalHostName(szHostName);
 		sprintf (xBuff, "        Host Name \"%S\".", szHostName);
