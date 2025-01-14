@@ -7398,12 +7398,12 @@ END
 STRINGTABLE DISCARDABLE
 BEGIN
     IDS_P01_CATEGO_08       "Report (Financial)"
-    IDS_P01_ADDR_101        " 101: Financial Report"
+    IDS_P01_ADDR_101        " 101: Financial Report Gross Net"
     IDS_P01_ADDR_102        " 102: Financial Report"
     IDS_P01_ADDR_103        " 103: Financial Report Discounts"
     IDS_P01_ADDR_104        " 104: Financial Report"
-    IDS_P01_ADDR_105        " 105: Financial Report"
-    IDS_P01_ADDR_106        " 106: Financial Report Tender"
+    IDS_P01_ADDR_105        " 105: Financial Report Tips"
+    IDS_P01_ADDR_106        " 106: Financial Report Print Media"
     IDS_P01_ADDR_107        " 107: Financial Report Tender Misc Media"
 END
 
@@ -7586,8 +7586,8 @@ BEGIN
 	IDS_P01_ADDR_343        " 343: Financial Report Foreign #3"
     IDS_P01_ADDR_344        " 344: Financial Report Foreign Currency"
     IDS_P01_ADDR_357        " 357: Financial Report Food Stamp"
-	IDS_P01_ADDR_358        " 358: Financial Report Tender #12"
-	IDS_P01_ADDR_430        " 430: Financial Report Tender #15"
+	IDS_P01_ADDR_358        " 358: Financial Report Offline Tender #12"
+	IDS_P01_ADDR_430        " 430: Financial Report Offline Tender #15"
 	IDS_P01_ADDR_431        " 431: Financial Report Total #13"
 	IDS_P01_ADDR_434        " 434: Financial Report Total #15"
 	IDS_P01_ADDR_435        " 435: Financial Report Tender #9"
@@ -7622,8 +7622,8 @@ END
 
 STRINGTABLE DISCARDABLE
 BEGIN
-    IDS_P01_ADDR_440        " 440: Financial Report"
-    IDS_P01_ADDR_441        " 441: Financial Report"
+    IDS_P01_ADDR_440        " 440: Financial Report Print Misc Media"
+    IDS_P01_ADDR_441        " 441: Financial Report Print Misc Media"
     IDS_P01_ADDR_467        " 467: Financial Report Bonus Totals"
     IDS_P01_ADDR_468        " 468: Financial Report Bonus Totals"
     IDS_P01_ADDR_469        " 469: Financial Report Bonus Totals"
@@ -7673,11 +7673,11 @@ END
 STRINGTABLE DISCARDABLE
 BEGIN
     IDS_P01_ADDR_108        " 108: Financial Report Foreign Currency"
-    IDS_P01_ADDR_109        " 109: Financial Report Total"
-    IDS_P01_ADDR_110        " 110: Financial Report Total"
+    IDS_P01_ADDR_109        " 109: Financial Report Total Key"
+    IDS_P01_ADDR_110        " 110: Financial Report Total Key"
     IDS_P01_ADDR_111        " 111: Financial Report Total Itemizer"
     IDS_P01_ADDR_112        " 112: Financial Report Add Check"
-    IDS_P01_ADDR_113        " 113: Financial Report"
+    IDS_P01_ADDR_113        " 113: Financial Report Add Check"
     IDS_P01_ADDR_114        " 114: Financial Report Tips"
     IDS_P01_ADDR_115        " 115: Financial Report Tax"
     IDS_P01_ADDR_116        " 116: Financial Report Tax"
@@ -9817,7 +9817,7 @@ BEGIN
     26771                   "NOT print Misc 5 Media."
     26772                   "Print SubTotal for Media."
     26773                   "NOT print SubTotal for Media."
-    26774                   "Feed One Line."
+    26774                   "Feed One Line after Media."
     26775                   "NOT feed One Line."
 END
 
