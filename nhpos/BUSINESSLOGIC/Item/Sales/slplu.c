@@ -1202,7 +1202,7 @@ SHORT   ItemSalesRefEntry( UCHAR RefNo[NUM_REFERENCE])
 *		(pItemSales->ControlCode.auchStatus[PLU_CONTROLCODE_ADR_7] & PLU_GIFT_RELOAD))
 *===========================================================================
 */
-static  LONG SlPluConvert (TCHAR  *tcsPluNumber)
+static  LONG SlPluConvert (const TCHAR  *tcsPluNumber)
 {
 	LONG  lPluNum = 0;
 
