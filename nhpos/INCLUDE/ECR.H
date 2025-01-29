@@ -319,6 +319,7 @@ extern "C"{
 
 
 // SERISP_MAX_LEN(s) calculates the maximum space in the data part of an XGRAM. s is sizeof(struct), e.g. sizeof(CLIRESGCF).
+// we also subtract the sizeof CLIREQDATA.usDataLen  See also type TrnVliOffset.
 #define SERISP_MAX_LEN(s) (SERISP_MAX_TMPBUF - (s) - 2)
 #define SERISP_ARG_MAX_LEN(x,s) ((x) - (s) - 2)
 
@@ -682,6 +683,14 @@ typedef unsigned long   NHPOSCOLORREF;	//colorpalette-changes
 //  Following sizes are used for transaction data files to specify file
 //  size and file offset for transaction data.
 //
+//  WARNING: Changes to the typedefs for TrnFileSize will ripple into the
+//           the source code for file operations since the first few bytes
+//           of data files specify the maximum size of the file.
+// 
+//           See functions TrnExpandFile() and TrnCalStoSize() as well as any functions
+//           that may create files. See as well usage of the defined values SERTMPFILE_DATASTART 
+//           and CLIGCFFILE_DATASTART which contain file size info.
+// 
 //  See also typedefs in pif.h for PifFileHandle and PifSemHandle
 typedef USHORT  TrnFileSize;         // maximum or actual file size (usFSize) most files contain this value as first data item in the file.
 typedef USHORT  TrnVliOffset;        // file read/write pointer offset from the beginning of the file.
