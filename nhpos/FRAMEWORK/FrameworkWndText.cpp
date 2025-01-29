@@ -642,14 +642,6 @@ CFrameworkWndText::CFrameworkWndText (int id, int row, int column, int width, in
     m_ptLCursor.x  = 0;
     m_ptLCursor.y  = 0;
     m_colorBG      = RGB(0xff, 0xff, 0xff); // white
-	//These sizes should be based on m_nRowsInCtl and m_nColumnsInCtl
-	//which depend on which text control it is
-	//m_nRow and m_nColumn only specify the location
-    m_pchText      = new TCHAR [controlAttributes.m_nRow * controlAttributes.m_nColumn];    // may be UNICODE
-    m_pchAttr      = new TCHAR [controlAttributes.m_nRow * controlAttributes.m_nColumn];
-    m_pchLatest    = new TCHAR [controlAttributes.m_nRow * controlAttributes.m_nColumn * 2];// with attribute
-    m_pchWork      = new TCHAR [controlAttributes.m_nRow * controlAttributes.m_nColumn * 2];// with attribute
-    ClearBuffer();
 }
 
 //CFrameworkWndText Constructor from a CWindowControl reference
@@ -671,7 +663,8 @@ CFrameworkWndText::CFrameworkWndText(CWindowControl *wc) :
 CFrameworkWndText::~CFrameworkWndText()
 {
 	TRACE3("%S(%d): CFrameworkWndText::~CFrameworkWndText() destructor called.  m_nIdentifier = %d\n", __FILE__, __LINE__, m_nIdentifier);
-
+	TRACE3("%S(%d): CFrameworkWndText::~CFrameworkWndText() destructor controlAttributes.m_myId = %d.\n", __FILE__, __LINE__, controlAttributes.m_myId);
+	TRACE3("%S(%d): CFrameworkWndText::~CFrameworkWndText() destructor name '%s'.\n", __FILE__, __LINE__, m_sName);
 	if(m_pchText)
 		delete [] m_pchText;
 	if(m_pchAttr)
@@ -2172,10 +2165,11 @@ int CFrameworkWndText::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	controlAttributes.m_nWidth = controlAttributes.m_usWidthMultiplier * CFrameworkWndButton::stdWidth;
 	textAttributes.m_nLeft = controlAttributes.m_nColumn * CFrameworkWndButton::stdWidth;
 	textAttributes.m_nTop = controlAttributes.m_nRow * CFrameworkWndButton::stdHeight;
-	m_pchText      = new TCHAR [m_nRowsInCtl * m_nColumnsInCtl];    // may be UNICODE
-    m_pchAttr      = new TCHAR [m_nRowsInCtl * m_nColumnsInCtl];
-    m_pchLatest    = new TCHAR [m_nRowsInCtl * m_nColumnsInCtl * 2];// with attribute
-    m_pchWork      = new TCHAR [m_nRowsInCtl * m_nColumnsInCtl * 2];// with attribute
+
+	if (m_pchText == nullptr) m_pchText      = new TCHAR [m_nRowsInCtl * m_nColumnsInCtl];    // may be UNICODE
+	if (m_pchAttr == nullptr) m_pchAttr      = new TCHAR [m_nRowsInCtl * m_nColumnsInCtl];
+	if (m_pchLatest == nullptr) m_pchLatest    = new TCHAR [m_nRowsInCtl * m_nColumnsInCtl * 2];// with attribute
+	if (m_pchWork == nullptr) m_pchWork      = new TCHAR [m_nRowsInCtl * m_nColumnsInCtl * 2];// with attribute
 	//m_nType = wc->m_nType;
 	//m_Action = wc->m_myAction;
 
@@ -2264,6 +2258,11 @@ int CFrameworkWndText::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// it appears that for some layouts and layout settings, a window may
 	// be created even though it already exists.
 	// From experiments we have seen this with a single receipt window.
+	//
+	// NOTE: Looking at Debug logs it appears that some windows will have their OnDestroy() called
+	//       then their OnCreate() called without having the object destructor called. The result is
+	//       memory leaks unless a check is made on the pointers to see if the object pointed to
+	//       already exists or not.  Note added RJC Jan-28-2025
 	//    Richard Chambers, Oct-09-2024
 
 	HGDIOBJ hw = m_Font.GetSafeHandle();
@@ -2278,9 +2277,7 @@ int CFrameworkWndText::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	if(m_nIdentifier == LCDWIN_ID_REG102 || m_nIdentifier == LCDWIN_ID_REG209 || m_nIdentifier == LCDWIN_ID_REG104) {
 		if (m_nIdentifier == LCDWIN_ID_REG104) {
-			m_OEPCustDisplayImage.Create(_T("A bitmap static control (B)"), 
-			WS_CHILD|WS_BORDER | WS_VISIBLE | SS_BITMAP| SS_CENTERIMAGE, CRect(90,16,138,64),
-			this);
+			m_OEPCustDisplayImage.Create(_T("A bitmap static control (B)"), WS_CHILD|WS_BORDER | WS_VISIBLE | SS_BITMAP| SS_CENTERIMAGE, CRect(90,16,138,64), this);
 		}
 		// if this is an OEP Window or an OEP Customer Display Window then hide it until needed.
 		GetParent()->ShowWindow(SW_HIDE);   // TypeOEP or TypeOEPCustDisplay
@@ -2315,7 +2312,10 @@ int CFrameworkWndText::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	{
 		ShowWindow(SW_SHOW);
 	}
-    return 0;
+	TRACE3("%S(%d): CFrameworkWndText::OnCreate called.  m_nIdentifier = %d\n", __FILE__, __LINE__, m_nIdentifier);
+	TRACE3("%S(%d): CFrameworkWndText::OnCreate controlAttributes.m_myId = %d.\n", __FILE__, __LINE__, controlAttributes.m_myId);
+	TRACE3("%S(%d): CFrameworkWndText::OnCreate name '%s'.\n", __FILE__, __LINE__, m_sName);
+	return 0;
 }
 
 
@@ -3491,7 +3491,48 @@ void CFrameworkWndText::SelectItem(UINT nFlags, CPoint point)
 
 void CFrameworkWndText::OnDestroy()
 {
-	TRACE2("%S(%d): CFrameworkWndText::OnDestroy().\n", __FILE__, __LINE__);
+	TRACE3("%S(%d): CFrameworkWndText::OnDestroy() id = %d.\n", __FILE__, __LINE__, m_nIdentifier);
+	TRACE3("%S(%d): CFrameworkWndText::OnDestroy() controlAttributes.m_myId = %d.\n", __FILE__, __LINE__, controlAttributes.m_myId);
+	TRACE3("%S(%d): CFrameworkWndText::OnDestroy() name '%s'.\n", __FILE__, __LINE__, m_sName);
+
+	// Testing with a layout file provided by Steve Dudek, I found warnings
+	// about memory leaks for the following data structures that are allocated
+	// when the OnCreate() is executed. While this source code also exists
+	// in the destructor, it appears that it was not always being executed or
+	// the variables had been set to nullptr at some point.
+	// The particular layout file being used seems to have some other problems
+	// as well. However by copying these deletes to this OnDestroy() function
+	// the memory leaks are eliminated.
+	//
+	// NOTE: Looking at Debug logs it appears that some windows will have their OnDestroy() called
+	//       then their OnCreate() called without having the object destructor called. The result is
+	//       memory leaks unless a check is made on the pointers to see if the object pointed to
+	//       already exists or not. I think this has to do with a window with a Dismiss Window button.
+	// 
+	//       And thinking about it, it seems logical to have the cleaning up of memory allocated in the
+	//       OnCreate() to be released in the OnDestroy().
+	// 
+	//       Richard Chambers, Jan-28-2025
+	if (m_pchText) {
+		delete[] m_pchText;
+		m_pchText = nullptr;
+	}
+	if (m_pchAttr) {
+		delete[] m_pchAttr;
+		m_pchAttr = nullptr;
+	}
+	if (m_pchLatest) {
+		delete[] m_pchLatest;
+		m_pchLatest = nullptr;
+	}
+	if (m_pchWork) {
+		delete[] m_pchWork;
+		m_pchWork = nullptr;
+	}
+
+	m_Font.DeleteObject();
+	m_Brush.DeleteObject();
+
 	CWindowText::OnDestroy();
 }
 

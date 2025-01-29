@@ -95,6 +95,7 @@ CFrameworkWndItem::CFrameworkWndItem(CWindowControl *wc) :
 
 CFrameworkWndItem::~CFrameworkWndItem()
 {
+	TRACE3("%S(%d): CFrameworkWndItem::~CFrameworkWndItem() destructor called controlAttributes.m_myId = %d.\n", __FILE__, __LINE__, controlAttributes.m_myId);
 	TRACE3("%S(%d): CFrameworkWndItem::~CFrameworkWndItem() destructor called  window named '%s'.\n", __FILE__, __LINE__, myName);
 	DeleteObject(m_faceBrush);
 
@@ -117,7 +118,8 @@ BOOL CFrameworkWndItem::WindowCreate (CWindowControl *pParentWnd, UINT nID, int 
 {
 	BOOL  bRet;
 	
-	TRACE3("%S(%d): BOOL CFrameworkWndItem::WindowCreate() window named '%s'\n", __FILE__, __LINE__, myName);
+	TRACE3("%S(%d): CFrameworkWndText::WindowCreate() controlAttributes.m_myId = %d.\n", __FILE__, __LINE__, controlAttributes.m_myId);
+	TRACE3("%S(%d): CFrameworkWndItem::WindowCreate() window named '%s'\n", __FILE__, __LINE__, myName);
 
 	bRet = CWindowItem::WindowCreate (pParentWnd, nID, scale);
 
@@ -199,7 +201,6 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 {
 	int          nButton = 0;
 	int          nRetStat = 0;
-	BL_PLU_INFO  PluInfo;
 	
 	if (controlAttributes.SpecWin[UserDefaultWinIndex] & UserDefaultWin_WEB_BROWSER) {
 		return TRUE;
@@ -598,6 +599,16 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 	}
 	else
 	{
+	// Followng code ifdefed out as it introduces a defect if the Auto OEP Flag
+	// available in the layout manager is checked.
+	// It isn't necessary for OEP functionality to work.
+	// I'm not exactly sure what the AUTO_OEP_FLAG is supposed to do as this is
+	// the only place I've found it. This code appears to be creating the OEP window
+	// as part of startup rather than at the time it is requested. Not sure that
+	// makes sense to do it that way or not. However this code is not needed for
+	// OEP window display and processing.
+	//    Richard Chambers, Jan-28-2025
+#if POSSIBLE_DEAD_CODE
 		// If this is an auto OEP window then we will need to obtain the group number(s) associated
 		// with the window and to then begin to populate the window with the buttons for the
 		// OEP groups.  The difference between an auto OEP window and a window with Dynamic PLU buttons
@@ -606,6 +617,7 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 		// be assigned PLUs from a group and the buttons are placed in the window using the Layout Manager.
 		if (controlAttributes.SpecWin[SpecWinIndex_OEP] & SpecWinMask_AUTO_OEP_FLAG)
 		{
+			BL_PLU_INFO  PluInfo;
 			CFrameworkWndTextSubWindow  mySubWindow;
 			SHORT  sGroupNumber = 0;
 			SHORT  sTableNumber = 0;
@@ -718,6 +730,7 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 				}
 			}
 		}
+#endif
 	}
 	return TRUE;
 }
