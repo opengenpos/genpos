@@ -181,6 +181,7 @@ RflGcfNo  RflPerformGcfCd (ULONG  ulNumber)
 				myStatus.uchGcCd = (UCHAR)(ulNumber % 100L);
 			} else {
 				myStatus.sRetStatus = LDT_ILLEGLNO_ADR;
+				NHPOS_ASSERT_TEXT(myStatus.sRetStatus != LDT_ILLEGLNO_ADR, "==PROVISION: MDC 12 Bit C on. RflMakeCD() failed.");
 			}
 		} else {
 			// Generate check digit is turned off so whole number if Guest Check No.
