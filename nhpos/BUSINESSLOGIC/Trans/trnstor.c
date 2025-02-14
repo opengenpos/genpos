@@ -3808,7 +3808,6 @@ VOID TrnStoGetConsToPostR( VOID )
     USHORT      usTtlVliSize;
     ULONG       ulTtlWriteSize;
     UCHAR       auchTranStorageWork[ TRN_TEMPBUFF_SIZE ];
-    UCHAR       *puchTempBuff;
     USHORT      husIndexFile;
     PRTIDXHDR   IdxFileInfo;
     ULONG       ulTtlIdxReadSize;
@@ -3820,23 +3819,22 @@ VOID TrnStoGetConsToPostR( VOID )
 
     /* --- store qualifier data to post receipt file --- */
 
-    ulWriteOffset   = sizeof( USHORT );
+    ulWriteOffset   = sizeof( TrnFileSize );
     ulPostRQualSize = sizeof( TRANGCFQUAL ) + sizeof( TRANCURQUAL );
 
     TrnWriteFile( ulWriteOffset, &( TrnInformation.TranGCFQual ), ulPostRQualSize, TrnInformation.hsTranPostRecStorage );
+    ulWriteOffset += ulPostRQualSize;
 
     /* --- copy consolidate storage's transaction data to post receipt --- */
 
-    ulReadOffset   = sizeof( USHORT ) + sizeof( USHORT ) + sizeof( TRANITEMIZERS ) + sizeof( TRANGCFQUAL );
-    ulWriteOffset += ulPostRQualSize;
+    ulReadOffset   = sizeof( TrnFileSize ) + sizeof( USHORT ) + sizeof( TRANITEMIZERS ) + sizeof( TRANGCFQUAL );
     ulTtlWriteSize = 0;
     usTtlVliSize   = sizeof( USHORT ) + TrnInformation.usTranConsStoVli;
-    puchTempBuff   = &auchTranStorageWork[ 0 ];
 
     do {
-		TrnReadFile( ulReadOffset, puchTempBuff, sizeof( auchTranStorageWork ), TrnInformation.hsTranConsStorage, &ulReadLen );
+		TrnReadFile( ulReadOffset, auchTranStorageWork, sizeof( auchTranStorageWork ), TrnInformation.hsTranConsStorage, &ulReadLen );
 
-        TrnWriteFile( ulWriteOffset, puchTempBuff, ulReadLen, TrnInformation.hsTranPostRecStorage );
+        TrnWriteFile( ulWriteOffset, auchTranStorageWork, ulReadLen, TrnInformation.hsTranPostRecStorage );
 
         ulReadOffset   += ulReadLen;
         ulWriteOffset  += ulReadLen;
@@ -3846,7 +3844,7 @@ VOID TrnStoGetConsToPostR( VOID )
 
     /* --- write actual size of trans. data to post receipt --- */
 
-    TrnWriteFile( (sizeof( USHORT ) + ulPostRQualSize), &TrnInformation.usTranConsStoVli,
+    TrnWriteFile( (sizeof( TrnFileSize ) + ulPostRQualSize), &TrnInformation.usTranConsStoVli,
                   sizeof( USHORT ), TrnInformation.hsTranPostRecStorage ); /* ### Mod (2171 for Win32) V1.0 */
 
     /* --- write consolidate's print priority index to post receipt --- */
@@ -3855,25 +3853,25 @@ VOID TrnStoGetConsToPostR( VOID )
 
     TrnReadFile( 0, &IdxFileInfo, sizeof( PRTIDXHDR ), husIndexFile, &ulActualBytesRead );
 
-    TrnWriteFile( (sizeof( USHORT ) + ulPostRQualSize + usTtlVliSize),
+    TrnWriteFile( (sizeof( TrnFileSize ) + ulPostRQualSize + usTtlVliSize),
                   &IdxFileInfo, sizeof( PRTIDXHDR ), TrnInformation.hsTranPostRecStorage ); /* ### Mod (2171 for Win32) V1.0 */
 
     /* --- save print priority index to GCF --- */
 
-    ulWriteOffset    =  sizeof( USHORT ) + ulPostRQualSize + usTtlVliSize + sizeof( PRTIDXHDR );
+    ulWriteOffset    =  sizeof( TrnFileSize ) + ulPostRQualSize + usTtlVliSize + sizeof( PRTIDXHDR );
     ulTtlIdxReadSize = 0;
     ulCurIdxReadSize = sizeof( auchTranStorageWork );
 
     while ( ulTtlIdxReadSize < IdxFileInfo.usIndexVli ) {
 
         //RPH 11-11-3 SR# 201
-		TrnReadFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize), puchTempBuff, sizeof( auchTranStorageWork ), husIndexFile, &ulCurIdxReadSize ); /* ### Mod (2171 for Win32) V1.0 */
+		TrnReadFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize), auchTranStorageWork, sizeof( auchTranStorageWork ), husIndexFile, &ulCurIdxReadSize ); /* ### Mod (2171 for Win32) V1.0 */
 
         if ( IdxFileInfo.usIndexVli < ( ulTtlIdxReadSize + ulCurIdxReadSize )) {
             ulCurIdxReadSize = IdxFileInfo.usIndexVli - ulTtlIdxReadSize;
         }
 
-        TrnWriteFile( (ulWriteOffset + ulTtlIdxReadSize), puchTempBuff, ulCurIdxReadSize, TrnInformation.hsTranPostRecStorage ); /* ### Mod (2171 for Win32) V1.0 */
+        TrnWriteFile( (ulWriteOffset + ulTtlIdxReadSize), auchTranStorageWork, ulCurIdxReadSize, TrnInformation.hsTranPostRecStorage ); /* ### Mod (2171 for Win32) V1.0 */
 
         ulTtlIdxReadSize += ulCurIdxReadSize;
     }
@@ -3908,19 +3906,17 @@ SHORT TrnStoPutPostRToCons( VOID )
     UCHAR       *puchTempBuff;
     PRTIDXHDR   IdxFileInfo;
     ULONG       ulTtlIdxReadSize;
-    ULONG       ulCurIdxReadSize;
 	ULONG		ulActualBytesRead;//RPH 11-11-3 SR# 201
 
     /* return, if post receipt file have been closed, V3.3 */
 
     if (TrnInformation.hsTranPostRecStorage < 0) {
-
         return (TRN_ERROR);
     }
 
     /* --- retrieve qualifier data and store it to trans. information --- */
 
-    ulReadOffset    = sizeof( USHORT );
+    ulReadOffset    = sizeof( TrnFileSize );
     ulPostRQualSize = sizeof( TRANGCFQUAL ) + sizeof( TRANCURQUAL );
 
     TrnReadFile( ulReadOffset, &( TrnInformation.TranGCFQual ), ulPostRQualSize, TrnInformation.hsTranPostRecStorage, &ulActualBytesRead );
@@ -3933,7 +3929,7 @@ SHORT TrnStoPutPostRToCons( VOID )
     //RPH 11-11-3 SR# 201
 	TrnReadFile( ulReadOffset, puchTempBuff, sizeof( auchTranStorageWork ), TrnInformation.hsTranPostRecStorage, &ulReadLen );
 
-    ulWriteOffset  = sizeof( USHORT ) + sizeof( USHORT ) + sizeof( TRANGCFQUAL ) + sizeof( TRANITEMIZERS );
+    ulWriteOffset  = sizeof( TrnFileSize ) + sizeof( USHORT ) + sizeof( TRANGCFQUAL ) + sizeof( TRANITEMIZERS );
     TrnWriteFile( ulWriteOffset, puchTempBuff, ulReadLen, TrnInformation.hsTranConsStorage );
 
     TrnInformation.usTranConsStoVli = *(( USHORT * )puchTempBuff );
@@ -3950,9 +3946,9 @@ SHORT TrnStoPutPostRToCons( VOID )
         ulWriteOffset += ulReadLen;
 
         //RPH 11-11-3 SR# 201
-		TrnReadFile( ulReadOffset, puchTempBuff, sizeof( auchTranStorageWork ), TrnInformation.hsTranPostRecStorage, &ulReadLen );
+		TrnReadFile( ulReadOffset, auchTranStorageWork, sizeof( auchTranStorageWork ), TrnInformation.hsTranPostRecStorage, &ulReadLen );
 
-        TrnWriteFile( ulWriteOffset, puchTempBuff, ulReadLen, TrnInformation.hsTranConsStorage );
+        TrnWriteFile( ulWriteOffset, auchTranStorageWork, ulReadLen, TrnInformation.hsTranConsStorage );
 
         ulTtlReadLen  += ulReadLen;
     }
@@ -3960,9 +3956,7 @@ SHORT TrnStoPutPostRToCons( VOID )
     /* --- write print priority index to consolidate index file --- */
 
     //RPH 11-11-3 SR# 201
-	TrnReadFile( (sizeof( USHORT ) + ulPostRQualSize + usTtlVliSize),
-                 &IdxFileInfo,
-                 sizeof( PRTIDXHDR ),
+	TrnReadFile( (sizeof( TrnFileSize ) + ulPostRQualSize + usTtlVliSize), &IdxFileInfo, sizeof( PRTIDXHDR ),
                  TrnInformation.hsTranPostRecStorage, &ulActualBytesRead); /* ### Mod (2171 for Win32) V1.0 */
 
     TrnWriteFile( 0, &IdxFileInfo, sizeof( PRTIDXHDR ), TrnInformation.hsTranConsIndex );
@@ -3971,16 +3965,14 @@ SHORT TrnStoPutPostRToCons( VOID )
     /* --- get print priority index, and save it to
         index file --- */
 
-    ulReadOffset = sizeof( USHORT ) + ulPostRQualSize + usTtlVliSize + sizeof( PRTIDXHDR );
+    ulReadOffset = sizeof( TrnFileSize ) + ulPostRQualSize + usTtlVliSize + sizeof( PRTIDXHDR );
     ulTtlIdxReadSize = 0;
-    ulCurIdxReadSize = sizeof( auchTranStorageWork );
 
     while ( ulTtlIdxReadSize < IdxFileInfo.usIndexVli ) {
+        ULONG       ulCurIdxReadSize = sizeof(auchTranStorageWork);
 
         //RPH 11-11-3 SR# 201
-		TrnReadFile( (ulReadOffset + ulTtlIdxReadSize),
-                    puchTempBuff,
-                    sizeof( auchTranStorageWork ),
+		TrnReadFile( (ulReadOffset + ulTtlIdxReadSize),  auchTranStorageWork, sizeof( auchTranStorageWork ),
                     TrnInformation.hsTranPostRecStorage, &ulCurIdxReadSize); /* ### Mod (2171 for Win32) V1.0 */
 
 
@@ -3988,15 +3980,9 @@ SHORT TrnStoPutPostRToCons( VOID )
             ulCurIdxReadSize = IdxFileInfo.usIndexVli - ulTtlIdxReadSize;
         }
 
-        TrnWriteFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize),
-                      puchTempBuff,
-                      ulCurIdxReadSize,
-                      TrnInformation.hsTranConsIndex ); /* ### Mod (2171 for Win32) V1.0 */
+        TrnWriteFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize),  auchTranStorageWork, ulCurIdxReadSize, TrnInformation.hsTranConsIndex ); /* ### Mod (2171 for Win32) V1.0 */
 
-        TrnWriteFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize),
-                      puchTempBuff,
-                      ulCurIdxReadSize,
-                      TrnInformation.hsTranNoConsIndex ); /* ### Mod (2171 for Win32) V1.0 */
+        TrnWriteFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize), auchTranStorageWork, ulCurIdxReadSize, TrnInformation.hsTranNoConsIndex ); /* ### Mod (2171 for Win32) V1.0 */
 
         ulTtlIdxReadSize += ulCurIdxReadSize;
     }
@@ -4016,13 +4002,12 @@ SHORT TrnStoPutPostRToCons( VOID )
 *===========================================================================*/
 VOID TrnSetConsNoToPostR( USHORT usConsecutiveNo )
 {
-    USHORT  usWriteOffset;
+    // calculate offset into transaction file to where consecutive number is
+    // stored. it's a member of the TRANCURQUAL data.
+    ULONG  ulWriteOffset = sizeof(TrnFileSize) + sizeof(TRANGCFQUAL) + OFFSET(TRANCURQUAL, usConsNo);
 
     /* --- store qualifier data to post receipt file --- */
-
-    usWriteOffset = sizeof( USHORT ) +  sizeof( TRANGCFQUAL );
-
-    TrnWriteFile( usWriteOffset, &usConsecutiveNo, sizeof( USHORT ), TrnInformation.hsTranPostRecStorage );
+    TrnWriteFile( ulWriteOffset, &usConsecutiveNo, sizeof( USHORT ), TrnInformation.hsTranPostRecStorage );
 }
 
 /*
