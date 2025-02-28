@@ -174,6 +174,10 @@ extern "C"{
 // Determine number elements in array based on size of first element
 #define ARRAYSIZEOF(x)  (sizeof(x)/sizeof((x)[0]))
 
+// Determine offset in bytes of a member of a struct.
+#define OFFSET(STRUCTURE, MEMBER)		&(((STRUCTURE *)NULL)->MEMBER)
+
+
 #ifndef FARCONST
 // This is a holdover from NHPOS Rel 1.4 and earlier.
 // While it would seem reasonable to define FARCONST as CONST
@@ -681,7 +685,14 @@ typedef unsigned long   NHPOSCOLORREF;	//colorpalette-changes
 
 // -----------------------------------------------------------------------
 //  Following sizes are used for transaction data files to specify file
-//  size and file offset for transaction data.
+//  size and file offset for transaction data. There appear to be several
+//  types of offsets that are all originally typed as USHORT which with the
+//  increased sizes of transaction data need to be better differentiated and
+//  typed with a more appropriate variable size.
+// 
+//  There are different types of transaction files which contain different types
+//  of Guest Checks whose data varies depending on the System Type. See the use
+//  of the RflGetSystemType () function.
 //
 //  WARNING: Changes to the typedefs for TrnFileSize will ripple into the
 //           the source code for file operations since the first few bytes
@@ -693,6 +704,7 @@ typedef unsigned long   NHPOSCOLORREF;	//colorpalette-changes
 // 
 //  See also typedefs in pif.h for PifFileHandle and PifSemHandle
 typedef USHORT  TrnFileSize;         // maximum or actual file size (usFSize) most files contain this value as first data item in the file.
+typedef USHORT  TrnGuestCheckSize;   // actual size of the Guest Check in the transaction file in bytes.
 typedef USHORT  TrnVliOffset;        // file read/write pointer offset from the beginning of the file.
 typedef SHORT   TrnStorageType;      // see list of TRN_TYPE_ such as TRN_TYPE_ITEMSTORAGE.
 
