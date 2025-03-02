@@ -2605,7 +2605,7 @@ SHORT   ItemMiscCheckTransGC2GC(ITEMMISC *pMiscTo)
 		} uchBuffer;
 
 		memset(&uchBuffer, 0, sizeof(uchBuffer));
-        TrnReadFile_MemoryForce(CLIGCFFILE_DATASTART, &(uchBuffer.gcfQual), sizeof(TRANGCFQUAL), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+        TrnReadFile(CLIGCFFILE_DATASTART, &(uchBuffer.gcfQual), sizeof(TRANGCFQUAL), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
 
         /* --- Check Mismatch between Destination GC and Target GC --- */
         if ((sStatus = ItemMiscCheckTransGC2GCCheck(&(uchBuffer.gcfQual))) != ITM_SUCCESS) {
@@ -2620,7 +2620,7 @@ SHORT   ItemMiscCheckTransGC2GC(ITEMMISC *pMiscTo)
         pMiscTo->ulID = WorkGCF->ulCashierID;
 
         /* --- Add Transaction Itemizers --- */
-        TrnReadFile_MemoryForce(CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL), &(uchBuffer.gcfItemizers), sizeof(TRANITEMIZERS), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+        TrnReadFile(CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL), &(uchBuffer.gcfItemizers), sizeof(TRANITEMIZERS), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
         TrnSplAddGC2GCItemizers(&(uchBuffer.gcfItemizers));
 
         if (RflGetSystemType () == FLEX_POST_CHK) {

@@ -78,7 +78,6 @@
 #define auchMldNoDispPLUHigh                 MLD2X20auchMldNoDispPLUHigh
 #define auchMldNoDispPLULow                  MLD2X20auchMldNoDispPLULow
 #define MldAddChk2                           MLD2X20MldAddChk2
-#define MldCalStoSize                        MLD2X20MldCalStoSize
 #define MldCancel                            MLD2X20MldCancel
 #define MldCheckConsolidation                MLD2X20MldCheckConsolidation
 #define MldCheckSize                         MLD2X20MldCheckSize
@@ -111,7 +110,6 @@
 #define MldDownCursor                        MLD2X20MldDownCursor
 #define MldECScrollWrite                     MLD2X20MldECScrollWrite
 #define MldECScrollWrite2                    MLD2X20MldECScrollWrite2
-#define MldExpandFile                        MLD2X20MldExpandFile
 #define MldForeignTender                     MLD2X20MldForeignTender
 #define MldGetCursorDisplay                  MLD2X20MldGetCursorDisplay
 #define MldGetMldStatus                      MLD2X20MldGetMldStatus

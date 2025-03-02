@@ -633,7 +633,7 @@
     VOID    TrnPrintTypeNoDsp(VOID *pItem);                 /* Saratoga */
 
     SHORT   TrnCreatePostRecFile( ULONG ulConsFileSize );
-    SHORT   TrnCreateIndexFile( USHORT  usNoOfItem, TCHAR  *lpszIndexName, ULONG *pulCreatedSize );
+    SHORT   TrnCreateIndexFile( USHORT  usNoOfItem, TCHAR CONST *lpszIndexName, ULONG *pulCreatedSize );
     SHORT   TrnICOpenIndexFile( VOID );
 
     SHORT   TrnCouponVoidSearch( ITEMCOUPONSEARCH *pItemSearch, TrnStorageType   sStorageType );
@@ -797,33 +797,6 @@
     SHORT   TrnStoIdxUpdate( ITEMSALES  *pItemSales, TRANSTOSALESSRCH *pNormalItem, TRANSTOSALESSRCH   *pVoidItem, TrnStorageType sStorageType );
     SHORT   TrnStoNoIdxUpdate( ITEMSALES *pItemSales, TRANSTOSALESSRCH   *pNormalItem, TRANSTOSALESSRCH   *pVoidItem, TrnStorageType sStorageType, SHORT sType );
 
-//------------------------------------------------------------------------
-// Testing with GenPOS Rel 2.2.1.145 with Table Service, Post Guest Check, to
-// review the functionality we discovered that using Guest Check Transfer to
-// combine a guest check with a second guest check was not working properly.
-// We found an error with the memory caching functionality due to a defect
-// in handling read of only part of a guest check.  Disabling this functionality
-// addressed the problem.
-// This memory caching functionality should probably just be removed as it
-// has a defect and does not seem to provide any advantage.
-//   Richard Chambers, Feb-06-2015
-
-//#define TrnReadWriteFile_Memory
-
-#if defined(TrnReadWriteFile_Memory)
-    SHORT   TrnExpandFile( SHORT hsFileHandle, ULONG ulInquirySize );
-    SHORT   TrnSeekFile(SHORT hsFileHandle, ULONG ulActSize, ULONG *ulActMove);
-    VOID    TrnDeleteFile(TCHAR *uchFileName);
-    USHORT  TrnConvertError(SHORT sError);
-
-    SHORT   TrnOpenFile_Memory(TCHAR *uchFileName, UCHAR *auchType);
-    VOID    TrnCloseFile_Memory(SHORT hsFileHandle);
-
-#define TrnOpenFile(uchFileName, auchType) TrnOpenFile_Memory(uchFileName, auchType)
-#define TrnCloseFile(hsFileHandle) TrnCloseFile_Memory(hsFileHandle)
-
-#else
-
 // The following #if is used to enable or disable
 // functionality to issues NHPOS_ASSERT log entries when
 // various Trn functions are called during NeighborhoodPOS
@@ -841,10 +814,10 @@
 #pragma message("  ====++++====   TrnCloseFile_Debug() is ENABLED     ====++++====")
 #pragma message("  ====++++====   TrnDeleteFile_Debug() is ENABLED     ====++++====")
 #pragma message("  ====++++====   File: Include\\trans.h              ====++++====")
-    SHORT   TrnOpenFile_Debug(CONST TCHAR *uchFileName, CONST UCHAR *auchType, CONST char *aszFilePath, int nLineNo);
-    SHORT   TrnExpandFile_Debug( SHORT hsFileHandle, ULONG ulInquirySize, CONST char *aszFilePath, int nLineNo);
-    SHORT   TrnSeekFile_Debug(SHORT hsFileHandle, ULONG ulActSize, ULONG *ulActMove, CONST char *aszFilePath, int nLineNo);
-    VOID    TrnCloseFile_Debug(SHORT hsFileHandle, CONST char *aszFilePath, int nLineNo);
+    PifFileHandle   TrnOpenFile_Debug(CONST TCHAR *uchFileName, CONST UCHAR *auchType, CONST char *aszFilePath, int nLineNo);
+    SHORT   TrnExpandFile_Debug(PifFileHandle hsFileHandle, ULONG ulInquirySize, CONST char *aszFilePath, int nLineNo);
+    SHORT   TrnSeekFile_Debug(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove, CONST char *aszFilePath, int nLineNo);
+    VOID    TrnCloseFile_Debug(PifFileHandle hsFileHandle, CONST char *aszFilePath, int nLineNo);
     VOID    TrnDeleteFile_Debug(CONST TCHAR *uchFileName, CONST char *aszFilePath, int nLineNo);
     USHORT  TrnConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo);
 
@@ -855,13 +828,12 @@
 #define TrnDeleteFile(uchFileName) TrnDeleteFile_Debug(uchFileName,__FILE__,__LINE__)
 #define TrnConvertError(sError) TTrnConvertError_Debug(sError,__FILE__,__LINE__)
 #else
-    SHORT   TrnOpenFile(CONST TCHAR *uchFileName, CONST UCHAR *auchType);
+    PifFileHandle   TrnOpenFile(CONST TCHAR *uchFileName, CONST UCHAR *auchType);
     SHORT   TrnExpandFile( PifFileHandle hsFileHandle, ULONG ulInquirySize );
     SHORT   TrnSeekFile(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove);
-    VOID    TrnCloseFile(SHORT hsFileHandle);
+    VOID    TrnCloseFile(PifFileHandle hsFileHandle);
     VOID    TrnDeleteFile(CONST TCHAR *uchFileName);
     USHORT  TrnConvertError(SHORT sError);
-#endif
 #endif
     SHORT   TrnChkStorageSize(SHORT sSize);
     SHORT   TrnChkStorageSizeIfSales(SHORT sSize);
@@ -1057,11 +1029,11 @@ VOID TrnItemStoPLUMnemo(TCHAR  *pszPLUMnem, TCHAR  *pszPLUMnemAlt, TCHAR  *auchP
     extern  TRANINFORMATION     TrnInformation;         /* transaction information */
 
     extern  TRANINFSPLIT    TrnSplitA;
-    extern  TCHAR FARCONST  aszTrnConsSplitFileA[];
-    extern  TCHAR FARCONST  aszTrnConsSplitIndexA[];
+    extern  TCHAR CONST  aszTrnConsSplitFileA[];
+    extern  TCHAR CONST  aszTrnConsSplitIndexA[];
     extern  TRANINFSPLIT    TrnSplitB;
-    extern  TCHAR FARCONST  aszTrnConsSplitFileB[];
-    extern  TCHAR FARCONST  aszTrnConsSplitIndexB[];
+    extern  TCHAR CONST  aszTrnConsSplitFileB[];
+    extern  TCHAR CONST  aszTrnConsSplitIndexB[];
 
 
 /****** End of Definition ******/

@@ -80,9 +80,9 @@ TCHAR CONST	aszMldStorage1Temp[]  = _T("MLDTMPSTO");	/* Temporary store file for
 SHORT MldCreateFile( USHORT usNoOfItem, UCHAR uchStorageType )
 {
     CONST TCHAR *lpszFileName;
-    SHORT       hsStorageFile;
+    PifFileHandle   hsStorageFile;
     SHORT       sReturn;
-    USHORT      usInquirySize;
+    ULONG       ulInquirySize;
 	TRANCONSSTORAGEHEADER    InitFileHeaderData = { 0 };
 
     /* --- function always create specified file, if it is existing --- */
@@ -124,8 +124,8 @@ SHORT MldCreateFile( USHORT usNoOfItem, UCHAR uchStorageType )
     MldWriteFile(0, &InitFileHeaderData, sizeof(InitFileHeaderData), hsStorageFile );
 
     /* --- allocate file size to store specified no. of items --- */
-    usInquirySize = MldCalStoSize( usNoOfItem );
-    sReturn = MldExpandFile( hsStorageFile, usInquirySize );
+    ulInquirySize = TrnCalStoSize(usNoOfItem, FLEX_CONSSTORAGE_ADR);
+    sReturn = TrnExpandFile( hsStorageFile, ulInquirySize );
 
     if (sReturn < 0) {
 		PifCloseFile( hsStorageFile );
@@ -172,10 +172,10 @@ SHORT MldCreateIndexFile( USHORT usNoOfItem,
                           ULONG  *pulCreatedSize )
 {
     CONST TCHAR *lpszIndexName;
-    SHORT       hsIndexFile;
+    PifFileHandle  hsIndexFile;
     PRTIDXHDR   IdxFileInfo;
     SHORT       sSeekStatus;
-    USHORT       usInquirySize;
+    ULONG       ulInquirySize;
 
     switch ( uchType ) {
 		case FLEX_ITEMSTORAGE_ADR:
@@ -197,15 +197,20 @@ SHORT MldCreateIndexFile( USHORT usNoOfItem,
         }
     }
 
+    /*
+    *    Following source code is similar to TrnCreateIndexFile()
+    *    Any changes made here should be considered for that function as well.
+    */
+
     /* --- delete current existing index file before new file creation --- */
 	PifDeleteFile( lpszIndexName );
 
     /* --- allocate index file with specified size --- */
     hsIndexFile = PifOpenFile( lpszIndexName, auchTEMP_NEW_FILE_READ_WRITE );   /* saratoga */
 
-    usInquirySize = sizeof( PRTIDXHDR ) + ( sizeof( PRTIDX ) * ( usNoOfItem + PRTIDX_RESERVE ));
+    ulInquirySize = sizeof( PRTIDXHDR ) + ( sizeof( PRTIDX ) * ( usNoOfItem + PRTIDX_RESERVE ));
 
-    sSeekStatus = MldExpandFile( hsIndexFile, usInquirySize );
+    sSeekStatus = TrnExpandFile( hsIndexFile, ulInquirySize );
 
     /* --- determine index file creation is successful or not --- */
     if ( sSeekStatus != MLD_SUCCESS ) {
@@ -217,12 +222,12 @@ SHORT MldCreateIndexFile( USHORT usNoOfItem,
     /* --- store current created file size to formal parameter --- */
 
     if ( pulCreatedSize != NULL ) {
-        *pulCreatedSize = (ULONG)usInquirySize;
+        *pulCreatedSize = ulInquirySize;
     }
 
     /* --- initialize file header and save it to index file --- */
 
-    IdxFileInfo.usIndexFSize   = usInquirySize;
+    IdxFileInfo.usIndexFSize   = ulInquirySize;
     IdxFileInfo.usIndexVli     = 0;
     IdxFileInfo.uchNoOfItem    = 0;
     IdxFileInfo.uchNoOfSales   = 0;
@@ -256,7 +261,7 @@ SHORT MldCreateIndexFile( USHORT usNoOfItem,
 SHORT MldChkAndCreFile( USHORT usNoOfItem, UCHAR uchStorageType )
 {
     CONST TCHAR *lpszFileName;
-    SHORT       hsStorageFile;
+    PifFileHandle   hsStorageFile;
     SHORT       sReturn;
 
     /* --- open current existing file --- */
@@ -314,9 +319,9 @@ VOID MldChkAndDelFile( USHORT usNoOfItem, UCHAR uchStorageType )
 {
     CONST TCHAR *lpszStorageName;
     CONST TCHAR *lpszIndexName;
-    SHORT       hsStorageFile;
+    PifFileHandle   hsStorageFile;
     USHORT      usActualSize;
-    USHORT      usInquirySize;
+    ULONG       ulInquirySize;
 	ULONG		ulActualBytesRead;//RPH SR# 201
 
     /* --- open current existing storage file --- */
@@ -353,11 +358,11 @@ VOID MldChkAndDelFile( USHORT usNoOfItem, UCHAR uchStorageType )
 	PifCloseFile( hsStorageFile );
 
     /* --- calculate inquiry size of storage file --- */
-    usInquirySize = MldCalStoSize( usNoOfItem );
+    ulInquirySize = TrnCalStoSize(usNoOfItem, FLEX_CONSSTORAGE_ADR);
 
     /* --- if inquiry size is different from actual size, delete
         current existing storage file --- */
-    if ( usInquirySize != usActualSize ) {
+    if ( ulInquirySize != usActualSize ) {
 		PifDeleteFile( lpszStorageName );
 		PifDeleteFile( lpszIndexName );
     }
@@ -478,30 +483,6 @@ VOID MldStorageInit(MLDCURTRNSCROL *pData, USHORT usType )
     MldWriteFile( 0, &IdxFileInfo, sizeof( PRTIDXHDR ), pData->sIndexHandle );
 }
 
-/*
-*===========================================================================
-** Synopsis:    USHORT MldCalStoSize( USHORT usNoOfItem)
-*
-*   Input:      USHORT usNoOfItem     - number of items in storage file
-*   Output:     Nothing
-*   InOut:      Nothing
-*
-** Return:      size of storage file in bytes.
-*
-** Description: calculate size of storage file with specified no. of items.
-*               See also functions FDTCalStoSize() and TrnCalStoSize()
-*               which perform a similar calculation.
-*===========================================================================
-*/
-USHORT MldCalStoSize( USHORT usNoOfItem )
-{
-    ULONG   ulActualSize = TrnCalStoSize(usNoOfItem, FLEX_CONSSTORAGE_ADR);
-
-	NHPOS_ASSERT(ulActualSize < 0xffff);
-
-    return ( (USHORT)ulActualSize );
-}
-
 /**===========================================================================
 ** Synopsis:    USHORT MldGetTrnStoToMldSto(USHORT usVliSize, SHORT sTrnFileHandle,
 *                       SHORT sTrnIndexHandle, SHORT sMldFileHandle, SHORT sMldIndexHandle)
@@ -532,8 +513,8 @@ USHORT MldCalStoSize( USHORT usNoOfItem )
 *               transaction file index for the sales information in the transaction
 *               file.
 *===========================================================================*/
-USHORT MldGetTrnStoToMldSto(USHORT usVliSize, SHORT sTrnFileHandle, SHORT sTrnIndexHandle,
-                SHORT sMldFileHandle, SHORT sMldIndexHandle)
+USHORT MldGetTrnStoToMldSto(USHORT usVliSize, PifFileHandle sTrnFileHandle, PifFileHandle sTrnIndexHandle,
+                            PifFileHandle sMldFileHandle, PifFileHandle sMldIndexHandle)
 {
     ULONG           ulReadOffset;
     ULONG           ulWriteOffset;
@@ -636,7 +617,7 @@ USHORT MldGetTrnStoToMldSto(USHORT usVliSize, SHORT sTrnFileHandle, SHORT sTrnIn
 *       This function copys storage data of gcf file to mld storage file.
 ==========================================================================*/
 
-SHORT   MldCopyGcfToStorage(USHORT usScroll, SHORT sFileHandle)
+SHORT   MldCopyGcfToStorage(USHORT usScroll, PifFileHandle sFileHandle)
 {
     PRTIDXHDR   IdxFileInfo;
 	TRANCONSSTORAGEHEADER  TranConStorage;
@@ -773,50 +754,6 @@ SHORT   MldCopyGcfToStorage(USHORT usScroll, SHORT sFileHandle)
 
 /*
 *==========================================================================
-**    Synopsis: SHORT   MldExpandFile( SHORT  hsFileHandle,
-*                                      USHORT usInquirySize )
-*
-*       Input:  SHORT   hsFileHandle  - file handle
-*               USHORT  usInquirySize - size of file to expand
-*      Output:  Nothing
-*
-**  Return   :
-*           Normal End: MLD_SUCCESS
-*           Error End : MLD_ERROR
-*
-**  Description:
-*           Expand specified file size
-*==========================================================================
-*/
-SHORT MldExpandFile( SHORT hsFileHandle, USHORT usInquirySize )
-{
-#if 1
-	return TrnExpandFile( hsFileHandle, usInquirySize);
-#else
-    ULONG   ulActualSize;
-    SHORT   sReturn;
-
-    sReturn = PifSeekFile( hsFileHandle, ( ULONG )usInquirySize, &ulActualSize );
-
-    if (( sReturn < 0 ) || (( ULONG )usInquirySize != ulActualSize )) {
-        return ( MLD_ERROR );
-    }
-
-    /* --- store file size to created file --- */
-    sReturn = PifSeekFile( hsFileHandle, 0UL, &ulActualSize );
-
-    if (( sReturn < 0 ) || ( ulActualSize != 0UL )) {
-        return ( MLD_ERROR );
-    }
-
-    PifWriteFile( hsFileHandle, &usInquirySize, sizeof( USHORT ));
-
-    return ( MLD_SUCCESS );
-#endif
-}
-
-/*
-*==========================================================================
 **    Synopsis: SHORT  MldReadFile(ULONG ulOffset, VOID *pData,
 *                                   ULONG ulSize, SHORT hsFileHandle
 									ULONG *pulActualBytesRead)
@@ -841,12 +778,8 @@ SHORT MldExpandFile( SHORT hsFileHandle, USHORT usInquirySize )
   Now returns Success/Error  Size Read is in pulActualBytesRead
 *==========================================================================
 */
-SHORT TrnReadFile_MemoryForceIfFile (ULONG ulOffset, VOID *pData,
-                   ULONG ulSize, SHORT hsFileHandle,
-				   ULONG *pulActualBytesRead);
-
 SHORT MldReadFile(ULONG ulOffset, VOID *pData,
-                   ULONG ulSize, SHORT hsFileHandle, ULONG *pulActualBytesRead)
+                   ULONG ulSize, PifFileHandle hsFileHandle, ULONG *pulActualBytesRead)
 {
     SHORT   sReturn;
     ULONG   ulActPos;
@@ -866,7 +799,7 @@ SHORT MldReadFile(ULONG ulOffset, VOID *pData,
 //        return (MLD_ERROR);
 //    }
 
-	if (TrnReadFile_MemoryForceIfFile (ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead) >= 0)
+	if (TrnReadFile(ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead) >= 0)
 		return (MLD_SUCCESS);
 
     sReturn = PifSeekFile( hsFileHandle, ulOffset, &ulActPos );
@@ -904,7 +837,7 @@ SHORT MldReadFile(ULONG ulOffset, VOID *pData,
 *==========================================================================
 */
 SHORT MldWriteFile(ULONG ulOffset, VOID *pData,
-                  ULONG ulSize, SHORT hsFileHandle)
+                  ULONG ulSize, PifFileHandle hsFileHandle)
 {
     SHORT   sReturn;
     ULONG   ulActPos;

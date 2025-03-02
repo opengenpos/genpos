@@ -164,7 +164,7 @@ VOID    TrnSplCheck(VOID)
     UCHAR   auchWork[sizeof(ITEMDATASIZEUNION)];        // compressed transaction item data record buffer
     UCHAR   uchMiddleSeat = 0, uchRightSeat = 0;
     SHORT   sFlagA = 0, sFlagB = 0;
-	SHORT   hsHandle;
+    PifFileHandle   hsHandle;
     ULONG   ulCurSize, ulReadPos;
 	ULONG   ulActualBytesRead;
 	TRANSTORAGERECORD  *pauchWork = (TRANSTORAGERECORD  *)auchWork;
@@ -430,7 +430,7 @@ static SHORT   TrnSplMoveReduceRecord (UCHAR uchSeat, TRANSTORAGERECORD  *pauchW
 static VOID    TrnSplGetSeat(UCHAR uchSeat, TrnStorageType  sStorageType, SHORT sUpdate, UCHAR uchStoType)
 {
     UCHAR           auchWork[sizeof(ITEMDATASIZEUNION)];
-	SHORT           hsHandle;
+    PifFileHandle   hsHandle;
     ULONG           ulCurSize, ulReadPos;
 	TRANSTORAGERECORD  *pauchWork = (TRANSTORAGERECORD  *)auchWork;
 
@@ -598,7 +598,7 @@ SHORT   TrnSplRightArrow(VOID)
     SHORT   sType, sFlagA = 0, sFlagB = 0;
     TRANINFSPLIT    *pSpl;
 	ITEMTRANSOPEN   TransOpen = {0};
-	SHORT           hsHandle;
+    PifFileHandle   hsHandle;
     ULONG           ulCurSize, ulReadPos;
 	ULONG           ulActualBytesRead;
 	TRANSTORAGERECORD  *pauchWork = (TRANSTORAGERECORD  *)auchWork;
@@ -754,7 +754,7 @@ SHORT   TrnSplLeftArrow(VOID)
     SHORT   sType, sFlagA = 0, sFlagB = 0;
     TRANINFSPLIT    *pSpl;
 	ITEMTRANSOPEN   TransOpen = {0};
-	SHORT           hsHandle;
+    PifFileHandle   hsHandle;
     ULONG           ulCurSize, ulReadPos;
 	ULONG           ulActualBytesRead;
 	TRANSTORAGERECORD  *pauchWork = (TRANSTORAGERECORD  *)auchWork;
@@ -907,7 +907,7 @@ SHORT   TrnSplLeftArrowSeat(UCHAR *uchMiddle, UCHAR *uchRight)
 VOID    TrnSplAddSeatTrans(UCHAR uchSeat)
 {
     UCHAR   auchWork[sizeof(ITEMDATASIZEUNION)];
-	SHORT   hsHandle;
+    PifFileHandle   hsHandle;
     ULONG   ulCurSize, ulReadPos;
 	TRANSTORAGERECORD  *pauchWork = (TRANSTORAGERECORD  *)auchWork;
 

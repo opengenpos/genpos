@@ -399,17 +399,15 @@ SHORT   MldStoMulti( ITEMMULTI *ItemMulti, USHORT usSize2, USHORT usType );
 SHORT   MldStoCoupon( ITEMCOUPON *pItemCoupon, USHORT usSize2, USHORT usType );
 VOID    MldStoNormal( VOID *pData, SHORT sSize );
 VOID    MldStorageInit(MLDCURTRNSCROL *pData, USHORT usType);
-USHORT MldGetTrnStoToMldSto(USHORT usType, SHORT sTrnFileHandle, SHORT sTrnIndexHandle,
-                SHORT sMldFileHandle, SHORT sMldIndexHandle);
+USHORT MldGetTrnStoToMldSto(USHORT usType, PifFileHandle sTrnFileHandle, PifFileHandle sTrnIndexHandle,
+                PifFileHandle sMldFileHandle, PifFileHandle sMldIndexHandle);
 SHORT   MldChkStorageSize(SHORT sSize, USHORT usSize2, USHORT usType);                     /* check storage buffer full */
 SHORT   MldStoSalesPreviousCondiment( ITEMSALES *pItemSales, USHORT usSize2, USHORT usType);
-SHORT   MldExpandFile( SHORT hsFileHandle, USHORT usInquirySize );
 SHORT MldReadFile(ULONG ulOffset, VOID *pData,
-                        ULONG ulSize, SHORT hsFileHandle,
+                        ULONG ulSize, PifFileHandle hsFileHandle,
 						ULONG *pulActualBytesRead);
 SHORT   MldWriteFile(ULONG ulOffset, VOID *pData,
-                         ULONG ulSize, SHORT hsFileHandle);
-USHORT MldCalStoSize(USHORT usSize);
+                         ULONG ulSize, PifFileHandle hsFileHandle);
 
 VOID    MldDispContinue(USHORT usScroll, USHORT usType);
 VOID    MldPrechkDispContinue(USHORT usType);
@@ -418,8 +416,8 @@ VOID    MldClearContinue(USHORT usScroll, USHORT usType);
 VOID    MldPrechkClearContinue(USHORT usType);
 VOID    MldDriveClearContinue(USHORT usScroll, USHORT usType);
 
-SHORT   MldCopyGcfToStorage(USHORT usScroll, SHORT sFileHandle);
-SHORT   MldLocalPutGcfToScroll(USHORT usScroll, SHORT sFileHandle);
+SHORT   MldCopyGcfToStorage(USHORT usScroll, PifFileHandle sFileHandle);
+SHORT   MldLocalPutGcfToScroll(USHORT usScroll, PifFileHandle sFileHandle);
 SHORT   MldDispLastStoredData(USHORT usScroll);
 SHORT   MldDispStoredDataRegion(USHORT usScroll, USHORT usFirstLine);
 SHORT   MldDispAllStoredData(USHORT usScroll);

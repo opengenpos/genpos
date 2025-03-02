@@ -311,7 +311,7 @@ SHORT   ItemTransACMulPreFin(UIFREGTRANSOPEN *pOpen, ITEMTRANSOPEN *ItemTransOpe
 
     /* copy GCF qual to work */
     memset( &(gcfti.gcfQual), 0, sizeof(gcfti.gcfQual) ); 
-    TrnReadFile_MemoryForce(CLIGCFFILE_DATASTART,
+    TrnReadFile(CLIGCFFILE_DATASTART,
         &(gcfti.gcfQual), sizeof(TRANGCFQUAL), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
 
 	// check the Guest Check qualifier information to determine if this Guest Check should be allowed
@@ -350,12 +350,12 @@ SHORT   ItemTransACMulPreFin(UIFREGTRANSOPEN *pOpen, ITEMTRANSOPEN *ItemTransOpe
     TrnInitialize( TRANI_GCFQUAL | TRANI_ITEMIZERS | TRANI_ITEM | TRANI_CONSOLI );
 
     /* set GCF qual to TrnInformation */
-    TrnReadFile_MemoryForce(CLIGCFFILE_DATASTART, &(gcfti.gcfQual), sizeof(TRANGCFQUAL), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+    TrnReadFile(CLIGCFFILE_DATASTART, &(gcfti.gcfQual), sizeof(TRANGCFQUAL), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
     TrnWriteFile(CLIGCFFILE_DATASTART, &(gcfti.gcfQual), sizeof(TRANGCFQUAL), TrnInfo->hsTranConsStorage);
     TrnPutGCFQual( &(gcfti.gcfQual) );                         /* put GCF qualifier */
 
     /* set tranitemizers to TrnInformation */
-    TrnReadFile_MemoryForce(CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL), &(gcfti.tItemizers), sizeof(TRANITEMIZERS), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+    TrnReadFile(CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL), &(gcfti.tItemizers), sizeof(TRANITEMIZERS), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
     TrnWriteFile(CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL), &(gcfti.tItemizers), sizeof(TRANITEMIZERS), TrnInfo->hsTranConsStorage);
 
     TrnPutTI( &(gcfti.tItemizers) );
@@ -363,7 +363,7 @@ SHORT   ItemTransACMulPreFin(UIFREGTRANSOPEN *pOpen, ITEMTRANSOPEN *ItemTransOpe
     /* copy consoli. data from work file to consoli. buffer file */
     ulRWOffset = CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL) + sizeof(TRANITEMIZERS);
 
-    TrnReadFile_MemoryForce(ulRWOffset, &(gcfti.usVli), sizeof(gcfti.usVli), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+    TrnReadFile(ulRWOffset, &(gcfti.usVli), sizeof(gcfti.usVli), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
     TrnWriteFile(ulRWOffset, &(gcfti.usVli), ulActualBytesRead, TrnInfo->hsTranConsStorage);
 
 
@@ -377,7 +377,7 @@ SHORT   ItemTransACMulPreFin(UIFREGTRANSOPEN *pOpen, ITEMTRANSOPEN *ItemTransOpe
         ;
     } else {
         do {
-            TrnReadFile_MemoryForce(ulRWOffset, &gcfti, sizeof(gcfti), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+            TrnReadFile(ulRWOffset, &gcfti, sizeof(gcfti), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
             TrnWriteFile(ulRWOffset, &gcfti, ulActualBytesRead, TrnInfo->hsTranConsStorage);
 
             ulRWOffset += ulActualBytesRead;
@@ -391,10 +391,10 @@ SHORT   ItemTransACMulPreFin(UIFREGTRANSOPEN *pOpen, ITEMTRANSOPEN *ItemTransOpe
         ulSize = CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL) + sizeof(TRANITEMIZERS);
 		//11-1103- SR 201 JHHJ
 		//SR 337 Fix
-        TrnReadFile_MemoryForce(ulSize, &usSize1, sizeof(USHORT), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+        TrnReadFile(ulSize, &usSize1, sizeof(USHORT), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
         if (usSize1 != 0) {
 			//11-1103- SR 201 JHHJ
-			TrnReadFile_MemoryForce((ulSize + usSize1 + sizeof(USHORT)), uchConsIdBuffer, sizeof(uchConsIdBuffer), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
+            TrnReadFile((ulSize + usSize1 + sizeof(USHORT)), uchConsIdBuffer, sizeof(uchConsIdBuffer), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
             ulIndexFSize = *((USHORT *)uchConsIdBuffer);
 			TrnWriteFile(0, uchConsIdBuffer, ulIndexFSize, TrnInfo->hsTranConsIndex);
 				/* --- Save Not Consoli Index File, 1/18/97 --- */

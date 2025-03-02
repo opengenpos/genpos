@@ -765,8 +765,11 @@
 
 /*--------------------------------------------------------------------------
 *       transaction information main
+* 
+*  WARNING: Do not change the order of the members in the following struct, TRANINFORMATION.
+*           There are places where multiple members are written to or read from files
+*           using the a single write or read. Specifically members TranGCFQual and TranCurQual.
 --------------------------------------------------------------------------*/
-
     typedef struct {
         USHORT          fsTransStatus;          /* Transaction Module Status, R3.1 */
         USHORT          usGuestNo[2];           /* GCF# on LCD for Split,  R3.1 */
@@ -911,36 +914,6 @@
     SHORT   TrnChkAndCreFile(USHORT usSize, UCHAR uchStorageType);     /* check and create item/cons./post rec. storage file */
     VOID    TrnChkAndDelFile(USHORT usSize, UCHAR uchStorageType);     /* check and delete item/cons./post rec. storage file */
 
-//------------------------------------------------------------------------
-// Testing with GenPOS Rel 2.2.1.145 with Table Service, Post Guest Check, to
-// review the functionality we discovered that using Guest Check Transfer to
-// combine a guest check with a second guest check was not working properly.
-// We found an error with the memory caching functionality due to a defect
-// in handling read of only part of a guest check.  Disabling this functionality
-// addressed the problem.
-// This memory caching functionality should probably just be removed as it
-// has a defect and does not seem to provide any advantage.
-//   Richard Chambers, Feb-06-2015
-
-//#define TrnReadWriteFile_Memory
-
-#if defined(TrnReadWriteFile_Memory)
-    SHORT   TrnReadFile_Memory(ULONG ulOffset, VOID *pData,
-                        ULONG ulSize, SHORT hsFileHandle,
-						ULONG *pulActualBytesRead);
-
-    SHORT   TrnWriteFile_Memory(ULONG ulOffset, VOID *pData,
-                         ULONG ulSize, SHORT hsFileHandle);
-
-	SHORT TrnReadFile_MemoryForce (ULONG ulOffset, VOID *pData,
-                   ULONG ulSize, SHORT hsFileHandle,
-				   ULONG *pulActualBytesRead);
-
-#define TrnReadFile(ulOffset,pData,ulSize,hsFileHandle,pulActualBytesRead) TrnReadFile_Memory(ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead)
-#define TrnWriteFile(ulOffset,pData,ulSize,hsFileHandle) TrnWriteFile_Memory(ulOffset, pData, ulSize, hsFileHandle)
-
-#else
-
 #if 0
     SHORT   TrnReadFile_Debug(ULONG ulOffset, VOID *pData,
                         ULONG ulSize, PifFileHandle hsFileHandle,
@@ -951,16 +924,11 @@
 #define TrnReadFile(ulOffset,pData,ulSize,hsFileHandle,pulActualBytesRead) TrnReadFile_Debug(ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead, __FILE__, __LINE__)
 #define TrnWriteFile(ulOffset,pData,ulSize,hsFileHandle) TrnReadFile_Debug(ulOffset, pData, ulSize, hsFileHandle, __FILE__, __LINE__)
 
-#define TrnReadFile_MemoryForce(ulOffset,pData,ulSize,hsFileHandle,pulActualBytesRead) TrnReadFile_Debug(ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead, __FILE__, __LINE__)
-
 #else
     SHORT   TrnReadFile(ULONG ulOffset, VOID *pData,
                         ULONG ulSize, PifFileHandle hsFileHandle, ULONG *pulActualBytesRead);
     SHORT   TrnWriteFile(ULONG ulOffset, VOID *pData, ULONG ulSize, PifFileHandle hsFileHandle);
 
-#define TrnReadFile_MemoryForce(ulOffset,pData,ulSize,hsFileHandle,pulActualBytesRead) TrnReadFile(ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead)
-
-#endif
 #endif
     VOID    TrnStoGetConsToPostR(VOID);
     SHORT   TrnStoPutPostRToCons(VOID);                     /* V3.3 */

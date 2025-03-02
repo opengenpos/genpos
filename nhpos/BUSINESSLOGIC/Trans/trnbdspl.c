@@ -533,18 +533,18 @@ SHORT   TrnChkAndCreFileSpl(USHORT usNoOfItem)
 */
 VOID    TrnChkAndDelFileSpl(USHORT usNoOfItem)
 {
-    TCHAR       *lpszStorageNameA = aszTrnConsSplitFileA;
-    TCHAR       *lpszIndexNameA = aszTrnConsSplitIndexA;
-    TCHAR       *lpszStorageNameB = aszTrnConsSplitFileB;
-    TCHAR       *lpszIndexNameB = aszTrnConsSplitIndexB;
-    SHORT       hsStorageFile;
-    SHORT       hsIndexFileA;
-    SHORT       hsIndexFileB;
-    BOOL        fSameSize;
-    BOOL        fIndexExist;
-    USHORT      usActualSize = 0;
-    ULONG       ulInquirySize;
-	ULONG		ulActualBytesRead;
+    TCHAR  CONST * const lpszStorageNameA = aszTrnConsSplitFileA;
+    TCHAR  CONST * const lpszIndexNameA = aszTrnConsSplitIndexA;
+    TCHAR  CONST * const lpszStorageNameB = aszTrnConsSplitFileB;
+    TCHAR  CONST * const lpszIndexNameB = aszTrnConsSplitIndexB;
+    PifFileHandle   hsStorageFile;
+    PifFileHandle   hsIndexFileA;
+    PifFileHandle   hsIndexFileB;
+    BOOL            fSameSize;
+    BOOL            fIndexExist;
+    TrnFileSize     usActualSize = 0;
+    ULONG           ulInquirySize;
+	ULONG		    ulActualBytesRead;
 
     /* --- if inquiry size is different from actual size, delete
         current existing storage file --- */
@@ -553,7 +553,7 @@ VOID    TrnChkAndDelFileSpl(USHORT usNoOfItem)
         return;
     }
 	//11-1103- SR 201 JHHJ
-    TrnReadFile(0, &usActualSize, sizeof(USHORT), hsStorageFile, &ulActualBytesRead);
+    TrnReadFile(0, &usActualSize, sizeof(TrnFileSize), hsStorageFile, &ulActualBytesRead);
     TrnCloseFile(hsStorageFile);
 
     ulInquirySize = TrnCalStoSize(usNoOfItem, FLEX_CONSSTORAGE_ADR);
@@ -575,7 +575,7 @@ VOID    TrnChkAndDelFileSpl(USHORT usNoOfItem)
         return;
     }
 	//11-1103- SR 201 JHHJ
-    TrnReadFile(0, &usActualSize, sizeof(USHORT), hsStorageFile, &ulActualBytesRead);
+    TrnReadFile(0, &usActualSize, sizeof(TrnFileSize), hsStorageFile, &ulActualBytesRead);
     TrnCloseFile(hsStorageFile);
 
     fSameSize = (ulInquirySize == usActualSize) ? TRUE : FALSE;
@@ -609,6 +609,8 @@ VOID    TrnChkAndDelFileSpl(USHORT usNoOfItem)
 */
 static SHORT   TrnOpenIndexFileSpl(VOID)
 {
+    // TBD: Is initSize correct? The calculation for the value looks suspicious.
+    //          Richard Chambers, Feb-06-2025
 	PRTIDXHDR    auchInitIdxInfo = {0};
 	int          initSize = sizeof(auchInitIdxInfo.usIndexVli) - sizeof (auchInitIdxInfo.usIndexFSize);
 

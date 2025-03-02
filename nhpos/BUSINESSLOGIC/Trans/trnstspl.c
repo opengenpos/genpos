@@ -403,7 +403,7 @@ SHORT   TrnStoAppendIndexSpl(TRANSTORAGESALESNON *pTranNon,
     SHORT       sReturn;
     PRTIDX      IndexNew;
     PRTIDXHDR   IdxFileInfo;
-    USHORT      usWriteOffset;
+    ULONG       ulWriteOffset;
     TRANINFSPLIT    *pSpl = TrnGetInfSpl(sType);
 	ULONG		ulActualBytesRead;//RPH 11-11-3 SR# 201
 
@@ -414,9 +414,9 @@ SHORT   TrnStoAppendIndexSpl(TRANSTORAGESALESNON *pTranNon,
 
     /* --- append print priority index to bottom of index file --- */
     //RPH 11-11-3 SR# 201
-	TrnReadFile(0, (VOID *)&IdxFileInfo, (USHORT)sizeof(PRTIDXHDR), (SHORT)pSpl->hsTranConsIndex, &ulActualBytesRead);
-    usWriteOffset = sizeof(PRTIDXHDR) + (sizeof(PRTIDX) * IdxFileInfo.uchNoOfItem);
-    TrnWriteFile(usWriteOffset, &IndexNew, sizeof(PRTIDX), pSpl->hsTranConsIndex);
+	TrnReadFile(0, &IdxFileInfo, sizeof(PRTIDXHDR), pSpl->hsTranConsIndex, &ulActualBytesRead);
+    ulWriteOffset = sizeof(PRTIDXHDR) + (sizeof(PRTIDX) * IdxFileInfo.uchNoOfItem);
+    TrnWriteFile(ulWriteOffset, &IndexNew, sizeof(PRTIDX), pSpl->hsTranConsIndex);
 
     /* --- update information about index file --- */
     IdxFileInfo.uchNoOfItem++;

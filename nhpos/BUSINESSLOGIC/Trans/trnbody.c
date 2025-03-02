@@ -142,54 +142,23 @@
 #include	"ConnEngineObjectIf.h"
 #include	"item.h"
 
-#if defined(TrnReadWriteFile_Memory)
-typedef struct {
-	SHORT  hsFileHandle;
-	ULONG  ulActualBytesRead;
-	UCHAR  *pTrnMemoryFile;
-} TrnMemoryFileTableRow;
-
-#define TRNMEMORYFILE_SIZE    65800
-
-static UCHAR  TrnMemoryFile_MemoryArea[14 * TRNMEMORYFILE_SIZE];
-
-static TrnMemoryFileTableRow  TrnMemoryFileTable[] = {
-	{-1, 0, TrnMemoryFile_MemoryArea +  0},
-	{-1, 0, TrnMemoryFile_MemoryArea +  1 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea +  2 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea +  3 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea +  4 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea +  5 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea +  6 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea +  7 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea +  8 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea +  9 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea + 10 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea + 11 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea + 12 * TRNMEMORYFILE_SIZE},
-	{-1, 0, TrnMemoryFile_MemoryArea + 13 * TRNMEMORYFILE_SIZE},
-	{-1, 0, 0}
-};
-
-#endif
-
 TRANINFORMATION TrnInformation;                             /* transaction information */
-TCHAR FARCONST  aszTrnItemStorageFile[]    = _T("ITEMSTOR");    /* file Name of item storage */
-TCHAR FARCONST  aszTrnConsStorageFile[]    = _T("CONSSTOR");    /* file Name of cons. storage */
-TCHAR FARCONST  aszTrnPostRecStorageFile[] = _T("POSRSTOR");    /* file Name of post rec. storage */
-TCHAR FARCONST  aszTrnItemStorageIndex[]   = _T("ITEMIDX");     /* item storage index */
-TCHAR FARCONST  aszTrnNoItemStorageIndex[] = _T("NOITIDX");     /* no cons. storage index */
-TCHAR FARCONST  aszTrnConsStorageIndex[]   = _T("CONSIDX");     /* cons. storage index */
-TCHAR FARCONST  aszTrnNoConsStorageIndex[] = _T("NOCNIDX");     /* no cons. storage index */
-TCHAR FARCONST aszTrnTempStorageFile[]	   = _T("TRNTMP");
+TCHAR CONST  aszTrnItemStorageFile[]    = _T("ITEMSTOR");    /* file Name of item storage */
+TCHAR CONST  aszTrnConsStorageFile[]    = _T("CONSSTOR");    /* file Name of cons. storage */
+TCHAR CONST  aszTrnPostRecStorageFile[] = _T("POSRSTOR");    /* file Name of post rec. storage */
+TCHAR CONST  aszTrnItemStorageIndex[]   = _T("ITEMIDX");     /* item storage index */
+TCHAR CONST  aszTrnNoItemStorageIndex[] = _T("NOITIDX");     /* no cons. storage index */
+TCHAR CONST  aszTrnConsStorageIndex[]   = _T("CONSIDX");     /* cons. storage index */
+TCHAR CONST  aszTrnNoConsStorageIndex[] = _T("NOCNIDX");     /* no cons. storage index */
+TCHAR CONST aszTrnTempStorageFile[]	   = _T("TRNTMP");
 
 /*----- Split Check File,  R3.1 -----*/
 TRANINFSPLIT    TrnSplitA;
-TCHAR FARCONST  aszTrnConsSplitFileA[]     = _T("SPLITA");      /* file Name of split A */
-TCHAR FARCONST  aszTrnConsSplitIndexA[]    = _T("IDXSPLA");     /* split A index */
+TCHAR CONST  aszTrnConsSplitFileA[]     = _T("SPLITA");      /* file Name of split A */
+TCHAR CONST  aszTrnConsSplitIndexA[]    = _T("IDXSPLA");     /* split A index */
 TRANINFSPLIT    TrnSplitB;
-TCHAR FARCONST  aszTrnConsSplitFileB[]     = _T("SPLITB");      /* file Name of split B */
-TCHAR FARCONST  aszTrnConsSplitIndexB[]    = _T("IDXSPLB");     /* split B index */
+TCHAR CONST  aszTrnConsSplitFileB[]     = _T("SPLITB");      /* file Name of split B */
+TCHAR CONST  aszTrnConsSplitIndexB[]    = _T("IDXSPLB");     /* split B index */
 
 /* 05/20/01 */
 /* 12/05/01 */
@@ -1727,10 +1696,7 @@ SHORT TrnGetGC(USHORT usGCFNo, SHORT sType, USHORT usType)
 
 		ulSize = CLIGCFFILE_DATASTART;
 		//11-1103- SR 201 JHHJ
-		TrnReadFile_MemoryForce (ulSize, &(TrnInformation.TranGCFQual), sizeof(TRANGCFQUAL), TrnInformation.hsTranConsStorage, &ulActualBytesRead);
-#if 0
         TrnReadFile(ulSize, &(TrnInformation.TranGCFQual), sizeof(TRANGCFQUAL), TrnInformation.hsTranConsStorage, &ulActualBytesRead);
-#endif
 
 		// We need to update the Hourly Total Block Offset for the Guest Check so that additional items purchased will
 		// be in the current Hourly Total Block and not the previous one when the Guest Check was first created.
@@ -1741,22 +1707,15 @@ SHORT TrnGetGC(USHORT usGCFNo, SHORT sType, USHORT usType)
         /* set tranitemizers to TrnInformation */
 
 		//11-1103- SR 201 JHHJ
-		TrnReadFile_MemoryForce (ulSize, &(TrnInformation.TranItemizers), sizeof(TRANITEMIZERS), TrnInformation.hsTranConsStorage, &ulActualBytesRead);
-#if 0
         TrnReadFile(ulSize, &(TrnInformation.TranItemizers), sizeof(TRANITEMIZERS), TrnInformation.hsTranConsStorage, &ulActualBytesRead);
-#endif
 		ulSize += sizeof(TRANITEMIZERS);
 
         if (sType == 1) {
             /* set consoli. vli to TrnInformation */
 
 			//11-1103- SR 201 JHHJ
-			TrnReadFile_MemoryForce (ulSize, &(TrnInformation.usTranConsStoVli), sizeof(TrnInformation.usTranConsStoVli),
-                        TrnInformation.hsTranConsStorage, &ulActualBytesRead);
-#if 0
             TrnReadFile(ulSize, &(TrnInformation.usTranConsStoVli), sizeof(TrnInformation.usTranConsStoVli),
                         TrnInformation.hsTranConsStorage, &ulActualBytesRead);
-#endif
 			ulSize += sizeof(TrnInformation.usTranConsStoVli);
 			ulSize += TrnInformation.usTranConsStoVli;
 
@@ -1768,11 +1727,7 @@ SHORT TrnGetGC(USHORT usGCFNo, SHORT sType, USHORT usType)
                     index file --- */
 
 				//11-1103- SR 201 JHHJ
-				TrnReadFile_MemoryForce (ulSize, &IdxFileInfo, sizeof( PRTIDXHDR ), TrnInformation.hsTranConsStorage, &ulActualBytesRead); /* ### Mod (2171 for Win32) V1.0 */
-#if 0
-                TrnReadFile(ulSize, &IdxFileInfo, sizeof( PRTIDXHDR ),
-                             TrnInformation.hsTranConsStorage, &ulActualBytesRead); /* ### Mod (2171 for Win32) V1.0 */
-#endif
+                TrnReadFile(ulSize, &IdxFileInfo, sizeof( PRTIDXHDR ), TrnInformation.hsTranConsStorage, &ulActualBytesRead); /* ### Mod (2171 for Win32) V1.0 */
 				ulSize += sizeof(PRTIDXHDR);
 
                 TrnWriteFile( 0, &IdxFileInfo, sizeof( PRTIDXHDR ), TrnInformation.hsTranConsIndex );
@@ -1787,12 +1742,8 @@ SHORT TrnGetGC(USHORT usGCFNo, SHORT sType, USHORT usType)
                 while ( ulTtlIdxReadSize < IdxFileInfo.usIndexVli ) {
 
 					//11-1103- SR 201 JHHJ
-					TrnReadFile_MemoryForce ( (ulReadOffset + ulTtlIdxReadSize), auchIdxWork, sizeof( auchIdxWork ),
-                                                    TrnInformation.hsTranConsStorage, &ulCurIdxReadSize ); /* ### Mod (2171 for Win32) V1.0 */
-#if 0
                     TrnReadFile( (ulReadOffset + ulTtlIdxReadSize), auchIdxWork, sizeof( auchIdxWork ),
                                                     TrnInformation.hsTranConsStorage, &ulCurIdxReadSize ); /* ### Mod (2171 for Win32) V1.0 */
-#endif
 					if (ulCurIdxReadSize < 1)
 						break;
 
@@ -1849,7 +1800,7 @@ static ULONG TrnUpdateGuestCheckDataFile (USHORT usType)
 	ULONG	ulActualBytesRead;
     ULONG   ulSize;
     USHORT  usInitVli = 0;
-    USHORT  husIndexFile;
+    PifFileHandle  husIndexFile;
     UCHAR   auchIdxWork[ sizeof( PRTIDX ) * 80 ];
     PRTIDXHDR IdxFileInfo;
 
@@ -2047,32 +1998,20 @@ SHORT TrnQueryGC( USHORT usGCFNo )
 
     /* --- set retrieved qualifier/itemizer to Transaction Information --- */
     ulReadOffset = usStoreOffset;
-    TrnReadFile_MemoryForce( ulReadOffset, &TrnInformation.TranGCFQual, sizeof( TRANGCFQUAL ), TrnInformation.hsTranConsStorage, &ulActualBytesRead );
-#if 0
     TrnReadFile( ulReadOffset, &TrnInformation.TranGCFQual, sizeof( TRANGCFQUAL ), TrnInformation.hsTranConsStorage, &ulActualBytesRead );
-#endif
 
     ulReadOffset += sizeof( TRANGCFQUAL );
-    TrnReadFile_MemoryForce( ulReadOffset, &TrnInformation.TranItemizers, sizeof( TRANITEMIZERS ), TrnInformation.hsTranConsStorage, &ulActualBytesRead );
-#if 0
     TrnReadFile( ulReadOffset, &TrnInformation.TranItemizers, sizeof( TRANITEMIZERS ), TrnInformation.hsTranConsStorage, &ulActualBytesRead );
-#endif
 
     ulReadOffset += sizeof( TRANITEMIZERS );
-    TrnReadFile_MemoryForce( ulReadOffset, &TrnInformation.usTranConsStoVli, sizeof( TrnInformation.usTranConsStoVli ), TrnInformation.hsTranConsStorage, &ulActualBytesRead );
-#if 0
     TrnReadFile( ulReadOffset, &TrnInformation.usTranConsStoVli, sizeof( TrnInformation.usTranConsStoVli ), TrnInformation.hsTranConsStorage, &ulActualBytesRead );
-#endif
     ulReadOffset += sizeof( TrnInformation.usTranConsStoVli );
 
     if ( 0 < TrnInformation.usTranConsStoVli ) {
         /* --- get item index information, and save it to index file --- */
         ulReadOffset += TrnInformation.usTranConsStoVli;
 		//11-1103- SR 201 JHHJ
-        TrnReadFile_MemoryForce( ulReadOffset, &IdxFileInfo, sizeof( PRTIDXHDR ), TrnInformation.hsTranConsStorage, &ulActualBytesRead );
-#if 0
         TrnReadFile( ulReadOffset, &IdxFileInfo, sizeof( PRTIDXHDR ), TrnInformation.hsTranConsStorage, &ulActualBytesRead );
-#endif
         TrnWriteFile( 0, &IdxFileInfo, sizeof( PRTIDXHDR ), TrnInformation.hsTranConsIndex );
         TrnWriteFile( 0, &IdxFileInfo, sizeof( PRTIDXHDR ), TrnInformation.hsTranNoConsIndex );
 
@@ -2085,10 +2024,7 @@ SHORT TrnQueryGC( USHORT usGCFNo )
         while ( ulTtlIdxReadSize < IdxFileInfo.usIndexVli ) {
 
 			//11-1103- SR 201 JHHJ
-            TrnReadFile_MemoryForce( (ulReadOffset + ulTtlIdxReadSize), auchIdxWork, sizeof( auchIdxWork ), TrnInformation.hsTranConsStorage, &ulCurIdxReadSize ); /* ### Mod (2171 for Win32) V1.0 */
-#if 0
             TrnReadFile( (ulReadOffset + ulTtlIdxReadSize), auchIdxWork, sizeof( auchIdxWork ), TrnInformation.hsTranConsStorage, &ulCurIdxReadSize ); /* ### Mod (2171 for Win32) V1.0 */
-#endif
             if ( IdxFileInfo.usIndexVli < ( ulTtlIdxReadSize + ulCurIdxReadSize )) {
                 ulCurIdxReadSize = IdxFileInfo.usIndexVli - ulTtlIdxReadSize;
             }
@@ -2356,8 +2292,8 @@ VOID    TrnPrintTypeNoDsp(VOID *pItem)
 */
 SHORT TrnCreateFile( USHORT usNoOfItem, UCHAR uchStorageType )
 {
-    TCHAR         *lpszFileName;
-    TCHAR         *lpszIndexName;
+    TCHAR  CONST  *lpszFileName;
+    TCHAR  CONST  *lpszIndexName;
     ULONG         ulInquirySize;
     ULONG         ulVliOffset = 0;
     PifFileHandle hsStorageFile;
@@ -2526,7 +2462,7 @@ SHORT TrnCreatePostRecFile( ULONG ulConsFileSize )
 *==========================================================================
 */
 SHORT TrnCreateIndexFile( USHORT     usNoOfItem,
-                          TCHAR     *lpszIndexName,
+                          TCHAR CONST *lpszIndexName,
                           ULONG     *pulCreatedSize )
 {
     PifFileHandle   hsIndexFile;
@@ -2598,7 +2534,7 @@ SHORT TrnCreateIndexFile( USHORT     usNoOfItem,
 */
 SHORT TrnChkAndCreFile( USHORT usNoOfItem, UCHAR uchStorageType )
 {
-    TCHAR           *lpszFileName;
+    TCHAR  CONST   *lpszFileName;
     PifFileHandle   hsStorageFile;
     SHORT           sReturn;    
 
@@ -2656,14 +2592,14 @@ SHORT TrnChkAndCreFile( USHORT usNoOfItem, UCHAR uchStorageType )
 */
 VOID TrnChkAndDelFile( USHORT usNoOfItem, UCHAR uchStorageType )
 {
-    TCHAR       *lpszStorageName;
-    TCHAR       *lpszIndexName;
+    TCHAR  CONST *lpszStorageName;
+    TCHAR  CONST *lpszIndexName;
     ULONG       ulInquirySize;
 	ULONG		ulActualBytesRead;
-    SHORT       hsStorageFile;
-    SHORT       hsIndexFile;
-    SHORT       hsPostRecFile;
-    SHORT       hsNoConsIndex;
+    PifFileHandle    hsStorageFile;
+    PifFileHandle    hsIndexFile;
+    PifFileHandle    hsPostRecFile;
+    PifFileHandle    hsNoConsIndex;
     BOOL        fSameSize;
     BOOL        fIndexExist;
     BOOL        fPostRecExist;
@@ -2765,7 +2701,7 @@ VOID TrnChkAndDelFile( USHORT usNoOfItem, UCHAR uchStorageType )
 SHORT TrnICPOpenFile( VOID )
 {
 	ULONG	ulActualBytesRead;
-    SHORT   hsFileHandle;
+    PifFileHandle   hsFileHandle;
     SHORT   sReturn;
 
     /* check file already have been opened, V3.3 */
@@ -2841,10 +2777,10 @@ SHORT TrnICPOpenFile( VOID )
 */
 SHORT TrnICOpenIndexFile( VOID )
 {
-    SHORT       hsItemIndex;
-    SHORT       hsNoItemIndex;
-    SHORT       hsConsIndex;
-    SHORT       hsNoConsIndex;
+    PifFileHandle   hsItemIndex = -1;
+    PifFileHandle   hsNoItemIndex = -1;
+    PifFileHandle   hsConsIndex = -1;
+    PifFileHandle   hsNoConsIndex = -1;
     UCHAR       auchInitIdxInfo[ sizeof( PRTIDXHDR ) - sizeof( USHORT ) ];
 
     memset( &auchInitIdxInfo[ 0 ], 0x00, sizeof( auchInitIdxInfo ));
@@ -2977,9 +2913,9 @@ VOID TrnICPCloseFile( VOID )
 */
 #if defined(TrnOpenFile)
 #pragma message("TrnOpenFile defined")
-SHORT TrnOpenFile_Special(CONST TCHAR *uchFileName, CONST UCHAR *auchType);
+PifFileHandle TrnOpenFile_Special(CONST TCHAR *uchFileName, CONST UCHAR *auchType);
 
-SHORT TrnOpenFile_Debug(CONST TCHAR  *uchFileName, CONST UCHAR  *auchType, CONST char *aszFilePath, int nLineNo)
+PifFileHandle TrnOpenFile_Debug(CONST TCHAR  *uchFileName, CONST UCHAR  *auchType, CONST char *aszFilePath, int nLineNo)
 {
     SHORT   sReturn;
 	int iLen = 0;
@@ -3003,36 +2939,13 @@ SHORT TrnOpenFile_Debug(CONST TCHAR  *uchFileName, CONST UCHAR  *auchType, CONST
 	return sReturn;
 }
 
-SHORT TrnOpenFile_Special(CONST TCHAR  *uchFileName, CONST UCHAR  *auchType)
+PifFileHandle TrnOpenFile_Special(CONST TCHAR  *uchFileName, CONST UCHAR  *auchType)
 #else
-SHORT TrnOpenFile(CONST TCHAR *uchFileName, CONST UCHAR *auchType)
+PifFileHandle TrnOpenFile(CONST TCHAR *uchFileName, CONST UCHAR *auchType)
 #endif
 {
     return(PifOpenFile(uchFileName, auchType));
 }    
-
-#if defined(TrnReadWriteFile_Memory)
-
-SHORT TrnOpenFile_Memory (TCHAR *uchFileName, UCHAR *auchType)
-{
-	SHORT  hsFileHandle;
-	int    i = 0;
-	TrnMemoryFileTableRow  *pMemoryTable = TrnMemoryFileTable;
-
-	for (i = 0; pMemoryTable->pTrnMemoryFile != 0; pMemoryTable++, i++) {
-		if (pMemoryTable->hsFileHandle < 0) {
-			hsFileHandle = TrnOpenFile_Special(uchFileName, auchType);
-			if (hsFileHandle >= 0) {
-				pMemoryTable->hsFileHandle = hsFileHandle;
-				PifReadFile(hsFileHandle, pMemoryTable->pTrnMemoryFile, TRNMEMORYFILE_SIZE, &(pMemoryTable->ulActualBytesRead));
-			}
-			return hsFileHandle;
-		}
-	}
-	return TrnOpenFile_Special(uchFileName, auchType);
-}
-
-#endif
 
 /*
 *==========================================================================
@@ -3088,6 +3001,14 @@ SHORT TrnExpandFile( PifFileHandle hsFileHandle, ULONG ulInquirySize )
     SHORT        sReturn;
 	TrnFileSize  usInquirySize = ulInquirySize;
 
+    // WARNING: over the years file sizes have increased especially the transaction file size
+    //          and the Guest Check file size. The data files used contain a maximum file size
+    //          specified in the first few bytes of the file. As of this date, Jan-21-2025, this
+    //          is a USHORT value and the inquiry size or maximum file size may be larger than
+    //          will fit in a USHORT. So we will ensure that the maximum size, 0xffff, will be used
+    //          if the inquiry size is larger than will fit in a USHORT.
+    //
+    //          However when actually expanding the file, we will use the actual calculated inquiry value.
     sReturn = PifSeekFile( hsFileHandle, ulInquirySize, &ulActualSize );
     if (( sReturn < 0 ) || (ulInquirySize != ulActualSize )) {
         return ( TRN_ERROR );
@@ -3099,6 +3020,9 @@ SHORT TrnExpandFile( PifFileHandle hsFileHandle, ULONG ulInquirySize )
         return ( TRN_ERROR );
     }
 
+    NHPOS_ASSERT(sizeof(TrnFileSize) != sizeof(ULONG));
+
+    if (sizeof(TrnFileSize) < sizeof(ULONG) && ulInquirySize > 0xffff) usInquirySize = 0xffff;    // if the needed size is greater than USHORT value, make it max USHORT value
     PifWriteFile( hsFileHandle, &usInquirySize, sizeof( TrnFileSize ));
 
     return ( TRN_SUCCESS );
@@ -3221,18 +3145,34 @@ SHORT TrnReadFile(ULONG ulOffset, VOID *pData,
 {
     ULONG   sReturn;
     ULONG   ulActPos;
-//    USHORT  usFSize;
+//    TrnFileSize  usFSize;
 
 	*pulActualBytesRead = 0;          // initialize number of bytes read to zero
     if (!ulSize) {                    /* check read size */
         return(TRN_NO_READ_SIZE);     /* if read nothing, return */
     }
 
-//    sReturn = TrnSeekFile( hsFileHandle, 0UL, &ulActPos );
+#if 0
+    // remove this check on the file size.  similar removal has been
+    // done for the following functionality:
+    //  MldReadFile()
+    //  TrnReadFile()
+    sReturn = TrnSeekFile( hsFileHandle, 0UL, &ulActPos );
+    if ((sReturn < 0) || (ulActPos != 0UL)) {
+        return(TRN_ERROR);
+    }
 
 	//JHHJ 11-7-03, added pulActualBytesRead for PifReadFile
-//    sReturn = PifReadFile( hsFileHandle, &usFSize, sizeof( USHORT ), pulActualBytesRead);
+    sReturn = PifReadFile( hsFileHandle, &usFSize, sizeof(TrnFileSize), pulActualBytesRead);
+    if ((*pulActualBytesRead != sizeof(TrnFileSize)) || (usFSize < ulOffset)) {
+        return(TRN_ERROR);
+    }
+#endif
+
     sReturn = TrnSeekFile( hsFileHandle, ulOffset, &ulActPos );
+    if ((sReturn < 0) || (ulOffset != ulActPos)) {
+        return(TRN_ERROR);
+    }
 
 	PifReadFile(hsFileHandle, pData, ulSize, pulActualBytesRead);
 	if( *pulActualBytesRead != ulSize)
@@ -3245,121 +3185,6 @@ SHORT TrnReadFile(ULONG ulOffset, VOID *pData,
 
     return (TRN_SUCCESS);
 }
-
-#if defined(TrnReadWriteFile_Memory)
-
-SHORT TrnReadFile_MemoryForce (ULONG ulOffset, VOID *pData,
-                   ULONG ulSize, SHORT hsFileHandle,
-				   ULONG *pulActualBytesRead)
-{
-	SHORT   sRetStatus = (TRN_ERROR);
-	UCHAR  *pTrnMemoryFile;
-	TrnMemoryFileTableRow  *pMemoryTable;
-
-	NHPOS_ASSERT_TEXT((hsFileHandle >= 0), "TrnReadFile_MemoryForce(): Bad file handle.");
-
-	for (pMemoryTable = TrnMemoryFileTable; pMemoryTable->pTrnMemoryFile != 0; pMemoryTable++) {
-		if (pMemoryTable->hsFileHandle == hsFileHandle) {
-			pTrnMemoryFile = pMemoryTable->pTrnMemoryFile;
-			break;
-		}
-	}
-
-	*pulActualBytesRead = 0;
-
-	sRetStatus = TrnReadFile_Special (ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead);
-
-	if (pMemoryTable->pTrnMemoryFile == 0) {
-		return sRetStatus;
-	}
-
-	if (ulOffset + ulSize < TRNMEMORYFILE_SIZE) {
-		memcpy (pTrnMemoryFile + ulOffset, pData, ulSize);
-	}
-	return sRetStatus;
-}
-
-SHORT TrnReadFile_MemoryForceIfFile (ULONG ulOffset, VOID *pData,
-                   ULONG ulSize, SHORT hsFileHandle,
-				   ULONG *pulActualBytesRead)
-{
-	SHORT   sRetStatus = (TRN_ERROR);
-	UCHAR  *pTrnMemoryFile;
-	TrnMemoryFileTableRow  *pMemoryTable;
-
-	NHPOS_ASSERT_TEXT((hsFileHandle >= 0), "TrnReadFile_MemoryForceIfFile(): Bad file handle.");
-
-	for (pMemoryTable = TrnMemoryFileTable; pMemoryTable->pTrnMemoryFile != 0; pMemoryTable++) {
-		if (pMemoryTable->hsFileHandle == hsFileHandle) {
-			pTrnMemoryFile = pMemoryTable->pTrnMemoryFile;
-			break;
-		}
-	}
-
-	*pulActualBytesRead = 0;
-
-	if (pMemoryTable->pTrnMemoryFile == 0)
-		return (TRN_ERROR);
-
-	sRetStatus = TrnReadFile_Special (ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead);
-
-	if (pMemoryTable->pTrnMemoryFile == 0) {
-		return sRetStatus;
-	}
-
-	if (ulOffset + ulSize < TRNMEMORYFILE_SIZE) {
-		memcpy (pTrnMemoryFile + ulOffset, pData, ulSize);
-	}
-	return sRetStatus;
-}
-
-
-SHORT TrnReadFile_Memory (ULONG ulOffset, VOID *pData,
-                   ULONG ulSize, SHORT hsFileHandle,
-				   ULONG *pulActualBytesRead)
-{
-	SHORT   sRetStatus;
-	UCHAR  *pTrnMemoryFile = 0;
-	TrnMemoryFileTableRow  *pMemoryTable;
-
-	NHPOS_ASSERT_TEXT((hsFileHandle >= 0), "TrnReadFile_Memory(): Bad file handle.");
-
-	for (pMemoryTable = TrnMemoryFileTable; pMemoryTable->pTrnMemoryFile != 0; pMemoryTable++) {
-		if (pMemoryTable->hsFileHandle == hsFileHandle) {
-			pTrnMemoryFile = pMemoryTable->pTrnMemoryFile;
-			break;
-		}
-	}
-
-	*pulActualBytesRead = 0;
-
-	if (pMemoryTable->pTrnMemoryFile != 0 && ulOffset + ulSize < TRNMEMORYFILE_SIZE) {
-		memcpy (pData, pTrnMemoryFile + ulOffset, ulSize);
-		*pulActualBytesRead = ulSize;
-		sRetStatus = (TRN_SUCCESS);
-	}
-	else {
-		sRetStatus = TrnReadFile_Special (ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead);
-	}
-	return sRetStatus;
-}
-#else
-SHORT TrnReadFile_MemoryForceIfFile (ULONG ulOffset, VOID *pData,
-                   ULONG ulSize, SHORT hsFileHandle,
-				   ULONG *pulActualBytesRead)
-{
-	SHORT   sRetStatus = (TRN_ERROR);
-
-	NHPOS_ASSERT_TEXT((hsFileHandle >= 0), "TrnReadFile_MemoryForceIfFile(): Bad file handle.");
-
-	*pulActualBytesRead = 0;
-
-	sRetStatus = TrnReadFile (ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead);
-
-	return sRetStatus;
-}
-
-#endif
 
 /*
 *==========================================================================
@@ -3419,52 +3244,41 @@ SHORT TrnWriteFile(ULONG ulOffset, VOID *pData,
 {
     SHORT   sReturn;
     ULONG   ulActPos;
-//    USHORT  usFSize;
+//  TrnFileSize  usFSize;
 //	ULONG	ulActualBytesRead; //For PifReadFile 11-7-3
 
     if (ulSize == 0) {              /* check writed size */
         return 0;                     /* if nothing, return */
     }
 
-//    sReturn = TrnSeekFile( hsFileHandle, 0UL, &ulActPos );
-//    sReturn = PifReadFile( hsFileHandle, &usFSize, sizeof( USHORT ), &ulActualBytesRead);
+#if 0
+    // POSSIBLE_DEAD_CODE to indicate this is candidate for deletion.
+    //
+    // remove this check on the file size.  similar removal has been
+    // done for the following functionality:
+    //  MldWriteFile()
+    //  TrnWriteFile()
+    sReturn = TrnSeekFile( hsFileHandle, 0UL, &ulActPos );
+    if ((sReturn < 0) || (ulActPos != 0UL)) {
+        return(TRN_ERROR);
+    }
+
+    // FILE_SIZE_CHECK
+    sReturn = PifReadFile(hsFileHandle, &usFSize, sizeof(TrnFileSize), &ulActualBytesRead);
+    if ((ulActualBytesRead != sizeof(TrnFileSize)) || (usFSize < (ulOffset + ulSize))) {
+        return(TRN_ERROR);
+    }
+#endif
+
     sReturn = TrnSeekFile( hsFileHandle, ulOffset, &ulActPos);
+    if ((sReturn < 0) || (ulOffset != ulActPos)) {
+        return(TRN_ERROR);
+    }
 
     PifWriteFile(hsFileHandle, pData, ulSize);
 
-	return sReturn;
+	return TRN_SUCCESS;
 }
-
-#if defined(TrnReadWriteFile_Memory)
-
-SHORT TrnWriteFile_Memory (ULONG ulOffset, VOID *pData,
-                  ULONG ulSize, SHORT hsFileHandle)
-{
-	SHORT   sRetStatus;
-	UCHAR  *pTrnMemoryFile;
-	TrnMemoryFileTableRow  *pMemoryTable;
-
-	NHPOS_ASSERT_TEXT((hsFileHandle >= 0), "TrnWriteFile_Memory(): Bad file handle.");
-
-	for (pMemoryTable = TrnMemoryFileTable; pMemoryTable->pTrnMemoryFile != 0; pMemoryTable++) {
-		if (pMemoryTable->hsFileHandle == hsFileHandle) {
-			pTrnMemoryFile = pMemoryTable->pTrnMemoryFile;
-			break;
-		}
-	}
-
-	sRetStatus = TrnWriteFile_Special(ulOffset, pData, ulSize, hsFileHandle);
-
-	if (pMemoryTable->pTrnMemoryFile == 0) {
-		return sRetStatus;
-	}
-
-	if (ulOffset + ulSize < TRNMEMORYFILE_SIZE) {
-		memcpy (pTrnMemoryFile + ulOffset, pData, ulSize);
-	}
-	return sRetStatus;
-}
-#endif
 
 /*
 *==========================================================================
@@ -3482,9 +3296,9 @@ SHORT TrnWriteFile_Memory (ULONG ulOffset, VOID *pData,
 */
 #if defined(TrnCloseFile)
 #pragma message("TrnCloseFile defined")
-VOID TrnCloseFile_Special(SHORT hsFileHandle);
+VOID TrnCloseFile_Special(PifFileHandle hsFileHandle);
 
-VOID TrnCloseFile_Debug(SHORT hsFileHandle, CONST char *aszFilePath, int nLineNo)
+VOID TrnCloseFile_Debug(PifFileHandle hsFileHandle, CONST char *aszFilePath, int nLineNo)
 {
     SHORT   sReturn = (TRN_SUCCESS);
 	int iLen = 0;
@@ -3507,36 +3321,13 @@ VOID TrnCloseFile_Debug(SHORT hsFileHandle, CONST char *aszFilePath, int nLineNo
 
 }
 
-VOID TrnCloseFile_Special(SHORT hsFileHandle)
+VOID TrnCloseFile_Special(PifFileHandle hsFileHandle)
 #else
-VOID TrnCloseFile(SHORT hsFileHandle)
+VOID TrnCloseFile(PifFileHandle hsFileHandle)
 #endif
 {
-    PifCloseFile(hsFileHandle);                           
+    if (hsFileHandle >= 0) PifCloseFile(hsFileHandle);                           
 }    
-
-#if defined(TrnReadWriteFile_Memory)
-
-VOID TrnCloseFile_Memory (SHORT hsFileHandle)
-{
-	TrnMemoryFileTableRow  *pMemoryTable;
-
-	NHPOS_ASSERT_TEXT((hsFileHandle >= 0), "TrnCloseFile_Memory(): Bad file handle.");
-
-	for (pMemoryTable = TrnMemoryFileTable; pMemoryTable->pTrnMemoryFile != 0; pMemoryTable++) {
-		if (pMemoryTable->hsFileHandle == hsFileHandle) {
-			TrnCloseFile_Special(pMemoryTable->hsFileHandle);
-			pMemoryTable->hsFileHandle = -1;
-			break;
-		}
-	}
-
-	if (pMemoryTable->pTrnMemoryFile == 0) {
-		TrnCloseFile_Special(hsFileHandle);
-	}
-}
-
-#endif
 
 /*
 *==========================================================================
