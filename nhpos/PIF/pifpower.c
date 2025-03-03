@@ -26,8 +26,6 @@ VOID PifInitPowerSem(VOID);
 VOID PifSendPowerEvent(USHORT usEvent);
 VOID PifWaitForPowerAck(VOID);
 
-UCHAR  FARCONST aszRecoveryThreadName[] = "RECOVERY";
-
 #define PIF_MAX_POWER 8
 
 USHORT              usPifPowerEvent;
@@ -281,7 +279,8 @@ DWORD GetKeyLock(VOID)
 fhfh*/
 VOID PifStartRecoveryThread(VOID)
 {
-	VOID (THREADENTRY *pFunc)(VOID) = RecoveryThread;
+    UCHAR  CONST aszRecoveryThreadName[] = "RECOVERY";
+    VOID (THREADENTRY *pFunc)(VOID) = RecoveryThread;
     BOOL            bResult;
     NCRPWR_MODE     Mode;
     LONG            lId;
@@ -326,7 +325,7 @@ VOID PifStartRecoveryThread(VOID)
                 
         if (bResult) {
             
-            memcpy(&PifPowerModeSave, &Mode, sizeof(PifPowerModeSave)); /* V1.0.04 */
+            PifPowerModeSave = Mode; /* V1.0.04 */
 
             Mode.fEnablePowerOff = 0;           /* not go to power off automatically */
             Mode.fEnableSuspendOnAcLost = 1;    /* for only AC monitor */
@@ -346,7 +345,7 @@ VOID PifStartRecoveryThread(VOID)
                     NULL);                      // ptr. to overlapped
 
             if (bResult) {
-                lId = PifBeginThread(pFunc, NULL, 512, PIF_TASK_HIGHEST, (const CHAR*)aszRecoveryThreadName);
+                lId = PifBeginThread(pFunc, NULL, 0, PIF_TASK_HIGHEST, (const CHAR*)aszRecoveryThreadName);
             } 
 			else {
 #ifdef DEBUG_PIF_OUTPUT

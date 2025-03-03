@@ -292,12 +292,7 @@ SHORT UieShellExecuteFileMonitor (TCHAR *aszPathAndName, TCHAR *aszCommandLine)
 	PointerArray[usIndexTemp][1] = &(myCommandLine[usIndexTemp][0]);
 
 	/* create total update thread */
-	PifBeginThread(pFuncTemp,                   /* Start Address */
-				   NULL,                        /* Stack Address is not used*/
-				   2000,                   /* Stack Size */
-				   PRIO_TOTALS,                 /* Priority */
-				   szUifIniStartupThread,       /* Name */
-				   PointerArray[usIndexTemp]);
+	PifBeginThread(pFuncTemp, NULL, 0, PRIO_TOTALS, szUifIniStartupThread, PointerArray[usIndexTemp]);
 	PifSleep(50);    // give up time slice to allow execution to start
 
 	return 0;

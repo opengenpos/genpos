@@ -492,6 +492,16 @@ static void SetPifThreadName( DWORD dwThreadID, const char* threadName)
 	}
 }
 
+/*
+* PifBeginThread() - start a new thread running using the specified function as the entry point.
+* 
+* PifBeginThread() is part of the Platform Indepdent library and was ported to Windows CE with the NCR 7448
+* superceded the NCR 2170 and NHPOS was modified to run under Windows CE on the NCR 7448 terminal.
+* Several of the old arguments that were needed with the operating system of the NCR 2170 were no longer
+* needed with Windows CE nor needed with Windows XP and later versions of Windows. Those unusued arguments,
+* address for a memory area for the thread's stack and the number of bytes of stack space in the memory area,
+* are now ignored and not used.
+*/
 ULONG PIFENTRY PifBeginThread(VOID (THREADENTRY *pStart)(VOID),
                                VOID *pStack, USHORT usStackSize,
                                USHORT usPriority,
@@ -648,7 +658,7 @@ VOID   PIFENTRY PifEndThread(VOID)
 **                                                                  **
 **********************************************************************
 fhfh*/
-USHORT CONST FAR * PIFENTRY PifGetProcessId(VOID)
+USHORT CONST * PIFENTRY PifGetProcessId(VOID)
 {
     return 0;
 

@@ -9,10 +9,6 @@
 * Category    : Viode Output Service, 2170 System Application
 * Program Name: VosInit.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00 by Microsoft Corp.
-* Memory Model: Medium Model
-* Options     : /c /AM /W4 /G1 /Gs /Os /Za /Zp
-* --------------------------------------------------------------------------
 * Abstract:     
 *
 * --------------------------------------------------------------------------
@@ -24,6 +20,8 @@
 ** NCR2172 **
 * Oct-07-99 : 1.00.00  : K.Iwata    : Initial (for 2172)
 *
+* OpenGenPOS
+* Mar-02-25 : 4.02.00  : R.Chambers : remove unused thread stack ausVosStack
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -66,7 +64,6 @@ USHORT       usVosConfig = 0;                         /* VOS configuration    */
 PifSemHandle usVosApiSem = PIF_SEM_INVALID_HANDLE;    /* exclusive semaphore  */
 VOSVIDEO     VosVideo;                                /* video information    */
 USHORT       usVosPage = 0;                           /* video page           */
-USHORT       ausVosStack[VOS_NUM_STACK / 2];          /* back light thread    */
 
 
 /*
@@ -84,7 +81,7 @@ USHORT       ausVosStack[VOS_NUM_STACK / 2];          /* back light thread    */
 */
 _declspec(dllexport) VOID VosInitialize(USHORT usMinutes)
 {
-    static  UCHAR   FARCONST  szName[] = "VOSBL";
+/*  static  UCHAR   FARCONST  szName[] = "VOSBL"; ### DEL (2172 for Win32) V1.0 */
 /*  static  VOID    (THREADENTRY *pFunc)(VOID) = VosThread; ### DEL (2172 for Win32) V1.0 */
 
     if (usVosConfig & VOS_CONFIG_INIT) {    /* already initialization      */
@@ -112,8 +109,7 @@ _declspec(dllexport) VOID VosInitialize(USHORT usMinutes)
                    szName,                  /* name                        */
                    NULL);
 #endif /* __EVS_DELETE */
-    usVosConfig |= (VOS_CONFIG_INIT |       /* initialization completed    */
-                    VOS_CONFIG_LCD);        /* LCD provide                 */
+    usVosConfig |= (VOS_CONFIG_INIT | VOS_CONFIG_LCD);        /* indicate configuration completed and LCD provided */
 }
 
 

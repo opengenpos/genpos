@@ -413,7 +413,7 @@ VOID  UieQueueStanzaInit ()
 
 	sUieQueueStanzaQueue = PifCreateQueue(10);
 
-    PifBeginThread(UiePlayStanzaThread, 0, 8000, PRIO_SERVER_T, szUieQueueStanzaName);
+    PifBeginThread(UiePlayStanzaThread, 0, 0, PRIO_SERVER_T, szUieQueueStanzaName);
 }
 
 

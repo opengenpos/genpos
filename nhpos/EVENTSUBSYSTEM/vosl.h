@@ -53,13 +53,12 @@
 #define VOS_MEM2_MARK       0x2b            /* used memory, mark is '+' */
 #define VOS_MEM2_SPECIAL    0               /* use special function     */
 
-#define VOS_NUM_STACK       512             /* stack size of thread     */
 #define VOS_SLEEP_THREAD    5000            /* 5 msec                   */
 
 /* --- VOS configuration --- */
 
-#define VOS_CONFIG_INIT     0x0001          /* initialization           */
-#define VOS_CONFIG_LCD      0x0002          /* LCD provide              */
+#define VOS_CONFIG_INIT     0x0001          /* initialization completed    */
+#define VOS_CONFIG_LCD      0x0002          /* LCD provided. possible a holdover from NCR 2170 with no LCD  */
 
 /* --- window state flag --- */
 
