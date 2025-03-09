@@ -242,21 +242,9 @@ PLUTOTAL_EXTERN_C	__declspec( dllexport )	ULONG	PLUTTLAPI	PluTotalFirstRec(const
 }
 
 
-PLUTOTAL_EXTERN_C	__declspec( dllexport )	ULONG	PLUTTLAPI	PluTotalLastRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID){
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	return	plutotal.LastRec(hdDB,nTblID);
-}
-
-
 PLUTOTAL_EXTERN_C	__declspec( dllexport )	ULONG	PLUTTLAPI	PluTotalNextRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID){
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	return	plutotal.NextRec(hdDB,nTblID);
-}
-
-
-PLUTOTAL_EXTERN_C	__declspec( dllexport )	ULONG	PLUTTLAPI	PluTotalPrevRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID){
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	return	plutotal.PrevRec(hdDB,nTblID);
 }
 
 
@@ -476,19 +464,7 @@ PLUTOTAL_EXTERN_C	__declspec( dllexport )	ULONG	PLUTTLAPI	PluTotalFirstRec(const
 }
 
 
-PLUTOTAL_EXTERN_C	__declspec( dllexport )	ULONG	PLUTTLAPI	PluTotalLastRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID){
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	return	PLUTOTAL_SUCCESS;
-}
-
-
 PLUTOTAL_EXTERN_C	__declspec( dllexport )	ULONG	PLUTTLAPI	PluTotalNextRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID){
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	return	PLUTOTAL_SUCCESS;
-}
-
-
-PLUTOTAL_EXTERN_C	__declspec( dllexport )	ULONG	PLUTTLAPI	PluTotalPrevRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID){
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	return	PLUTOTAL_SUCCESS;
 }
