@@ -55,6 +55,7 @@
 #include <paraequ.h>
 #include <para.h>
 #include <csstbpar.h>
+#include "PluTtlD.h"
 
 
 /*
@@ -62,9 +63,6 @@
 *   Extern Declarations
 *===========================================================================
 */
-
-extern TCHAR FARCONST szTtlPluPtdCurFileName[];   /* Base Total File Name */
-extern TCHAR FARCONST szTtlPluPtdSavFileName[];   /* Base Total File Name */
 
 /*
 *===========================================================================
@@ -205,8 +203,8 @@ VOID TtlTUMRestoreTtlData(VOID)
 
 	/* delete ptd file by option, from the upgrade from previous version, 09/05/01 */
 	if(RflGetPtdFlagByType(FLEX_PLU_ADR) == 0){
-        PifDeleteFile(szTtlPluPtdCurFileName);	/* delete current ptd file on DOC */
-        PifDeleteFile(szTtlPluPtdSavFileName);	/* delete saved ptd file on DOC */
+        PifDeleteFile(PLUTOTAL_DBNM_PTD_CUR);	/* delete current ptd file on DOC */
+        PifDeleteFile(PLUTOTAL_DBNM_PTD_SAV);	/* delete saved ptd file on DOC */
 	}
 
     /* last update may canceled, create newest backup */

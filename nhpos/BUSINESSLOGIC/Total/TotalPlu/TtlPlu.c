@@ -21,6 +21,7 @@
 *    Date  : Ver.Rev. :   Name       : Description
 * 12/24/99 : 01.00.00 : K.Iwata      : 2172 Rel1.0(Saratoga) initial
 * 08/19/15 : 02.02.01 : R.Chambers   : changes to TtlPLUOptimize() to reduce sleep time, add logs.
+* 03/11/25 : 02.04.00 : R.Chambers   : moved TtlPLUOpenRecNoSem() to top of file and made static
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -64,9 +65,6 @@ PLUTOTAL_FILE_HANDLE    g_hdDBFile;         /* database file handle     */
 SHORT   g_nCurrentTblId = 0;
 USHORT  g_nGetRecCount = 0;
 
-TCHAR FARCONST szTtlPluPtdCurFileName[] = PLUTOTAL_DBNM_PTD_CUR;   /* Base Total File Name */
-TCHAR FARCONST szTtlPluPtdSavFileName[] = PLUTOTAL_DBNM_PTD_SAV;   /* Base Total File Name */
-
 VOID    _InitBackUp(VOID);
 
 VOID    _SetPluTotalStatusVal(ULONG ulResetSts,DATE_TIME *dtFrom,DATE_TIME *dtTo,LONG lAllTotal,LONG lAmount,PLUTOTAL_STATUS *ppsRec);
@@ -84,6 +82,85 @@ VOID    _PLUTOTAL_DATE2DATE_TIME(const PLUTOTAL_DATE pdDate,DATE_TIME *pDt);
 #if defined(LOGGING)
 SHORT   _CreatePluTotal( SHORT nTblID, ULONG ulPLUNum );
 #endif
+
+static PLUTOTAL_STATUS g_psStatus;
+
+static SHORT   TtlPLUOpenRecNoSem(const SHORT nTblID, const ULONG ulSearchOpt, ULONG* pulRecNum) {
+    SHORT   sRet = TTL_SUCCESS;
+
+    if (g_hdDB == PLUTOTAL_HANDLE_NULL) {
+        NHPOS_ASSERT_TEXT(0, "TtlPLUOpenRecNoSem(): TTL_FAIL  PLUTOTAL_HANDLE_NULL");
+        return  TTL_FAIL;
+    }
+
+    if (g_nCurrentTblId) {
+        /* if already opened by another thread */
+        NHPOS_ASSERT_TEXT(0, "TtlPLUOpenRecNoSem(): TTL_FAIL  g_nCurrentTblId nonZero. Already Opened.");
+        return  TTL_FAIL;
+    }
+
+    do {
+        ULONG   ulSts;
+
+        ulSts = PluTotalGetStsInfo(g_hdDB, nTblID, &g_psStatus);
+        if (ulSts != PLUTOTAL_SUCCESS) {
+            {
+                char xBuff[128];
+                sprintf(xBuff, "TtlPLUOpenRecNoSem(): TTL_FAIL PluTotalGetStsInfo - ulSts = %d", ulSts);
+                NHPOS_NONASSERT_TEXT(xBuff);
+            }
+            sRet = TTL_FAIL;
+            break;
+        }
+
+        /* open Recordset */
+        ulSts = PluTotalSelectRec(g_hdDB, nTblID, ulSearchOpt);
+        if (ulSts != PLUTOTAL_SUCCESS) {
+            {
+                char xBuff[128];
+                sprintf(xBuff, "TtlPLUOpenRecNoSem(): TTL_FAIL PluTotalSelectRec - ulSts = %d", ulSts);
+                NHPOS_NONASSERT_TEXT(xBuff);
+            }
+            sRet = TTL_FAIL;
+            break;
+        }
+
+        /* record count */
+        ulSts = PluTotalGetNumRec(g_hdDB, nTblID, pulRecNum);
+        if (ulSts != PLUTOTAL_SUCCESS) {
+            PluTotalReleaseRec(g_hdDB, nTblID);
+            {
+                char xBuff[128];
+                sprintf(xBuff, "TtlPLUOpenRecNoSem(): TTL_FAIL PluTotalGetNumRec - ulSts = %d", ulSts);
+                NHPOS_NONASSERT_TEXT(xBuff);
+            }
+            sRet = TTL_FAIL;
+            break;
+        }
+
+        if (*pulRecNum > 0) {
+            /* move to the first record */
+            ulSts = PluTotalFirstRec(g_hdDB, nTblID);
+            if (ulSts != PLUTOTAL_SUCCESS) {
+                PluTotalReleaseRec(g_hdDB, nTblID);
+                {
+                    char xBuff[128];
+                    sprintf(xBuff, "TtlPLUOpenRecNoSem(): TTL_FAIL PluTotalFirstRec - ulSts = %d", ulSts);
+                    NHPOS_NONASSERT_TEXT(xBuff);
+                }
+                sRet = TTL_FAIL;
+                break;
+            }
+        }
+
+        /* save current table ID */
+        g_nCurrentTblId = nTblID;
+        sRet = TTL_SUCCESS;
+    } while (0);
+
+    return  sRet;
+}
+
 
 /*
 ===========================================================================
@@ -1147,9 +1224,9 @@ SHORT   TtlTTotalCheckPLU(TTLPLU *pTotal, VOID *pTmpBuff){
 
 
 
-PLUTOTAL_STATUS g_psStatus;
 SHORT   TtlPLUOpenRec(const SHORT nTblID,const ULONG ulSearchOpt,ULONG *pulRecNum){
     ULONG   ulSts;
+    SHORT   sRet = TTL_SUCCESS;
 
     PifRequestSem(usTtlSemDBBackup);      /* Request Semaphore for Total database File backup */
 
@@ -1168,6 +1245,9 @@ SHORT   TtlPLUOpenRec(const SHORT nTblID,const ULONG ulSearchOpt,ULONG *pulRecNu
 	
     PifRequestSem(usTtlSemRW);
 
+#if 0
+    sRet = TtlPLUOpenRecNoSem(nTblID, ulSearchOpt, pulRecNum);
+#else
     ulSts = PluTotalGetStsInfo(g_hdDB,nTblID,&g_psStatus);
     if(ulSts != PLUTOTAL_SUCCESS){
         PifReleaseSem(usTtlSemRW);
@@ -1225,86 +1305,12 @@ SHORT   TtlPLUOpenRec(const SHORT nTblID,const ULONG ulSearchOpt,ULONG *pulRecNu
 
     /* save current table ID */
     g_nCurrentTblId = nTblID;
+#endif
 
     PifReleaseSem(usTtlSemRW);
    	PifReleaseSem(usTtlSemDBBackup);      /* Release Semaphore for Total database File backup */
 
-    return  TTL_SUCCESS;
-}
-
-SHORT   TtlPLUOpenRecNoSem(const SHORT nTblID, const ULONG ulSearchOpt, ULONG *pulRecNum) {
-	ULONG   ulSts;
-	SHORT   sRet = TTL_SUCCESS;
-
-	if (g_hdDB == PLUTOTAL_HANDLE_NULL) {
-		NHPOS_ASSERT_TEXT(0, "TtlPLUOpenRecNoSem(): TTL_FAIL  PLUTOTAL_HANDLE_NULL");
-		return  TTL_FAIL;
-	}
-
-	if (g_nCurrentTblId) {
-		/* if already opened by another thread */
-		NHPOS_ASSERT_TEXT(0, "TtlPLUOpenRecNoSem(): TTL_FAIL  g_nCurrentTblId nonZero. Already Opened.");
-		return  TTL_FAIL;
-	}
-
-	do {
-		ulSts = PluTotalGetStsInfo(g_hdDB, nTblID, &g_psStatus);
-		if (ulSts != PLUTOTAL_SUCCESS) {
-			{
-				char xBuff[128];
-				sprintf(xBuff, "TtlPLUOpenRecNoSem(): TTL_FAIL PluTotalGetStsInfo - ulSts = %d", ulSts);
-				NHPOS_NONASSERT_TEXT(xBuff);
-			}
-			sRet = TTL_FAIL;
-			break;
-		}
-
-		/* open Recordset */
-		ulSts = PluTotalSelectRec(g_hdDB, nTblID, ulSearchOpt);
-		if (ulSts != PLUTOTAL_SUCCESS) {
-			{
-				char xBuff[128];
-				sprintf(xBuff, "TtlPLUOpenRecNoSem(): TTL_FAIL PluTotalSelectRec - ulSts = %d", ulSts);
-				NHPOS_NONASSERT_TEXT(xBuff);
-			}
-			sRet = TTL_FAIL;
-			break;
-		}
-
-		/* record count */
-		ulSts = PluTotalGetNumRec(g_hdDB, nTblID, pulRecNum);
-		if (ulSts != PLUTOTAL_SUCCESS) {
-			PluTotalReleaseRec(g_hdDB, nTblID);
-			{
-				char xBuff[128];
-				sprintf(xBuff, "TtlPLUOpenRecNoSem(): TTL_FAIL PluTotalGetNumRec - ulSts = %d", ulSts);
-				NHPOS_NONASSERT_TEXT(xBuff);
-			}
-			sRet = TTL_FAIL;
-			break;
-		}
-
-		if (*pulRecNum > 0) {
-			/* move to the first record */
-			ulSts = PluTotalFirstRec(g_hdDB, nTblID);
-			if (ulSts != PLUTOTAL_SUCCESS) {
-				PluTotalReleaseRec(g_hdDB, nTblID);
-				{
-					char xBuff[128];
-					sprintf(xBuff, "TtlPLUOpenRecNoSem(): TTL_FAIL PluTotalFirstRec - ulSts = %d", ulSts);
-					NHPOS_NONASSERT_TEXT(xBuff);
-				}
-				sRet = TTL_FAIL;
-				break;
-			}
-		}
-
-		/* save current table ID */
-		g_nCurrentTblId = nTblID;
-		sRet = TTL_SUCCESS;
-	} while (0);
-
-	return  sRet;
+    return  sRet;
 }
 
 
