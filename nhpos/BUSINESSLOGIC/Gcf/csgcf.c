@@ -797,7 +797,7 @@ SHORT GusReadLock  (GCNUM  usGCNumber,
 
 					Gcf_DriveIndexDeleteSpl (&Gcf_FileHed, i, ulDriveIndexSerHitPoint);
 					if (sMaster == STUB_SUCCESS) {
-						NbWriteMessage(1, (UCHAR)(NB_REQPAYMENT1 << i));
+						NbWriteMessage(NB_MESOFFSET1, (UCHAR)(NB_REQPAYMENT1 << i));
 					}
 				}
 			}
@@ -810,11 +810,11 @@ SHORT GusReadLock  (GCNUM  usGCNumber,
 		if (sMaster == STUB_SUCCESS) {
 			switch (usType) {
 			case GCF_PAYMENT_QUEUE1:
-				NbWriteMessage(1, NB_REQPAYMENT1);
+				NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT1);
 				break;
 
 			case GCF_PAYMENT_QUEUE2:
-				NbWriteMessage(1, NB_REQPAYMENT2);
+				NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT2);
 				break;
 			}
 		}
@@ -1525,11 +1525,11 @@ SHORT   GusResetReadFlag(GCNUM usGCNumber, USHORT usType)
 		if (sMaster == STUB_SUCCESS) {
 			switch (usType) {
 			case GCF_APPEND_QUEUE1:
-				NbWriteMessage(1, NB_REQPAYMENT1 | NB_REQDELIVERY1);
+				NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT1 | NB_REQDELIVERY1);
 				break;
 
 			case GCF_APPEND_QUEUE2:
-				NbWriteMessage(1, NB_REQPAYMENT2 | NB_REQDELIVERY2);
+				NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT2 | NB_REQDELIVERY2);
 				break;
 			}
 		}
@@ -2013,41 +2013,41 @@ SHORT GusStoreFileFH(USHORT  usType,
         case GCF_DRIVE_PUSH_THROUGH_STORE:
 			// drop through as transaction prepended in function Gcf_StoreDataFH ()
         case GCF_DRIVE_THROUGH_STORE:
-            NbWriteMessage(1, NB_REQPAYMENT1);
+            NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT1);
             break;
 
         case GCF_DRIVE_PUSH_DELIVERY1:
 			// drop through as transaction prepended in function Gcf_StoreDataFH ()
         case GCF_DRIVE_DELIVERY1:
-            NbWriteMessage(1, NB_REQPAYMENT1 | NB_REQDELIVERY1);
+            NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT1 | NB_REQDELIVERY1);
             break;
 
         case GCF_DRIVE_PUSH_THROUGH2:
 			// drop through as transaction prepended in function Gcf_StoreDataFH ()
         case GCF_DRIVE_THROUGH2:
-            NbWriteMessage(1, NB_REQPAYMENT2);
+            NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT2);
             break;
 
         case GCF_DRIVE_PUSH_DELIVERY2:
 			// drop through as transaction prepended in function Gcf_StoreDataFH ()
         case GCF_DRIVE_DELIVERY2:
-            NbWriteMessage(1, NB_REQPAYMENT2 | NB_REQDELIVERY2);
+            NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT2 | NB_REQDELIVERY2);
             break;
 
         case GCF_DRIVE_TH_TENDER1:
-            NbWriteMessage(1, NB_REQORDER1);
+            NbWriteMessage(NB_MESOFFSET1, NB_REQORDER1);
             break;
 
         case GCF_DRIVE_TH_TENDER2:
-            NbWriteMessage(1, NB_REQORDER2);
+            NbWriteMessage(NB_MESOFFSET1, NB_REQORDER2);
             break;
 
         case GCF_DRIVE_DE_TENDER1:
-            NbWriteMessage(1, NB_REQDELIVERY1 | NB_REQORDER1);
+            NbWriteMessage(NB_MESOFFSET1, NB_REQDELIVERY1 | NB_REQORDER1);
             break;
 
         case GCF_DRIVE_DE_TENDER2:
-            NbWriteMessage(1, NB_REQDELIVERY2 | NB_REQORDER2);
+            NbWriteMessage(NB_MESOFFSET1, NB_REQDELIVERY2 | NB_REQORDER2);
             break;
 
         }
@@ -2226,7 +2226,7 @@ SHORT GusReadLockFH(GCNUM  usGCNumber,
 				if (Gcf_DriveIndexSer(Gcf_FileHed.usCurDrive[i], usGCNumber, &ulDriveIndexSerHitPoint, Gcf_FileHed.offulDrvNOFile[i]) == GCF_SUCCESS) {
 					Gcf_DriveIndexDeleteSpl (&Gcf_FileHed, i, ulDriveIndexSerHitPoint);
 					if (sMaster == STUB_SUCCESS) {
-						NbWriteMessage(1, (UCHAR)(NB_REQPAYMENT1 << i));
+						NbWriteMessage(NB_MESOFFSET1, (UCHAR)(NB_REQPAYMENT1 << i));
 					}
 				}
 			}
@@ -2239,11 +2239,11 @@ SHORT GusReadLockFH(GCNUM  usGCNumber,
 		if (sMaster == STUB_SUCCESS) {
 			switch (usType) {
 			case GCF_PAYMENT_QUEUE1:
-				NbWriteMessage(1, NB_REQPAYMENT1);
+				NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT1);
 				break;
 
 			case GCF_PAYMENT_QUEUE2:
-				NbWriteMessage(1, NB_REQPAYMENT2);
+				NbWriteMessage(NB_MESOFFSET1, NB_REQPAYMENT2);
 				break;
 			}
 		}
