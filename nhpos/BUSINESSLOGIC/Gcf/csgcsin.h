@@ -101,7 +101,7 @@ typedef struct {                /* FILE HEADER */
    USHORT   offusFreeGC;        /* Start Free Que Block No */
    ULONG    offulDrvNOFile[GCF_MAX_QUEUE];  /* Number of bytes from file head to beginning of the DriveThrough index Table Chg R3.0 */
    ULONG    offulPayTranNO;     /* Number of bytes from file head to beginning of the Payment Transaction index Table Chg R3.0 */
-   ULONG    offulGCIndFile;     /* Number of bytes from file head to beginning of the Index Tabe File */
+   ULONG    offulGCIndFile;     /* Number of bytes from file head to beginning of the Index Table File */
    ULONG    offulGCDataFile;    /* Number of bytes from file head to beginning of the Data Table File */
 }GCF_FILEHED;
 
@@ -137,7 +137,7 @@ typedef struct {                    /* Guest Check Index entry */
 typedef struct {                    /* First Data Block Header */
     USHORT  offusNextBKNO;          /* Next Block No */
     USHORT  offusSelfBKNO;          /* Self Block No */
-    USHORT  usDataLen;              /* total Guest Check data length in bytes */
+    ULONG   ulDataLenGC;            /* total Guest Check data length in bytes */
     /* Guest Check data contained in the first block starts here */
 }GCF_DATAHEAD;
 
@@ -147,15 +147,17 @@ typedef struct {                    /* Second Data Block Header */
     /* Guest Check data contained in second and succeeding blocks starts here */
 }GCF_DATAHEAD_SEC;
 
+/* Guest Check backup message header describing Guest Check data that follows */
 typedef struct {                    /* Back up header */
-    USHORT  usSeqNO;                /* Sequence number */
-    USHORT  usType;                 /* Data type */
-    GCNUM  usGCNumber;             /* GCN       */
+    USHORT  usSeqNO;                /* Sequence number of backup message */
+    USHORT  fbContFlag;             /* Data type from GCF_INDEX of Guest Check */
+    GCNUM  usGCNumber;             /* GCN from GCF_INDEX of Guest Check */
+    GCF_INDEXDATE  GcfCreateTime;   /* Guest Check create time stamp from GCF_INDEX of Guest Check */
 }GCF_BACKUP;
 
-
+/* Guest Check backup message second header containing the length of the Guest Check data that follows */
 typedef struct {                    /* Back up Data header */
-    USHORT  usDataLen;              /* GC Data length */
+    ULONG   ulDataLen;              /* Guest Check Data length only. */
     UCHAR   auchData[1];            /* GC data  */
 }GCF_BAKDATA;
 
@@ -200,7 +202,7 @@ typedef struct {
 SHORT  Gcf_memmove (GCNUM *gcDest, GCNUM *gcSource, int nItems);
 USHORT Gcf_WalkGcfDataFile (GCF_FILEHED *pGcf_FileHed, GCF_TALLY_INDEX *pTallyArray, USHORT nArrayItems);
 SHORT  Gcf_ReadFile(ULONG offulSeekPos, VOID *pReadBuffer, ULONG ulReadSize, UCHAR uchMode); 
-SHORT  Gcf_WriteFile(ULONG offulSeekPos, VOID *pWriteBuffer, USHORT usWriteSize);
+SHORT  Gcf_WriteFile(ULONG offulSeekPos, VOID *pWriteBuffer, ULONG ulWriteSize);
 SHORT  Gcf_Index(GCF_FILEHED *pgcf_filehed, UCHAR uchMode, GCF_INDEXFILE *pGcf_Index, ULONG *pHit_Point);
 SHORT  Gcf_IndexDel(GCF_FILEHED   *pGcfFileHed, GCF_INDEXFILE *pGcf_IndexFile);
 SHORT  Gcf_CompIndex(GCF_INDEXFILE *usKey, GCF_INDEXFILE *pGcf_IndexFile);
@@ -255,7 +257,7 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,  /* Change R3.0 */
                         SHORT       hsFileHandle,
                         ULONG       ulStartPoint,
                         ULONG       ulSize,
-                        USHORT      usType);
+                        USHORT      usType, GCF_INDEXDATE  *pCreateTime);
 
 SHORT   Gcf_DataBlockCopyFH(GCF_FILEHED *pGcf_FileHed, 
                             GCNUM      usStartBlockNO, 

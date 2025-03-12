@@ -301,11 +301,11 @@ SHORT   Gcf_ReadFile(ULONG      offulSeekPos,
 *==========================================================================
 **    Synopsis:   VOID Gcf_WriteFile(ULONG  offulSeekPos, 
 *                                    VOID   *pWriteBuffer, 
-*                                    USHORT usWriteSize)
+*                                    ULONG  ulWriteSize)
 *
 *       Input:    ULONG     offulSeekPos   Seek value from file head for writing.
 *                 VOID      *pWriteBuffer  Write buffer
-*                 USHORT    usWriteSize    Write buffer size 
+*                 ULONG     ulWriteSize    Write buffer size 
 *                 
 *      Output:    Nothing 
 *       InOut:    Nothing
@@ -321,7 +321,7 @@ SHORT   Gcf_ReadFile(ULONG      offulSeekPos,
 *               along with the number of bytes is specified.
 *==========================================================================
 */
-SHORT Gcf_WriteFile(ULONG offulSeekPos, VOID *pWriteBuffer, USHORT usWriteSize)
+SHORT Gcf_WriteFile(ULONG offulSeekPos, VOID *pWriteBuffer, ULONG ulWriteSize)
 {
 	int     iStatus = 0;
     ULONG   ulActualPosition;           /* for seek */
@@ -334,10 +334,10 @@ SHORT Gcf_WriteFile(ULONG offulSeekPos, VOID *pWriteBuffer, USHORT usWriteSize)
         PifAbort(MODULE_GCF, FAULT_ERROR_FILE_SEEK);
 		return(GCF_FATAL);
     }
-    if (0 == usWriteSize || pWriteBuffer == NULL) {      /* PifWriteFile() is occurred system-error by read-size = 0 */
+    if (0 == ulWriteSize || pWriteBuffer == NULL) {      /* PifWriteFile() is occurred system-error by read-size = 0 */
         return(GCF_SUCCESS);
     }
-    PifWriteFile(hsGcfFile, pWriteBuffer, usWriteSize);
+    PifWriteFile(hsGcfFile, pWriteBuffer, ulWriteSize);
     return(GCF_SUCCESS);
 }
 
@@ -1194,11 +1194,7 @@ SHORT GusIndRead(GCNUM     usGCNumber,
 		Gcf_IndexFile.usGCNO = usGCNumber;
 		sStatus = Gcf_Index(&Gcf_FileHed, GCF_SEARCH_ONLY, &Gcf_IndexFile, &offulIndexPoint);
 		if (sStatus == GCF_SUCCESS) {
-			sStatus = Gcf_DataBlockCopy(&Gcf_FileHed, 
-								  Gcf_IndexFile.offusBlockNo, 
-								  puchRcvBuffer, 
-								  usSize, 
-								  &usCopyBlock);
+			sStatus = Gcf_DataBlockCopy(&Gcf_FileHed, Gcf_IndexFile.offusBlockNo, puchRcvBuffer, usSize, &usCopyBlock);
 		}
 		Gcf_CloseFileReleaseSem();
     }
@@ -1984,7 +1980,7 @@ SHORT GusStoreFileFH(USHORT  usType,
 	}
 #endif
 
-    sStatus = Gcf_StoreDataFH(&Gcf_FileHed, fbStatus, usGCNumber, hsFileHandle, ulStartPoint, ulSize, usType);
+    sStatus = Gcf_StoreDataFH(&Gcf_FileHed, fbStatus, usGCNumber, hsFileHandle, ulStartPoint, ulSize, usType, NULL);
     if ((sStatus == GCF_SUCCESS) && (fbStatus & GCF_PAYMENT_TRAN_MASK)) { 
 		  /* 
 			update payment transaction queue if this is a drive thru system.
@@ -2396,19 +2392,17 @@ SHORT GusIndReadFH(GCNUM     usGCNumber,
 *                 GCF_NOT_LOCKED
 *                 GCF_FULL
 **  Description:
-*               Request Back up. (File Handle I/F Version)             
+*               Request Back up. (File Handle I/F Version). This function sends
+*               a request for a backup and then processes the response generated
+*               by the function GusResBackUpFH().
 *==========================================================================
 */
-SHORT   GusReqBackUpFH( SHORT hsFileHandle )
+SHORT   GusReqBackUpFH(PifFileHandle hsFileHandle )
 {
-    GCF_FILEHED     Gcf_FileHed, Gcf_FileHed_AsMT;
-    GCF_BACKUP      Gcf_ReqBak;
-    GCF_BACKUP      Gcf_Backup;
-    GCF_BAKDATA     Gcf_BKData;
-    USHORT          usRcvLen, usInit;
-    SHORT           sStatusLen,  sStatus, i;
-    USHORT          usNoBlock;
-	GCNUM           auchWorkBuffer[GCF_MAX_DRIVE_NUMBER] = {0};   
+    GCF_BACKUP      Gcf_ReqBakState = { 0 };    // backup transfer state data
+    GCF_FILEHED     Gcf_FileHed = { 0 };   // Guest Check file header for our Guest Check data file
+    GCNUM           usCurGCN_LastSeqno = 0;
+    SHORT           sStatus;
 
 	if (hsFileHandle < 0) {
 		PifLog (MODULE_GCF, LOG_ERROR_GCF_BACKUPFH_FH_HANDLE_1);
@@ -2427,6 +2421,7 @@ SHORT   GusReqBackUpFH( SHORT hsFileHandle )
     fsGcfDurAllLock = 0x0000;           /* clear all lock memory */
 
     if (Gcf_FileHed.usCurGCN) {
+        USHORT     usNoBlock;
 
         /* Creat Free Que */
         Gcf_GetNumberofBlockTypical(Gcf_FileHed.usSystemtype, &usNoBlock);
@@ -2441,49 +2436,65 @@ SHORT   GusReqBackUpFH( SHORT hsFileHandle )
         Gcf_FileHed.usCurPayGC = 0;              
     }
 
-    /* Request File Header from as master */
-    memset(&Gcf_ReqBak, 0, sizeof(GCF_BACKUP));
-
     for (;;) {
+        GCF_BACKUP      Gcf_Backup;     // backup management data we have received in the current data transfer
+        GCF_BAKDATA     Gcf_BKData;     // backup management data we have received in the current data transfer
+        USHORT          usRcvLen;    // size of the total amount of data we have received.
+        SHORT           sStatusLen;
 
         Gcf_ReadFileFH(0, &usRcvLen, sizeof(USHORT), hsFileHandle);
 
-        if  ((sStatusLen = SstReqBackUpFH(CLI_FCBAKGCF, (UCHAR *)&Gcf_ReqBak, sizeof(GCF_BACKUP), hsFileHandle, &usRcvLen)) < 0 ) {
+        // Request the next piece of the Guest Check file we are back up.
+        // Gcf_ReqBakState is used for the state data as the backup progresses.
+        if  ((sStatusLen = SstReqBackUpFH(CLI_FCBAKGCF, &Gcf_ReqBakState, sizeof(GCF_BACKUP), hsFileHandle, &usRcvLen)) < 0 ) {
 			NHPOS_NONASSERT_NOTE("==STATE", "==STATE: End GusReqBackUpFH().");
             Gcf_CloseFileReleaseSem();
             return(sStatusLen);
         }
 
-        Gcf_ReadFileFH(SERTMPFILE_DATASTART, &Gcf_Backup, sizeof(GCF_BACKUP), hsFileHandle);
+        Gcf_ReadFileFH(SERTMPFILE_DATASTART, &Gcf_Backup, sizeof(Gcf_Backup), hsFileHandle);
 
-        Gcf_ReadFileFH(SERTMPFILE_DATASTART + sizeof(GCF_BACKUP), &Gcf_BKData, sizeof(GCF_BAKDATA), hsFileHandle);
+        Gcf_ReadFileFH(SERTMPFILE_DATASTART + sizeof(GCF_BACKUP), &Gcf_BKData, sizeof(Gcf_BKData), hsFileHandle);
 
-        if ( Gcf_Backup.usSeqNO != Gcf_ReqBak.usSeqNO )  {
+        if ( Gcf_Backup.usSeqNO != Gcf_ReqBakState.usSeqNO )  {
             sStatus = GCF_BACKUP_ERROR;
             break;
         }
 
         if ( usRcvLen == sizeof(GCF_BACKUP) ) {
-            usInit = 0;
-            Gcf_WriteFileFH(SERTMPFILE_DATASTART + sizeof(GCF_BACKUP), &usInit, sizeof(USHORT), hsFileHandle); 
-            Gcf_BKData.usDataLen = 0;
-        }  else if ( usRcvLen - sizeof(GCF_BACKUP) - 2 != Gcf_BKData.usDataLen) {
+            Gcf_BKData.ulDataLen = 0;
+            Gcf_WriteFileFH(SERTMPFILE_DATASTART + sizeof(GCF_BACKUP), &Gcf_BKData, sizeof(GCF_BAKDATA), hsFileHandle);
+        }  else if ( usRcvLen - (sizeof(GCF_BACKUP) + sizeof(GCF_BAKDATA)) != Gcf_BKData.ulDataLen) {
             sStatus = GCF_BACKUP_ERROR;
             break;
         }
 
-        if (0 == Gcf_ReqBak.usSeqNO) {
-            Gcf_ReadFileFH(SERTMPFILE_DATASTART + sizeof(GCF_BACKUP) + sizeof(Gcf_BKData.usDataLen), &Gcf_FileHed_AsMT, sizeof(GCF_FILEHED), hsFileHandle);
+        if (0 == Gcf_ReqBakState.usSeqNO) {
+            GCF_FILEHED     Gcf_FileHed_AsMT = { 0 };  // Guest Check file header for their Guest Check data file
 
+            // if this is the first message it contains Guest Check file management data.
+            Gcf_ReadFileFH(SERTMPFILE_DATASTART + sizeof(GCF_BACKUP) + sizeof(GCF_BAKDATA), &Gcf_FileHed_AsMT, sizeof(GCF_FILEHED), hsFileHandle);
+
+            // basic checks that we are just backing up Guest Check data without making any
+            // changes to the Guest Check file structure such as the max number of Guest Checks
+            // or adding/removing drive thru queues.
             if (Gcf_FileHed.usMaxGCN != Gcf_FileHed_AsMT.usMaxGCN) {
                 sStatus = GCF_BACKUP_ERROR;
+                NHPOS_ASSERT(Gcf_FileHed.usMaxGCN == Gcf_FileHed_AsMT.usMaxGCN);
                 break;
             }
             if (Gcf_FileHed.usSystemtype != Gcf_FileHed_AsMT.usSystemtype) {
                 sStatus = GCF_BACKUP_ERROR;
+                NHPOS_ASSERT(Gcf_FileHed.usSystemtype == Gcf_FileHed_AsMT.usSystemtype);
                 break;
             }
 
+            // copy over the existing Guest Check File header with the data from
+            // the source terminal and update our file with this data.
+            // notice that we do not set Gcf_FileHed.usCurGCN since it will
+            // be incremented as we insert guest checks. however we need to know
+            // how many guest checks will be transmited from the source.
+            usCurGCN_LastSeqno = Gcf_FileHed_AsMT.usCurGCN;         // Number of Guest Checks to be transmitted.
             Gcf_FileHed.usStartGCN = Gcf_FileHed_AsMT.usStartGCN;
             Gcf_FileHed.usCurDrive[0] = Gcf_FileHed_AsMT.usCurDrive[0];
             Gcf_FileHed.usCurDrive[1] = Gcf_FileHed_AsMT.usCurDrive[1];
@@ -2492,46 +2503,58 @@ SHORT   GusReqBackUpFH( SHORT hsFileHandle )
             Gcf_FileHed.usCurPayGC = Gcf_FileHed_AsMT.usCurPayGC;
             Gcf_WriteFile(GCF_FILE_HEAD_POSITION, &Gcf_FileHed, sizeof(GCF_FILEHED));
 
-            if (Gcf_BKData.usDataLen == (sizeof(GCF_FILEHED) + Gcf_FileHed.usMaxGCN * (GCF_MAX_QUEUE+1))) {
+            if (FLEX_STORE_RECALL == Gcf_FileHed.usSystemtype) {
+                // if there is Store Recall drive thru queue data in this first message then lets insert
+                // this data into the Guest Check file.
+	            GCNUM   auchWorkBuffer[GCF_MAX_DRIVE_NUMBER] = {0};   
 				USHORT  usNoBytes = (USHORT)(Gcf_FileHed.usMaxGCN * sizeof(GCNUM));
-				ULONG   ulBaseOffset = SERTMPFILE_DATASTART + sizeof(GCF_BACKUP) + sizeof(Gcf_BKData.usDataLen) + sizeof(GCF_FILEHED);
+				ULONG   ulBaseOffset = SERTMPFILE_DATASTART + sizeof(GCF_BACKUP) + sizeof(GCF_BAKDATA) + sizeof(GCF_FILEHED);
 
-                for (i = 0; i < GCF_MAX_QUEUE; i++) {
-                    Gcf_ReadFileFH(ulBaseOffset + (Gcf_FileHed.usMaxGCN * i), auchWorkBuffer, usNoBytes, hsFileHandle);
+                for (int i = 0; i < GCF_MAX_QUEUE; i++) {
+                    Gcf_ReadFileFH(ulBaseOffset + (Gcf_FileHed.usMaxGCN * sizeof(GCNUM) * i), auchWorkBuffer, usNoBytes, hsFileHandle);
 
                     Gcf_WriteFile(Gcf_FileHed.offulDrvNOFile[i], auchWorkBuffer, usNoBytes);
                 }
-                Gcf_ReadFileFH(ulBaseOffset + (Gcf_FileHed.usMaxGCN * GCF_MAX_QUEUE), auchWorkBuffer, usNoBytes, hsFileHandle);
+                Gcf_ReadFileFH(ulBaseOffset + (Gcf_FileHed.usMaxGCN * sizeof(GCNUM) * GCF_MAX_QUEUE), auchWorkBuffer, usNoBytes, hsFileHandle);
 
                 Gcf_WriteFile(Gcf_FileHed.offulPayTranNO, auchWorkBuffer, usNoBytes);
             }
 
             if (0 == Gcf_FileHed_AsMT.usCurGCN) {
-				NHPOS_NONASSERT_NOTE("==STATE", "==STATE: End GusReqBackUpFH().");
                 Gcf_CloseFileReleaseSem();
+				NHPOS_NONASSERT_NOTE("==STATE", "==STATE: End GusReqBackUpFH().");
                 return(GCF_SUCCESS);
             }
-        } else {
-            Gcf_Backup.usType |= GCF_BACKUP_STORE_FILE; /* Set backup copy flag */
-            sStatus = Gcf_StoreDataFH(&Gcf_FileHed, Gcf_Backup.usType, Gcf_Backup.usGCNumber, hsFileHandle,
-                                      SERTMPFILE_DATASTART + sizeof(GCF_BACKUP) + sizeof(Gcf_BKData.usDataLen), Gcf_BKData.usDataLen, GCF_COUNTER_TYPE); 
+        } else if (Gcf_Backup.usSeqNO <= usCurGCN_LastSeqno) {
+            // Gcf_ReqBak.usSeqNO > 0 
+            // rest of the messages will contain the individual Guest Check data that is
+            // being backed up. we will use the standard Guest Check file library to insert
+            // this Guest Check data as a new Guest Check.
+            Gcf_Backup.fbContFlag |= GCF_BACKUP_STORE_FILE; /* Set backup copy flag */
+            sStatus = Gcf_StoreDataFH(&Gcf_FileHed, Gcf_Backup.fbContFlag, Gcf_Backup.usGCNumber, hsFileHandle,
+                                      SERTMPFILE_DATASTART + sizeof(GCF_BACKUP) + sizeof(GCF_BAKDATA), Gcf_BKData.ulDataLen, GCF_COUNTER_TYPE, &Gcf_Backup.GcfCreateTime);
             if ( 0 > sStatus ) {
-                break;
+                NHPOS_ASSERT(0 <= sStatus);
+                break;   // error so break out of this Guest Check transfer loop
             }
         }
 
-        Gcf_ReqBak.usSeqNO++ ;
-        if ( Gcf_ReqBak.usSeqNO > Gcf_FileHed_AsMT.usCurGCN ) {
+        // increment the sequence number in the file transfer state data and
+        // see if we have reached the last Guest Check. if so we break from the
+        // loop otherwise we loop back to fetch the next piece of file data.
+        Gcf_ReqBakState.usSeqNO++ ;
+        if (Gcf_ReqBakState.usSeqNO > usCurGCN_LastSeqno) {
+            // we have reached the last Guest Check so lets break from the loop.
             break;
         }
-    }     
+    }     // end of for (;;)
 
-    /* Write File Header */
+    /* Write File Header which has been updated by the Guest Check insertions in the loop */
     Gcf_WriteFile(GCF_FILE_HEAD_POSITION, &Gcf_FileHed, sizeof(GCF_FILEHED));
 
-	NHPOS_NONASSERT_NOTE("==STATE", "==STATE: End GusReqBackUpFH().");
-
     Gcf_CloseFileReleaseSem();
+
+	NHPOS_NONASSERT_NOTE("==STATE", "==STATE: End GusReqBackUpFH().");
     return(sStatus);
 }
 /*
@@ -2554,89 +2577,143 @@ SHORT   GusReqBackUpFH( SHORT hsFileHandle )
 *                 Abnormal End:     GCF_FATAL
 *                                   GCF_FILE_NOT_FOUND
 **  Description:
-*               RESPONSE OF BACK UP.(File Handle I/F Version)              
+*               RESPONSE OF BACK UP.(File Handle I/F Version). The function
+*               creates a response to the request for a function code .
+*               The data stream created by this function is processed by
+*               the corresponding request function GusReqBackUpFH().
 *==========================================================================
 */
 SHORT   GusResBackUpFH(UCHAR  *puchRcvData,
                        USHORT usRcvLen,
-                       SHORT  hsFileHandle,
+                       PifFileHandle  hsFileHandle,
                        ULONG  ulOffset,
-                       USHORT *pusSndLen)
+                       ULONG  *pulSndLen)
 {
-    GCF_BACKUP          *pReq_Backup = (GCF_BACKUP *)puchRcvData;
-    GCF_BACKUP          *pGcf_Backup = 0;   /* decl'd for sizeof() only */
-    GCF_BAKDATA         *pGcf_BKData = 0;   /* decl'd for sizeof() only */
-    GCF_FILEHED         Gcf_FileHed;
-    GCF_INDEXFILE       Gcf_IndexFile;
-    USHORT              usCopyBlock;
+    GCF_BACKUP          * const pReq_Backup = (GCF_BACKUP *)puchRcvData;
+    GCF_BAKDATA         BKData = { 0 };
+    GCF_BACKUP          Gcf_Backup = { 0 };
+    GCF_FILEHED         Gcf_FileHed = { 0 };
     SHORT               sStatus;
-	SHORT				i;
-	GCNUM               auchWorkBuffer[GCF_MAX_DRIVE_NUMBER] = {0};   
-    ULONG				ulBytesRead;//RPH SR# 201
+    ULONG				ulBytesRead;   //RPH SR# 201
 
 	if (hsFileHandle < 0) {
-		PifLog (MODULE_GCF, LOG_ERROR_GCF_BACKUPFH_FH_HANDLE_2);
+        PifLog(MODULE_GCF, LOG_ERROR_GCF_BACKUPFH_FH_HANDLE_2);
+        NHPOS_ASSERT(hsFileHandle >= 0);
 		return GCF_FATAL;
 	}
 
     sStatus = Gcf_ReqSemOpenFileGetHeadChkLck(&Gcf_FileHed, GCF_NOT_LOCKCHECK);
     if (sStatus != GCF_SUCCESS) {
+        NHPOS_ASSERT_TEXT(sStatus == GCF_SUCCESS, "**ERROR: GusResBackUpFH() - Gcf_ReqSemOpenFileGetHeadChkLck() failed.");
         return(sStatus);
     }
 
     if (usRcvLen != sizeof(GCF_BACKUP)) {
         Gcf_CloseFileReleaseSem();
         PifLog(MODULE_GCF, LOG_ERROR_GCF_BACKUP_SIZE_ERR01);
+        NHPOS_ASSERT_TEXT(usRcvLen == sizeof(GCF_BACKUP), "**ERROR: GusResBackUpFH() argument invalid.");
         return(GCF_FATAL);
     }
 
-    if (0 == pReq_Backup->usSeqNO) {   /* offset = 0 */
+    Gcf_Backup.usSeqNO = pReq_Backup->usSeqNO;        // indicate in the backup management data the sequence number
 
-        if (*pusSndLen < sizeof(Gcf_FileHed)) {
+    if (0 == pReq_Backup->usSeqNO) {
+        // the first part of the data is the Guest Check File management data.
+        // what this data is depends on the system type since a Store Recall System
+        // may have the Drive Thru functionality enabled which means that not only are
+        // the individual Guest Checks needed but also the Drive Thru queue data
+        // needs to be transferred as well.
+
+        if (*pulSndLen < sizeof(GCF_FILEHED)) {
+            // the minimum size is the Guest Check file header containing the file's
+            // management data.
             Gcf_CloseFileReleaseSem();
-			PifLog(MODULE_GCF, LOG_ERROR_GCF_BACKUP_SIZE_ERR02);
+            *pulSndLen = 0;    // return a zero for the length of our message.
+            PifLog(MODULE_GCF, LOG_ERROR_GCF_BACKUP_SIZE_ERR02);
+            NHPOS_ASSERT_TEXT(*pulSndLen >= sizeof(GCF_FILEHED), "**ERROR: GusResBackUpFH() argument invalid for (0 == pReq_Backup->usSeqNO).");
             return(GCF_FATAL);
         }
 
-        Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen), &Gcf_FileHed, sizeof(GCF_FILEHED), hsFileHandle);
+        *pulSndLen = 0;    // initialize the length of our message that we will return.
 
-        sStatus = 0;
+        Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP) + sizeof(GCF_BAKDATA), &Gcf_FileHed, sizeof(GCF_FILEHED), hsFileHandle);
+        BKData.ulDataLen = sizeof(GCF_FILEHED);
+
         if (FLEX_STORE_RECALL == Gcf_FileHed.usSystemtype) {
-            for (i=0; i < GCF_MAX_QUEUE; i++) {
-                Gcf_ReadFile(Gcf_FileHed.offulDrvNOFile[i], auchWorkBuffer, Gcf_FileHed.usMaxGCN * sizeof(GCNUM), GCF_SEEK_READ);
+            // if this is a Flex Recall system type then we have to provide the various drive thru
+            // queue data as well as the guest check data. so first message will contain the
+            // drive thru queue data as well as the Guest Check file header with its management data.
+	        GCNUM   auchWorkBuffer[GCF_MAX_DRIVE_NUMBER] = {0};   
+            USHORT  usQueueSize = Gcf_FileHed.usMaxGCN * sizeof(GCNUM);    // size of a drive thru queue in bytes
+            ULONG   ulQueueBaseOffset = ulOffset + sizeof(GCF_BACKUP) + sizeof(GCF_BAKDATA) + sizeof(GCF_FILEHED);
 
-                Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen)+ sizeof(GCF_FILEHED)+ (Gcf_FileHed.usMaxGCN * i),
-                                auchWorkBuffer, GCF_MAX_DRIVE_NUMBER * sizeof(GCNUM), hsFileHandle);
+            for (int i= 0; i < GCF_MAX_QUEUE; i++) {
+                Gcf_ReadFile(Gcf_FileHed.offulDrvNOFile[i], auchWorkBuffer, usQueueSize, GCF_SEEK_READ);
+
+                Gcf_WriteFileFH(ulQueueBaseOffset + (usQueueSize * i), auchWorkBuffer, usQueueSize, hsFileHandle);
             }
-            Gcf_ReadFile(Gcf_FileHed.offulPayTranNO, auchWorkBuffer, Gcf_FileHed.usMaxGCN * sizeof(GCNUM), GCF_SEEK_READ);
+            Gcf_ReadFile(Gcf_FileHed.offulPayTranNO, auchWorkBuffer, usQueueSize, GCF_SEEK_READ);
 
-            Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen)+ sizeof(GCF_FILEHED)+ (Gcf_FileHed.usMaxGCN * GCF_MAX_QUEUE),
-                            auchWorkBuffer, GCF_MAX_DRIVE_NUMBER * sizeof(GCNUM), hsFileHandle);
-            sStatus = Gcf_FileHed.usMaxGCN * (GCF_MAX_QUEUE +1);
+            Gcf_WriteFileFH(ulQueueBaseOffset + (usQueueSize * GCF_MAX_QUEUE), auchWorkBuffer, usQueueSize, hsFileHandle);
+
+            BKData.ulDataLen += usQueueSize * (GCF_MAX_QUEUE + 1);  // add all the queue lengths to total number of bytes of guest check data.
         }
 
-        sStatus += sizeof(GCF_FILEHED);
+        *pulSndLen += BKData.ulDataLen;   // update the total message length with the length of the guest check data.
 
-    } else {
+        // BKData.ulDataLen now equals sizeof(GCF_FILEHED) plus the size of the drive thru queues if they exist.
+        // drive thru queues are used with in a Store Recall system type only.
+        //
+        // the entire file length is returned in *pulSndLen and includes the Guest Check data whose length is
+        // in BKData.ulDataLen but also the backup management data in GCF_BACKUP and GCF_BAKDATA.
 
-        Gcf_ReadFile(Gcf_FileHed.offulGCIndFile + ((pReq_Backup->usSeqNO - 1) * sizeof(GCF_INDEXFILE)), &Gcf_IndexFile, sizeof(GCF_INDEXFILE), GCF_SEEK_READ);
+        Gcf_WriteFileFH(ulOffset, &Gcf_Backup, sizeof(Gcf_Backup), hsFileHandle);    // write GCF_BACKUP
+        *pulSndLen += sizeof(GCF_BACKUP);
 
-        *pusSndLen -= sizeof(GCF_BACKUP) + 2;
+        Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP), &BKData, sizeof(BKData), hsFileHandle);    // write GCF_BAKDATA
+        *pulSndLen += sizeof(GCF_BAKDATA);
+    } else if (pReq_Backup->usSeqNO <= Gcf_FileHed.usCurGCN) {
+        // pReq_Backup->usSeqNO > 0 and is less than or equal to the number of guest checks to transmit
+        // after the first message transmitted the Guest Check file management data, we now
+        // will start sending the actual guest check data, guest check by guest check.
+        // since the sequence number for the messages returning the actual guest checks begins
+        // with 1 we will just use the message sequence number to know which Guest Check Index we
+        // will process next.
+        GCF_INDEXFILE  Gcf_IndexFile = { 0 };
+        USHORT         usCopyBlock = 0;
 
-        Gcf_WriteFileFH(ulOffset + sizeof(pGcf_Backup->usSeqNO), (USHORT *)&Gcf_IndexFile.fbContFlag, sizeof(USHORT), hsFileHandle);
-        Gcf_WriteFileFH(ulOffset + sizeof(pGcf_Backup->usSeqNO) + sizeof(pGcf_Backup->usType), &Gcf_IndexFile.usGCNO, sizeof(USHORT), hsFileHandle);
+        *pulSndLen = 0;    // initialize the length of our message that we will return.
 
-        sStatus = Gcf_DataBlockCopyFH(&Gcf_FileHed, Gcf_IndexFile.offusBlockNo, hsFileHandle, (ulOffset + sizeof(GCF_BACKUP) + sizeof(pGcf_BKData->usDataLen)),
-                                      *pusSndLen, &usCopyBlock, &ulBytesRead);
+        // fetch the next Guest Check index to provide the address of the first block in the Guest Check data block chain.
+        sStatus = Gcf_ReadFile(Gcf_FileHed.offulGCIndFile + ((pReq_Backup->usSeqNO - 1) * sizeof(GCF_INDEXFILE)), &Gcf_IndexFile, sizeof(GCF_INDEXFILE), GCF_SEEK_READ);
+        NHPOS_ASSERT(sStatus == GCF_SUCCESS);
+
+        Gcf_Backup.fbContFlag = Gcf_IndexFile.fbContFlag;
+        Gcf_Backup.usGCNumber = Gcf_IndexFile.usGCNO;
+        Gcf_Backup.GcfCreateTime = Gcf_IndexFile.GcfCreateTime;
+
+        sStatus = Gcf_DataBlockCopyFH(&Gcf_FileHed, Gcf_IndexFile.offusBlockNo, hsFileHandle, (ulOffset + sizeof(GCF_BACKUP) + sizeof(GCF_BAKDATA)), *pulSndLen, &usCopyBlock, &ulBytesRead);
+        BKData.ulDataLen = 0;
+        if (sStatus >= 0) BKData.ulDataLen = ulBytesRead;
+
+        *pulSndLen += BKData.ulDataLen;
+
+        Gcf_WriteFileFH(ulOffset, &Gcf_Backup, sizeof(Gcf_Backup), hsFileHandle);
+        *pulSndLen += sizeof(GCF_BACKUP);
+
+        Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP), &BKData, sizeof(BKData), hsFileHandle);
+        *pulSndLen +=  sizeof(GCF_BAKDATA);
     }
+    else {
+        BKData.ulDataLen = 0;
 
-    *pusSndLen = sizeof(GCF_BACKUP);
+        *pulSndLen = 0;
 
-    Gcf_WriteFileFH(ulOffset, &pReq_Backup->usSeqNO, sizeof(USHORT), hsFileHandle);
+        Gcf_WriteFileFH(ulOffset, &Gcf_Backup, sizeof(Gcf_Backup), hsFileHandle);
+        *pulSndLen += sizeof(GCF_BACKUP);
 
-    if ( 0 != sStatus ) {
-        *pusSndLen += (USHORT)sStatus + 2 ;
-        Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP), ( USHORT *)&sStatus, sizeof(USHORT), hsFileHandle);
+        Gcf_WriteFileFH(ulOffset + sizeof(GCF_BACKUP), &BKData, sizeof(BKData), hsFileHandle);
+        *pulSndLen += sizeof(GCF_BAKDATA);
     }
 
     Gcf_CloseFileReleaseSem();
@@ -3031,7 +3108,7 @@ SHORT GusCheckAndReadFH(GCNUM     usGCNumber,
 		offulBlockPoint = Gcf_FileHed.offulGCDataFile + ((Gcf_IndexFile.offusBlockNo - 1) * GCF_DATA_BLOCK_SIZE);
 		Gcf_ReadFile(offulBlockPoint, &GcfDataHead, sizeof(GCF_DATAHEAD), GCF_SEEK_READ);
 
-		if (GcfDataHead.usDataLen == usSize){
+		if (GcfDataHead.ulDataLenGC == usSize){
 			Gcf_CloseFileReleaseSem();
 			return(GCF_EXIST);                 
 		}
@@ -3148,7 +3225,7 @@ SHORT GusDeliveryIndRead(USHORT     usQueue,
     GCF_INDEXFILE   Gcf_IndexFile;
     SHORT            sStatus, sFlag = 0;
     ULONG           offulIndexPoint;
-    USHORT          i, usLen, usCopyBlock;
+    USHORT          i, usCopyBlock;
 	GCNUM			usGCNumber;
 	GCNUM           auchWorkBuffer[GCF_MAX_DRIVE_NUMBER] = {0};
 
@@ -3176,7 +3253,7 @@ SHORT GusDeliveryIndRead(USHORT     usQueue,
 
     /* Check Paid Transaction */
     if ((Gcf_IndexFile.fbContFlag & GCF_PAYMENT_TRAN_MASK) != 0) {
-        usLen = Gcf_DataBlockCopy(&Gcf_FileHed, Gcf_IndexFile.offusBlockNo, puchRcvBuffer, usSize, &usCopyBlock);
+        SHORT usLen = Gcf_DataBlockCopy(&Gcf_FileHed, Gcf_IndexFile.offusBlockNo, puchRcvBuffer, usSize, &usCopyBlock);
         Gcf_CloseFileReleaseSem();
         return(usLen);
     }

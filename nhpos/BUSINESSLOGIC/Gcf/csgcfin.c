@@ -132,6 +132,21 @@
 #include    "csgcsin.h"
 #include    "csstbstb.h"
 
+// put the index creation date and time stamp into the index to provide a way to determine
+// when the index was created for guest checks that are open and locked due to GenPOS
+// crashing or some other similar issue.
+static void Gcf_CreateTimeFromDate(GCF_INDEXDATE *pGcfCreateTime)
+{
+	DATE_TIME DtNow;
+
+	PifGetDateTime(&DtNow);
+	pGcfCreateTime->uchGcfYear = (UCHAR)(DtNow.usYear % 100);
+	pGcfCreateTime->uchGcfMonth = (UCHAR)DtNow.usMonth;
+	pGcfCreateTime->uchGcfDay = (UCHAR)DtNow.usMDay;
+	pGcfCreateTime->uchGcfHour = (UCHAR)DtNow.usHour;
+	pGcfCreateTime->uchGcfMinute = (UCHAR)DtNow.usMin;
+	pGcfCreateTime->uchGcfSecond = (UCHAR)DtNow.usSec;
+}
 
 static SHORT Gcf_FreeQueTakeChain (GCF_FILEHED *pGcf_FileHed, GCF_INDEXFILE *pGcf_IndexFile, USHORT usBlock, ULONG *pulHitPoint)
 {
@@ -227,17 +242,7 @@ SHORT  Gcf_Index(GCF_FILEHED        *pGcf_FileHed,
 	// put the index creation date and time stamp into the index to provide a way to determine
 	// when the index was created for guest checks that are open and locked due to GenPOS
 	// crashing or some other similar issue.
-	{
-		DATE_TIME DtNow;
-
-		PifGetDateTime(&DtNow);
-		pGcf_Index->GcfCreateTime.uchGcfYear = (UCHAR)(DtNow.usYear % 100);
-		pGcf_Index->GcfCreateTime.uchGcfMonth = (UCHAR)DtNow.usMonth;
-		pGcf_Index->GcfCreateTime.uchGcfDay = (UCHAR)DtNow.usMDay;
-		pGcf_Index->GcfCreateTime.uchGcfHour = (UCHAR)DtNow.usHour;
-		pGcf_Index->GcfCreateTime.uchGcfMinute = (UCHAR)DtNow.usMin;
-		pGcf_Index->GcfCreateTime.uchGcfSecond = (UCHAR)DtNow.usSec;
-	}
+	Gcf_CreateTimeFromDate(&pGcf_Index->GcfCreateTime);
 
 	//Assign The GC into the file
     Gcf_InsertTableinFile(pGcf_FileHed->offulGCIndFile, pGcf_FileHed->usCurGCN, *pHit_Point, pGcf_Index, sizeof(GCF_INDEXFILE));
@@ -525,7 +530,7 @@ SHORT    Gcf_FreeQueTake(GCF_FILEHED    *pGcf_FileHed,
 		}
 		if (cusITemp < cusI) {
 			DataHed.offusNextBKNO      = 0;                      // indicate this is last block in chain to be used
-			DataHedFirst.usDataLen     = 0;                      // initialize the data length in the chain to be used at zero
+			DataHedFirst.ulDataLenGC = 0;                      // initialize the data length in the chain to be used at zero
 			Gcf_WriteFile(ulSeekPoint, &DataHed, sizeof(GCF_DATAHEAD));
             return(GCF_FULL);
 		}
@@ -540,7 +545,7 @@ SHORT    Gcf_FreeQueTake(GCF_FILEHED    *pGcf_FileHed,
     pGcf_FileHed->offusFreeGC  = DataHed.offusNextBKNO;  // remember rest of chain of blocks that are free
     DataHed.offusNextBKNO      = 0;                      // indicate this is last block in chain to be used
     DataHedFirst.offusSelfBKNO = DataHed.offusSelfBKNO;  // remember the last block in the chain to be used
-    DataHedFirst.usDataLen     = 0;                      // initialize the data length in the chain to be used at zero
+    DataHedFirst.ulDataLenGC = 0;                      // initialize the data length in the chain to be used at zero
 
     Gcf_WriteFile(ulFirstSeekPoint, &DataHedFirst, sizeof(GCF_DATAHEAD));
     
@@ -899,10 +904,24 @@ VOID      Gcf_DeleteTableinFile(  ULONG     offulTableHead,
 *                 
 *       InOut:    Nothing
 *
-**  Return    :   Read Size.
+**  Return    :   Number of bytes read from Guest Check File into the buffer puchRcvBuffer.
 *
-**  Description:
-*               Read a GCF Data from Blocks. 
+**  Description:  Determine the number of Guest Check File storage blocks used by a guest check.
+* 
+*                 Read Guest Check Data from Guest Check File if usRcvSize is non-zero and puchRcvBuffer
+*                 is not NULL. The amount of Guest Check data will vary depending on the system type
+*                 and the number of items in the Guest Check if the System Type indicates that item
+*                 data are stored in the Guest Check.
+* 
+*                 SEE ALSO: function Gcf_DataBlockCopyFH() which reads the Guest Check data into a file
+*                           rather than a data buffer in order to handle large Guest Checks.
+* 
+*                 NOTE: Pre-check buffering print and Pre-check unbuffering print do not store transaction details.
+*                       See the following list of system types and the function RflGetSystemType().
+*                         FLEX_PRECHK_BUFFER      pre-check buffering print
+*                         FLEX_PRECHK_UNBUFFER    pre-check unbuffering print
+*                         FLEX_POST_CHK           post check buffering print system
+*                         FLEX_STORE_RECALL       store/ recall buffering print system
 *==========================================================================
 */
 SHORT     Gcf_DataBlockCopy(GCF_FILEHED     *pGcf_FileHed, 
@@ -913,7 +932,7 @@ SHORT     Gcf_DataBlockCopy(GCF_FILEHED     *pGcf_FileHed,
 {
     GCF_DATAHEAD    GcfDataHead;
     ULONG           offulBlockPoint;
-    USHORT          usWorkSize,  usWorkRetSize;
+    ULONG           ulWorkSize,  ulWorkRetSize;
 
     *pusCopyBlock = 0;
     if (0 == usStartBlockNO) {
@@ -922,42 +941,42 @@ SHORT     Gcf_DataBlockCopy(GCF_FILEHED     *pGcf_FileHed,
 
     offulBlockPoint = pGcf_FileHed->offulGCDataFile + ((usStartBlockNO - 1) * GCF_DATA_BLOCK_SIZE);
     Gcf_ReadFile(offulBlockPoint, &GcfDataHead, sizeof(GCF_DATAHEAD), GCF_SEEK_READ);
-    if (0 == GcfDataHead.usDataLen){
+    if (0 == GcfDataHead.ulDataLenGC){
         return(0);                 /* Return Len = 0 */
     }
 
-    if (0 == usRcvSize ) {   /* If lock only, then get block count */
-        for ( usWorkSize = 0; GcfDataHead.usDataLen != 0 ; usWorkSize++ ){
+    if (0 == usRcvSize || puchRcvBuffer == NULL ) {   /* If lock only, then get block count */
+        for (int iBlock = 0; GcfDataHead.ulDataLenGC != 0 ; iBlock++ ){
             (*pusCopyBlock)++;
-            if (usWorkSize) {
-                if ( GcfDataHead.usDataLen < (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC)) ) {
+            if (iBlock) {
+                if ( GcfDataHead.ulDataLenGC < (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC)) ) {
                     break;
                 }
-                GcfDataHead.usDataLen -= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC));
+                GcfDataHead.ulDataLenGC -= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC));
             }  else {
-                if ( GcfDataHead.usDataLen < (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD)) ) {
+                if ( GcfDataHead.ulDataLenGC < (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD)) ) {
                     break;
                 }
-                GcfDataHead.usDataLen -= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD));
+                GcfDataHead.ulDataLenGC -= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD));
            }
         }
         return(0);    /* Return len = 0 */
     }
 
-    if (GcfDataHead.usDataLen > usRcvSize) {
-        usWorkSize = usWorkRetSize = usRcvSize;
+    if (GcfDataHead.ulDataLenGC > usRcvSize) {
+        ulWorkSize = ulWorkRetSize = usRcvSize;
     } else {
-        usWorkSize = usWorkRetSize = GcfDataHead.usDataLen;
+        ulWorkSize = ulWorkRetSize = GcfDataHead.ulDataLenGC;
     }
 
-    if (usWorkSize <= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD))) {
+    if (ulWorkSize <= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD))) {
         (*pusCopyBlock)++;
-        Gcf_ReadFile(0, puchRcvBuffer, usWorkSize, GCF_CONT_READ);
-        return(usWorkRetSize);
+        Gcf_ReadFile(0, puchRcvBuffer, ulWorkSize, GCF_CONT_READ);
+        return(ulWorkRetSize);
     }
 
     Gcf_ReadFile(0L, puchRcvBuffer, GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD), GCF_CONT_READ);
-    usWorkSize    -= GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD);
+    ulWorkSize    -= GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD);
     puchRcvBuffer += GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD);
     (*pusCopyBlock)++;
 
@@ -977,16 +996,16 @@ SHORT     Gcf_DataBlockCopy(GCF_FILEHED     *pGcf_FileHed,
 
         Gcf_ReadFile(offulBlockPoint, &GcfDataHead, sizeof(GCF_DATAHEAD_SEC), GCF_SEEK_READ);
 
-        if (usWorkSize <= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC))) {
-            Gcf_ReadFile(0L, puchRcvBuffer, usWorkSize, GCF_CONT_READ);
+        if (ulWorkSize <= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC))) {
+            Gcf_ReadFile(0L, puchRcvBuffer, ulWorkSize, GCF_CONT_READ);
             break;
         }
 
         Gcf_ReadFile(0, puchRcvBuffer, GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC), GCF_CONT_READ);
-        usWorkSize    -= GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC);
+        ulWorkSize    -= GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC);
         puchRcvBuffer += GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC);
     }
-    return(usWorkRetSize);
+    return(ulWorkRetSize);
 }
 /*
 *==========================================================================
@@ -1179,7 +1198,8 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,
                         SHORT       hsFileHandle,
                         ULONG       ulStartPoint,
                         ULONG       ulSize,
-                        USHORT      usType)
+                        USHORT      usType,
+						GCF_INDEXDATE * pCreateTime)
 {                                   
 
     UCHAR           uchSndBuffer[GCF_DATABLOCK];
@@ -1189,7 +1209,7 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,
     LONG            offulBlockPosition, offulFirstBlock;
     ULONG           ulHitPoint;
     ULONG           offulReadPoint;
-    GCF_INDEXFILE   Gcf_IndexFile;
+	GCF_INDEXFILE   Gcf_IndexFile = { 0 };
     GCF_DATAHEAD    GcfDataHead,    GcfDataHeadFirst;
 
 #if 0
@@ -1228,7 +1248,7 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,
 				//if there is an offset read the guest check in that location
                 Gcf_ReadFile(pGcf_FileHed->offulGCDataFile + ((ULONG)(Gcf_IndexFile.offusBlockNo - 1) * GCF_DATA_BLOCK_SIZE), 
                              &GcfDataHeadFirst, sizeof(GCF_DATAHEAD), GCF_SEEK_READ);
-                if (GcfDataHeadFirst.usDataLen == ulSize) {
+                if (GcfDataHeadFirst.ulDataLenGC == ulSize) {
                     return(GCF_SUCCESS);
                 }
 				PifLog(MODULE_GCF, LOG_ERROR_GCF_NOTLOCKED_ERR);
@@ -1278,12 +1298,16 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,
 			}
 		}
     } else if (sStatus == GCF_NOT_IN) {
-		char xBuff[128];
-		sprintf(xBuff, "Gcf_StoreDataFH(): Unexpected GCF_NOT_IN found GCNO = %d.", Gcf_IndexFile.usGCNO);
-		NHPOS_ASSERT_TEXT(0, xBuff);
-		PifLog(MODULE_GCF, LOG_ERROR_GCF_NOTLOCKED_ERR);
-		PifLog(MODULE_DATA_VALUE(MODULE_GCF), usGCNumber);
-		PifLog(MODULE_LINE_NO(MODULE_GCF), (USHORT)__LINE__);
+		if ((usStatus & GCF_BACKUP_STORE_FILE) == 0) {
+			// if doing a Guest Check File backup then we don't expect the Guest Check to exist.
+			// if not a backup then not existing is unexpected.
+			char xBuff[128];
+			sprintf(xBuff, "Gcf_StoreDataFH(): Unexpected GCF_NOT_IN found GCNO = %d.", Gcf_IndexFile.usGCNO);
+			NHPOS_ASSERT_TEXT(0, xBuff);
+			PifLog(MODULE_GCF, LOG_ERROR_GCF_NOTLOCKED_ERR);
+			PifLog(MODULE_DATA_VALUE(MODULE_GCF), usGCNumber);
+			PifLog(MODULE_LINE_NO(MODULE_GCF), (USHORT)__LINE__);
+		}
 
 		// Try and free a que, if we cant, the we will return that the file
 		// is full
@@ -1292,6 +1316,13 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,
 			NHPOS_ASSERT(!"GCF FULL ERROR, Gcf_FreeQueTakeChain () could not free up space.");
 			PifLog(MODULE_GCF, LOG_ERROR_GCF_FULL_ERR_09);
 			return sqStatus;
+		}
+
+		if (pCreateTime == NULL) {
+			Gcf_CreateTimeFromDate(&Gcf_IndexFile.GcfCreateTime);
+		}
+		else {
+			Gcf_IndexFile.GcfCreateTime = *pCreateTime;
 		}
 
         if (0 == (usStatus & GCF_PAYMENT_TRAN_MASK)) {       /* Check paid transaction */
@@ -1354,7 +1385,7 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,
         usFreeStartBlock = GcfDataHeadFirst.offusNextBKNO;  /* next que id */
         usLastBlockNo    = GcfDataHeadFirst.offusSelfBKNO;  /* save last block no */
         GcfDataHeadFirst.offusSelfBKNO = Gcf_IndexFile.offusReserveBlockNo; /* set self block no */
-        GcfDataHeadFirst.usDataLen = ulSize;
+        GcfDataHeadFirst.ulDataLenGC = ulSize;
 
         Gcf_ReadFileFH(offulReadPoint, uchSndBuffer + sizeof(GCF_DATAHEAD), (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD)), hsFileHandle);
 
@@ -1390,9 +1421,9 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,
             usFreeStartBlock = GcfDataHead.offusNextBKNO;          /* next que id */
 
             if (ulSize > (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC))) {
-                Gcf_ReadFileFH(offulReadPoint, uchSndBuffer, (SHORT)(GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC)), hsFileHandle);
+                Gcf_ReadFileFH(offulReadPoint, uchSndBuffer, (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC)), hsFileHandle);
                 offulReadPoint += GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC); 
-                PifWriteFile(hsGcfFile, uchSndBuffer, (USHORT)(GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC))); 
+                PifWriteFile(hsGcfFile, uchSndBuffer, (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC))); 
                 ulSize -= GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC);
             } else {
                 Gcf_ReadFileFH(offulReadPoint, uchSndBuffer, ulSize, hsFileHandle);
@@ -1523,10 +1554,23 @@ SHORT   Gcf_StoreDataFH(GCF_FILEHED *pGcf_FileHed,
 *
 **  Return    :   Read Size.
 *
-**  Description:
-*               Read a guest check transaction from the Guest Check File block by block
-*               writing each block, without the block header, to the specified file
-*               creating a file with the complete transaction, de-blocked.. 
+**  Description:  Determine the number of Guest Check File storage blocks used by a guest check.
+* 
+*                 Read Guest Check Data from Guest Check File if usRcvSize is non-zero. 
+* 
+*                 Reads a guest check transaction from the Guest Check File block by block
+*                 writing each block, without the block header, to the specified file
+*                 creating a file with the complete transaction, de-blocked.
+* 
+*                 SEE ALSO: function Gcf_DataBlockCopy() which reads the Guest Check data into a buffer
+*                           rather than a file.
+*
+*                 NOTE: Pre-check buffering print and Pre-check unbuffering print do not store transaction details.
+*                       See the following list of system types and the function RflGetSystemType().
+*                         FLEX_PRECHK_BUFFER      pre-check buffering print
+*                         FLEX_PRECHK_UNBUFFER    pre-check unbuffering print
+*                         FLEX_POST_CHK           post check buffering print system
+*                         FLEX_STORE_RECALL       store/ recall buffering print system
 *==========================================================================
 */
 SHORT   Gcf_DataBlockCopyFH(GCF_FILEHED *pGcf_FileHed, 
@@ -1560,36 +1604,42 @@ SHORT   Gcf_DataBlockCopyFH(GCF_FILEHED *pGcf_FileHed,
 
     Gcf_ReadFile(offulBlockPoint, &GcfDataHead, sizeof(GCF_DATAHEAD), GCF_SEEK_READ);
 
-    if (0 == GcfDataHead.usDataLen){
+    if (0 == GcfDataHead.ulDataLenGC){
 		return(0);                 /* Return Len = 0 */
     }
 
     if (0 == ulRcvSize ) {   /* If lock only, then get block count */
-        for ( ulWorkSize = 0; GcfDataHead.usDataLen != 0 ; ulWorkSize++ ){
+        for ( ulWorkSize = 0; GcfDataHead.ulDataLenGC != 0 ; ulWorkSize++ ){
             (*pusCopyBlock)++;
             if (ulWorkSize) {
-                if ( GcfDataHead.usDataLen < (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC)) ) {
+                if ( GcfDataHead.ulDataLenGC < (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC)) ) {
                     break;
                 }
-                GcfDataHead.usDataLen -= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC));
+                GcfDataHead.ulDataLenGC -= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD_SEC));
             }  else {
-                if ( GcfDataHead.usDataLen < (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD)) ) {
+                if ( GcfDataHead.ulDataLenGC < (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD)) ) {
                     break;
                 }
-                GcfDataHead.usDataLen -= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD));
+                GcfDataHead.ulDataLenGC -= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD));
            }
         }
 		return(0);    /* Return len = 0 */
     }
 
-	NHPOS_ASSERT(GcfDataHead.usDataLen <= ulRcvSize);
+	NHPOS_ASSERT(GcfDataHead.ulDataLenGC <= ulRcvSize);
 
-    if (GcfDataHead.usDataLen > ulRcvSize) {
+	// determine the amount of Guest Check data we are going to provide.
+	// the data must fit in the destination file whose size is specified.
+	// we either provide the entire Guest Check data, if it will fit,
+	// or as much of the Guest Check data as will fit.
+    if (GcfDataHead.ulDataLenGC > ulRcvSize) {
         ulWorkSize = ulWorkRetSize = ulRcvSize;
     } else {
-        ulWorkSize = ulWorkRetSize = GcfDataHead.usDataLen;
+        ulWorkSize = ulWorkRetSize = GcfDataHead.ulDataLenGC;
     }
     if (ulWorkSize <= (GCF_DATA_BLOCK_SIZE - sizeof(GCF_DATAHEAD))) {
+		// if the amount of data to provide is smaller than a single block
+		// then just provide the data from the first block.
         (*pusCopyBlock)++;
         Gcf_ReadFile(0L, uchRcvBuffer, ulWorkSize, GCF_CONT_READ);
         Gcf_WriteFileFH(offulWritePoint, uchRcvBuffer, ulWorkSize, hsFileHandle);
@@ -2066,7 +2116,7 @@ USHORT Gcf_OptimizeGcfDataFile (GCF_FILEHED *pGcf_FileHed,
 	USHORT			usGlobalBlocksCountInUse = 0;
 	USHORT			usGlobalBlocksCountReserved = 0;
 	USHORT			usGlobalBlocksCountFree = 0;
-	USHORT			usGlobalTotalBlocks = 0;
+	ULONG			ulGlobalTotalBlocks = 0;
 	ULONG           *ulIndexStatus = 0;
 	ULONG			ulGlobalTotalBytes = 0;
 	ULONG           ulGcfAreaEnd = 0;
@@ -2086,7 +2136,7 @@ USHORT Gcf_OptimizeGcfDataFile (GCF_FILEHED *pGcf_FileHed,
 	}
 	ulGlobalTotalBytes = (ulGcfAreaEnd - pGcf_FileHed->offulGCDataFile);
 	NHPOS_ASSERT((ulGlobalTotalBytes / GCF_DATA_BLOCK_SIZE) < 0xffff);
-	usGlobalTotalBlocks = (ulGlobalTotalBytes / GCF_DATA_BLOCK_SIZE);
+	ulGlobalTotalBlocks = (ulGlobalTotalBytes / GCF_DATA_BLOCK_SIZE);
 
 	if (pGcf_FileHed->offulGCIndFile != sizeof(GCF_FILEHED))
 	{
@@ -2098,8 +2148,8 @@ USHORT Gcf_OptimizeGcfDataFile (GCF_FILEHED *pGcf_FileHed,
 		PifLog(MODULE_GCF, LOG_ERROR_GCF_OPT_DATA_BADOFFSET);
 	}
 
-	ulIndexStatus = (ULONG *)_alloca (sizeof(ULONG) * usGlobalTotalBlocks);
-	memset (ulIndexStatus, 0, sizeof(ULONG) * usGlobalTotalBlocks);
+	ulIndexStatus = (ULONG *)_alloca (sizeof(ULONG) * ulGlobalTotalBlocks);
+	memset (ulIndexStatus, 0, sizeof(ULONG) * ulGlobalTotalBlocks);
 
 	// First of all read in the index entries for the guest check file
 	ulOffset = pGcf_FileHed->offulGCIndFile;
@@ -2225,7 +2275,7 @@ USHORT Gcf_OptimizeGcfDataFile (GCF_FILEHED *pGcf_FileHed,
 
 	// Lets see if there are any blocks that are not on any of the 
 	// block chains.  If so, then issue a PifLog ().
-	if (usGlobalTotalBlocks != usGlobalBlocksCountInUse + usGlobalBlocksCountReserved + usGlobalBlocksCountFree)
+	if (ulGlobalTotalBlocks != usGlobalBlocksCountInUse + usGlobalBlocksCountReserved + usGlobalBlocksCountFree)
 	{
 		PifLog(MODULE_GCF, LOG_ERROR_GCF_OPT_BLOCKS_NOBAL);
 	}
@@ -2258,7 +2308,7 @@ USHORT Gcf_OptimizeGcfDataFile (GCF_FILEHED *pGcf_FileHed,
 		// available should be equal to the blocks found while walking through
 		// the various chains.  If there are any missing, we need to discover them
 		// and then put them on the chain of free blocks.
-		if (usGlobalTotalBlocks != usGlobalBlocksCountInUse + usGlobalBlocksCountReserved + usGlobalBlocksCountFree)
+		if (ulGlobalTotalBlocks != usGlobalBlocksCountInUse + usGlobalBlocksCountReserved + usGlobalBlocksCountFree)
 		{
 			for (usBlockNo = 1, ulOffset = pGcf_FileHed->offulGCDataFile;
 				ulOffset < ulGcfAreaEnd;
@@ -2271,7 +2321,7 @@ USHORT Gcf_OptimizeGcfDataFile (GCF_FILEHED *pGcf_FileHed,
 					Gcf_ReadFile( ulOffset, &GcfDataHed, sizeof(GCF_DATAHEAD), GCF_SEEK_READ);
 					GcfDataHed.offusNextBKNO = pGcf_FileHed->offusFreeGC;
 					GcfDataHed.offusSelfBKNO = usBlockNo;
-					GcfDataHed.usDataLen = 0;
+					GcfDataHed.ulDataLenGC = 0;
 					Gcf_WriteFile (ulOffset, &GcfDataHed, sizeof(GCF_DATAHEAD));
 					pGcf_FileHed->offusFreeGC = usBlockNo;
 				}
