@@ -227,9 +227,22 @@ SHORT  NbNetReceive(VOID)
 */
 SHORT  NbNetSend(VOID)
 {
+#if defined(NbWriteMessage)
+    static NBCONTMES   NbConMesSave = { 0 };
+#endif
     SHORT sRet,sI;
                          
-	// Set a timeout for the send so that if the server is
+#if defined(NbWriteMessage)
+    if (memcmp (NbConMesSave.auchMessage, NbSndBuf.NbConMes.auchMessage, sizeof(NbSndBuf.NbConMes.auchMessage)) != 0) {
+        char xBuff[64];
+        sprintf(xBuff, "==NOTE: NbConMes.auchMessage  0x%x 0x%x 0x%x 0x%x", NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET0], NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET1],
+            NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET2], NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET3]);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+        NbConMesSave = NbSndBuf.NbConMes;    // save a copy of the current message so that we won't repeat the same log multiple times.
+    }
+#endif
+
+    // Set a timeout for the send so that if the server is
 	// busy, we will get notified immediately.  Look at
 	// SerRecvNextFrame () in servrmh.c in the Server subsystem
 	// for an example of Server responding with STUB_BUSY.

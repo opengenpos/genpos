@@ -87,8 +87,8 @@
 *===========================================================================
 */
 
-static UCHAR   auchNbReqMes[NB_MAX_MESSAGE] = { 0 };   /* Saves a user's request */
-static USHORT  usNbSeqNO = 0;                          /* Uses Sequence Number control */
+static NBMESSAGE_T   auchNbReqMes[NB_MAX_MESSAGE] = { 0 };   /* Saves a user's request, auchMessage[] of NBMESSAGE */
+static USHORT        usNbSeqNO = 0;                          /* Uses Sequence Number control */
 
 /*
 *===========================================================================
@@ -762,7 +762,22 @@ USHORT  NbSetMTBM_Online (UCHAR uchFadr)
 ** Description: Writs a user's request message.
 *===========================================================================
 */
-SHORT  NbWriteMessage(USHORT usOffset, UCHAR uchReqFlag)
+#if defined(NbWriteMessage)
+SHORT   NbWriteMessage_Special(USHORT usOffset, NBMESSAGE_T uchReqFlag);
+SHORT   NbWriteMessage_Debug(char* aszFilePath, int nLineNo, USHORT usOffset, NBMESSAGE_T uchReqFlag)
+{
+	NBMESSAGE_T  NbReqMesSave = auchNbReqMes[usOffset];
+	char  xBuffer[256];
+
+	sprintf(xBuffer, "==NOTE: NbWriteMessage_Debug(): File %s  lineno=%d usOffset=%d uchReqFlag=0x%x NbReqMesSave=0x%x", RflPathChop(aszFilePath), nLineNo, usOffset, uchReqFlag, NbReqMesSave);
+	NHPOS_NONASSERT_NOTE("==NOTE", xBuffer);
+	return NbWriteMessage_Special(usOffset, uchReqFlag);
+}
+
+SHORT   NbWriteMessage_Special(USHORT usOffset, NBMESSAGE_T uchReqFlag)
+#else
+SHORT  NbWriteMessage(USHORT usOffset, NBMESSAGE_T uchReqFlag)
+#endif
 {
     PifRequestSem(husNbSemHand);
  
@@ -779,7 +794,7 @@ SHORT  NbWriteMessage(USHORT usOffset, UCHAR uchReqFlag)
              (0 == pSys->auchLaddr[2])) ||    /* comm. board not provide */
              (0 == pSys->auchLaddr[3])) {      /* U.A is 0 */
 
-            FDTNoticeMessage((UCHAR)(auchNbReqMes[NB_MESOFFSET1] & NB_RSTALLFDT));
+            FDTNoticeMessage((NBMESSAGE_T)(auchNbReqMes[NB_MESOFFSET1] & NB_RSTALLFDT));
         }
     }
     /********************** End Add R3.0 *******************************/
@@ -802,7 +817,7 @@ SHORT  NbWriteMessage(USHORT usOffset, UCHAR uchReqFlag)
 */
 VOID  NbMakeSndMessage(VOID)                 /* Make a message to send */
 {
-    UCHAR uchUadd, uchFdtFlag = 0;
+    NBMESSAGE_T uchUadd, uchFdtFlag = 0;
 	static  USHORT  fsSystemInfSnapshot = 0;
 
 	if (fsSystemInfSnapshot != NbSysFlag.fsSystemInf) {
@@ -858,8 +873,10 @@ VOID  NbMakeSndMessage(VOID)                 /* Make a message to send */
         NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET1] |= auchNbReqMes[NB_MESOFFSET1];    /* Add R3.0 */
 		NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET2] |= auchNbReqMes[NB_MESOFFSET2];    /* Add R3.0 */
 		NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET3] |= auchNbReqMes[NB_MESOFFSET3];    /* Add R3.0 */
+
+        uchFdtFlag = (UCHAR)(auchNbReqMes[NB_MESOFFSET1] & NB_RSTALLFDT); /* Add R3.0 for Flexible Drive Thru messages*/
+
         auchNbReqMes[NB_MESOFFSET0] = 0;
-        uchFdtFlag = (UCHAR)(auchNbReqMes[NB_MESOFFSET1] & NB_RSTALLFDT); /* Add R3.0 */
         auchNbReqMes[NB_MESOFFSET1] = 0;                        /* Add R3.0 */
 		auchNbReqMes[NB_MESOFFSET2] = 0;
 		auchNbReqMes[NB_MESOFFSET3] = 0;
@@ -901,10 +918,29 @@ VOID  NbMakeSndMessage(VOID)                 /* Make a message to send */
 	// triggers FDTMain () to start through its loop body by releasing a semaphore.
 
     if (uchFdtFlag) {   /* Add R3.0 */
-        /* Request to FDT in self */
+#if defined(NbWriteMessage)
+		char xBuff[64];
+		sprintf(xBuff, "==NOTE: NbMakeSndMessage()  FDTNoticeMessage()  uchFdtFlag=0x%x ", uchFdtFlag);
+		NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+#endif
+		/* Request to FDT in self */
         FDTNoticeMessage(uchFdtFlag);
     }
     NbSndBuf.NbConMes.usSeqNO = usNbSeqNO;          /* Set Sequence No. */
+#if defined(NbWriteMessage)
+	if (usNbSndCnt == 1) {
+		UCHAR testMsg = 0;
+		for (USHORT usI = 0; usI < NB_MESOFFSET3; usI++) {
+			testMsg |= NbSndBuf.NbConMes.auchMessage[usI];
+		}
+		if (testMsg) {
+			char xBuff[64];
+			sprintf(xBuff, "==NOTE: NbConMes.auchMessage  0x%x 0x%x 0x%x 0x%x", NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET0], NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET1],
+				NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET2], NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET3]);
+			NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+		}
+	}
+#endif
 }
 
 /*

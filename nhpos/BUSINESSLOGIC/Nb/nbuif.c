@@ -82,9 +82,6 @@ USHORT  usNbSndCnt = 0;              /* Controls a request same message counter 
 USHORT  usNbPreDesc = 0;             /* Saves previous descriptor data */
 
 PifSemHandle  husNbSemHand = PIF_SEM_INVALID_HANDLE;            /* Controls to read/write flags  */
-USHORT  usNbStack[NB_STACK];     /* Stack size            */
-static VOID (THREADENTRY *pFunc)(VOID) = NbMain;    /* Add R3.0 */
-static VOID (THREADENTRY *pFunc2)(VOID) = NbMainCE; /* V3.3  Notice Board Idle if no comms */
 
 PifSemHandle  husNbBkupSem = PIF_SEM_INVALID_HANDLE;           /* semaphore for backup copy 02/06/2001 */
                                                                                 
@@ -93,7 +90,7 @@ PifSemHandle  husNbBkupSem = PIF_SEM_INVALID_HANDLE;           /* semaphore for 
 *   Code Area Declarations
 *===========================================================================
 */
-UCHAR FARCONST  NBTHREDNAME[]="NOTICEBD";         /* NB Thred Name */
+UCHAR CONST  NBTHREDNAME[]="NOTICEBD";         /* NB Thred Name */
 
 /*
 *===========================================================================
@@ -109,6 +106,8 @@ UCHAR FARCONST  NBTHREDNAME[]="NOTICEBD";         /* NB Thred Name */
 */
 VOID NbInit(VOID)
 {
+    VOID(THREADENTRY * pFunc)(VOID) = NbMain;    /* Add R3.0 */
+    VOID(THREADENTRY * pFunc2)(VOID) = NbMainCE; /* V3.3  Notice Board Idle if no comms */
     SHORT     sRet, sStatus;
     USHORT  usTemp;
 
@@ -139,7 +138,7 @@ VOID NbInit(VOID)
 
     /* --- No Com Board and PC I/F System, V3.3 --- */
     if (sRet == PIF_ERROR_NET_NOT_PROVIDED && sStatus == NB_SUCCESS) {
-        PifBeginThread(pFunc2, &usNbStack[NB_STACK], sizeof(usNbStack), PRIO_NOTICEBD, NBTHREDNAME);
+        PifBeginThread(pFunc2, NULL, 0, PRIO_NOTICEBD, NBTHREDNAME);
         return;
     }
 
@@ -155,7 +154,7 @@ VOID NbInit(VOID)
         return;
     }    
 
-    PifBeginThread(pFunc, &usNbStack[NB_STACK], sizeof(usNbStack), PRIO_NOTICEBD, NBTHREDNAME );
+    PifBeginThread(pFunc, NULL, 0, PRIO_NOTICEBD, NBTHREDNAME );
 
 }
 
@@ -172,7 +171,22 @@ VOID NbInit(VOID)
 ** Description: Resets a user's request message.
 *===========================================================================
 */
-SHORT  NbResetMessage(USHORT usOffset, UCHAR uchRstFlag)
+#if defined(NbResetMessage)
+SHORT   NbResetMessage_Special(USHORT usOffset, NBMESSAGE_T uchRstFlag);
+SHORT   NbResetMessage_Debug(char* aszFilePath, int nLineNo, USHORT usOffset, NBMESSAGE_T uchRstFlag)
+{
+    NBMESSAGE_T  NbReqMesSave = NbSysFlag.auchMessage[usOffset];
+    char  xBuffer[256];
+
+    sprintf(xBuffer, "==NOTE NbResetMessage_Debug(): File %s  lineno=%d usOffset=%d uchRstFlag=0x%x NbReqMesSave=0x%x", RflPathChop(aszFilePath), nLineNo, usOffset, uchRstFlag, NbReqMesSave);
+    NHPOS_NONASSERT_NOTE("==NOTE", xBuffer);
+    return NbResetMessage_Special(usOffset, uchRstFlag);
+}
+
+SHORT   NbResetMessage_Special(USHORT usOffset, NBMESSAGE_T uchRstFlag)
+#else
+SHORT  NbResetMessage(USHORT usOffset, NBMESSAGE_T uchRstFlag)
+#endif
 {
     PifRequestSem(husNbSemHand);
  
@@ -221,7 +235,31 @@ SHORT  NbReadAllMessage(NBMESSAGE *pMes)
 ** Description: Write a designate Information Flag.
 *===========================================================================
 */
+#if defined(NbWriteInfFlag)
+SHORT   NbWriteInfFlag_Special(USHORT usType, USHORT fsInfFlag);
+SHORT   NbWriteInfFlag_Debug(char* aszFilePath, int nLineNo, USHORT usType, USHORT fsInfFlag)
+{
+
+    if (NB_SYSTEMFLAG == usType) {
+        static USHORT fsInfFlagSave = -1;
+
+        if (fsInfFlag != fsInfFlagSave) {
+            char  xBuffer[256];
+
+            sprintf(xBuffer, "==NOTE NbWriteInfFlag_Debug(): File %s  lineno=%d  usType=%d fsInfFlag=0x%x", RflPathChop(aszFilePath), nLineNo, usType, fsInfFlag);
+            NHPOS_NONASSERT_NOTE("==NOTE", xBuffer);
+            sprintf(xBuffer, "==NOTE                         NbSysFlag.fsSystemInf=0x%x ", NbSysFlag.fsSystemInf);
+            NHPOS_NONASSERT_NOTE("==NOTE", xBuffer);
+        }
+    }
+
+    return NbWriteInfFlag_Special(usType, fsInfFlag);
+}
+
+SHORT   NbWriteInfFlag_Special(USHORT usType, USHORT fsInfFlag)
+#else
 SHORT  NbWriteInfFlag(USHORT usType, USHORT fsInfFlag)
+#endif
 {
     SHORT   sRet = NB_SUCCESS;
     USHORT  usTemp;

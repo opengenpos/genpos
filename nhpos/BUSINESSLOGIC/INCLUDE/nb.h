@@ -13,10 +13,6 @@
 * Category    : Notice Board , NCR 2170 US Hospitality Model         
 * Program Name: NB.H                                                      
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract:        
 *
 * --------------------------------------------------------------------------
@@ -29,6 +25,10 @@
 ** NCR2172 **
 *
 * Oct-05-99:01.00.00:M.Teraki   :initial (for Win32)
+* 
+** OpenGenPOS **
+* 
+* Mar-05-25:02.04.00:R.Chambers  : added NbWriteMessage_Debug() and defines
 *
 *===========================================================================
 *===========================================================================
@@ -46,13 +46,8 @@
 *   Define Declarations 
 *===========================================================================
 */
-#define NB_MAX_MESSAGE      4               /* Max size of Message */
-#define NB_MESOFFSET0       0x0             /* Message offset address 0 */
-#define NB_MESOFFSET1       0x0001          /* Message offset address 1 */
-#define NB_MESOFFSET2       0x0002          /* Message offset address 2 */
-#define NB_MESOFFSET3       0x0003          /* Message offset address 3 */
 
-/* System Information Flag */
+/* defines for System Information Flag bits used with NbSysFlag.fsSystemInf */
 
 #define NB_RSTUPANDON       0x2ff0          /* Reset up to date & online flag */
 #define NB_RSTSYSFLAG       0x0003          /* Reset system flag              */
@@ -76,24 +71,29 @@
 #define NB_AC85_MODE        0x0010          /* AC85 performed so stay Master   */
 #define NB_AUTO85_MODE      0x0020          /* Backup Master detected data change and Master not up to date   */
 
-/* Request parameter flag */
+/*
+ * defines for accessing auchMessage[] in the struct NBCONTMES
+ * it appears the auchMessage[] was (NHPOS 1.4 and earlier) a UCHAR array that was changed to TCHAR/WCHAR at some point.
+ * all the bit flag constants are in the range for a UCHAR and UCHAR is used in a number of places
+ * as a cast
+*/
+typedef  USHORT  NBMESSAGE_T;               /* type for the auchMessage[] array used in Notice Board messages */
+#define NB_MAX_MESSAGE      4               /* Max size of Message */
+#define NB_MESOFFSET0       0x0             /* Message offset address 0 */
+#define NB_MESOFFSET1       0x0001          /* Message offset address 1 */
+#define NB_MESOFFSET2       0x0002          /* Message offset address 2 */
+#define NB_MESOFFSET3       0x0003          /* Message offset address 3 */
+
+/* Request parameter flags used with auchMessage in the struct NBCONTMES. See NbWriteMessage(). */
 // auchMessage[NB_MESOFFSET0]; file/parameter change and file/parameter download request
 #define NB_REQPLU           0x0001          /* Request PLU parameter */
 #define NB_REQSUPER         0x0002          /* Request SUP parameter */
 #define NB_REQALLPARA       0x0004          /* Request All parameter */
 #define NB_REQPLEVEL        0x0008          /* Request Price Level para. */
 #define	NB_REQLAYOUT		0x0010			/* Request Layout Files ESMITH LAYOUT */
-#define NB_REQSETDBFLAG		0x0020			//delayed balance JHHJ used in offset 3.
-#define NB_REQ_OPERATOR_MSG	0x0040			//request new Operator Message from master.
+#define NB_REQ_OPERATOR_MSG	0x0040			// request new Operator Message from master.
 #define NB_REQRESETCONSEC   0x0080          /* Request reset consecutive no  */
-
-#define NB_RSTALLPARA       0x000f          /* Reset All   parameter request */
-//#define NB_RSTPLUPARA       0x0001          /* Reset PLU   parameter request */
-//#define NB_RSTSUPPARA       0x0002          /* Reset Super parameter request */
-//#define NB_RSTPLEVEL        0x0008          /* Reset Price Level para request */
-//#define NB_RSTLAYREQ        0x0010          /* Reset Layout File request */ //ESMITH LAYOUT
-//#define NB_RSTSETDBFLAG     0x0020          //delayed balance JHHJ used in offset 3.
-//#define NB_RSTRESETCONSEC   0x0080          /* Reset Reset consecutive no    */
+#define NB_RSTALLPARA       0x000f          /* Reset All operational parameters request */
 
 // auchMessage[NB_MESOFFSET1];  FDT Request GCF Status,    R3.0
 #define NB_REQPAYMENT1      0x01            /* Exist GCF to Payment Terminal #1 */
@@ -102,8 +102,10 @@
 #define NB_REQDELIVERY2     0x08            /* Exist GCF to Delivery Terminal #2 */
 #define NB_REQORDER1        0x10            /* Exist GCF to Order Terminal #1 */
 #define NB_REQORDER2        0x20            /* Exist GCF to Order Terminal #2 */
-#define NB_RSTALLFDT        0x3f            /* Mask */
+#define NB_RSTALLFDT        0x3f            /* Mask to detect if Flexible Druve Thru command */
 
+// auchMessage[NB_MESOFFSET3]; file/parameter change and file/parameter download request
+#define NB_REQSETDBFLAG		0x0020			//delayed balance JHHJ used in offset 3.
 
 
 /* Argument of NbWriteInfFlag */
@@ -154,7 +156,7 @@ typedef struct {
         USHORT  fsBMBackupInf; // NbExecRcvMonMes() puts NbConMes.fsBackupInf from Backup here
 		ULONG   ulMT_ParaHashCurrent;
 		ULONG   ulBU_ParaHashCurrent;
-        WCHAR   auchMessage[NB_MAX_MESSAGE];
+		NBMESSAGE_T   auchMessage[NB_MAX_MESSAGE];
 }NBMESSAGE;
 
 
@@ -169,11 +171,22 @@ typedef struct {
 *===========================================================================
 */
 VOID   NbInit(VOID);                                      /* Creates UIC Task     */
-SHORT  NbWriteMessage(USHORT usOffset, UCHAR uchReqFlag); /* Write degignate flag */
-SHORT  NbResetMessage(USHORT usOffset, UCHAR uchRstFlag); /* Reset degignate flag */
-SHORT  NbReadAllMessage(NBMESSAGE *pMes);                 /* Read all flag        */        
+#if 0
+// generate a warning so this place is easy to find from a compiler warning.
+#pragma message("  ====++++====   NbWriteMessage_Debug() is ENABLED    ====++++====\z")
+SHORT  NbWriteMessage_Debug(char* aszFilePath, int nLineNo, USHORT usOffset, NBMESSAGE_T uchReqFlag); /* Write degignate flag */
+SHORT  NbResetMessage_Debug(char* aszFilePath, int nLineNo, USHORT usOffset, NBMESSAGE_T uchRstFlag); /* Reset degignate flag */
+SHORT  NbWriteInfFlag_Debug(char* aszFilePath, int nLineNo, USHORT usType, USHORT fsInfFlag);   /* Write inf. flag      */
+
+#define  NbWriteMessage(usOffset, uchReqFlag)  NbWriteMessage_Debug (__FILE__, __LINE__, usOffset, uchReqFlag)
+#define  NbResetMessage(usOffset, uchRstFlag)  NbResetMessage_Debug(__FILE__, __LINE__, usOffset, uchRstFlag)
+#define  NbWriteInfFlag(usType, fsInfFlag)     NbWriteInfFlag_Debug(__FILE__, __LINE__, usType, fsInfFlag)
+#else
+SHORT  NbWriteMessage(USHORT usOffset, NBMESSAGE_T uchReqFlag); /* Write degignate flag */
+SHORT  NbResetMessage(USHORT usOffset, NBMESSAGE_T uchRstFlag); /* Reset degignate flag */
 SHORT  NbWriteInfFlag(USHORT usType, USHORT fsInfFlag);   /* Write inf. flag      */
-SHORT  NbClearInfFlag(USHORT usType, USHORT fsInfFlag);   /* Clear a particular inf. flag      */
+#endif
+SHORT  NbReadAllMessage(NBMESSAGE *pMes);                 /* Read all flag        */        
 SHORT  NbStartAsMaster(USHORT fsFlag);                    /* Starts As Master     */      
 SHORT  NbStartOnline(USHORT fsFlag);                      /* Starts  Online       */      
 SHORT  NbStartInquiry(VOID);                              /* Set INQUIRY flag     */      
