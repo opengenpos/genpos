@@ -202,17 +202,17 @@ BOOL    WINAPI  A162DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		case IDD_A162_BTNSET02:
 			// Set the AC162 provisioning for a mixed Counter Terminal and Drive Thru
 			// type of system.  Terminals #1 - 3 are counter terminals, Terminal # 4
-			// is a Drive Thru, Side #1 as Order/Payment and Terminal #5 is Delivery.
+			// is a Drive Thru, Side #1 as Order/Payment and Terminal #5 is Delivery for Side #1.
 			//
 			// For each Counter terminal beginning with address pair 4 and 5 for Terminal #1:
 			//   Set the System Type to 0, Ordering/Payment System
 			//   Set the Terminal Type to 12, COUNTER Terminal for UNPAID TRANSACTION - FULL Screen
 			// For Terminal #4
-			//   Set the System Type to 
-			//   Set the Terminal Type to 
+			//   Set the System Type to Order/Payment and Delivery (two terminals)
+			//   Set the Terminal Type to Order/Payment terminal
 			// For Terminal #5
-			//   Set the System Type to 
-			//   Set the Terminal Type to 
+			//   Set the System Type to Order/Payment and Delivery (two terminals)
+			//   Set the Terminal Type to Delivery terminal
 			memset (abData, 0, sizeof(abData));
 			{
 				int i;
@@ -220,15 +220,15 @@ BOOL    WINAPI  A162DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 					abData[i] = 0; i++;    // set the System Type
 					abData[i] = 12; i++;   // set the Terminal Type
 				}
-				abData[0] = 5;       // Term # of Delivery Terminal for DT Side#1
-				abData[2] = 4;       // Term # of PAYMENT Terminal for DT Side#1
+				abData[0] = 5;       // Term # of Delivery Terminal for DT Side#1, Side#2 is zero
+				abData[2] = 4;       // Term # of PAYMENT Terminal for DT Side#1, Side#2 is zero
 
 				i = (4 - 1) * 2 + 4; // calculate to Terminal #4, System Type
-				abData[i] = 2; i++;  // set the System Type, Order & pay at one terminal, deliver at another
-				abData[i] = 1; i++;  // set the Terminal Type, Order/Payment DT Terminal for DT Side#1 - 3 part Screen
+				abData[i] = FX_DRIVE_SYSTYPE_2T_OP_D; i++;       // set the System Type, Order & pay at one terminal, deliver at another
+				abData[i] = FX_DRIVE_ORDER_PAYMENT_TERM_1; i++;  // set the Terminal Type, Order/Payment DT Terminal for DT Side#1 - 3 part Screen
 				// Terminal #5 follows immediately after Terminal #4
-				abData[i] = 2; i++;  // set the System Type, Order & pay at one terminal, deliver at another
-				abData[i] = 3; i++;  // set the Terminal Type, Delivery DT Terminal for DT Side#1 - 3 part Screen
+				abData[i] = FX_DRIVE_SYSTYPE_2T_OP_D; i++;       // set the System Type, Order & pay at one terminal, deliver at another
+				abData[i] = FX_DRIVE_DELIV_1; i++;               // set the Terminal Type, Delivery DT Terminal for DT Side#1 - 3 part Screen
 			}
 			/* ----- Set Description to StaticText ----- */
 			A162RedrawText(hDlg, abData);

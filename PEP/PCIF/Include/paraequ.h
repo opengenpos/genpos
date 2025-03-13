@@ -3521,6 +3521,7 @@ can assign PLUs to, and 165 is the max number of keys that can be assigned per p
 #define FX_DRIVE_SYSTERM_16             35   /* System   Type of Terminal #16     */
 #define FX_DRIVE_TERMTYPE_16            36   /* Terminal Type of Terminal #16     */
 
+// following defines are used with struct FDTPARA, member uchTypeTerm to indicate terminal role
 #define FX_DRIVE_ORDER_TERM_1           0    /* Order Terminal #1 */
 #define FX_DRIVE_ORDER_PAYMENT_TERM_1   1    /* Order/Payment Terminal #1 */
 #define FX_DRIVE_PAYMENT_TERM_1         2    /* Payment Terminal #1 */
@@ -3535,6 +3536,11 @@ can assign PLUs to, and 165 is the max number of keys that can be assigned per p
 #define FX_DRIVE_ORDER_FUL_TERM_2      11    /* Order Full Screen Terminal #2 */
 #define FX_DRIVE_COUNTER_FUL_STORE     12    /* Counter Full Screen Terminal (Store) */
 #define FX_DRIVE_COUNTER_FUL_STORE_PAY 13    /* Counter Full Screen Terminal (Store/Payment) */
+
+// following defines are used with struct FDTPARA, member uchSysTypeTerm to indicate terminal role
+#define FX_DRIVE_SYSTYPE_1T_OP          0    /* Ordering/Payment System (counter or single drive thru) */
+#define FX_DRIVE_SYSTYPE_2T_OP          1    /* Ordering & Payment System (two terminal drive thru) */
+#define FX_DRIVE_SYSTYPE_2T_OP_D        2    /* Ordering/Payment & Delivery System (two terminal drive thru) */
 
 /*------------------------------------------------------------------------*\
 *   Define - Mld Mnemonics Address (PRG # 65), V3.3
