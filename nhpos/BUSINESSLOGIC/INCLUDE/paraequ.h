@@ -4040,8 +4040,9 @@ UCHAR   CliParaMDCCheckField(USHORT address, UCHAR field);
 #define FX_DRIVE_COUNTER_FUL_STORE     12    /* Counter Full Screen Terminal (Store) */
 #define FX_DRIVE_COUNTER_FUL_STORE_PAY 13    /* Counter Full Screen Terminal (Store/Payment) */
 
+// following defines are used with struct FDTPARA, member uchSysTypeTerm to indicate terminal role
 #define FX_DRIVE_SYSTYPE_1T_OP          0    /* Ordering/Payment System (counter or single drive thru) */
-#define FX_DRIVE_SYSTYPE_2T_OP          1    /* Ordering & Payment System (two terminal drive thru) */
+#define FX_DRIVE_SYSTYPE_2T_OP          1    /* Ordering & Payment/Delivery System (two terminal drive thru) */
 #define FX_DRIVE_SYSTYPE_2T_OP_D        2    /* Ordering/Payment & Delivery System (two terminal drive thru) */
 
 /*------------------------------------------------------------------------*\

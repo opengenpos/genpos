@@ -3333,7 +3333,7 @@ SHORT GusWalkGcfDataFile (CLIGUS_TALLY_HEAD *pTallyHead, CLIGUS_TALLY_INDEX *pTa
 	pTallyHead->usCurNoPayGCN = Gcf_FileHed.usCurNoPayGCN;
 	pTallyHead->usCurPayGC = Gcf_FileHed.usCurPayGC;
 
-	*nArrayItems = usCount;
+	if (nArrayItems) *nArrayItems = usCount;
 
 	return GCF_SUCCESS;
 }
