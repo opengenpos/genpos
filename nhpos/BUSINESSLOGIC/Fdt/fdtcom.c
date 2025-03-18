@@ -771,7 +771,7 @@ SHORT   FDTGetTrans(GCNUM uchOrderNo, SHORT sType)
 		TRANCONSSTORAGEHEADER  TempStorageHeader;
         /*----- Set Order# to FDT Local -----*/
         /*----- Set Transaction Itemizer to FDT Local -----*/
-        FDTReadFile(0, &TempStorageHeader, sizeof(TRANCONSSTORAGEHEADER), husHandle, &ulActualBytesRead);
+        TrnReadFile(0, &TempStorageHeader, sizeof(TRANCONSSTORAGEHEADER), husHandle, &ulActualBytesRead);
 
         if (sType == 1) {
             FDTLocal.uchOrderNo1 = TempStorageHeader.TranGCFQual.usGuestNo;

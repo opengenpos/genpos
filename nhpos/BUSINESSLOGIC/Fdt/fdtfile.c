@@ -76,17 +76,11 @@
 */
 SHORT   FDTCreateFile(USHORT usNoOfItem)
 {
-    TCHAR FAR   *lpszFileName1;
-    TCHAR FAR   *lpszFileName2;
-    SHORT       hsFile1;
-    SHORT       hsFile2;
-    USHORT      usInquirySize;
-    USHORT      usInitialVli1;
-    USHORT      usInitialVli2;
-    USHORT      usVliOffset;
-
-    lpszFileName1 = aszFDTFile1;
-    lpszFileName2 = aszFDTFile2;
+    TCHAR       const * const lpszFileName1 = aszFDTFile1;
+    TCHAR       const * const lpszFileName2 = aszFDTFile2;
+    PifFileHandle   hsFile1;
+    PifFileHandle   hsFile2;
+    ULONG           ulInquirySize = TrnCalStoSize(usNoOfItem, FLEX_CONSSTORAGE_ADR);
 
     PifDeleteFile(lpszFileName1);
     PifDeleteFile(lpszFileName2);
@@ -94,8 +88,8 @@ SHORT   FDTCreateFile(USHORT usNoOfItem)
     if ((hsFile1 = PifOpenFile(lpszFileName1, auchTEMP_NEW_FILE_READ_WRITE)) < 0) { /* saratoga */
         return(FDT_ERROR);
     }
-    usInquirySize = FDTCalStoSize(usNoOfItem);
-    if (FDTExpandFile(hsFile1, usInquirySize) < 0) {
+
+    if (TrnExpandFile(hsFile1, ulInquirySize) < 0) {
         PifCloseFile(hsFile1);
         PifDeleteFile(lpszFileName1);
         return(FDT_ERROR);
@@ -107,7 +101,7 @@ SHORT   FDTCreateFile(USHORT usNoOfItem)
         return(FDT_ERROR);
     }
 
-    if (FDTExpandFile(hsFile2, usInquirySize) < 0) {
+    if (TrnExpandFile(hsFile2, ulInquirySize) < 0) {
         PifCloseFile(hsFile1);
         PifDeleteFile(lpszFileName1);
         PifCloseFile(hsFile2);
@@ -116,10 +110,12 @@ SHORT   FDTCreateFile(USHORT usNoOfItem)
     }
 
     /* --- Store Actual Size --- */
-    usInitialVli1 = usInitialVli2 = 0;
-    usVliOffset = CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL) + sizeof(TRANITEMIZERS);  // TRANCONSSTORAGEHEADER
-    FDTWriteFile(usVliOffset, &usInitialVli1, sizeof(USHORT), hsFile1);
-    FDTWriteFile(usVliOffset, &usInitialVli2, sizeof(USHORT), hsFile2);
+    {
+        TrnVliOffset    usInitialVli = 0;
+        TrnFileSize     usVliOffset = CLIGCFFILE_DATASTART + sizeof(TRANGCFQUAL) + sizeof(TRANITEMIZERS);  // TRANCONSSTORAGEHEADER
+        TrnWriteFile(usVliOffset, &usInitialVli, sizeof(TrnVliOffset), hsFile1);
+        TrnWriteFile(usVliOffset, &usInitialVli, sizeof(TrnVliOffset), hsFile2);
+    }
     PifCloseFile(hsFile1);
     PifCloseFile(hsFile2);
 
@@ -144,7 +140,7 @@ SHORT   FDTCreateFile(USHORT usNoOfItem)
 */
 SHORT   FDTChkAndCreFile(USHORT usNoOfItem)
 {
-    SHORT       hsStorageFile;
+    PifFileHandle   hsStorageFile;
     SHORT       sReturn;    
 
     if ((hsStorageFile = PifOpenFile(aszFDTFile1, auchTEMP_OLD_FILE_READ)) >= 0) {  /* saratoga */
@@ -180,10 +176,10 @@ SHORT   FDTChkAndCreFile(USHORT usNoOfItem)
 */
 VOID    FDTChkAndDelFile(USHORT usNoOfItem)
 {
-    SHORT       hsStorageFile;
-    USHORT      usActualSize;
-    USHORT      usInquirySize;
-	ULONG		ulActualBytesRead;//RPH 11-10-3 SR# 201
+    PifFileHandle   hsStorageFile;
+    TrnFileSize     usActualSize;
+    ULONG           ulInquirySize = TrnCalStoSize(usNoOfItem, FLEX_CONSSTORAGE_ADR);   /* --- calculate inquiry size of storage file --- */
+	ULONG		    ulActualBytesRead;//RPH 11-10-3 SR# 201
 
     if ((hsStorageFile = PifOpenFile(aszFDTFile1, auchTEMP_OLD_FILE_READ)) < 0) {   /* saratoga */
         return;
@@ -191,14 +187,11 @@ VOID    FDTChkAndDelFile(USHORT usNoOfItem)
 
     /* --- retrieve actual size of storage file --- */
     //RPH 11-10-3 SR# 201
-	FDTReadFile(0, &usActualSize, sizeof(USHORT), hsStorageFile, &ulActualBytesRead);
+    TrnReadFile(0, &usActualSize, sizeof(TrnFileSize), hsStorageFile, &ulActualBytesRead);
     PifCloseFile(hsStorageFile);
 
-    /* --- calculate inquiry size of storage file --- */
-    usInquirySize = FDTCalStoSize(usNoOfItem);
-
     /* --- if inquiry size is different from actual, delete existing storage file --- */
-    if (usInquirySize != usActualSize) {
+    if (ulInquirySize != usActualSize) {
         PifDeleteFile(aszFDTFile1);
     }
 
@@ -208,203 +201,14 @@ VOID    FDTChkAndDelFile(USHORT usNoOfItem)
 
     /* --- retrieve actual size of storage file --- */
     //RPH 11-10-3 SR# 201
-	FDTReadFile(0, &usActualSize, sizeof(USHORT), hsStorageFile, &ulActualBytesRead);
+    TrnReadFile(0, &usActualSize, sizeof(TrnFileSize), hsStorageFile, &ulActualBytesRead);
     PifCloseFile(hsStorageFile);
 
     /* --- if inquiry size is different from actual, delete existing storage file --- */
-    if (usInquirySize != usActualSize) {
+    if (ulInquirySize != usActualSize) {
         PifDeleteFile(aszFDTFile2);
     }
 }
 
-
-/*
-*==========================================================================
-**    Synopsis: SHORT   FDTExpandFile(SHORT hsFileHandle, USHORT usInquirySize)
-*                                                        
-*       Input:  SHORT   hsFileHandle  - file handle
-*               USHORT  usInquirySize - size of file to expand
-*      Output:  Nothing
-*
-**  Return   :  
-*                                                                  
-**  Description:    Expand specified file size
-*==========================================================================
-*/
-SHORT   FDTExpandFile(SHORT hsFileHandle, USHORT usInquirySize)
-{
-#if 1
-	return TrnExpandFile( hsFileHandle, usInquirySize);
-#else
-    ULONG   ulActualSize;
-    SHORT   sReturn;
-
-    sReturn = PifSeekFile(hsFileHandle, (ULONG)usInquirySize, &ulActualSize);
-
-    if ((sReturn < 0) || ((ULONG)usInquirySize != ulActualSize)) {
-        return(FDT_ERROR);
-    }
-
-    /* --- store file size to created file --- */
-    sReturn = PifSeekFile(hsFileHandle, 0UL, &ulActualSize);
-
-    if ((sReturn < 0) || (ulActualSize != 0UL)) {
-        return(FDT_ERROR);
-    }
-
-    PifWriteFile(hsFileHandle, &usInquirySize, sizeof(USHORT));
-
-    return(FDT_SUCCESS);
-#endif
-}
-
-/*
-*==========================================================================
-**    Synopsis: USHORT  FDTReadFile(ULONG ulOffset, VOID *pData,
-*                                   ULONG ulSize, SHORT hsFileHandle, ULONG *pulActualBytesRead)
-*                                                        
-*       Input:  ULONG  ulOffset - Number of bytes from the beginning of the file.
-*               VOID    *pData - Pointer to read data buffer.
-*               ULONG  ulSize - Number of bytes to be Read.
-*               SHORT   hsFileHandle - File Handle.
-				ULONG	*pulActualBytesRead - Number of Bytes Read
-*      Output:  Nothing
-*       InOut:  Nothing
-*
-**  Return   :   FDT_NO_READ_SIZE
-				 FDT_ERROR
-				 FDT_SUCCESS
-*
-**  Description:    Read data from file.
-
-  11-10-3 RPH Changes for PifReadFile
-  FDTReadFile Now returns only an Error/Success Condition
-  but the Number of bytes Read is passed back by pulActualBytesRead
-*==========================================================================
-*/
-SHORT  FDTReadFile(ULONG ulOffset, VOID *pData, ULONG ulSize, SHORT hsFileHandle, ULONG *pulActualBytesRead)
-{
-    SHORT   sReturn;
-    ULONG   ulActPos;
-//    USHORT  usFSize;
-
-    if (!ulSize) {          /* check read size */
-        return(FDT_NO_READ_SIZE);          /* if read nothing, return */
-    }
-
-#if 0
-	// POSSIBLE_DEAD_CODE to indicate this is candidate for deletion.
-	//
-	// remove this check on the file size.  similar removal has been
-	// done for the following functionality:
-	//  MldReadFile()
-	//  TrnReadFile()
-    sReturn = PifSeekFile(hsFileHandle, 0UL, &ulActPos);
-    if ((sReturn < 0) || (ulActPos != 0UL)) {
-        return(FDT_ERROR);
-    }
-
-//    sReturn = PifReadFile(hsFileHandle, &usFSize, sizeof(USHORT), pulActualBytesRead);
-    if ((*pulActualBytesRead != sizeof(USHORT)) || (usFSize < ulOffset)) {
-        return(FDT_ERROR);
-    }
-#endif
-
-    sReturn = PifSeekFile(hsFileHandle, ulOffset, &ulActPos);
-    if ((sReturn < 0) || (ulOffset != ulActPos)) {
-        return(FDT_ERROR);
-    }
-
-	PifReadFile(hsFileHandle, pData, ulSize, pulActualBytesRead);
-	if(*pulActualBytesRead != ulSize){
-		return(FDT_ERROR);
-	}
-
-    return(FDT_SUCCESS);
-}
-
-/*
-*==========================================================================
-**    Synopsis: VOID    FDTWriteFile(ULONG ulOffset, VOID *pData,
-*                                    ULONG ulSize, SHORT hsFileHandle)
-*                                                        
-*       Input:  ULONG  ulOffset - Number of bytes from the biginning of the file.
-*               VOID    *pData - Pointer to write data buffer.
-*               ULONG  ulSize - Number of bytes to be written.
-*               SHORT   hsFileHandle - File Handle.
-*      Output:  Nothing
-*       InOut:  Nothing
-*
-**  Return   :  Normal End: FDT_SUCCESS
-*               Error End:  FDT_ERROR                                                       
-*
-**  Description:    Write data to file.
-
-  11-10-3 RPH Changes for PifReadFile
-*==========================================================================
-*/
-SHORT   FDTWriteFile(ULONG ulOffset, VOID *pData, ULONG ulSize, SHORT hsFileHandle)
-{
-    SHORT   sReturn;
-    ULONG   ulActPos;
-//    USHORT  usFSize;
-//	ULONG	ulActualBytesRead;
-
-    if (!ulSize) {                  /* check writed size */
-        return(FDT_ERROR);       /* if nothing, return */
-    }
-
-#if 0
-	// POSSIBLE_DEAD_CODE to indicate this is candidate for deletion.
-	//
-	// remove this check on the file size.  similar removal has been
-	// done for the following functionality:
-	//  MldWriteFile()
-	//  TrnWriteFile()
-    sReturn = PifSeekFile(hsFileHandle, 0UL, &ulActPos);
-    if ((sReturn < 0) || (ulActPos != 0UL)) {
-        return(FDT_ERROR);
-    }
-
-	// FILE_SIZE_CHECK
-//    sReturn = PifReadFile(hsFileHandle, &usFSize, sizeof(USHORT), &ulActualBytesRead);
-    if ((ulActualBytesRead != sizeof(USHORT)) || (usFSize < (ulOffset + ulSize))) {
-        return(FDT_ERROR);
-    }
-#endif
-
-    sReturn = PifSeekFile(hsFileHandle, ulOffset, &ulActPos);
-    if ((sReturn < 0) || (ulOffset != ulActPos)) {
-        return(FDT_ERROR);
-    }
-
-    PifWriteFile(hsFileHandle, pData, ulSize);
-
-    return(FDT_SUCCESS);
-}
-
-
-/*
-*===========================================================================
-** Synopsis:    USHORT FDTCalStoSize(USHORT usNoOfItem)
-*
-*   Input:      USHORT usNoOfItem     - number of items in storage file
-*   Output:     Nothing
-*   InOut:      Nothing
-*
-** Return:      size of storage file in bytes.
-*
-** Description: calculate size of storage file with specified no. of items.
-*               See also functions MldCalStoSize() and TrnCalStoSize() which
-*               perform a similar calculation.
-*===========================================================================
-*/
-USHORT  FDTCalStoSize(USHORT usNoOfItem)
-{
-    ULONG   ulActualSize = TrnCalStoSize(usNoOfItem, FLEX_CONSSTORAGE_ADR);
-
-	NHPOS_ASSERT(ulActualSize < 0xffff);
-    return((USHORT)ulActualSize);
-}
 
 /*========= End of File =========*/

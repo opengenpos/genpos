@@ -43,6 +43,7 @@
 #include    "transact.h"
 #include    "trans.h"
 #include    "prt.h"
+#include    "rfl.h"
 #include    "storage.h"
 #include    "fdt.h"
 #include    "nb.h"
@@ -56,14 +57,11 @@
 #include    "uie.h"
 #include    "pifmain.h"
 
-TCHAR       FARCONST  aszFDTFile1[]  = _T("FDTSTOR1");  /* Temp file #1 for LCD display #2 */
-TCHAR       FARCONST  aszFDTFile2[]  = _T("FDTSTOR2");  /* Temp file #2 for LCD display #3 */
+TCHAR       const  aszFDTFile1[]  = _T("FDTSTOR1");  /* Temp file #1 for LCD display #2 */
+TCHAR       const  aszFDTFile2[]  = _T("FDTSTOR2");  /* Temp file #2 for LCD display #3 */
 PifSemHandle    husFDTSyncSem = PIF_SEM_INVALID_HANDLE; /* FDT Event Semaphore */
 PifSemHandle    husFDTFileSem = PIF_SEM_INVALID_HANDLE; /* FDT File Semaphore */
 FDTLOCAL    FDTLocal;
-/*USHORT      usFDTStack[FDT_STACK];                      / Stack size */
-/*UCHAR       FARCONST  FDTTHREDNAME[] = "FDT";           / FDT Thread Name */
-/*static VOID (THREADENTRY *pFunc)(VOID) = FDTMain; */
 
 /*
 *===========================================================================
@@ -80,16 +78,13 @@ FDTLOCAL    FDTLocal;
 */
 VOID    FDTInit(USHORT usMode)
 {
-    PARAFLEXMEM     ParaFlexMem;
-
     husFDTSyncSem = PifCreateSem(0);    /* Create Event Semaphore */
     husFDTFileSem = PifCreateSem(1);    /* Create File Semaphore */
 
     if (usMode & POWER_UP_CLEAR_TOTAL) {
-        ParaFlexMem.uchMajorClass = CLASS_PARAFLEXMEM;
-        ParaFlexMem.uchAddress = FLEX_CONSSTORAGE_ADR;
-        CliParaRead(&ParaFlexMem);
-        CliCreateFile(FLEX_CONSSTORAGE_ADR, ParaFlexMem.ulRecordNumber, 0);
+        ULONG  ulRecordNumber = RflGetMaxRecordNumberByType(FLEX_CONSSTORAGE_ADR);
+
+        CliCreateFile(FLEX_CONSSTORAGE_ADR, ulRecordNumber, 0);
     }
 }
 
@@ -112,9 +107,8 @@ VOID    FDTInit(USHORT usMode)
 */
 VOID    THREADENTRY FDTMain(VOID)
 {
-    FDTPARA     FDTPara;
+    FDTPARA     FDTPara = { 0 };
 
-    memset(&FDTLocal, 0, sizeof(FDTLOCAL));      /* Initialize */
     FDTLocal.husTranHandle1 = PIF_FILE_INVALID_HANDLE;
     FDTLocal.husTranHandle2 = PIF_FILE_INVALID_HANDLE;
 
@@ -309,7 +303,7 @@ SHORT   FDTOpen(VOID)
         PifReleaseSem(husFDTFileSem);
         return(LDT_PROHBT_ADR);
     }
-	FDTReadFile(0, &FDTLocal.usTranSize1, sizeof(FDTLocal.usTranSize1), FDTLocal.husTranHandle1, &ulActualBytesRead);
+    TrnReadFile(0, &FDTLocal.usTranSize1, sizeof(FDTLocal.usTranSize1), FDTLocal.husTranHandle1, &ulActualBytesRead);
 
     /*----- Open FDT File #2 -----*/
     if ((FDTLocal.husTranHandle2 = PifOpenFile(aszFDTFile2, auchTEMP_OLD_FILE_READ_WRITE)) < 0) {  /* saratoga */
@@ -319,7 +313,7 @@ SHORT   FDTOpen(VOID)
         return(LDT_PROHBT_ADR);
     }
     //RPH 11-10-3 SR# 201
-	FDTReadFile(0, &FDTLocal.usTranSize2, sizeof(FDTLocal.usTranSize2), FDTLocal.husTranHandle2, &ulActualBytesRead);
+    TrnReadFile(0, &FDTLocal.usTranSize2, sizeof(FDTLocal.usTranSize2), FDTLocal.husTranHandle2, &ulActualBytesRead);
 
     /*----- Exist Message from NB ? -----*/
     if (FDTLocal.fchNBMessage != 0) {
@@ -368,7 +362,7 @@ VOID    FDTClose(VOID)
 SHORT   FDTRefresh(USHORT usQueue, USHORT usType)
 {
     USHORT   uchOrder2, uchOrder3;
-	USHORT   usFdtOrders[2];
+    USHORT   usFdtOrders[2] = { 0 };
     SHORT   sStatus = GCF_NOT_IN, sReturn = 0;
 
     sStatus = CliGusRetrieveFirstQueue(usQueue, usType, &usFdtOrders[0]);
