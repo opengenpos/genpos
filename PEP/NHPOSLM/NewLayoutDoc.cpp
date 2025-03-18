@@ -166,12 +166,12 @@ void CNewLayoutDoc::OnFileExport()
 				//get the next control in the list and asign to bi
 				bi = pwi->ButtonItemList.GetNext (pos);
 				
-				if(bi->controlAttributes.m_nType == CWindowControl::ButtonControl ){
+				if(bi->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl ){
 					WriteExportData(bi);
 				}
 					
 				//control is a window
-				if(bi->controlAttributes.m_nType == CWindowControl::WindowContainer){
+				if(bi->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 					ExpSubControl(CWindowItemExt::TranslateCWindowControl(bi));
 				}
 				//bi = pwi->GetDataNext();
@@ -237,11 +237,11 @@ BOOL CNewLayoutDoc::ExpSubControl(CWindowItem *wi)
 
 	while (pwc) {
 		CRect kk;
-		if(pwc->controlAttributes.m_nType == CWindowControl::ButtonControl){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 			WriteExportData(pwc);
 		}
 
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			ExpSubControl(CWindowItemExt::TranslateCWindowControl(pwc));
 		}
 

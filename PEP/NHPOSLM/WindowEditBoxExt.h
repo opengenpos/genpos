@@ -22,7 +22,7 @@ public:
 //	virtual void ControlSerialize (CArchive &ar);
 	BOOL WindowDisplay (CDC *pDC);
 	static CWindowEditBoxExt * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == EditBoxControl)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::EditBoxControl)
 			return (static_cast <CWindowEditBoxExt *> (pwc));
 		else
 			return NULL;

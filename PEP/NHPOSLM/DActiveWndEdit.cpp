@@ -151,7 +151,7 @@ void CDActiveWndEdit::OnSelchangeComboGrplist()
 		pListControl = pDoc->listControls.GetNext (currentPos);
 
 		//is the control a window item
-		if (pListControl->controlAttributes.m_nType == CWindowControl::WindowContainer ) {
+		if (pListControl->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer ) {
 			CWindowItemExt* wi = CWindowItemExt::TranslateCWindowControl(pListControl);
 
 			//does the window item belong to the selected group

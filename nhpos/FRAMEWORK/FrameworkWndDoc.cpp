@@ -920,7 +920,7 @@ void CFrameworkWndDoc::OnTimer(UINT nIDEvent)
 					pListControl = listControls.GetNext (currentPos);
 					ASSERT(pListControl);
 
-					if (pListControl->controlAttributes.m_nType != CWindowControl::WindowContainer) {
+					if (pListControl->controlAttributes.m_nType != CWindowControl::CWindowControlType::WindowContainer) {
 						pListControl->WindowCreate (this);
 					}
 					else /*if (pListControl->m_myId == 1)*/{
@@ -1038,7 +1038,7 @@ void CFrameworkWndDoc::DefaultUserScreenLocal()
 			ASSERT(pwc);
 			
 			//if the control in the list is a Window
-			if (pwc && (pwc->controlAttributes.m_nType == CWindowControl::WindowContainer))
+			if (pwc && (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer))
 			{
 				//if this window was set to be a user screen default
 				if (pwc->controlAttributes.SpecWin[UserDefaultWinIndex] & UserDefaultWin_FLAG)

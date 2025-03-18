@@ -46,23 +46,23 @@ void DefaultEdit::DoDataExchange(CDataExchange* pDX)
 
 	if (pDX->m_bSaveAndValidate) {
 		//Button Shape
-		ShapeDefault = CWindowButton::ButtonShapeRect;
+		ShapeDefault = CWindowButton::ButtonShape::ButtonShapeRect;
 
 		if (m_ShapeElipse.GetCheck ()) {
-			ShapeDefault = CWindowButton::ButtonShapeElipse;
+			ShapeDefault = CWindowButton::ButtonShape::ButtonShapeElipse;
 		}
 		else if (m_ShapeRoundRect.GetCheck ()) {
-			ShapeDefault = CWindowButton::ButtonShapeRoundedRect;
+			ShapeDefault = CWindowButton::ButtonShape::ButtonShapeRoundedRect;
 		}
 
 		//Button Pattern
-		PatternDefault = CWindowButton::ButtonPatternNone;
+		PatternDefault = CWindowButton::ButtonPattern::ButtonPatternNone;
 
 		if (m_PatternHorizontal.GetCheck ()) {
-			PatternDefault = CWindowButton::ButtonPatternHoriz;
+			PatternDefault = CWindowButton::ButtonPattern::ButtonPatternHoriz;
 		}
 		else if (m_PatternVertical.GetCheck ()) {
-			PatternDefault = CWindowButton::ButtonPatternVert;
+			PatternDefault = CWindowButton::ButtonPattern::ButtonPatternVert;
 		}
 
 		
@@ -101,14 +101,14 @@ void DefaultEdit::DoDataExchange(CDataExchange* pDX)
 		}
 
 		//Button Shape
-		m_ShapeRect.SetCheck ((ShapeDefault == CWindowButton::ButtonShapeRect) ? 1 : 0);
-		m_ShapeElipse.SetCheck ((ShapeDefault == CWindowButton::ButtonShapeElipse) ? 1 : 0);
-		m_ShapeRoundRect.SetCheck ((ShapeDefault == CWindowButton::ButtonShapeRoundedRect) ? 1 : 0);
+		m_ShapeRect.SetCheck ((ShapeDefault == CWindowButton::ButtonShape::ButtonShapeRect) ? 1 : 0);
+		m_ShapeElipse.SetCheck ((ShapeDefault == CWindowButton::ButtonShape::ButtonShapeElipse) ? 1 : 0);
+		m_ShapeRoundRect.SetCheck ((ShapeDefault == CWindowButton::ButtonShape::ButtonShapeRoundedRect) ? 1 : 0);
 		
 		//Button Pattern
-		m_PatternNone.SetCheck ((PatternDefault == CWindowButton::ButtonPatternNone) ? 1 : 0);
-		m_PatternHorizontal.SetCheck ((PatternDefault == CWindowButton::ButtonPatternHoriz) ? 1 : 0);
-		m_PatternVertical.SetCheck ((PatternDefault == CWindowButton::ButtonPatternVert) ? 1 : 0);
+		m_PatternNone.SetCheck ((PatternDefault == CWindowButton::ButtonPattern::ButtonPatternNone) ? 1 : 0);
+		m_PatternHorizontal.SetCheck ((PatternDefault == CWindowButton::ButtonPattern::ButtonPatternHoriz) ? 1 : 0);
+		m_PatternVertical.SetCheck ((PatternDefault == CWindowButton::ButtonPattern::ButtonPatternVert) ? 1 : 0);
 		
 		
 		//Width and Height --> verify value is between 1 and 6

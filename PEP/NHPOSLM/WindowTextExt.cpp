@@ -10,7 +10,7 @@
 CWindowTextExt::CWindowTextExt (int id, int row, int column, int width, int height) :
 	CWindowText (id, row, column, width, height)
 {
-		controlAttributes.m_nType = CWindowControl::TextControl;
+		controlAttributes.m_nType = CWindowControl::CWindowControlType::TextControl;
 	
 }
 

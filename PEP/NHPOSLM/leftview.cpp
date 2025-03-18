@@ -164,7 +164,7 @@ void CLeftView::SetControlTextItem(CWindowItem *wi, HTREEITEM ti)
 		//get the current control in the windows control list
 		CWindowControl* wc = wi->ButtonItemList.GetNext (currentPos);
 		//is the control a TextControl, if not its a button
-		if(wc->controlAttributes.m_nType == CWindowControl::TextControl){
+		if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 
 			
 			//Set the caption variable according to the type of the text control
@@ -178,7 +178,7 @@ void CLeftView::SetControlTextItem(CWindowItem *wi, HTREEITEM ti)
 												    	caption, 0, 0, 0, 0, wc->controlAttributes.m_myId, DocWinTextControls, TVI_LAST);
 			}
 		}
-		else if (wc->controlAttributes.m_nType == CWindowControl::ButtonControl)
+		else if (wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl)
 		{
 
 			caption.Format(_T("%s"), wc->myCaption);
@@ -241,7 +241,7 @@ void CLeftView::InsertNewTextControl(UINT id, CWindowControl* pwc)
 
 		wc = wi->ButtonItemList.GetNext (currentPos);
 		//is the control a TextControl
-		if(wc->controlAttributes.m_nType == CWindowControl::TextControl){
+		if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 			//creating tree control for the label text control
 			HTREEITEM control = myTree->GetChildItem(parent);
 			//creating tree subControl for the items under text control
@@ -268,7 +268,7 @@ void CLeftView::InsertNewTextControl(UINT id, CWindowControl* pwc)
 			}
 		}
 		//is this control a button
-		else if (wc->controlAttributes.m_nType != CWindowControl::LabelControl)
+		else if (wc->controlAttributes.m_nType != CWindowControl::CWindowControlType::LabelControl)
 		{
 			HTREEITEM control = myTree->GetChildItem(parent);
 			control = myTree->GetNextItem(control, TVGN_NEXT);
@@ -358,7 +358,7 @@ void CLeftView::SetTreeItem(CWindowItem *wi, HTREEITEM ti)
 		//get the current control in the windows control list
 		CWindowControl* wc = wi->ButtonItemList.GetNext (currentPos);
 		//is the control a WindowItem
-		if(wc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 
 			//Set the caption variable according to the name of the window
 			//tempA.LoadString(IDS_SUBWINITEM);
@@ -416,7 +416,7 @@ void CLeftView::ShowSelectedWindow(UINT id)
 		POSITION  currentPos2 = wi->ButtonItemList.GetHeadPosition ();
 		POSITION  currentPosLast2 = currentPos2;
 
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			// Look to see if this window item has the same ID as what was selected.
 			// If so, we have found the window and we process the select accordingly.
 			// If the current window does not have the same ID, then look to see if any
@@ -442,7 +442,7 @@ void CLeftView::ShowSelectedWindow(UINT id)
 				while (currentPos) {
 					//get the next control
 					CWindowControl *pwc = wi->ButtonItemList.GetNext (currentPos);
-					if(pwc->controlAttributes.m_nType == CWindowControl::ButtonControl ){
+					if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl ){
 						TRACE0("  Button Found %d\n");
 					}
 				}
@@ -868,7 +868,7 @@ void CLeftView::HideWindowItem(UINT id, CWindowItemExt *wi)
 		CWindowControl *pwc = wi->ButtonItemList.GetNext (currentPos);
 		
 		//is the control a window item
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			//cast the controls type to CWindowItemExt
 			CWindowItemExt *pwi = CWindowItemExt::TranslateCWindowControl(pwc);
 			//is this window the one that was selected

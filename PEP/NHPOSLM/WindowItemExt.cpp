@@ -162,7 +162,7 @@ BOOL CWindowItemExt::WindowDisplay (CDC* pDC)
 			//verify that the windows has a valid parent
 			if(pContainer){
 				//if the windows parent is another window and its parents property is set to show it
-				if(pContainer->controlAttributes.m_nType == CWindowControl::WindowContainer
+				if(pContainer->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer
 					&& CWindowItemExt::TranslateCWindowControl(pContainer)->windowAttributes.Show){
 					//create a dotted border
 					penWinBorder.CreatePen(PS_DOT, 1, RGB(0, 0, 255)/*WinColor*/);
@@ -188,7 +188,7 @@ BOOL CWindowItemExt::WindowDisplay (CDC* pDC)
 		CWindowControl *pwc = ButtonItemList.GetNext (currentPos);
 		pwc->controlAttributes.m_myId;
 		//if we are showing this window or the control in the list is a window itme
-		if(this->windowAttributes.Show || pwc->controlAttributes.m_nType == CWindowControl::WindowContainer ){
+		if(this->windowAttributes.Show || pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer ){
 			//make sure the current active ID is known to this control
 			pwc->controlAttributes.CurrentID = this->controlAttributes.CurrentID;
 			//call function to display this control
@@ -318,14 +318,14 @@ int CWindowItemExt::SearchForControl(int row, int column)
 		
 		CRect kk;
 		//control is a Text Area
-		if(bi->controlAttributes.m_nType == CWindowControl::TextControl )
+		if(bi->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl )
 			kk.SetRect(/*pw->m_nColumn*/ + bi->controlAttributes.m_nColumn, 
 					   /*pw->m_nRow*/ + bi->controlAttributes.m_nRow, 
 					   /*pw->m_nColumn*/ + bi->controlAttributes.m_nColumn + bi->controlAttributes.m_usWidthMultiplier, 
 					   /*pw->m_nRow*/ + bi->controlAttributes.m_nRow + bi->controlAttributes.m_usHeightMultiplier);
 
 		//control is a button
-		if(bi->controlAttributes.m_nType == CWindowControl::ButtonControl)
+		if(bi->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl)
 			kk.SetRect(controlAttributes.m_nColumn + bi->controlAttributes.m_nColumn, 
 					   controlAttributes.m_nRow + bi->controlAttributes.m_nRow, 
 					   controlAttributes.m_nColumn + bi->controlAttributes.m_nColumn + bi->controlAttributes.m_usWidthMultiplier, 

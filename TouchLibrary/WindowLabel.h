@@ -17,9 +17,6 @@
 class CWindowLabel : public CWindowControl  
 {
 public:
-	typedef enum {CaptionAlignmentHLeft = 0, CaptionAlignmentHCenter, CaptionAlignmentHRight, CaptionAlignmentVTop, CaptionAlignmentVMiddle, CaptionAlignmentVBottom} CaptionAlignment;
-	typedef enum {IconAlignmentHLeft = 0, IconAlignmentHCenter, IconAlignmentHRight} HorizontalIconAlignment;
-	typedef enum {IconAlignmentVTop = 0, IconAlignmentVMiddle, IconAlignmentVBottom} VerticalIconAlignment;
 
 	/*Structure containing all the attributes to be serialized for the WindowLabel class
 	any new attributes need to be added at the end of the struct so data from 
@@ -53,7 +50,7 @@ public:
 	int nEndOfArchive;
 
 	static CWindowLabel * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc && pwc->controlAttributes.m_nType == LabelControl)
+		if (pwc && pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl)
 			return (static_cast <CWindowLabel *> (pwc));
 		else
 			return NULL;

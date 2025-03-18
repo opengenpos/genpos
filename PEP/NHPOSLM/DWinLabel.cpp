@@ -70,9 +70,9 @@ CDWinLabel::CDWinLabel(CWindowLabelExt *pl,CWnd* pParent /*=NULL*/)
 		nColumn = 0;
 		m_usWidthMultiplier = df.defaultAttributes.WidthDefault;
 		m_usHeightMultiplier = df.defaultAttributes.HeightDefault;
-		myCapAlignment = CWindowLabel::CaptionAlignmentVMiddle;
-		myHorIconAlignment = CWindowLabel::IconAlignmentHCenter;
-		myVertIconAlignment =	CWindowLabel::IconAlignmentVMiddle;
+		myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
+		myHorIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+		myVertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		horizOrient = TRUE;
 		myLblFont = df.defaultAttributes.FontDefault;
 		colorText = df.defaultAttributes.FontColorDefault;
@@ -115,9 +115,9 @@ CDWinLabel::CDWinLabel(CWindowEditBoxExt *pl,CWnd* pParent /*=NULL*/)
 		nColumn = 0;
 		m_usWidthMultiplier = df.defaultAttributes.WidthDefault;
 		m_usHeightMultiplier = df.defaultAttributes.HeightDefault;
-		myCapAlignment = CWindowLabel::CaptionAlignmentVMiddle;
-		myHorIconAlignment = CWindowLabel::IconAlignmentHCenter;
-		myVertIconAlignment =	CWindowLabel::IconAlignmentVMiddle;
+		myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
+		myHorIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+		myVertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		horizOrient = TRUE;
 		myLblFont = df.defaultAttributes.FontDefault;
 		colorText = df.defaultAttributes.FontColorDefault;
@@ -163,24 +163,24 @@ void CDWinLabel::DoDataExchange(CDataExchange* pDX)
 		//Horizontal Caption Alignment
 		if(((CButton *)GetDlgItem (IDC_RADIO_LBL_VERTICAL))->GetCheck()){
 			horizOrient = FALSE;
-			myCapAlignment = CWindowLabel::CaptionAlignmentHLeft;
+			myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHLeft;
 			if(((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_CENTER))->GetCheck()){
-				myCapAlignment = CWindowLabel::CaptionAlignmentHCenter;
+				myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHCenter;
 			}
 			else if(((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_RIGHT))->GetCheck()){
-				myCapAlignment = CWindowLabel::CaptionAlignmentHRight;
+				myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHRight;
 			}
 		}
 
 		//Vertical Caption Alignment
 		if(((CButton *)GetDlgItem (IDC_RADIO_LBL_HORIZONTAL))->GetCheck()){
 			horizOrient = TRUE;
-			myCapAlignment = CWindowLabel::CaptionAlignmentVTop;
+			myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVTop;
 			if(((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_MIDDLE))->GetCheck()){
-				myCapAlignment = CWindowLabel::CaptionAlignmentVMiddle;
+				myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
 			}
 			else if(((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_BOTTOM))->GetCheck()){
-				myCapAlignment = CWindowLabel::CaptionAlignmentVBottom;
+				myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVBottom;
 			}
 		}
 
@@ -190,20 +190,20 @@ void CDWinLabel::DoDataExchange(CDataExchange* pDX)
 		}
 
 		//Icon alignment - can have both horizontal and vertical
-		myHorIconAlignment = CWindowLabel::IconAlignmentHLeft;
+		myHorIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHLeft;
 		if(((CButton *)GetDlgItem (IDC_RADIO_LBLICON_CENTER))->GetCheck()){
-			myHorIconAlignment = CWindowLabel::IconAlignmentHCenter;
+			myHorIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
 		}
 		else if(((CButton *)GetDlgItem (IDC_RADIO_LBLICON_RIGHT))->GetCheck()){
-			myHorIconAlignment = CWindowLabel::IconAlignmentHRight;
+			myHorIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHRight;
 		}
 
-		myVertIconAlignment = CWindowLabel::IconAlignmentVTop;
+		myVertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVTop;
 		if(((CButton *)GetDlgItem (IDC_RADIO_LBLICON_MIDDLE))->GetCheck()){
-			myVertIconAlignment = CWindowLabel::IconAlignmentVMiddle;
+			myVertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		}
 		else if(((CButton *)GetDlgItem (IDC_RADIO_LBLICON_BOTTOM))->GetCheck()){
-			myVertIconAlignment = CWindowLabel::IconAlignmentVBottom;
+			myVertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVBottom;
 		}
 
 		// Borders 
@@ -285,18 +285,18 @@ void CDWinLabel::DoDataExchange(CDataExchange* pDX)
 			((CButton *)GetDlgItem (IDC_CHECK_IS_COUNTER))->SetCheck(FALSE);
 		}
 
-		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_LEFT))->SetCheck((myCapAlignment == CWindowLabel::CaptionAlignmentHLeft)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_CENTER))->SetCheck((myCapAlignment == CWindowLabel::CaptionAlignmentHCenter)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_RIGHT))->SetCheck((myCapAlignment == CWindowLabel::CaptionAlignmentHRight)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_TOP))->SetCheck((myCapAlignment == CWindowLabel::CaptionAlignmentVTop)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_MIDDLE))->SetCheck((myCapAlignment == CWindowLabel::CaptionAlignmentVMiddle)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_BOTTOM))->SetCheck((myCapAlignment == CWindowLabel::CaptionAlignmentVBottom)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_LEFT))->SetCheck((myHorIconAlignment == CWindowLabel::IconAlignmentHLeft)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_CENTER))->SetCheck((myHorIconAlignment == CWindowLabel::IconAlignmentHCenter)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_RIGHT))->SetCheck((myHorIconAlignment == CWindowLabel::IconAlignmentHRight)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_TOP))->SetCheck((myVertIconAlignment == CWindowLabel::IconAlignmentVTop)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_MIDDLE))->SetCheck((myVertIconAlignment == CWindowLabel::IconAlignmentVMiddle)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_BOTTOM))->SetCheck((myVertIconAlignment == CWindowLabel::IconAlignmentVBottom)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_LEFT))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHLeft)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_CENTER))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHCenter)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_RIGHT))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHRight)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_TOP))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentVTop)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_MIDDLE))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLCAP_BOTTOM))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentVBottom)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_LEFT))->SetCheck((myHorIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHLeft)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_CENTER))->SetCheck((myHorIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_RIGHT))->SetCheck((myHorIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHRight)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_TOP))->SetCheck((myVertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVTop)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_MIDDLE))->SetCheck((myVertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_LBLICON_BOTTOM))->SetCheck((myVertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVBottom)? 1 : 0);
 
 		// Borders 
 		if (bSpecialBorder)

@@ -25,7 +25,7 @@ public:
 	CString csOEPIconFilePath;
 
 	static CWindowTextExt * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == TextControl)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl)
 			return (static_cast <CWindowTextExt *> (pwc));
 		else
 			return NULL;

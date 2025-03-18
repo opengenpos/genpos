@@ -66,8 +66,8 @@ CD_OEPEdit::CD_OEPEdit(CWindowTextExt *pb, CWindowItemExt *pParent /*=NULL*/)
 		m_csSpecWin[SpecWinIndex_OEP] |= SpecWinMask_OEP_FLAG;
 
 		//added icon support to buttons
-		m_nOEPIconHorizRadioSelection	= CWindowButton::IconAlignmentHCenter;
-		m_nOEPIconVertRadioSelection	= CWindowButton::IconAlignmentVMiddle;
+		m_nOEPIconHorizRadioSelection	= CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+		m_nOEPIconVertRadioSelection	= CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 //		m_csOEPIconFileName = _T("");
 //		m_csOEPIconFilePathName = NULL:	//ignore for now, set when user interacts
 	}
@@ -99,29 +99,29 @@ void CD_OEPEdit::DoDataExchange(CDataExchange* pDX)
 	//Additions made for Multiple-OEP Window Feature - CSMALL 1/11/06
 	DDX_Text(pDX, IDC_EDIT1_OEPGroupNumbers, m_OEPGroupNumbers);
 	DDX_Text(pDX, IDC_OEP_ICON_FILENAME_EDIT, m_csOEPIconFileName);
-	DDX_Radio(pDX, IDC_OEP_ICON_HOR_LEFT, m_nOEPIconHorizRadioSelection);
-	DDX_Radio(pDX, IDC_OEP_ICON_VERT_TOP, m_nOEPIconVertRadioSelection);
+	DDX_Radio(pDX, IDC_OEP_ICON_HOR_LEFT, (int &)(m_nOEPIconHorizRadioSelection));
+	DDX_Radio(pDX, IDC_OEP_ICON_VERT_TOP, (int&)m_nOEPIconVertRadioSelection);
 	//}}AFX_DATA_MAP
 	if (pDX->m_bSaveAndValidate) {
 
 		//Button Shape
-		myShape = CWindowButton::ButtonShapeRect;
+		myShape = CWindowButton::ButtonShape::ButtonShapeRect;
 
 		if (m_buttonOEPShapeElipse.GetCheck ()) {
-			myShape = CWindowButton::ButtonShapeElipse;
+			myShape = CWindowButton::ButtonShape::ButtonShapeElipse;
 		}
 		else if (m_buttonOEPShapeRoundRect.GetCheck ()) {
-			myShape = CWindowButton::ButtonShapeRoundedRect;
+			myShape = CWindowButton::ButtonShape::ButtonShapeRoundedRect;
 		}
 
 		//Button Pattern
-		myPattern = CWindowButton::ButtonPatternNone;
+		myPattern = CWindowButton::ButtonPattern::ButtonPatternNone;
 
 		if (m_buttonOEPPattHoriz.GetCheck ()) {
-			myPattern = CWindowButton::ButtonPatternHoriz;
+			myPattern = CWindowButton::ButtonPattern::ButtonPatternHoriz;
 		}
 		else if (m_buttonOEPPattVert.GetCheck ()) {
-			myPattern = CWindowButton::ButtonPatternVert;
+			myPattern = CWindowButton::ButtonPattern::ButtonPatternVert;
 		}
 		
 		//Button Width and Height
@@ -186,14 +186,14 @@ void CD_OEPEdit::DoDataExchange(CDataExchange* pDX)
 		((CEdit *)GetDlgItem (IDC_EDIT1_OEPGroupNumbers))->LimitText (25);
 
 		//Button Shape
-		m_buttonOEPShapeRect.SetCheck ((myShape == CWindowButton::ButtonShapeRect) ? 1 : 0);
-		m_buttonOEPShapeElipse.SetCheck ((myShape == CWindowButton::ButtonShapeElipse) ? 1 : 0);
-		m_buttonOEPShapeRoundRect.SetCheck ((myShape == CWindowButton::ButtonShapeRoundedRect) ? 1 : 0);
+		m_buttonOEPShapeRect.SetCheck ((myShape == CWindowButton::ButtonShape::ButtonShapeRect) ? 1 : 0);
+		m_buttonOEPShapeElipse.SetCheck ((myShape == CWindowButton::ButtonShape::ButtonShapeElipse) ? 1 : 0);
+		m_buttonOEPShapeRoundRect.SetCheck ((myShape == CWindowButton::ButtonShape::ButtonShapeRoundedRect) ? 1 : 0);
 		
 		//Button Pattern
-		m_buttonOEPPattNone.SetCheck ((myPattern == CWindowButton::ButtonPatternNone) ? 1 : 0);
-		m_buttonOEPPattHoriz.SetCheck ((myPattern == CWindowButton::ButtonPatternHoriz) ? 1 : 0);
-		m_buttonOEPPattVert.SetCheck ((myPattern == CWindowButton::ButtonPatternVert) ? 1 : 0);
+		m_buttonOEPPattNone.SetCheck ((myPattern == CWindowButton::ButtonPattern::ButtonPatternNone) ? 1 : 0);
+		m_buttonOEPPattHoriz.SetCheck ((myPattern == CWindowButton::ButtonPattern::ButtonPatternHoriz) ? 1 : 0);
+		m_buttonOEPPattVert.SetCheck ((myPattern == CWindowButton::ButtonPattern::ButtonPatternVert) ? 1 : 0);
 		
 		//Button Width and Height --> verify value is between 1 and 8
 		if (m_usBtnWidth < 1)

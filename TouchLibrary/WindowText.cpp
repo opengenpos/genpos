@@ -22,7 +22,7 @@ CWindowText::CWindowText(CWindowControl *wc /* = 0 */) :
 {
 	//initlize attributes
 	if (!wc || !CWindowText::TranslateCWindowControl(wc)) {
-//		controlAttributes.m_nType = TextControl;
+//		controlAttributes.m_nType = CWindowControl::CWindowControlType::TextControl;
 		memset(&textAttributes ,0, sizeof(TextAttributes));		//NULL unless OEP, if OEP, this will be set
 		textAttributes.signatureStart = 0xABCDEF87;
 		textAttributes.oepBtnDown = 4;
@@ -31,21 +31,21 @@ CWindowText::CWindowText(CWindowControl *wc /* = 0 */) :
 		textAttributes.oepBtnHeight = 3;
 		textAttributes.oepBtnColor = RGB(220, 220, 220);
 		textAttributes.oepBtnFontColor = RGB(0, 0, 0);
-		textAttributes.oepBtnShape = CWindowButton::ButtonShapeRect;
-		textAttributes.oepBtnPattern = CWindowButton::ButtonPatternNone;
+		textAttributes.oepBtnShape = CWindowButton::ButtonShape::ButtonShapeRect;
+		textAttributes.oepBtnPattern = CWindowButton::ButtonPattern::ButtonPatternNone;
 	}
 	else{
 		memcpy(&textAttributes,&(CWindowText::TranslateCWindowControl(wc)->textAttributes),sizeof(textAttributes));
 	}
 
-	controlAttributes.m_nType = TextControl;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::TextControl;
 }
 
 CWindowText::CWindowText (int id, int row, int column, int width, int height) :
 	CWindowControl (id, row, column, width, height)
 {
 	//initialize attributes
-	controlAttributes.m_nType = TextControl;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::TextControl;
 	memset(&textAttributes, 0, sizeof(TextAttributes));
 	textAttributes.signatureStart = 0xABCDEF87;
 	textAttributes.m_nTop = 0;
@@ -57,8 +57,8 @@ CWindowText::CWindowText (int id, int row, int column, int width, int height) :
 	textAttributes.oepBtnHeight = 3;
 	textAttributes.oepBtnColor = RGB(220, 220, 220);
 	textAttributes.oepBtnFontColor = RGB(0, 0, 0);
-	textAttributes.oepBtnShape = CWindowButton::ButtonShapeRect;
-	textAttributes.oepBtnPattern = CWindowButton::ButtonPatternNone;
+	textAttributes.oepBtnShape = CWindowButton::ButtonShape::ButtonShapeRect;
+	textAttributes.oepBtnPattern = CWindowButton::ButtonPattern::ButtonPatternNone;
 }
 
 CWindowText::~CWindowText()

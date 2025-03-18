@@ -56,7 +56,7 @@ public:
 	static void sendButtonMessageToBL(CHARDATA* pCharData);//Sends data into BusinessLogic From Button Press
 
 	static CFrameworkWndButton * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == ButtonControl)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl)
 			return (static_cast <CFrameworkWndButton *> (pwc));
 		else
 			return NULL;

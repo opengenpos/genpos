@@ -40,7 +40,7 @@ public:
 	int  m_usWidthMultiplier;	//Window width (grids)
 //	int  m_nTop;	//Window origin y position
 //	int  m_nLeft;	//WIndow origin x position
-	int  m_nControlType; //Window Functionality Receipt/ type
+	CWindowControl::CWindowControlType  m_nControlType; //Window Functionality Receipt/ type
 	COLORREF   colorFace;
 	COLORREF   colorText;
 	LOGFONT myTextFont;

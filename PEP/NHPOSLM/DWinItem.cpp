@@ -540,12 +540,12 @@ void CDWinItem::OnResetWinDefaults()
 		CWindowControl *pwc = temp->GetDataFirst ();
 		while(pwc){
 			switch(pwc->controlAttributes.m_nType){
-			case CWindowControl::TextControl:		//text
+			case CWindowControl::CWindowControlType::TextControl:		//text
 				if(pwc->controlAttributes.useDefault){
 					pwc->controlAttributes.m_colorFace = temp->WindowDef.defaultAttributes.TextWinDefault;
 				}
 				break;
-			case CWindowControl::ButtonControl:		//button
+			case CWindowControl::CWindowControlType::ButtonControl:		//button
 				if(pwc->controlAttributes.useDefault){
 					CWindowButton *wb = CWindowButton::TranslateCWindowControl (pwc);
 					wb->controlAttributes.m_colorFace = temp->WindowDef.defaultAttributes.ButtonDefault;
@@ -602,12 +602,12 @@ void CDWinItem::OnRadioDocDef()
 		CWindowControl *pwc = temp->GetDataFirst ();
 		while(pwc){
 			switch(pwc->controlAttributes.m_nType){
-			case CWindowControl::TextControl:		//text
+			case CWindowControl::CWindowControlType::TextControl:		//text
 				if(pwc->controlAttributes.useDefault){
 					pwc->controlAttributes.m_colorFace = temp->WindowDef.defaultAttributes.TextWinDefault;
 				}
 				break;
-			case CWindowControl::ButtonControl:		//button
+			case CWindowControl::CWindowControlType::ButtonControl:		//button
 				if(pwc->controlAttributes.useDefault){
 					CWindowButton *wb = CWindowButton::TranslateCWindowControl (pwc);
 					wb->controlAttributes.m_colorFace = temp->WindowDef.defaultAttributes.ButtonDefault;

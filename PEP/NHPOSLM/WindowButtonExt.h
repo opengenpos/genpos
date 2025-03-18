@@ -30,7 +30,7 @@ public:
 	friend CDButtonEdit;
 
 	static CWindowButtonExt * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == ButtonControl)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl)
 			return (static_cast <CWindowButtonExt *> (pwc));
 		else
 			return NULL;

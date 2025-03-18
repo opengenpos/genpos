@@ -32,27 +32,27 @@ public:
 		CWindowControl *wcReturn = NULL;
 		this->Serialize (ar);
 		switch (controlAttributes.m_nType) {
-			case TextControl:
+		case CWindowControl::CWindowControlType::TextControl:
 				wcReturn = new CFrameworkWndText(this);
 				wcReturn->ControlSerialize (ar);
 				break;
-			case ButtonControl:
+			case CWindowControl::CWindowControlType::ButtonControl:
 				wcReturn = new CFrameworkWndButton(this);
 				wcReturn->ControlSerialize (ar);
 				break;
-			case WindowContainer:
+			case CWindowControl::CWindowControlType::WindowContainer:
 				wcReturn = new CFrameworkWndItem(this);
 				wcReturn->ControlSerialize (ar);
 				break;
-			case LabelControl:
+			case CWindowControl::CWindowControlType::LabelControl:
 				wcReturn = new CFrameworkWndLabel(this);
 				wcReturn->ControlSerialize (ar);
 				break;
-			case ListBoxControl:
+			case CWindowControl::CWindowControlType::ListBoxControl:
 				wcReturn = new CFrameworkWndListBox(this);
 				wcReturn->ControlSerialize (ar);
 				break;
-			case EditBoxControl:
+			case CWindowControl::CWindowControlType::EditBoxControl:
 				wcReturn = new CFrameworkWndEditBox(this);
 				wcReturn->ControlSerialize (ar);
 				break;

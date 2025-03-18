@@ -22,7 +22,7 @@ public:
 //	virtual void ControlSerialize (CArchive &ar);
 	BOOL WindowDisplay (CDC *pDC);
 	static CWindowLabelExt * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == LabelControl)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl)
 			return (static_cast <CWindowLabelExt *> (pwc));
 		else
 			return NULL;

@@ -41,13 +41,13 @@ CWindowEditBox::CWindowEditBox(CWindowControl *wc) :
 		controlAttributes.m_nType = wc->controlAttributes.m_nType;
 	}*/
 	if(!wc){
-		editboxAttributes.capAlignment = CaptionAlignmentHCenter;
-		editboxAttributes.horIconAlignment = IconAlignmentHCenter;
-		editboxAttributes.vertIconAlignment = IconAlignmentVMiddle;
+		editboxAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHCenter;
+		editboxAttributes.horIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+		editboxAttributes.vertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		editboxAttributes.HorizontalOriented = TRUE;
 		editboxAttributes.signatureStart = 0xABCDEF87;
 		editboxAttributes.Show = TRUE;
-		controlAttributes.m_nType = EditBoxControl;
+		controlAttributes.m_nType = CWindowControl::CWindowControlType::EditBoxControl;
 	}
 
 }
@@ -56,10 +56,10 @@ CWindowEditBox::CWindowEditBox(CWindowControl *wc) :
 CWindowEditBox::CWindowEditBox (int id, int row, int column, int width, int height) :
 	CWindowControl(id, row, column, width, height)
 {
-		controlAttributes.m_nType = EditBoxControl;
-		editboxAttributes.capAlignment = CaptionAlignmentHCenter;
-		editboxAttributes.horIconAlignment = IconAlignmentHCenter;
-		editboxAttributes.vertIconAlignment = IconAlignmentVMiddle;
+		controlAttributes.m_nType = CWindowControl::CWindowControlType::EditBoxControl;
+		editboxAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHCenter;
+		editboxAttributes.horIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+		editboxAttributes.vertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		editboxAttributes.HorizontalOriented = TRUE;
 		editboxAttributes.signatureStart = 0xABCDEF87;
 		m_IconName = _T("");

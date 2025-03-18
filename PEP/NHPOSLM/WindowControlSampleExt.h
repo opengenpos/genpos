@@ -41,19 +41,19 @@ public:
 		CWindowControl *wcReturn = NULL;
 		this->Serialize (ar);
 		switch (controlAttributes.m_nType) {
-			case TextControl:
+			case CWindowControl::CWindowControlType::TextControl:
 				wcReturn = new CWindowTextExt (this);
 				wcReturn->ControlSerialize (ar);
 				break;
-			case ButtonControl:
+			case CWindowControl::CWindowControlType::ButtonControl:
 				wcReturn = new CWindowButtonExt (this);
 				wcReturn->ControlSerialize (ar);
 				break;
-			case WindowContainer:
+			case CWindowControl::CWindowControlType::WindowContainer:
 				wcReturn = new CWindowItemExt (this);
 				wcReturn->ControlSerialize (ar);
 				break;
-			case LabelControl:
+			case CWindowControl::CWindowControlType::LabelControl:
 				wcReturn = new CWindowLabelExt (this);
 				wcReturn->ControlSerialize (ar);
 				break;

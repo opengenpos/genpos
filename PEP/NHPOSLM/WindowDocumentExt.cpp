@@ -168,7 +168,7 @@ BOOL CWindowDocumentExt::CreateDocument (CWnd *pParentWnd, UINT nID, CRect *rect
 	while (currentPos) {
 		pListControl = listControls.GetNext (currentPos);
 
-		if (pListControl->controlAttributes.m_nType /*!*/== CWindowControl::WindowContainer ) {
+		if (pListControl->controlAttributes.m_nType /*!*/== CWindowControl::CWindowControlType::WindowContainer ) {
 			pListControl->WindowCreate (this);
 		}
 		else if (pListControl->controlAttributes.m_myId == 1) {
@@ -483,18 +483,18 @@ BOOL CWindowDocumentExt::DeleteWndControl(CWindowItemExt *pScreenItem, int row, 
 		CRect screenItemArea(0,0,0,0);
 		switch (pCurScreenItem->controlAttributes.m_nType) {
 			// sub-window
-			case CWindowControl::WindowContainer:
+			case CWindowControl::CWindowControlType::WindowContainer:
 				screenItemArea.SetRect(pCurScreenItem->controlAttributes.m_nColumn, 
 									   pCurScreenItem->controlAttributes.m_nRow,
 									   pCurScreenItem->controlAttributes.m_nColumn + pCurScreenItem->controlAttributes.m_usWidthMultiplier,
 									   pCurScreenItem->controlAttributes.m_nRow + pCurScreenItem->controlAttributes.m_usHeightMultiplier);
 				break;
 			// button or label
-			case CWindowControl::TextControl:
+			case CWindowControl::CWindowControlType::TextControl:
 				// fall through
-			case CWindowControl::ButtonControl:
+			case CWindowControl::CWindowControlType::ButtonControl:
 				// fall through
-			case CWindowControl::LabelControl:
+			case CWindowControl::CWindowControlType::LabelControl:
 				 screenItemArea.SetRect(pScreenItem->controlAttributes.m_nColumn + pCurScreenItem->controlAttributes.m_nColumn,
 					pScreenItem->controlAttributes.m_nRow + pCurScreenItem->controlAttributes.m_nRow,
 					pScreenItem->controlAttributes.m_nColumn + pCurScreenItem->controlAttributes.m_nColumn + pCurScreenItem->controlAttributes.m_usWidthMultiplier,
@@ -510,7 +510,7 @@ BOOL CWindowDocumentExt::DeleteWndControl(CWindowItemExt *pScreenItem, int row, 
 
 			//Delete the current item(s)
 			//Check to see if control we are deleting is a triple screen text area
-			if(pCurScreenItem->controlAttributes.m_nType == CWindowControl::TextControl &&
+			if(pCurScreenItem->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl &&
 				(CWindowTextExt::TranslateCWindowControl(pCurScreenItem)->textAttributes.type == CWindowTextExt::TypeMultiReceipt1 || 
 				CWindowTextExt::TranslateCWindowControl(pCurScreenItem)->textAttributes.type == CWindowTextExt::TypeMultiReceipt2 || 
 			   CWindowTextExt::TranslateCWindowControl(pCurScreenItem)->textAttributes.type  == CWindowTextExt::TypeMultiReceipt3 ||
@@ -520,7 +520,7 @@ BOOL CWindowDocumentExt::DeleteWndControl(CWindowItemExt *pScreenItem, int row, 
 
 				//cycle through the windows control list and delete all three corresponding text items
 				while(pwc){
-					if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+					if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 						CWindowTextExt *ti = CWindowTextExt::TranslateCWindowControl(pwc);
 						ASSERT(ti);
 
@@ -554,14 +554,14 @@ BOOL CWindowDocumentExt::DeleteWndControl(CWindowItemExt *pScreenItem, int row, 
 				//triple text area deleted - exit function
 				return TRUE;
 			}
-			else if(pCurScreenItem->controlAttributes.m_nType == CWindowControl::TextControl && CWindowTextExt::TranslateCWindowControl(pCurScreenItem)->textAttributes.type == CWindowText::TypeOEP){
+			else if(pCurScreenItem->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl && CWindowTextExt::TranslateCWindowControl(pCurScreenItem)->textAttributes.type == CWindowText::TypeOEP){
 				pScreenItem->DeleteDataThis();
 				return DeleteWndItem( row, column, pScreenItem->controlAttributes.m_myId);
 			}
 			// if single text area or button
 			else{
 				//if control is a subwindow and contains other controls, we dont delete it
-				if(pCurScreenItem->controlAttributes.m_nType == CWindowControl::WindowContainer){
+				if(pCurScreenItem->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 					pCurScreenItem = pScreenItem->GetDataNext();
 					continue;
 				}
@@ -726,14 +726,14 @@ BOOL CWindowDocumentExt::ValidateText(CWindowTextExt::CWindowTextType type)
 
 		while(pwc){
 			//if text, validate its ID
-			if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+			if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 				// if ID already exists, cannot create
 				if(CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == type){
 					return FALSE;
 				}
 			}
 			//if window item, call recursive function to check its list of control
-			if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+			if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 				//if function call invalidated text, cannot create
 				BOOL retr = ValidateSubWinText(type, pw);
 				if(!retr){
@@ -767,14 +767,14 @@ BOOL CWindowDocumentExt::ValidateSubWinText(CWindowTextExt::CWindowTextType type
 	while (currentPos) {
 		CWindowControl *pwc = wi->ButtonItemList.GetNext(currentPos);
 		//if text, validate its ID
-		if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 			// if ID already exists, cannot create
 			if(CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == type){
 				return FALSE;
 			}
 		}
 		//if window item, call recursive function to check its list of control
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			//if function call invalidated text, cannot create
 			BOOL retr = ValidateSubWinText(type,CWindowItemExt::TranslateCWindowControl(pwc));
 			if(!retr){
@@ -1041,7 +1041,7 @@ CWindowItemExt* CWindowDocumentExt::GetSelectedWindow(CWindowItemExt *wi, UINT i
 		//get the next control
 		CWindowControl *pwc = wi->ButtonItemList.GetNext(currentPos);
 		//is it a Window Item
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			//is the Window Item ID the active ID
 			if(pwc->controlAttributes.m_myId == id){
 				//return this window 
@@ -1070,7 +1070,7 @@ CWindowItemExt* CWindowDocumentExt::GetSelectedDocWindow( UINT id)
 		//get the next control
 		CWindowControl *pwc = listControls.GetNext(currentPos);
 		//is it a Window Item
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			//is the Window Item ID the active ID
 			if(pwc->controlAttributes.m_myId == id){
 				//return this window 
@@ -1121,8 +1121,8 @@ void CWindowDocumentExt::InitializeDefaults()
 	DocumentDef.defaultAttributes.ButtonDefault = DEF_BTN_COLOR;
 	DocumentDef.defaultAttributes.WindowDefault = DEF_WND_COLOR;
 	DocumentDef.defaultAttributes.TextWinDefault = DEF_TXT_COLOR;
-	DocumentDef.defaultAttributes.ShapeDefault = CWindowButton::ButtonShapeRect;
-	DocumentDef.defaultAttributes.PatternDefault = CWindowButton::ButtonPatternNone;
+	DocumentDef.defaultAttributes.ShapeDefault = CWindowButton::ButtonShape::ButtonShapeRect;
+	DocumentDef.defaultAttributes.PatternDefault = CWindowButton::ButtonPattern::ButtonPatternNone;
 	DocumentDef.defaultAttributes.FontDefault = lf;
 	PopupDefaultDlg();
 

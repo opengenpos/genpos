@@ -94,9 +94,9 @@ CDButtonEdit::CDButtonEdit(CWindowButtonExt *pb /* = NULL */,CWnd* pParent /*=NU
 		colorFace = df.defaultAttributes.ButtonDefault;
 		m_usWidthMultiplier = df.defaultAttributes.WidthDefault;
 		m_usHeightMultiplier = df.defaultAttributes.HeightDefault;
-		myCapAlignment = CWindowButton::CaptionAlignmentVMiddle;
-		myHorIconAlignment = CWindowButton::IconAlignmentHCenter;
-		myVertIconAlignment =	CWindowButton::IconAlignmentVMiddle;
+		myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
+		myHorIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+		myVertIconAlignment =	CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		horizOrient = TRUE;
 		m_GroupPermissions = 0;
 
@@ -142,23 +142,23 @@ void CDButtonEdit::DoDataExchange(CDataExchange* pDX)
 
 	if (pDX->m_bSaveAndValidate) {
 		//Button Shape
-		myShape = CWindowButton::ButtonShapeRect;
+		myShape = CWindowButton::ButtonShape::ButtonShapeRect;
 
 		if (m_ButtonShapeElipse.GetCheck ()) {
-			myShape = CWindowButton::ButtonShapeElipse;
+			myShape = CWindowButton::ButtonShape::ButtonShapeElipse;
 		}
 		else if (m_ButtonShapeRoundedRectangle.GetCheck ()) {
-			myShape = CWindowButton::ButtonShapeRoundedRect;
+			myShape = CWindowButton::ButtonShape::ButtonShapeRoundedRect;
 		}
 
 		//Button Pattern
-		myPattern = CWindowButton::ButtonPatternNone;
+		myPattern = CWindowButton::ButtonPattern::ButtonPatternNone;
 
 		if (m_ButtonPatternHoriz.GetCheck ()) {
-			myPattern = CWindowButton::ButtonPatternHoriz;
+			myPattern = CWindowButton::ButtonPattern::ButtonPatternHoriz;
 		}
 		else if (m_ButtonPatternVert.GetCheck ()) {
-			myPattern = CWindowButton::ButtonPatternVert;
+			myPattern = CWindowButton::ButtonPattern::ButtonPatternVert;
 		}
 
 		//Width and Height
@@ -213,42 +213,42 @@ void CDButtonEdit::DoDataExchange(CDataExchange* pDX)
 		//Horizontal Caption Alignment
 		if(((CButton *)GetDlgItem (IDC_RADIO_VERTICAL))->GetCheck()){
 			horizOrient = FALSE;
-			myCapAlignment = CWindowButton::CaptionAlignmentHLeft;
+			myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHLeft;
 			if(((CButton *)GetDlgItem (IDC_RADIO_CAP_CENTER))->GetCheck()){
-				myCapAlignment = CWindowButton::CaptionAlignmentHCenter;
+				myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHCenter;
 			}
 			else if(((CButton *)GetDlgItem (IDC_RADIO_CAP_RIGHT))->GetCheck()){
-				myCapAlignment = CWindowButton::CaptionAlignmentHRight;
+				myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHRight;
 			}
 
 		}
 		//Vertical Caption Alignment
 		if(((CButton *)GetDlgItem (IDC_RADIO_HORIZONTAL))->GetCheck()){
 			horizOrient = TRUE;
-			myCapAlignment = CWindowButton::CaptionAlignmentVTop;
+			myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVTop;
 			if(((CButton *)GetDlgItem (IDC_RADIO_CAP_MIDDLE))->GetCheck()){
-				myCapAlignment = CWindowButton::CaptionAlignmentVMiddle;
+				myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
 			}
 			else if(((CButton *)GetDlgItem (IDC_RADIO_CAP_BOTTOM))->GetCheck()){
-				myCapAlignment = CWindowButton::CaptionAlignmentVBottom;
+				myCapAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVBottom;
 			}
 		}
 
 		//Icon alignment - can have both horizontal and vertical
-		myHorIconAlignment = CWindowButton::IconAlignmentHLeft;
+		myHorIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHLeft;
 		if(((CButton *)GetDlgItem (IDC_RADIO_CAP_CENTER2))->GetCheck()){
-			myHorIconAlignment = CWindowButton::IconAlignmentHCenter;
+			myHorIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
 		}
 		else if(((CButton *)GetDlgItem (IDC_RADIO_CAP_RIGHT2))->GetCheck()){
-			myHorIconAlignment = CWindowButton::IconAlignmentHRight;
+			myHorIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHRight;
 		}
 
-		myVertIconAlignment = CWindowButton::IconAlignmentVTop;
+		myVertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVTop;
 		if(((CButton *)GetDlgItem (IDC_RADIO_CAP_MIDDLE2))->GetCheck()){
-			myVertIconAlignment = CWindowButton::IconAlignmentVMiddle;
+			myVertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		}
 		else if(((CButton *)GetDlgItem (IDC_RADIO_CAP_BOTTOM2))->GetCheck()){
-			myVertIconAlignment = CWindowButton::IconAlignmentVBottom;
+			myVertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVBottom;
 		}
 	}
 	else {
@@ -309,14 +309,14 @@ void CDButtonEdit::DoDataExchange(CDataExchange* pDX)
 		}
 
 		//Button Shape
-		m_ButtonShapeRectangle.SetCheck ((myShape == CWindowButton::ButtonShapeRect) ? 1 : 0);
-		m_ButtonShapeElipse.SetCheck ((myShape == CWindowButton::ButtonShapeElipse) ? 1 : 0);
-		m_ButtonShapeRoundedRectangle.SetCheck ((myShape == CWindowButton::ButtonShapeRoundedRect) ? 1 : 0);
+		m_ButtonShapeRectangle.SetCheck ((myShape == CWindowButton::ButtonShape::ButtonShapeRect) ? 1 : 0);
+		m_ButtonShapeElipse.SetCheck ((myShape == CWindowButton::ButtonShape::ButtonShapeElipse) ? 1 : 0);
+		m_ButtonShapeRoundedRectangle.SetCheck ((myShape == CWindowButton::ButtonShape::ButtonShapeRoundedRect) ? 1 : 0);
 
 		//Button Pattern
-		m_ButtonPatternNone.SetCheck ((myPattern == CWindowButton::ButtonPatternNone) ? 1 : 0);
-		m_ButtonPatternHoriz.SetCheck ((myPattern == CWindowButton::ButtonPatternHoriz) ? 1 : 0);
-		m_ButtonPatternVert.SetCheck ((myPattern == CWindowButton::ButtonPatternVert) ? 1 : 0);
+		m_ButtonPatternNone.SetCheck ((myPattern == CWindowButton::ButtonPattern::ButtonPatternNone) ? 1 : 0);
+		m_ButtonPatternHoriz.SetCheck ((myPattern == CWindowButton::ButtonPattern::ButtonPatternHoriz) ? 1 : 0);
+		m_ButtonPatternVert.SetCheck ((myPattern == CWindowButton::ButtonPattern::ButtonPatternVert) ? 1 : 0);
 
 		//Width and Height --> verify value is between 1 and 6
 		if (m_usWidthMultiplier < MIN_BTN_WIDTH)
@@ -360,18 +360,18 @@ void CDButtonEdit::DoDataExchange(CDataExchange* pDX)
 			((CButton *)GetDlgItem (IDC_RADIO_CAP_RIGHT))->EnableWindow(FALSE);
 		}
 
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_LEFT))->SetCheck((myCapAlignment == CWindowButton::CaptionAlignmentHLeft)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_CENTER))->SetCheck((myCapAlignment == CWindowButton::CaptionAlignmentHCenter)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_RIGHT))->SetCheck((myCapAlignment == CWindowButton::CaptionAlignmentHRight)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_TOP))->SetCheck((myCapAlignment == CWindowButton::CaptionAlignmentVTop)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_MIDDLE))->SetCheck((myCapAlignment == CWindowButton::CaptionAlignmentVMiddle)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_BOTTOM))->SetCheck((myCapAlignment == CWindowButton::CaptionAlignmentVBottom)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_LEFT2))->SetCheck((myHorIconAlignment == CWindowButton::IconAlignmentHLeft)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_CENTER2))->SetCheck((myHorIconAlignment == CWindowButton::IconAlignmentHCenter)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_RIGHT2))->SetCheck((myHorIconAlignment == CWindowButton::IconAlignmentHRight)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_TOP2))->SetCheck((myVertIconAlignment == CWindowButton::IconAlignmentVTop)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_MIDDLE2))->SetCheck((myVertIconAlignment == CWindowButton::IconAlignmentVMiddle)? 1 : 0);
-		((CButton *)GetDlgItem (IDC_RADIO_CAP_BOTTOM2))->SetCheck((myVertIconAlignment == CWindowButton::IconAlignmentVBottom)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_LEFT))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHLeft)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_CENTER))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHCenter)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_RIGHT))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHRight)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_TOP))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentVTop)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_MIDDLE))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_BOTTOM))->SetCheck((myCapAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentVBottom)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_LEFT2))->SetCheck((myHorIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHLeft)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_CENTER2))->SetCheck((myHorIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_RIGHT2))->SetCheck((myHorIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHRight)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_TOP2))->SetCheck((myVertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVTop)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_MIDDLE2))->SetCheck((myVertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle)? 1 : 0);
+		((CButton *)GetDlgItem (IDC_RADIO_CAP_BOTTOM2))->SetCheck((myVertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVBottom)? 1 : 0);
 	}
 }
 
@@ -411,7 +411,7 @@ CDButtonEdit & CDButtonEdit::operator = (const CWindowButtonExt & cdt)
 	colorFace = cdt.controlAttributes.m_colorFace;
 	myAction = cdt.controlAttributes.m_myAction;
 	myBtnFont = cdt.controlAttributes.lfControlFont;
-	memcpy (&myActionUnion, &cdt.btnAttributes.m_myActionUnion, sizeof (myActionUnion));
+	myActionUnion = cdt.btnAttributes.m_myActionUnion;
 	m_usWidthMultiplier = cdt.controlAttributes.m_usWidthMultiplier;
 	m_usHeightMultiplier = cdt.controlAttributes.m_usHeightMultiplier;
 	myCapAlignment = cdt.btnAttributes.capAlignment;
@@ -694,14 +694,14 @@ void CDButtonEdit::OnRadioWinDef()
 	// TODO: Add your control notification handler code here
 
 	//Button Shape
-	m_ButtonShapeRectangle.SetCheck ((df.defaultAttributes.ShapeDefault == CWindowButton::ButtonShapeRect) ? 1 : 0);
-	m_ButtonShapeElipse.SetCheck ((df.defaultAttributes.ShapeDefault == CWindowButton::ButtonShapeElipse) ? 1 : 0);
-	m_ButtonShapeRoundedRectangle.SetCheck ((df.defaultAttributes.ShapeDefault == CWindowButton::ButtonShapeRoundedRect) ? 1 : 0);
+	m_ButtonShapeRectangle.SetCheck ((df.defaultAttributes.ShapeDefault == CWindowButton::ButtonShape::ButtonShapeRect) ? 1 : 0);
+	m_ButtonShapeElipse.SetCheck ((df.defaultAttributes.ShapeDefault == CWindowButton::ButtonShape::ButtonShapeElipse) ? 1 : 0);
+	m_ButtonShapeRoundedRectangle.SetCheck ((df.defaultAttributes.ShapeDefault == CWindowButton::ButtonShape::ButtonShapeRoundedRect) ? 1 : 0);
 	
 	//Button Pattern
-	m_ButtonPatternNone.SetCheck ((df.defaultAttributes.PatternDefault == CWindowButton::ButtonPatternNone) ? 1 : 0);
-	m_ButtonPatternHoriz.SetCheck ((df.defaultAttributes.PatternDefault == CWindowButton::ButtonPatternHoriz) ? 1 : 0);
-	m_ButtonPatternVert.SetCheck ((df.defaultAttributes.PatternDefault == CWindowButton::ButtonPatternVert) ? 1 : 0);
+	m_ButtonPatternNone.SetCheck ((df.defaultAttributes.PatternDefault == CWindowButton::ButtonPattern::ButtonPatternNone) ? 1 : 0);
+	m_ButtonPatternHoriz.SetCheck ((df.defaultAttributes.PatternDefault == CWindowButton::ButtonPattern::ButtonPatternHoriz) ? 1 : 0);
+	m_ButtonPatternVert.SetCheck ((df.defaultAttributes.PatternDefault == CWindowButton::ButtonPattern::ButtonPatternVert) ? 1 : 0);
 	
 	m_usWidthMultiplier = df.defaultAttributes.WidthDefault;
 	m_usHeightMultiplier = df.defaultAttributes.HeightDefault;

@@ -26,12 +26,8 @@ public:
 public:
 	enum {stdWidth = STD_GRID_WIDTH, stdHeight = 15, stdLeading = 1};
 
-	typedef enum {ButtonShapeRect = 1, ButtonShapeElipse, ButtonShapeRoundedRect } ButtonShape;
-	typedef enum {ButtonPatternNone = 1, ButtonPatternHoriz, ButtonPatternVert} ButtonPattern;
-	typedef enum {ButtonFontSize6 = 0, ButtonFontSize8, ButtonFontSize10, ButtonFontSize12, ButtonFontSize14, ButtonFontSize16} ButtonFontSize;
-	typedef enum {CaptionAlignmentHLeft = 0, CaptionAlignmentHCenter, CaptionAlignmentHRight, CaptionAlignmentVTop, CaptionAlignmentVMiddle, CaptionAlignmentVBottom} CaptionAlignment;
-	typedef enum {IconAlignmentHLeft = 0, IconAlignmentHCenter, IconAlignmentHRight} HorizontalIconAlignment;
-	typedef enum {IconAlignmentVTop = 0, IconAlignmentVMiddle, IconAlignmentVBottom} VerticalIconAlignment;
+	enum class ButtonShape {ButtonShapeRect = 1, ButtonShapeElipse, ButtonShapeRoundedRect };
+	enum class ButtonPattern {ButtonPatternNone = 1, ButtonPatternHoriz, ButtonPatternVert };
 
 	//-------------------------------------------------------------------------------------------------------
 	//  ButtonActionType indicates which key press this button represents.
@@ -187,9 +183,9 @@ public:
 		ButtonPattern m_myPattern;						//Button face pattern - None, horizontal stripes, or vertical stripes
 		TCHAR myIcon[30];								//Button icon file nale
 		ButtonActionUnion m_myActionUnion;				//type and action of button (FSC and extended FSC)
-		CaptionAlignment capAlignment;					//alignment of button caption
-		HorizontalIconAlignment horIconAlignment;	    //horizontal alignment of button icon	
-		VerticalIconAlignment vertIconAlignment;        //vertical alignment of button icon
+		CWindowControl::CaptionAlignment capAlignment;					//alignment of button caption
+		CWindowControl::HorizontalIconAlignment horIconAlignment;	    //horizontal alignment of button icon	
+		CWindowControl::VerticalIconAlignment vertIconAlignment;        //vertical alignment of button icon
 		BOOL HorizontalOriented;						//Caption Orientation - TRUE for horizontal, FALSE for Vertical
 
 	}WinBtnAttributes;
@@ -214,7 +210,7 @@ public:
 	static CRect getRectangleSized (int column, int row, USHORT usWidthMult, USHORT usHeightMult);
 
 	static CWindowButton * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc && pwc->controlAttributes.m_nType == ButtonControl)
+		if (pwc && pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl)
 			return (static_cast <CWindowButton *> (pwc));
 		else
 			return NULL;

@@ -24,13 +24,13 @@ CWindowButton::CWindowButton(CWindowControl *wc) :
 	//initialize attributes if not constructing from an existing object
 	if (!wc) {
 		m_Icon = _T("");
-		controlAttributes.m_nType = ButtonControl;
-		btnAttributes.m_myShape = ButtonShapeRect;
-		btnAttributes.m_myPattern = ButtonPatternNone;
+		controlAttributes.m_nType = CWindowControl::CWindowControlType::ButtonControl;
+		btnAttributes.m_myShape = ButtonShape::ButtonShapeRect;
+		btnAttributes.m_myPattern = ButtonPattern::ButtonPatternNone;
 		memset (&(btnAttributes.m_myActionUnion), 0, sizeof (btnAttributes.m_myActionUnion));
-		btnAttributes.capAlignment = CaptionAlignmentHCenter;
-		btnAttributes.horIconAlignment = IconAlignmentHCenter;
-		btnAttributes.vertIconAlignment = IconAlignmentVMiddle;
+		btnAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHCenter;
+		btnAttributes.horIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+		btnAttributes.vertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		btnAttributes.HorizontalOriented = TRUE;
 		btnAttributes.signatureStart = 0xABCDEF87;
 	}
@@ -42,13 +42,13 @@ CWindowButton::CWindowButton (int id, int row, int column, int width, int height
 	CWindowControl(id, row, column, width, height)
 {
 	m_Icon = _T("");
-	controlAttributes.m_nType = ButtonControl;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::ButtonControl;
 	memset (&btnAttributes, 0, sizeof (btnAttributes));
-	btnAttributes.m_myShape = ButtonShapeRect;
-	btnAttributes.m_myPattern = ButtonPatternNone;
-	btnAttributes.capAlignment = CaptionAlignmentHCenter;
-	btnAttributes.horIconAlignment = IconAlignmentHCenter;
-	btnAttributes.vertIconAlignment = IconAlignmentVMiddle;
+	btnAttributes.m_myShape = ButtonShape::ButtonShapeRect;
+	btnAttributes.m_myPattern = ButtonPattern::ButtonPatternNone;
+	btnAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHCenter;
+	btnAttributes.horIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+	btnAttributes.vertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 	btnAttributes.HorizontalOriented = TRUE;
 	btnAttributes.signatureStart = 0xABCDEF87;
 }

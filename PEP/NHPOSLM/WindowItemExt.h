@@ -29,7 +29,7 @@ public:
 	
 	
 	static CWindowItemExt * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == WindowContainer)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer)
 			return (static_cast <CWindowItemExt *> (pwc));
 		else
 			return NULL;

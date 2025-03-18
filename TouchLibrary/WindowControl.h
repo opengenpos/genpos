@@ -81,37 +81,6 @@
 									//one less than the size of the TCHAR m_myCaption. This value is used to set the limit on
 									//edit boxes that need to be restricted, as well as the limiters for copying data into this structure.						
 
-/*Structure containing all the attributes to be serialized for the WindowControl class
-any new attributes need to be added at the end of the struct so data from 
-old layout files does not get corrupted during serialization*/
-typedef struct _tagWinControlAttributes{
-	unsigned long signatureStart;
-	unsigned long  m_nType;		//control type - button, window, document, or text
-	UINT m_myId;				//id of control
-	int  m_nRow;				//top left grid of control
-	int  m_nColumn;				//top left grid of control
-	int  m_nHeight;				//window height (pixels)
-	int  m_nWidth;				//window width (pixels)
-	COLORREF m_colorFace;		//controls face color
-	COLORREF m_colorText;		//controls text color
-	int  m_usWidthMultiplier;   //window width (grids)
-	int  m_usHeightMultiplier;	//window Height (grids)
-	int m_myAction;
-	TCHAR m_myCaption[30];		//controls caption
-	TCHAR m_myName[30];			//controls name
-	BOOL isVirtualWindow;		//TRUE - virtual window, FALSE - Popup window
-	BOOL useDefault;			//does control use document/window defaults or custom attributes
-	LOGFONT lfControlFont;		//Font information for control
-	UINT CurrentID;
-	BOOL Selected;				//used in Extended class to indicate whether a control is selected or not
-	BYTE SpecWin[8];			//used to mark the window as a special window that contains a special type of display
-
-	//Additions made for Multiple-OEP Window Feature - CSMALL 1/11/06
-	TCHAR mOEPGroupNumbers[30];
-	BOOL	mWindowSizedExplicitly; // added for checkbox to size windows explicitly - CSMALL								
-	ULONG	ulMaskGroupPermission;	//2.2.0 added group permission bitmask
-}WinControlAttributes;
-
 // Define the standard grid width in pixels which we use for
 // drawing the grid squares for all controls. Also defined in
 // NewLayout.h in the Layout Manager Project.
@@ -144,8 +113,46 @@ public:
 	// these are the supported types of controls.  Changes to here need to be reflected
 	// in changes to CWindowControlSample SerializeNew to that it can generate the new
 	// type of control.
-	typedef enum {UnknownControl = 0, TextControl = 1, ButtonControl, WindowContainer, LabelControl, DocumentContainer, WindowGroup, WindowContainerAdHoc, ListBoxControl, EditBoxControl} CWindowControlType;
-		
+	// WARNING: explicit types are used to maintain backward compatibility due to loose usage
+	//          of assigning enum values to some other type. with a change to enum class we have
+	//          tightened up safety by providing an explicit scope but can no longer assign or
+	//          compare enum values to ints, longs, etc.
+	enum class CWindowControlType:unsigned long {UnknownControl = 0, TextControl = 1, ButtonControl, WindowContainer, LabelControl, DocumentContainer, WindowGroup, WindowContainerAdHoc, ListBoxControl, EditBoxControl} ;
+	enum class CaptionAlignment { CaptionAlignmentHLeft = 0, CaptionAlignmentHCenter, CaptionAlignmentHRight, CaptionAlignmentVTop, CaptionAlignmentVMiddle, CaptionAlignmentVBottom } ;
+	enum class HorizontalIconAlignment { IconAlignmentHLeft = 0, IconAlignmentHCenter, IconAlignmentHRight } ;
+	enum class VerticalIconAlignment { IconAlignmentVTop = 0, IconAlignmentVMiddle, IconAlignmentVBottom } ;
+
+	/*Structure containing all the attributes to be serialized for the WindowControl class
+	any new attributes need to be added at the end of the struct so data from 
+	old layout files does not get corrupted during serialization*/
+	typedef struct _tagWinControlAttributes{
+		unsigned long signatureStart;
+		CWindowControlType  m_nType;		//control type - button, window, document, or text
+		UINT m_myId;				//id of control
+		int  m_nRow;				//top left grid of control
+		int  m_nColumn;				//top left grid of control
+		int  m_nHeight;				//window height (pixels)
+		int  m_nWidth;				//window width (pixels)
+		COLORREF m_colorFace;		//controls face color
+		COLORREF m_colorText;		//controls text color
+		int  m_usWidthMultiplier;   //window width (grids)
+		int  m_usHeightMultiplier;	//window Height (grids)
+		int m_myAction;
+		TCHAR m_myCaption[30];		//controls caption
+		TCHAR m_myName[30];			//controls name
+		BOOL isVirtualWindow;		//TRUE - virtual window, FALSE - Popup window
+		BOOL useDefault;			//does control use document/window defaults or custom attributes
+		LOGFONT lfControlFont;		//Font information for control
+		UINT CurrentID;
+		BOOL Selected;				//used in Extended class to indicate whether a control is selected or not
+		BYTE SpecWin[8];			//used to mark the window as a special window that contains a special type of display
+
+		//Additions made for Multiple-OEP Window Feature - CSMALL 1/11/06
+		TCHAR mOEPGroupNumbers[30];
+		BOOL	mWindowSizedExplicitly; // added for checkbox to size windows explicitly - CSMALL								
+		ULONG	ulMaskGroupPermission;	//2.2.0 added group permission bitmask
+	}WinControlAttributes;
+
 
 // Operations
 public:
