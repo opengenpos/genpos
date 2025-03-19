@@ -42,6 +42,9 @@
 :  Update Histories
 :    Date  : Ver.Rev. :   Name      : Description
 : 07/15/15 : 02.02.01 : R.Chambers  : changes to PifLog() to provide more data on errors.
+:
+: OpenGenPOS
+: 03/18/25 : 02.04.00 : R.Chambers  : source address for PifGetDestHostAddress() const argument
 -------------------------------------------------------------------------*/
 
 #pragma warning( disable : 4201 4214 4514)
@@ -93,7 +96,7 @@ static SHORT  PifNetControlTcp(USHORT usNet, USHORT usFunc, ...);
 static USHORT PifNetCheckPowerDown(USHORT usHandle);
 static USHORT PifNetInitialize(VOID);
 static VOID   PifInitHostsAddress(VOID);
-static SHORT  PifGetDestHostAddress(UCHAR *puchDestAddr, UCHAR *puchSrcAddr);
+static SHORT  PifGetDestHostAddress(UCHAR *puchDestAddr, const UCHAR *puchSrcAddr);
 SHORT  PifGetHostAddress(UCHAR *puchLocalAddr, UCHAR *puchHostAddr, TCHAR *wszHostName2);
 SHORT  PifCheckHostsAddress(USHORT usSrc, UCHAR *puchSrcAddr);
 
@@ -282,7 +285,7 @@ SHORT  PIFENTRY PifNetSystemInfo (PIF_NETSYSTALLY *pNetTally, PIF_NETUSERTALLY *
 			pNetUsers[iUsers].usTimerCheckSkipped = pUserTally->infTally.usTimerCheckSkipped;
 			pNetUsers[iUsers].usTimerSendWithRecvPending = pUserTally->infTally.usTimerSendWithRecvPending;
 		}
-		(*pusUsers) = iUsers;
+		if (pusUsers) (*pusUsers) = iUsers;
 	}
 
 	return 0;
@@ -1370,7 +1373,7 @@ static SHORT  PifNetOpenG(CONST XGHEADER FAR *pHeader)
 static SHORT  PifNetSendG(USHORT usNet, CONST VOID *pBuffer, ULONG ulBytes)
 {
 	BOOL     bMyAddress;
-    XGRAMEX * const pxgram = pBuffer;
+    const XGRAMEX * const pxgram = pBuffer;
     UCHAR i;
     SHORT sReturn;
 	PIF_CLUSTER_HOST  *pPifHostInfo = SysConfig.PifNetHostInformation;
@@ -2541,7 +2544,7 @@ static SHORT  PifGetClusterPrefix (TCHAR  *aszLocalName, TCHAR  *wszHostName, TC
 **              the host name lookup succeeding for that terminal.  **
 **********************************************************************
 fhfh*/
-static SHORT PifGetDestHostAddress(UCHAR *puchDestAddr, UCHAR *puchSrcAddr)
+static SHORT PifGetDestHostAddress(UCHAR *puchDestAddr, const UCHAR *puchSrcAddr)
 {
     DWORD  dwError = 0;
     USHORT usSrc;
