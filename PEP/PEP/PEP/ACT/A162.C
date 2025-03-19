@@ -272,7 +272,7 @@ VOID    A162InitDlg(HWND hDlg, LPBYTE lpbData)
 
     /* ----- Set Top Index & Bottom Index ----- */
     unTopIndex    = A162_SCBAR_MIN;
-    unBottomIndex = A162_ONE_PAGE;
+    unBottomIndex = unTopIndex + A162_ONE_PAGE;
 
     for (wID = IDD_A162_EDIT01; wID <= IDD_A162_EDIT10; wID++) {
         /* ----- Change Font to Fixed Font ----- */
@@ -553,6 +553,18 @@ VOID    A162RedrawText(HWND hDlg, LPBYTE lpbData)
     WCHAR    szWork[A162_DESC_LEN];
     WCHAR    szRengWork[A162_DESC_RENG_LEN];
 
+    for (unCount = 0; unCount < 4; unCount++) {
+        /* ----- Load Strings from Resource ----- */
+        LoadString(hResourceDll, IDS_A162_DESC01 + unCount, szWork, A162_DESC_LEN);
+        /* ----- Set Loaded Strings to StaticText ----- */
+        DlgItemRedrawText(hDlg, IDD_A162_LANE_1_T1_DESC + unCount, szWork);
+        /* ----- Load Renge Strings from Resource ----- */
+//        LoadString(hResourceDll, IDS_A162_RENG01 + unCount, szRengWork, A162_DESC_RENG_LEN);
+        /* ----- Set Loaded Renge Strings to StaticText ----- */
+//        DlgItemRedrawText(hDlg, IDD_A162_RENG01 + unCount, szRengWork);
+        /* ----- Set Data to EditText ----- */
+        SetDlgItemInt(hDlg, IDD_A162_LANE_1_T1_EDIT + unCount, (UINT) * (lpbData + (BYTE)unCount), FALSE);
+    }
     for (unCount = unTopIndex; unCount <= unBottomIndex; unCount++, unLoop++) {
         /* ----- Load Strings from Resource ----- */
         LoadString(hResourceDll, IDS_A162_DESC01 + unCount, szWork, A162_DESC_LEN);
@@ -564,6 +576,12 @@ VOID    A162RedrawText(HWND hDlg, LPBYTE lpbData)
         DlgItemRedrawText(hDlg, IDD_A162_RENG01 + unLoop, szRengWork);
         /* ----- Set Data to EditText ----- */
         SetDlgItemInt(hDlg, IDD_A162_EDIT01 + unLoop, (UINT)*(lpbData + (BYTE)unCount), FALSE);
+    }
+    for (unCount = IDS_A162_SYSTYPE_DESC00; unCount <= IDS_A162_TERMTYPE_DESC14; unCount++) {
+        /* ----- Load Strings from Resource ----- */
+        LoadString(hResourceDll, IDS_A162_SYSTYPE_DESC00 + (unCount - IDS_A162_SYSTYPE_DESC00), szWork, A162_DESC_LEN);
+        /* ----- Set Loaded Strings to StaticText ----- */
+        DlgItemRedrawText(hDlg, IDD_A162_SYSTYPE_DESC00 + (unCount - IDS_A162_SYSTYPE_DESC00), szWork);
     }
 }
 
