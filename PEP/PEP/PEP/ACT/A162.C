@@ -122,13 +122,30 @@ BOOL    WINAPI  A162DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	case WM_SETFONT:
 		if (hResourceFont) {
 			int j;
-			for(j=IDD_A162_DESC01; j<=IDD_A162_CAPTION2; j++)
+            for (j = 0; j < 4; j++)
+            {
+                SendDlgItemMessage(hDlg, IDD_A162_LANE_1_T1_DESC + j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+                SendDlgItemMessage(hDlg, IDD_A162_LANE_1_T1_EDIT + j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            }
+
+            for(j=IDD_A162_DESC01; j<=IDD_A162_CAPTION2; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
-			SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
-			SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
-		}
+
+            for (j = IDD_A162_SYSTYPE_DESC00; j <= IDD_A162_TERMTYPE_DESC14; j++)
+            {
+                SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            }
+            
+            SendDlgItemMessage(hDlg, IDD_A162_BTNSET01, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDD_A162_CAPSET01, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDD_A162_BTNSET02, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDD_A162_CAPSET02, WM_SETFONT, (WPARAM)hResourceFont, 0);
+
+            SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
+        }
 		return FALSE;
 
     case WM_MOUSEWHEEL:
