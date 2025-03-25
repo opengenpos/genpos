@@ -13,7 +13,22 @@
 * Category    : ISP Server module, US Hospitality Model
 * Program Name: ISPCOM.C                                            
 * --------------------------------------------------------------------------
-* Abstruct: The provided function names are as follows:  
+*    Georgia Southern University Research Services Foundation
+*    donated by NCR to the research foundation in 2002 and maintained here
+*    since.
+*       2002  -> NHPOS Rel 1.4  (Windows CE for NCR 7448, Visual Studio Embedded)
+*       2003  -> NHPOS Rel 2.0.0  (Windows XP for NCR touch screen, Datacap for EPT)
+*       2006  -> NHPOS Rel 2.0.4  (Windows XP, Rel 2.0.4.51)
+*       2006  -> NHPOS Rel 2.0.5  (Windows XP, US Customs, Store and Forward, Mobile Terminal, Rel 2.0.5.76)
+*       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
+*       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
+*       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
+*
+*    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
+* --------------------------------------------------------------------------
+* Abstruct: The provided function names are as follows:
 *
 *           IspIamMaster()          Check am I Master Terminal ?
 *           IspIamBMaster()         Check am I Backup Master Terminal ?
@@ -247,14 +262,15 @@ VOID    IspSendResponse(CLIRESCOM   *pResMsgH,
     IspSndBuf.usLport = CLI_PORT_ISPSERVER;
     ulSendLen = sizeof(XGHEADER);
                                                 /*=== EDIT MESSAGE ===*/
-
     memcpy(IspSndBuf.auchData, pResMsgH, ulResMsgHLen);
     ulSendLen += ulResMsgHLen;
 
     if (NULL != puchReqData ) {                 /*=== EDIT DATA ===*/
-        memcpy(&IspSndBuf.auchData[ulResMsgHLen], &ulReqLen, sizeof(USHORT));                /* insert the number of bytes to send */
-        memcpy(&IspSndBuf.auchData[ulResMsgHLen + sizeof(USHORT)], puchReqData, ulReqLen);   /* Copy data to send */
-        ulSendLen += ulReqLen + sizeof(USHORT);             /* Add data length size */
+        CLIREQDATA  * const pSend = (CLIREQDATA*)(IspSndBuf.auchData + ulResMsgHLen);
+
+        pSend->usDataLen = ulReqLen;                           /* insert the number of bytes to send */
+        memcpy(pSend->auchData, puchReqData, ulReqLen);        /* Copy data to send */
+        ulSendLen += ulReqLen + sizeof(pSend->usDataLen);      /* Add data length size */
     }
                                                /*=== SEND RESPONSE ===*/
     IspNetSend(ulSendLen);
@@ -472,9 +488,9 @@ VOID	IspNetSynchSeqNo (VOID)
 ** Description: This function sends thru my port.
 *===========================================================================
 */
-VOID    IspNetSend(ULONG ulSendData)
+SHORT   IspNetSend(ULONG ulSendData)
 {
-    SHORT   sError, sRetry=5;
+    SHORT   sError = PIF_ERROR_NET_OFFLINE, sRetry=5;
 
     if (IspNetConfig.fchStatus & ISP_NET_OPEN) {    /* if NET_OPEN, the send data */
 
@@ -509,6 +525,8 @@ VOID    IspNetSend(ULONG ulSendData)
 
         /* IspNetConfig.fchStatus &= ~ISP_NET_SEND;       */
     }
+
+    return sError;
 }
 
 /*
@@ -598,12 +616,7 @@ VOID    IspNetReceive(VOID)
 */
 VOID    IspTimerStart(VOID)
 {
-    DATE_TIME   Timer;
-
-    PifGetDateTime(&Timer);      /* Get current TOD */
-    IspTimer.uchHour = (UCHAR)Timer.usHour;  /* Save hour */
-    IspTimer.uchMin  = (UCHAR)Timer.usMin;   /* Save min  */
-    IspTimer.uchSec  = (UCHAR)Timer.usSec;   /* Save sec  */
+    PifGetDateTimeTimer(&IspTimer);      /* Get current TOD */
  
     IspResp.usTimeOutCo = 0 ;                /* Clear counter */
     sIspExeError = 0;                        /* Clear flag */ 
@@ -640,14 +653,10 @@ VOID    IspTimerStop(VOID)
 */
 LONG    IspTimerRead(VOID)
 {
-    DATE_TIME   Timer;
-    ISPTIMER    CurTime = { 0 };
+    PIFTIMER    CurTime = { 0 };
     LONG        lOLD, lNEW;
 
-    PifGetDateTime(&Timer);        /* Get current TOD */
-    CurTime.uchHour = (UCHAR)Timer.usHour;     /* Save hour */
-    CurTime.uchMin  = (UCHAR)Timer.usMin;      /* Save min  */
-    CurTime.uchSec  = (UCHAR)Timer.usSec;      /* Save sec  */
+    PifGetDateTimeTimer(&CurTime);        /* Get current TOD */
 
     lOLD = (IspTimer.uchHour * 3600L)         /* Convert start time to seconds */
            + (IspTimer.uchMin * 60L)            

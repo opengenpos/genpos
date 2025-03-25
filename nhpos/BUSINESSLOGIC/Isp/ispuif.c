@@ -89,8 +89,8 @@ XGRAM            IspSndBuf;               /* Sends    buffer */
 XGRAM            IspRcvBuf;               /* Receives buffer */
 
 PIFNETCONFIG     IspNetConfig;            /* NET work configration   */
-ISPPREVIOUS      IspResp;                 /* Response Structure      */
-ISPTIMER         IspTimer;                /* Timer Keep              */
+SERISPPREVIOUS   IspResp;                 /* Response Structure      */
+PIFTIMER         IspTimer;                /* Timer Keep              */
 ISPRESETLOG      IspResetLog = {0};           /* pc if reset log save area, V3.3 */
 
 UCHAR            auchIspTmpBuf[ISP_MAX_TMPSIZE];  /* Temporary buffer size */

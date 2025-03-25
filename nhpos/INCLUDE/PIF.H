@@ -1695,7 +1695,7 @@ VOID PIFENTRY *PifGetWindowHandle (void **ppHwnd);
 VOID PIFENTRY PifSnapShotTables (VOID);
 
 ULONG PIFENTRY PifBeginThread(VOID (THREADENTRY *pStart)(VOID),
-                               VOID  *pStack, USHORT usStackSize,
+                               VOID  * pStackNotUsed, USHORT usStackSizeNotUsed,
                                USHORT usPriority,
                                CONST CHAR  *pszThreadName, ...);
 VOID   PIFENTRY PifEndThread(VOID);
@@ -1731,7 +1731,7 @@ VOID * PIFENTRY PifReadQueue(USHORT usQueue);
 /* --- Time --- */
 VOID   PIFENTRY PifSleep(USHORT usMsec);
 VOID   PIFENTRY PifGetDateTime(DATE_TIME *pDateTime);
-VOID   PIFENTRY PifGetDateTimeTimer(DATE_TIME* pDateTime);
+VOID   PIFENTRY PifGetDateTimeTimer(PIFTIMER * pDateTime);
 VOID   PIFENTRY PifSetDateTime(CONST DATE_TIME *pDateTime);
 
 /* --- Get elapsed time since system was started (DollarTree SCER 2000-11-17) ---*/

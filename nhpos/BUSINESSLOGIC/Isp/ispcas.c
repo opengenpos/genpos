@@ -23,8 +23,10 @@
 *       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
 *       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
 *       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
 *
 *    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
 * --------------------------------------------------------------------------
 * Abstruct: The provided function names are as follows:  
 *
@@ -87,7 +89,7 @@
 */
 VOID    IspRecvCas(VOID)
 {
-    CLIREQCASHIER   *pReqMsgH = (VOID *)IspRcvBuf.auchData;
+    CLIREQCASHIER   * const pReqMsgH = (VOID *)IspRcvBuf.auchData;
 	CLIRESCASHIER   ResMsgH = {0};
     CASIF           Casif = {0};
 
@@ -148,25 +150,27 @@ VOID    IspRecvCas(VOID)
         break;
 
     case CLI_FCCASDELETE:   /* Delete a cashier */
-        ResMsgH.sReturn = IspCheckTtlCas(Casif.ulCashierNo);    /* Check total */
+        ResMsgH.sReturn = IspCheckTtlCas(pReqMsgH->ulCashierNo);    /* Check total */
         if ( ISP_SUCCESS == ResMsgH.sReturn ) {
-            ResMsgH.sReturn = SerCasDelete(Casif.ulCashierNo);   /* Check issued report */
+            ResMsgH.sReturn = SerCasDelete(pReqMsgH->ulCashierNo);   /* Check issued report */
         }
         break;
 
     case CLI_FCCASINDCLOSE:  /*  Force to close a designate cashier */
-        ResMsgH.sReturn = SerCasClose(Casif.ulCashierNo);
+        ResMsgH.sReturn = SerCasClose(pReqMsgH->ulCashierNo);
         break;
 
     case CLI_FCCASCLRSCODE:  /*  Clear secret code */
-        ResMsgH.sReturn = SerCasSecretClr(Casif.ulCashierNo);
+        ResMsgH.sReturn = SerCasSecretClr(pReqMsgH->ulCashierNo);
         break;
 
     case CLI_FCCASALLIDREAD : /* Cashier All Id Read */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESCASHIER)];
+        IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESCASHIER);
         ResMsgH.sReturn = SerCasAllIdRead(sizeof(ULONG)*CAS_NUMBER_OF_MAX_CASHIER, (ULONG *)IspResp.pSavBuff->auchData );
         if (0 <= ResMsgH.sReturn) {
             IspResp.pSavBuff->usDataLen = sizeof(ULONG)*ResMsgH.sReturn;
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             ResMsgH.sResCode = STUB_MULTI_SEND;
         } else {
             IspResp.pSavBuff->usDataLen = 0;
@@ -194,10 +198,10 @@ VOID    IspRecvCas(VOID)
  
     case CLI_FCCASINDLOCK :   /* Cashier individual Lock */
         if (0 == ( fsIspLockedFC & ISP_LOCK_INDCASHIER) ) {
-            ResMsgH.sReturn = SerCasIndLock(Casif.ulCashierNo);
+            ResMsgH.sReturn = SerCasIndLock(pReqMsgH->ulCashierNo);
             if ( CAS_PERFORM  == ResMsgH.sReturn ) {
                 fsIspLockedFC |= ISP_LOCK_INDCASHIER;   /* Set INDCASHIER */
-                ulIspLockedCasNO  = Casif.ulCashierNo;  /* Save Cashier ID */
+                ulIspLockedCasNO  = pReqMsgH->ulCashierNo;  /* Save Cashier ID */
             }
         } else {
             ResMsgH.sReturn = CAS_DIFF_NO;  /* if alredy locked, then error */
@@ -232,11 +236,13 @@ VOID    IspRecvCas(VOID)
     
     case CLI_FCCASCHKSIGNIN : /* Cashier Check exist sign-in */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESCASHIER)];
-		memset (IspResp.pSavBuff->auchData, 0, sizeof(ULONG) * STD_NUM_OF_TERMINALS * 2);
+        IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESCASHIER);
+        memset (IspResp.pSavBuff->auchData, 0, sizeof(ULONG) * STD_NUM_OF_TERMINALS * 2);
         ResMsgH.sReturn = SerCasChkSignIn( (ULONG *) IspResp.pSavBuff->auchData );
 
         if (CAS_DURING_SIGNIN == ResMsgH.sReturn) {
             IspResp.pSavBuff->usDataLen = sizeof(ULONG) * STD_NUM_OF_TERMINALS * 2; // CAS_TERMINAL_NO_EXTENDED ;
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             ResMsgH.sResCode = STUB_MULTI_SEND;
         } else {
             IspResp.pSavBuff->usDataLen = 0;
@@ -264,7 +270,7 @@ VOID    IspRecvCas(VOID)
 		//This function tells the terminal that they are in delay balance
 		//mode
 		uchMaintDelayBalanceFlag |= MAINT_DBON;
-		ResMsgH.sReturn = SerCasDelayedBalance(Casif.uchTerminal, MAINT_DBON);
+		ResMsgH.sReturn = SerCasDelayedBalance(pReqMsgH->uchTerminal, MAINT_DBON);
 
 		if(ResMsgH.sReturn == SUCCESS)
 		{
@@ -330,7 +336,7 @@ VOID    IspRecvCas(VOID)
 
     case CLI_FCCASCLOSEPICLOA:    /*  Sign-out for pickup loan */
         if (fsIspLockedFC & ISP_LOCK_PICKUPCASHIER) {
-            ResMsgH.sReturn = IspCleanUpPickupCas(Casif.ulCashierNo);
+            ResMsgH.sReturn = IspCleanUpPickupCas(pReqMsgH->ulCashierNo);
         } else {
             ResMsgH.sReturn = CAS_NO_SIGNIN;  /* if not signin, then error */
         }

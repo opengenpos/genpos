@@ -97,21 +97,22 @@ XGRAM           SerSndBuf;                  /* Send response buffer */
 XGRAM           SerRcvBuf;                  /* Receive request buffer */
 PIFNETCONFIG    SerNetConfig;               /* NET configration */
 USHORT          usSerStatus;                /* Server status */
-USHORT          fsSerExeSpe;                /* special request flags */
-UCHAR           auchSerTmpBuf[SER_MAX_TMPBUF];  /* temporary buffer */
-SERPREVIOUS     SerResp;                    /* Response common structure */
-SERTIMER        SerTimer;                   /* Timer Control */
-SERTIMER        SerKpsTimer[SER_MAX_KP];    /* Timer Control for KPS */
-SERTIMER        SerBcasTimer;               /* Timer Control for B-cast */
-SERTIMER        SerSpsTimer;                /* Timer Control for SPS */
-USHORT          husSerIFSerCli;             /* Semapho, STUB - SERVER */       
+SHORT           sSerExeError;               /* Special request error */
+USHORT          fsSerShrStatus;             /* Shred printer status  */
+UCHAR           auchSerTmpBuf[SERISP_MAX_TMPBUF];  /* temporary buffer */
+SERISPPREVIOUS  SerResp;                    /* Response common structure */
+PIFTIMER        SerTimer;                   /* Timer Control */
+PIFTIMER        SerKpsTimer[SER_MAX_KP];    /* Timer Control for KPS */
+PIFTIMER        SerBcasTimer;               /* Timer Control for B-cast */
+PIFTIMER        SerSpsTimer;                /* Timer Control for SPS */
+PifSemHandle    husSerIFSerCli;             /* Semapho, STUB - SERVER */
 PifSemHandle    usSerCliSem = PIF_SEM_INVALID_HANDLE;                /* Save samapho handle */
 PifSemHandle    husSerCreFileSem = PIF_SEM_INVALID_HANDLE;           /* Samapho, create temp. file - used temp. file */
-SHORT           sSerExeError;               /* Special request error */
-CLIOPBCAS       *pSerBcas;                  /* broadcast inf. pointer */
-USHORT          usSerBcasFunCode;           /* Broadcast function code */
-USHORT          fsSerShrStatus;             /* Shred printer status  */
-SHORT           hsSerTmpFile;               /* save area for file handle of temporary buffer file */
+PifFileHandle   hsSerTmpFile;               /* save area for file handle of temporary buffer file */
+
+static CLIOPBCAS  *pSerBcas;                  /* broadcast inf. pointer */
+static USHORT   fsSerExeSpe;                /* special request flags */
+static USHORT   usSerBcasFunCode;           /* Broadcast function code */
 
 /* static VOID (THREADENTRY *pFunc)(VOID) = SerStartUp;    / Add R3.0 */
 static VOID (PIFENTRY *pPifSaveFarData)(VOID) = PifSaveFarData; /* saratoga */
@@ -121,8 +122,8 @@ static VOID (PIFENTRY *pPifSaveFarData)(VOID) = PifSaveFarData; /* saratoga */
     Code Area
 ------------------------------------------  
 */                                              
-/* UCHAR FARCONST  SERTHREADNAME[] = "SERVER_T";   / THREAD NAME */      
-TCHAR  FARCONST  aszSerTmpFileName[]   = _T("SERTMP");
+/* Server thread temporary file used for transfer of large amounts of data */      
+TCHAR    aszSerTmpFileName[]   = _T("SERTMP");
 
 /*
 *===========================================================================
@@ -139,7 +140,7 @@ TCHAR  FARCONST  aszSerTmpFileName[]   = _T("SERTMP");
 */
 VOID    SstInitialize(USHORT usMode)
 {
-    SHORT   hsFileHandle;
+    PifFileHandle   hsFileHandle;
 
     if (usMode & POWER_UP_CLEAR_TOTAL) {
         usSerCurStatus = 0;  // clear the inquiry status, will be set later using SstChangeInqStat().
@@ -158,17 +159,22 @@ VOID    SstInitialize(USHORT usMode)
     } 
 
     husSerIFSerCli = PifCreateSem(1);           /* Create Semapho */
+    NHPOS_ASSERT(husSerIFSerCli >= 0);
 
     /* open server temporary file */
     husSerCreFileSem = PifCreateSem(1);         /* Create Semapho */
+    NHPOS_ASSERT(husSerCreFileSem >= 0);
+
     hsSerTmpFile = -1;
     hsFileHandle = PifOpenFile(aszSerTmpFileName, auchTEMP_OLD_FILE_READ_WRITE);    /* saratoga */
+    NHPOS_ASSERT(hsFileHandle >= 0);
     if (hsFileHandle >= 0) {
         hsSerTmpFile = hsFileHandle;
     }
 	else {
-		PifLog (MODULE_SER_LOG, LOG_EVENT_SER_TEMP_FILE_ERR_01);
-	}
+        PifLog(MODULE_SER_LOG, LOG_EVENT_SER_TEMP_FILE_ERR_01);
+        PifLog(MODULE_ERROR_NO(MODULE_SER_LOG), abs(hsFileHandle));
+    }
 }
 
 /*
@@ -701,7 +707,7 @@ VOID    SstResetIndTransNo(UCHAR uchUniqueAddr)
 SHORT   SerCreateTmpFile( USHORT usSize )
 {
     SHORT       sReturn;
-    SHORT       hsFileHandle;
+    PifFileHandle   hsFileHandle;
     ULONG       ulActMove;
     ULONG       ulFileSize;
 

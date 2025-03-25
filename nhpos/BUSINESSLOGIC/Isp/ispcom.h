@@ -185,29 +185,6 @@
 #endif
 
 /*--------------------------------------
-    Response Message Keep
-    Changes to this struct should be synchronized
-    with changes to the struct SERPREVIOUS use in
-    Server subsystem that handles communications
-    between terminals.
----------------------------------------*/
-typedef struct {
-    SHORT       sError;                      /* Receive Error Code   */
-    USHORT      usRcvdLen;                   /* Receive Data Length  */
-    USHORT      usTimeOutCo;                 /* Time Out Counter     */
-    UCHAR       uchPrevUA;                   /* Previous Unique Address  */    
-    USHORT      usPrevMsgHLen;               /* Previous Response Mes. Len */
-    USHORT      usPrevDataOff;               /* Previous Data Offset */
-    CLIREQDATA  *pSavBuff;                   /* Saved data pointer   */
-} ISPPREVIOUS;
-
-
-/*--------------------------------------
-    TIMER control structure
----------------------------------------*/
-typedef PIFTIMER ISPTIMER;
-
-/*--------------------------------------
     TTL Department total structure 
 ---------------------------------------*/
 typedef struct {
@@ -254,8 +231,8 @@ extern USHORT        husIspOpHand;            /* Saves Op Handle         */
 extern SHORT         hsIspKeyBoardHand;       /* Saves Terminal Handle   */
 
 extern PIFNETCONFIG  IspNetConfig;            /* NET work configration   */
-extern ISPPREVIOUS   IspResp;                 /* Response Structure      */
-extern ISPTIMER      IspTimer;                /* Timer Keep              */
+extern SERISPPREVIOUS   IspResp;                 /* Response Structure      */
+extern PIFTIMER      IspTimer;                /* Timer Keep              */
 extern SHORT         sIspExeError;            /* Error Code of ESR       */
 
 extern USHORT        usIspTest;               /* ISP Test counter        */
@@ -309,11 +286,11 @@ VOID    IspRMHPassWord(VOID);               /* Receive during password state */
 VOID    IspRMHNormal(VOID);                 /* Receive during normal state */
 VOID    IspRMHMulSnd(VOID);                 /* Receive during multi. send state */
 VOID    IspRMHMulRcv(VOID);                 /* Receive during multi. receive state */
-VOID    IspRecvNormal(CLIREQCOM *pReqMsgH); /* Call each function */
-SHORT   IspRecvMultiple(CLIREQCOM *pReqMsgH); /* Check multiple receiving */
-SHORT   IspRecvNextFrame(CLIREQCOM *pReqMsgH); /* Received next frame */
+VOID    IspRecvNormal(USHORT  usFunCode);   /* Call each function */
+SHORT   IspRecvMultiple(VOID);              /* Check multiple receiving */
+SHORT   IspRecvNextFrame(VOID);             /* Received next frame */
 VOID    IspSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen);  /* Send multiple response */
-SHORT   IspSendNextFrame(CLIREQCOM *pReqMsgH); /* Send next frame */
+SHORT   IspSendNextFrame(VOID);                /* Send next frame */
 USHORT  IspCheckFunCode(USHORT usFunCode);     /* Check function code */
 SHORT   IspCheckResponse(VOID);                /* Check response condition */
 SHORT   IspCheckNetRcvData(VOID);              /* Check received data length */
@@ -435,7 +412,7 @@ USHORT  IspComReadStatus(VOID);              /* Get terminal status */
 SHORT   IspNetOpen(VOID);                    /* Open net work */
 VOID    IspNetClose(VOID);                   /* Close net work */
 VOID	IspNetSynchSeqNo (VOID);
-VOID    IspNetSend(ULONG ulSendLen);        /* Send net work  */
+SHORT   IspNetSend(ULONG ulSendLen);         /* Send net work  */
 VOID    IspNetReceive(VOID);                 /* Receive net work */
 
 VOID    IspTimerStart(VOID);                 /* Start timer */

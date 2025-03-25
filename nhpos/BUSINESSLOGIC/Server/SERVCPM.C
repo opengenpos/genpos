@@ -65,7 +65,7 @@
 */
 VOID    SerRecvCpm(VOID)
 {
-	CLIREQCPM  *pReqMsgH = (CLIREQCPM *)SerRcvBuf.auchData;
+	CLIREQCPM  * const pReqMsgH = (CLIREQCPM *)SerRcvBuf.auchData;
 	CLIRESCPM  ResMsgH = { 0 };
 	SHORT      sSerSendStatus = 0;
 

@@ -132,7 +132,8 @@ void SerAssignPluifToCliresscnplu (CLIRESSCNPLU *pResMsgH, PLUIF *pPlu)
 */ //ESMITH LAYOUT
 VOID SerRmtFileServer(VOID)
 {
-    VOID    *pReqMsgH, *pResMsgH;
+	VOID    * const pReqMsgH = SerRcvBuf.auchData;
+	VOID    * const pResMsgH = auchSerTmpBuf;
     USHORT  usLen;
     SHORT   sResult,sFileHandle;
     ULONG   ulActPos;
@@ -145,12 +146,8 @@ VOID SerRmtFileServer(VOID)
     usLen = 0;
     memset(auchSerTmpBuf, 0, sizeof(auchSerTmpBuf));
 
-	pReqMsgH = SerRcvBuf.auchData;
-	pResMsgH = auchSerTmpBuf;
-
     ((CLIRESCOM *)pResMsgH)->usFunCode = ((CLIREQCOM *)pReqMsgH)->usFunCode;
-    ((CLIRESCOM *)pResMsgH)->usSeqNo   = ((CLIREQCOM *)pReqMsgH)->usSeqNo &
-                                         CLI_SEQ_CONT;
+    ((CLIRESCOM *)pResMsgH)->usSeqNo   = ((CLIREQCOM *)pReqMsgH)->usSeqNo & CLI_SEQ_CONT;
     ((CLIRESCOM *)pResMsgH)->sResCode  = STUB_SUCCESS;
 
     switch(((CLIREQCOM *)pReqMsgH)->usFunCode & CLI_RSTCONTCODE) {
@@ -183,7 +180,7 @@ VOID SerRmtFileServer(VOID)
 		} else {
 			char  xBuff[128];
 
-			sprintf (xBuff, "SerRmtFileServer(): PifOpenFile() status = %d", sFileHandle);
+			sprintf(xBuff, "SerRmtFileServer(): PifOpenFile() status = %d %S", sFileHandle, ((CLIREQREAD*)pReqMsgH)->aszFileName);
 			NHPOS_ASSERT_TEXT((sFileHandle >= 0), xBuff);
 		}
 
@@ -191,7 +188,13 @@ VOID SerRmtFileServer(VOID)
     }
 
     /* send response message to PC  */
-	SerSendResponse((CLIRESCOM *)pResMsgH, usLen, NULL, 0);
+	sResult = SerSendResponse((CLIRESCOM*)pResMsgH, usLen, NULL, 0);
+	if (sResult < 0) {
+		char  xBuff[128];
+
+		sprintf(xBuff, "SerRmtFileServer(): SerSendResponse() status = %d %S  %ul", sResult, ((CLIREQREAD*)pReqMsgH)->aszFileName, ((CLIREQREAD*)pReqMsgH)->ulPosition);
+		NHPOS_ASSERT_TEXT((sResult >= 0), xBuff);
+	}
 }
 
 
@@ -199,11 +202,11 @@ VOID SerRmtFileServer(VOID)
 SHORT SerOpUnjoinCluster (VOID)
 {
     TCHAR  wszHostName[PIF_LEN_HOST_NAME + 1] = { 0 };
-	UCHAR  auchHostIpAddress[4];
-	UCHAR  auchLocalAddr[4];
+	UCHAR  auchHostIpAddress[4] = { 0 };
+	UCHAR  auchLocalAddr[4] = { 0 };
 	UCHAR  auchTerminalNo = 0;
-    CLIREQJOIN    *pReqMsgH;
-    CLIRESJOIN    ResMsgH;
+    CLIREQJOIN    * const pReqMsgH = (CLIREQJOIN *)SerRcvBuf.auchData;
+	CLIRESJOIN    ResMsgH = { 0 };
 
 #if 1
 	if (STUB_SUCCESS != CstIamMaster ()) {
@@ -230,18 +233,12 @@ SHORT SerOpUnjoinCluster (VOID)
 #pragma message("  ****   ")
 #endif
 
-    pReqMsgH = (CLIREQJOIN *)SerRcvBuf.auchData;
-
-    memset(&ResMsgH, 0, sizeof(ResMsgH));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
     ResMsgH.sResCode  = STUB_SUCCESS;
 
 	ResMsgH.sReturn = OpUnjoinCluster(pReqMsgH->wszHostName, pReqMsgH->auchHostIpAddress, &(pReqMsgH->auchTerminalNo));
 
-    memset(wszHostName, 0, sizeof(wszHostName));
-    memset(auchLocalAddr, 0, sizeof(auchLocalAddr));
-    memset(auchHostIpAddress, 0, sizeof(auchHostIpAddress));
 	MaintPifGetHostAddress(auchLocalAddr, auchHostIpAddress, wszHostName);
 
 	memcpy (ResMsgH.wszMasName, wszHostName, sizeof(ResMsgH.wszMasName));
@@ -259,14 +256,10 @@ SHORT SerOpUnjoinCluster (VOID)
 
 SHORT SerOpJoinCluster(VOID)
 {
-	UCHAR  auchHostIpAddress[4];
-	UCHAR  auchLocalAddr[4];
 	UCHAR  auchTerminalNo = 0;
-	CLIREQJOIN    *pReqMsgH;
-	CLIRESJOIN    ResMsgH;
-	PIF_CLUSTER_HOST  PifHostInfo;
-
-	pReqMsgH = (CLIREQJOIN *)SerRcvBuf.auchData;
+	CLIREQJOIN    *pReqMsgH = (CLIREQJOIN *)SerRcvBuf.auchData;
+	CLIRESJOIN    ResMsgH = { 0 };
+	PIF_CLUSTER_HOST  PifHostInfo = { 0 };
 
 #if 1
 	if (STUB_SUCCESS != CstIamMaster()) {
@@ -293,7 +286,6 @@ SHORT SerOpJoinCluster(VOID)
 #pragma message("  ****   ")
 #endif
 
-	memset(&ResMsgH, 0, sizeof(ResMsgH));
 	ResMsgH.usFunCode = pReqMsgH->usFunCode;
 	ResMsgH.usSeqNo = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
 	ResMsgH.sResCode = STUB_SUCCESS;
@@ -308,12 +300,11 @@ SHORT SerOpJoinCluster(VOID)
 	}
 	else {
 		TCHAR  wszHostName[PIF_LEN_HOST_NAME + 1] = { 0 };
+		UCHAR  auchHostIpAddress[4] = { 0 };
+		UCHAR  auchLocalAddr[4] = { 0 };
 
 		ResMsgH.sReturn = OpJoinCluster(&PifHostInfo, &(pReqMsgH->auchTerminalNo));
 
-    	memset(wszHostName, 0, sizeof(wszHostName));
-		memset(auchLocalAddr, 0, sizeof(auchLocalAddr));
-		memset(auchHostIpAddress, 0, sizeof(auchHostIpAddress));
 		MaintPifGetHostAddress(auchLocalAddr, auchHostIpAddress, wszHostName);
 
 		memcpy (ResMsgH.wszMasName, wszHostName, sizeof(ResMsgH.wszMasName));
@@ -583,15 +574,12 @@ SHORT SerOpTransferTotals (VOID)
 		_T("ZATALPLD"),   /* PLU Totals interim file, CLASS_TTLCURDAY */
 		_T("ZATALPLP"),   /* PLU Totals interim file, CLASS_TTLCURPTD */
 		NULL };
-    CLIREQTRANSFER    *pReqMsgH;
-    CLIRESTRANSFER    ResMsgH;
+    CLIREQTRANSFER    * const pReqMsgH = (CLIREQTRANSFER *)SerRcvBuf.auchData;
+	CLIRESTRANSFER    ResMsgH = { 0 };
 	int               iLoop;
 	USHORT            usLockHnd = 0;
 	USHORT            usTerminalNo = 0;
 
-    pReqMsgH = (CLIREQTRANSFER *)SerRcvBuf.auchData;
-
-    memset(&ResMsgH, 0, sizeof(ResMsgH));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
     ResMsgH.sResCode  = STUB_SUCCESS;
@@ -607,7 +595,7 @@ SHORT SerOpTransferTotals (VOID)
 		sSerSendStatus = SerSendResponse((CLIRESCOM *)&ResMsgH, sizeof(ResMsgH), NULL, 0);
 		if (sSerSendStatus < 0) {
 			char xBuff [128];
-			sprintf (xBuff, "SerOpTransferTotals(): sSerSendStatus = %d,  usTerminalNo = %d, sReturn = %d", sSerSendStatus, usTerminalNo, ResMsgH.sReturn);
+			sprintf (xBuff, "SerOpTransferTotals(): sSerSendStatus = %d  usTerminalNo = %d sReturn = %d", sSerSendStatus, usTerminalNo, ResMsgH.sReturn);
 			NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 		}
 		return 0;
@@ -618,7 +606,7 @@ SHORT SerOpTransferTotals (VOID)
 		sSerSendStatus = SerSendResponse((CLIRESCOM *)&ResMsgH, sizeof(ResMsgH), NULL, 0);
 		if (sSerSendStatus < 0) {
 			char xBuff [128];
-			sprintf (xBuff, "SerOpTransferTotals(): sSerSendStatus = %d,  usTerminalNo = %d, sReturn = %d", sSerSendStatus, usTerminalNo, ResMsgH.sReturn);
+			sprintf (xBuff, "SerOpTransferTotals(): sSerSendStatus = %d  usTerminalNo = %d sReturn = %d", sSerSendStatus, usTerminalNo, ResMsgH.sReturn);
 			NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 		}
 		return 0;
@@ -659,7 +647,7 @@ SHORT SerOpTransferTotals (VOID)
 		}
 		if (sSerSendStatus < 0) {
 			char xBuff [128];
-			sprintf (xBuff, "SerOpTransferTotals(): sSerSendStatus = %d,  usTerminalNo = %d, sReturn = %d", sSerSendStatus, usTerminalNo, ResMsgH.sReturn);
+			sprintf (xBuff, "SerOpTransferTotals(): sSerSendStatus = %d  usTerminalNo = %d sReturn = %d", sSerSendStatus, usTerminalNo, ResMsgH.sReturn);
 			NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 		}
 	}
@@ -669,7 +657,7 @@ SHORT SerOpTransferTotals (VOID)
 	sSerSendStatus = SerSendResponse((CLIRESCOM *)&ResMsgH, sizeof(ResMsgH), NULL, 0);
 	if (sSerSendStatus < 0) {
 		char xBuff [128];
-		sprintf (xBuff, "SerOpTransferTotals(): sSerSendStatus = %d, usTerminalNo = %d, sReturn = %d", sSerSendStatus, usTerminalNo, ResMsgH.sReturn);
+		sprintf (xBuff, "SerOpTransferTotals(): sSerSendStatus = %d usTerminalNo = %d sReturn = %d", sSerSendStatus, usTerminalNo, ResMsgH.sReturn);
 		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 	}
 
@@ -707,18 +695,14 @@ VOID    SerRecvOpr(VOID)
 {
     SHORT           sFlag = 0;
 	SHORT           sSerSendStatus = 0;
-    CLIREQOPPARA    *pReqMsgH;
-    CLIRESOPPARA    ResMsgH;
+    CLIREQOPPARA    * const pReqMsgH = (CLIREQOPPARA *)SerRcvBuf.auchData;
+	CLIRESOPPARA    ResMsgH = { 0 };
     CLIREQDATA      *pReqBuff;
-    PLUIF           *pPlu;
     PLUIF_REP       *pPluIf_Rep;
     PLUIF_DEP       *pPluIf_Dep;
     static PLUIF           PluIf;       /* saratoga */
     static PLUIF_REP       PluIf_Rep;   /* saratoga */
     static PLUIF_DEP       PluIf_Dep;   /* saratoga */
-
-    pReqMsgH = (CLIREQOPPARA *)SerRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESOPPARA));
 
     ResMsgH.usFunCode     = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo       = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -727,8 +711,6 @@ VOID    SerRecvOpr(VOID)
     ResMsgH.uchMajorClass = pReqMsgH->uchMajorClass;
     ResMsgH.usHndorOffset = pReqMsgH->usHndorOffset;
     ResMsgH.usRWLen       = pReqMsgH->usRWLen;
-
-    pReqMsgH = (CLIREQOPPARA *)SerRcvBuf.auchData;
 
     switch(pReqMsgH->usFunCode & CLI_RSTCONTCODE) {
     case CLI_FCOPREQALL:
@@ -770,7 +752,7 @@ VOID    SerRecvOpr(VOID)
 	case CLI_FCOPREQMSGBUFFER:             // process request from terminal display a message to the operator
 		{
 			CLIREQMSGBUFFER   *pReqMsgHBuffer = ((CLIREQMSGBUFFER *)SerRcvBuf.auchData);
-			CLIRESMSGBUFFER   ResMsgHBuffer;
+			CLIRESMSGBUFFER   ResMsgHBuffer = { 0 };
 			SHORT             sTargetTerminal = SerResponseTargetTerminal();
 
 #if 0
@@ -785,7 +767,6 @@ VOID    SerRecvOpr(VOID)
 				SerOpSetOperatorMessageStatusTable (sTargetTerminal, 0x0001);
 			}
 
-			memset(&ResMsgHBuffer, 0, sizeof(ResMsgHBuffer));
 			ResMsgHBuffer.usFunCode = pReqMsgHBuffer->usFunCode;
 			ResMsgHBuffer.usSeqNo   = pReqMsgHBuffer->usSeqNo & CLI_SEQ_CONT;
 			ResMsgHBuffer.sResCode  = STUB_SUCCESS;
@@ -796,10 +777,9 @@ VOID    SerRecvOpr(VOID)
 
 	case CLI_FCOPUPDATETOTALSMSG:       // process request from terminal to update totals
 		{
-			CLIREQSFTOTALS   *pReqMsgH = ((CLIREQSFTOTALS *)SerRcvBuf.auchData);
-			CLIRESSFTOTALS   ResMsgH;
+			CLIREQSFTOTALS   * const pReqMsgH = ((CLIREQSFTOTALS *)SerRcvBuf.auchData);
+			CLIRESSFTOTALS   ResMsgH = { 0 };
 
-			memset(&ResMsgH, 0, sizeof(ResMsgH));
 			ResMsgH.usFunCode = pReqMsgH->usFunCode;
 			ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
 			ResMsgH.sResCode  = STUB_SUCCESS;
@@ -813,11 +793,11 @@ VOID    SerRecvOpr(VOID)
 
     case CLI_FCOPPLUREADBDP :   /* OP PLU  read by dept number, R3.0    */
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESOPPARA)];
-        pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQOPPARA));
+		SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESOPPARA);
+		pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQOPPARA));
         SerResp.pSavBuff->usDataLen = pReqBuff->usDataLen;
-        pPlu = (PLUIF *)SerResp.pSavBuff->auchData; 
         memcpy(SerResp.pSavBuff->auchData, pReqBuff->auchData, pReqBuff->usDataLen);
-        pPluIf_Dep = (PLUIF_DEP *)pPlu;
+        pPluIf_Dep = (PLUIF_DEP *)SerResp.pSavBuff->auchData;
         if ((pPluIf_Dep->culCounter == 0) || ((fsIspLockedFC & ISP_LOCK_MASSMEMORY) == 0))  {  /* if locked previously */
             memset(&PluIf_Dep, 0, sizeof(PLUIF_DEP));
         }
@@ -849,11 +829,11 @@ VOID    SerRecvOpr(VOID)
 
     case CLI_FCOPPLUREADBRC :   /* OP PLU  read by report code, R3.0    */
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESOPPARA)];
-        pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQOPPARA));
+		SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESOPPARA);
+		pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQOPPARA));
         SerResp.pSavBuff->usDataLen = pReqBuff->usDataLen;
-        pPlu = (PLUIF *)SerResp.pSavBuff->auchData; 
         memcpy(SerResp.pSavBuff->auchData, pReqBuff->auchData, pReqBuff->usDataLen);
-        pPluIf_Rep = (PLUIF_REP *)pPlu;
+        pPluIf_Rep = (PLUIF_REP *)SerResp.pSavBuff->auchData;
         if ((pPluIf_Rep->culCounter == 0) || ((fsIspLockedFC & ISP_LOCK_MASSMEMORY) == 0))  {  /* if locked previously */
             memset(&PluIf_Rep, 0, sizeof(PLUIF_REP));
         }
@@ -891,16 +871,15 @@ VOID    SerRecvOpr(VOID)
 		//   - Start the request, this step may or may not result in a Connection Engine response
 		//   - Wait for and return Connection Engine response, an optional step depending on the message
 		{
-			CLIREQOPCONNENGINE   *pReqMsgH = ((CLIREQOPCONNENGINE *)SerRcvBuf.auchData);
-			CLIRESOPCONNENGINE   ResMsgH;
-			CLIREQDATA           *pReqData;
+			CLIREQOPCONNENGINE   * const pReqMsgH = ((CLIREQOPCONNENGINE *)SerRcvBuf.auchData);
+			CLIREQDATA           * const pReqData = (CLIREQDATA *)(SerRcvBuf.auchData + sizeof(CLIREQOPCONNENGINE));
+			CLIRESOPCONNENGINE   ResMsgH = { 0 };
 			AllObjects           *pAllObjects;
 
-			memset(&ResMsgH, 0, sizeof(ResMsgH));
 			ResMsgH.usFunCode = pReqMsgH->usFunCode;
 			ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
 			ResMsgH.sResCode  = STUB_SUCCESS;
-			pReqData = (CLIREQDATA *)(SerRcvBuf.auchData + sizeof(CLIREQOPCONNENGINE));
+
 			pAllObjects = (AllObjects *)(pReqData->auchData);
 
 			ResMsgH.sReturn = 0;
@@ -935,10 +914,9 @@ VOID    SerRecvOpr(VOID)
 
     case    CLI_FCCOPONNENGINEMSGFH:
 		{
-			CLIREQOPCONNENGINE   *pReqMsgH = ((CLIREQOPCONNENGINE *)SerRcvBuf.auchData);
-			CLIRESOPCONNENGINE   ResMsgH;
+			CLIREQOPCONNENGINE   * const pReqMsgH = ((CLIREQOPCONNENGINE *)SerRcvBuf.auchData);
+			CLIRESOPCONNENGINE   ResMsgH = { 0 };
 
-			memset(&ResMsgH, 0, sizeof(ResMsgH));
 			ResMsgH.usFunCode = pReqMsgH->usFunCode;
 			ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
 			ResMsgH.sResCode  = STUB_SUCCESS;
@@ -993,7 +971,7 @@ VOID    SerRecvOpr(VOID)
 
 	if (sSerSendStatus < 0) {
 		char xBuff [128];
-		sprintf (xBuff, "SerRecvOpr(): sSerSendStatus = %d, usFunCode = 0x%x, usSeqNo = 0x%x, sReturn = %d", sSerSendStatus, ResMsgH.usFunCode, ResMsgH.usSeqNo, ResMsgH.sReturn);
+		sprintf (xBuff, "SerRecvOpr(): sSerSendStatus = %d usFunCode = 0x%x usSeqNo = 0x%x sReturn = %d", sSerSendStatus, ResMsgH.usFunCode, ResMsgH.usSeqNo, ResMsgH.sReturn);
 		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 	}
 }
@@ -1009,22 +987,15 @@ VOID    SerRecvOpr(VOID)
 */
 VOID    SerRecvOprPlu(VOID)
 {
-    CLIREQSCNPLU    *pReqMsgH;
-    CLIRESSCNPLU    ResMsgH;
-    CLIREQMNTPLU    *pReqMsgM;
-    CLIRESMNTPLU    ResMsgM;
-    PLUIF           Plu;
-    CLIREQOEPPLU    *pReqMsg;
-    CLIRESOEPPLU    ResMsg;
+    CLIREQSCNPLU    * const pReqMsgH = (CLIREQSCNPLU *)SerRcvBuf.auchData;
+    CLIREQMNTPLU    * const pReqMsgM = (CLIREQMNTPLU *)SerRcvBuf.auchData;
+    CLIREQOEPPLU    * const pReqMsg  = (CLIREQOEPPLU *)SerRcvBuf.auchData;
+	CLIRESSCNPLU    ResMsgH = { 0 };
+	CLIRESMNTPLU    ResMsgM = { 0 };
+	CLIRESOEPPLU    ResMsg = { 0 };
+	PLUIF           Plu = { 0 };
 	SHORT           sSerSendStatus = 0;
 
-    memset(&Plu, 0, sizeof(Plu));
-    pReqMsgH = (CLIREQSCNPLU *)SerRcvBuf.auchData;
-    pReqMsgM = (CLIREQMNTPLU *)SerRcvBuf.auchData;
-    pReqMsg  = (CLIREQOEPPLU *)SerRcvBuf.auchData;
-
-    memset(&ResMsgH, 0, sizeof(CLIRESSCNPLU));
-    memset(&ResMsgM, 0, sizeof(CLIRESMNTPLU));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgM.usFunCode = pReqMsgM->usFunCode;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -1032,7 +1003,6 @@ VOID    SerRecvOprPlu(VOID)
     ResMsgH.sResCode  = STUB_SUCCESS;
     ResMsgM.sResCode  = STUB_SUCCESS;
 
-    memset(&ResMsg, 0, sizeof(CLIRESOEPPLU));
     ResMsg.usFunCode = pReqMsg->usFunCode;
     ResMsg.usSeqNo   = pReqMsg->usSeqNo & CLI_SEQ_CONT;
     ResMsg.sResCode  = STUB_SUCCESS;
@@ -1080,7 +1050,7 @@ VOID    SerRecvOprPlu(VOID)
 
 	if (sSerSendStatus < 0) {
 		char xBuff[128];
-		sprintf(xBuff, "SerRecvOprPlu(): sSerSendStatus = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x, sReturn %d", sSerSendStatus, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo, ResMsgM.sReturn);
+		sprintf(xBuff, "SerRecvOprPlu(): status = %d usFunCode 0x%x usSeqNo 0x%x sReturn %d", sSerSendStatus, pReqMsgH->usFunCode, pReqMsgH->usSeqNo, ResMsgM.sReturn);
 		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 	}
 }
@@ -1097,15 +1067,17 @@ VOID    SerRecvOprPlu(VOID)
 */
 VOID    SerRecvOprPara(VOID)
 {
-    CLIREQOPPARA    *pReqMsgH = (CLIREQOPPARA *)SerRcvBuf.auchData;
+    CLIREQOPPARA    * const pReqMsgH = (CLIREQOPPARA *)SerRcvBuf.auchData;
+	CLIREQDATA      * const pSavBuff = (CLIREQDATA *)&SerRcvBuf.auchData[sizeof(CLIREQOPPARA)];
+	CLIREQDATA      * const pRcvBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESOPPARA)];
+	CLIOPFINBLK     * const pFinRecv = (CLIOPFINBLK *)pSavBuff->auchData;
+	CLIOPFINBLK     * const pFinSend = (CLIOPFINBLK *)pRcvBuff->auchData;
 	CLIRESOPPARA    ResMsgH = { 0 };
-    CLIREQDATA      *pSavBuff, *pRcvBuff;
-    USHORT          usDataLen, fsBcasInfUA;
-    SERINQSTATUS    InqData;
-    CLIOPFINBLK     *pFinRecv, *pFinSend;
-    USHORT          usFunCode;
+	SERINQSTATUS    InqData = { 0 };
+	DATE_TIME       D_T = { 0 };
+	USHORT          usFunCode;
+	USHORT          usDataLen, fsBcasInfUA;
     UCHAR           uchStatus;
-    DATE_TIME       D_T;
 	SHORT           sSerSendStatus;
 
 
@@ -1114,11 +1086,10 @@ VOID    SerRecvOprPara(VOID)
     ResMsgH.sResCode  = STUB_MULTI_SEND;
 
     usDataLen = SERISP_MAX_LEN(sizeof(CLIRESOPPARA));
-    pSavBuff = (CLIREQDATA *)&SerRcvBuf.auchData[sizeof(CLIREQOPPARA)];
-    pRcvBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESOPPARA)];
-    pFinSend = (CLIOPFINBLK *)pRcvBuff->auchData;
-    pFinRecv = (CLIOPFINBLK *)pSavBuff->auchData;
-    
+
+	SerResp.pSavBuff = pRcvBuff;
+	SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESOPPARA);
+
     switch(pReqMsgH->usFunCode & CLI_RSTCONTCODE) {
     case    CLI_FCOPREQALL:
         ResMsgH.sReturn = OpResAll(pSavBuff->auchData, pSavBuff->usDataLen, pRcvBuff->auchData, &usDataLen, 0);
@@ -1232,10 +1203,9 @@ VOID    SerRecvOprPara(VOID)
 
 	case CLI_FCOPUPDATETOTALSMSG:       // process request from terminal to update totals
 		{
-			CLIREQSFTOTALS   *pReqMsgH = ((CLIREQSFTOTALS *)SerRcvBuf.auchData);
-			CLIRESSFTOTALS   ResMsgH;
+			CLIREQSFTOTALS   * const pReqMsgH = ((CLIREQSFTOTALS *)SerRcvBuf.auchData);
+			CLIRESSFTOTALS   ResMsgH = { 0 };
 
-			memset(&ResMsgH, 0, sizeof(ResMsgH));
 			ResMsgH.usFunCode = pReqMsgH->usFunCode;
 			ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
 			ResMsgH.sResCode  = STUB_SUCCESS;
@@ -1254,12 +1224,11 @@ VOID    SerRecvOprPara(VOID)
         break;
     }
 
-    SerResp.pSavBuff = pRcvBuff;
-    SerResp.pSavBuff->usDataLen = usDataLen;
+	SerResp.pSavBuff->usDataLen = usDataLen;
     sSerSendStatus = SerSendMultiple((CLIRESCOM *)&ResMsgH, sizeof(CLIRESOPPARA));
 	if (sSerSendStatus < 0) {
 		char xBuff [128];
-		sprintf (xBuff, "SerRecvOprPara(): sSerSendStatus = %d, usFunCode = 0x%x, usSeqNo = 0x%x", sSerSendStatus, ResMsgH.usFunCode, ResMsgH.usSeqNo);
+		sprintf (xBuff, "SerRecvOprPara(): sSerSendStatus = %d usFunCode = 0x%x usSeqNo = 0x%x", sSerSendStatus, ResMsgH.usFunCode, ResMsgH.usSeqNo);
 		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 	}
 

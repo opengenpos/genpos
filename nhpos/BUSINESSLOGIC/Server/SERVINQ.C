@@ -69,10 +69,8 @@
 */
 VOID    SerRecvInq(VOID)
 {
-    CLIRESCOM   *pResp;
+    CLIRESCOM   * const pResp = (CLIRESCOM *)SerRcvBuf.auchData;
     
-    pResp = (CLIRESCOM *)SerRcvBuf.auchData;
-
     switch(pResp->usFunCode) {
     case    CLI_FCINQINQUIRY:               /* Inquiry */
         SerRecvInquiry();
@@ -104,13 +102,11 @@ VOID    SerRecvInq(VOID)
 */
 VOID    SerRecvInquiry(VOID)
 {
-    CLIRESINQUIRY   *pResMsgH;
-    CLIREQCOM       *pSend;
-
     if (SER_IAM_MASTER) {                   /** Response from BM **/
+        CLIRESINQUIRY   * const pResMsgH = (CLIRESINQUIRY *)SerRcvBuf.auchData;
+        CLIREQCOM       * const pSend = (CLIREQCOM *)auchSerTmpBuf;
+
         SerChangeStatus(SER_STINQUIRY);     /* timer start */
-        pSend = (CLIREQCOM *)auchSerTmpBuf;
-        pResMsgH = (CLIRESINQUIRY *)SerRcvBuf.auchData;
         if (CLI_FCINQINQUIRY != pSend->usFunCode) {
             return;                         /* not expected response */
         } else if (STUB_SUCCESS != pResMsgH->sResCode) {
@@ -144,18 +140,18 @@ VOID    SerRecvInquiry(VOID)
 */
 VOID    SerRecvInqChgDate(VOID)
 {
-    CLIREQINQUIRY   *pReqMsgH;
-    CLIREQCOM       *pSend;
     USHORT          fsSpeFlag;
 
     if (SER_IAM_MASTER) {                   /** Response from BM **/
-        pSend = (CLIREQCOM *)auchSerTmpBuf;
+        CLIREQCOM       * const pSend = (CLIREQCOM *)auchSerTmpBuf;
+
         if (CLI_FCINQCHGDATE != pSend->usFunCode) {
             return;                         /* not expected response */
         }
     } else if (SER_IAM_BMASTER) {           /** request from Master **/
+        CLIREQINQUIRY   * const pReqMsgH = (CLIREQINQUIRY *)SerRcvBuf.auchData;
+
         SerSendInqDateResp();               
-        pReqMsgH = (CLIREQINQUIRY *)SerRcvBuf.auchData;
         SstChangeInqStat(pReqMsgH->fsStatus);
         SstChangeInqDate(&pReqMsgH->Date);
     }
@@ -203,27 +199,34 @@ VOID    SerRecvInqReqInq(VOID)
 */
 VOID    SerSendInquiry(VOID)
 {
+    static SHORT    sSerSendStatusOld = 0;
 	SHORT           sSerSendStatus = 0;
-    CLIREQINQUIRY   ReqMsgH;
-    CLIREQCOM       *pSend;
+    CLIREQINQUIRY   ReqMsgH = { 0 };
+    CLIREQCOM       * const pSend = (CLIREQCOM *)auchSerTmpBuf;
     SERINQSTATUS    InqData;
    
     SstReadInqStat(&InqData);
-    pSend = (CLIREQCOM *)auchSerTmpBuf;
-    memset(&ReqMsgH, 0, sizeof(CLIREQINQUIRY));
     pSend->usFunCode    = CLI_FCINQINQUIRY;
     ReqMsgH.usFunCode   = CLI_FCINQINQUIRY;
     ReqMsgH.fsStatus    = InqData.usStatus;
-    memcpy(&ReqMsgH.Date, &InqData.CurDate, sizeof(CLIINQDATE));
+    ReqMsgH.Date = InqData.CurDate;
     memcpy(ReqMsgH.ausTranNo, InqData.ausTranNo, 2*CLI_ALLTRANSNO);
     memcpy(ReqMsgH.ausPreTranNo, InqData.ausPreTranNo, 2*CLI_ALLTRANSNO);
 
     sSerSendStatus = SerSendRequest(CLI_TGT_BMASTER, (CLIREQCOM *)&ReqMsgH, sizeof(CLIREQINQUIRY), NULL, 0);
 	if (sSerSendStatus < 0) {
-		char xBuff [128];
-		sprintf (xBuff, "SerSendInquiry(): sSerSendStatus = %d", sSerSendStatus);
-		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
-	}
+        if (sSerSendStatus != STUB_BUSY || sSerSendStatus != sSerSendStatusOld) {
+		    char xBuff [128];
+		    sprintf (xBuff, "SerSendInquiry(): CLI_TGT_BMASTER sSerSendStatus = %d", sSerSendStatus);
+		    NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
+        }
+	} else if (sSerSendStatusOld == STUB_BUSY) {
+        char xBuff[128];
+        sprintf(xBuff, "SerSendInquiry(): Clear - CLI_TGT_BMASTER sSerSendStatusOld == STUB_BUSY   sSerSendStatus = %d", sSerSendStatus);
+        NHPOS_ASSERT_TEXT(!(sSerSendStatus != sSerSendStatusOld), xBuff);
+    }
+
+    sSerSendStatusOld = sSerSendStatus;
 }
 
 /*
@@ -238,15 +241,14 @@ VOID    SerSendInquiry(VOID)
 VOID    SerSendInqResp(VOID)
 {
 	SHORT           sSerSendStatus = 0;
-    CLIRESINQUIRY   ResMsgH;
+    CLIRESINQUIRY   ResMsgH = { 0 };
     SERINQSTATUS    InqData;
    
     SstReadInqStat(&InqData);
-    memset(&ResMsgH, 0, sizeof(CLIRESINQUIRY));
     ResMsgH.usFunCode   = CLI_FCINQINQUIRY;
     ResMsgH.sResCode    = STUB_SUCCESS;
     ResMsgH.fsStatus    = InqData.usStatus;
-    memcpy(&ResMsgH.Date, &InqData.CurDate, sizeof(CLIINQDATE));
+    ResMsgH.Date = InqData.CurDate;
     memcpy(ResMsgH.ausTranNo, InqData.ausTranNo, 2*CLI_ALLTRANSNO);
     memcpy(ResMsgH.ausPreTranNo, InqData.ausPreTranNo, 2*CLI_ALLTRANSNO);
 
@@ -270,24 +272,22 @@ VOID    SerSendInqResp(VOID)
 VOID    SerSendInqDate(VOID)
 {
 	SHORT           sSerSendStatus = 0;
-    CLIREQINQUIRY   ReqMsgH;
-    CLIREQCOM       *pSend;
+    CLIREQINQUIRY   ReqMsgH = { 0 };
+    CLIREQCOM       * const pSend = (CLIREQCOM *)auchSerTmpBuf;
     SERINQSTATUS    InqData;
    
     SstReadInqStat(&InqData);
-    pSend = (CLIREQCOM *)auchSerTmpBuf;
-    memset(&ReqMsgH, 0, sizeof(CLIREQINQUIRY));
     pSend->usFunCode    = CLI_FCINQCHGDATE;
     ReqMsgH.usFunCode   = CLI_FCINQCHGDATE;
     ReqMsgH.fsStatus    = InqData.usStatus;
-    memcpy(&ReqMsgH.Date, &InqData.CurDate, sizeof(CLIINQDATE));
+    ReqMsgH.Date = InqData.CurDate;
     memcpy(ReqMsgH.ausTranNo, InqData.ausTranNo, 2*CLI_ALLTRANSNO);
     memcpy(ReqMsgH.ausPreTranNo, InqData.ausPreTranNo, 2*CLI_ALLTRANSNO);
 
     sSerSendStatus = SerSendRequest(CLI_TGT_BMASTER, (CLIREQCOM *)&ReqMsgH, sizeof(CLIREQINQUIRY), NULL, 0);
 	if (sSerSendStatus < 0) {
 		char xBuff [128];
-		sprintf (xBuff, "SerSendInqDate(): sSerSendStatus = %d", sSerSendStatus);
+		sprintf (xBuff, "SerSendInqDate(): CLI_TGT_BMASTER sSerSendStatus = %d", sSerSendStatus);
 		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 	}
 }
@@ -304,9 +304,8 @@ VOID    SerSendInqDate(VOID)
 VOID    SerSendInqDateResp(VOID)
 {
 	SHORT           sSerSendStatus = 0;
-    CLIRESINQUIRY   ResMsgH;
+    CLIRESINQUIRY   ResMsgH = { 0 };
 
-    memset(&ResMsgH, 0, sizeof(CLIRESINQUIRY));
     ResMsgH.usFunCode   = CLI_FCINQCHGDATE;
     ResMsgH.sResCode    = STUB_SUCCESS;
 
@@ -330,15 +329,14 @@ VOID    SerSendInqDateResp(VOID)
 VOID    SerSendInqReqInq(VOID)
 {
 	SHORT           sSerSendStatus = 0;
-    CLIREQINQUIRY   ReqMsgH;
+    CLIREQINQUIRY   ReqMsgH = { 0 };
 
-    memset(&ReqMsgH, 0, sizeof(CLIREQINQUIRY));
     ReqMsgH.usFunCode   = CLI_FCINQREQINQ;
 
     sSerSendStatus = SerSendRequest(CLI_TGT_MASTER, (CLIREQCOM *)&ReqMsgH, sizeof(CLIREQINQUIRY), NULL, 0);
 	if (sSerSendStatus < 0) {
 		char xBuff [128];
-		sprintf (xBuff, "SerSendInqDateResp(): sSerSendStatus = %d", sSerSendStatus);
+		sprintf (xBuff, "SerSendInqDateResp(): CLI_TGT_BMASTER sSerSendStatus = %d", sSerSendStatus);
 		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 	}
 }
@@ -355,11 +353,10 @@ VOID    SerSendInqReqInq(VOID)
 */
 SHORT   SerChekInqDate(VOID)
 {
-    CLIRESINQUIRY   *pResMsgH;
-    SERINQSTATUS    InqData;
+    CLIRESINQUIRY   * const pResMsgH = (CLIRESINQUIRY *)SerRcvBuf.auchData;
+    SERINQSTATUS    InqData = { 0 };
    
     SstReadInqStat(&InqData);
-    pResMsgH = (CLIRESINQUIRY *)SerRcvBuf.auchData;
 
     if ((0 == InqData.CurDate.usDay) && (0 == InqData.usStatus)) {
         return SERV_SUCCESS;
@@ -396,12 +393,11 @@ SHORT   SerChekInqDate(VOID)
 */
 SHORT   SerChekInqStatus(VOID)
 {
-    CLIRESINQUIRY   *pResMsgH;
+    CLIRESINQUIRY   * const pResMsgH = (CLIRESINQUIRY *)SerRcvBuf.auchData;
+    SERINQSTATUS    InqData = { 0 };
     USHORT          usNewStatus, usTerm;
-    SERINQSTATUS    InqData;
    
     SstReadInqStat(&InqData);
-    pResMsgH = (CLIRESINQUIRY *)SerRcvBuf.auchData;
                                             
     if ((0 == InqData.usStatus) && (0 == pResMsgH->fsStatus)) {
         SstChangeInqStat(SER_INQ_M_UPDATE);         /* I/R Both */

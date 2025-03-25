@@ -11,11 +11,22 @@
 *   Title              : Client/Server STUB, Header file for internal
 *   Category           : Client/Server STUB, US Hospitality Model
 *   Program Name       : CSSTUBIN.H
-*  ------------------------------------------------------------------------
-*   Compile            : MS-C Ver. 6.00 A by Microsoft Corp.
-*   Memory Model       : Midium Model
-*   Options            :  /c /AM /G1s /Os /Za /Zp
-*  ------------------------------------------------------------------------
+* --------------------------------------------------------------------------
+*    Georgia Southern University Research Services Foundation
+*    donated by NCR to the research foundation in 2002 and maintained here
+*    since.
+*       2002  -> NHPOS Rel 1.4  (Windows CE for NCR 7448, Visual Studio Embedded)
+*       2003  -> NHPOS Rel 2.0.0  (Windows XP for NCR touch screen, Datacap for EPT)
+*       2006  -> NHPOS Rel 2.0.4  (Windows XP, Rel 2.0.4.51)
+*       2006  -> NHPOS Rel 2.0.5  (Windows XP, US Customs, Store and Forward, Mobile Terminal, Rel 2.0.5.76)
+*       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
+*       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
+*       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
+*
+*    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
+* --------------------------------------------------------------------------
 *   Abstract           : define,typedef,struct,prototype,memory
 *
 *  ------------------------------------------------------------------------
@@ -105,22 +116,31 @@
 
 
 /*--------------------------------------
-    Request Message Structure
+    Client Communication Interface Structure
+
+    This structure is used to define Client subsystem
+    memory resident storage area for the data request
+    that the Client subsystem is processing.
+
+    This struct is not used in the actual message but rather
+    to store the information needed the Client subsystem
+    needs to create a message that is sent and to process
+    the response message received.
 ---------------------------------------*/
 typedef struct {
     USHORT      usFunCode;                  /* Function Code */
     CLIREQCOM   *pReqMsgH;                  /* Request Message Pointer */
     USHORT      usReqMsgHLen;               /* Request Message Length */
-    UCHAR       *pauchReqData;              /* Request Data */
-    USHORT      usReqLen;                   /* Request Data Length */
+    UCHAR       *pauchReqData;              /* Request Data or pointer to a PIF file handle containing the data */
+    USHORT      usReqLen;                   /* Request Data Length or size of the sending file */
     SHORT       sError;                     /* SERVER ERROR CODE such as STUB_BUSY or STUB_SUCCESS */
     USHORT      usRetryCo;                  /* ERROR retry count.  see CstComErrHandle()  */
     SHORT       sRetCode;                   /* Function Return Code, value of pResp->sReturn put here by CstComRespHandle() */
     USHORT      usAuxLen;                   /* Received Data Length or for files the current offset into the file. */
     CLIRESCOM   *pResMsgH;                  /* Response Message Pointer */
     USHORT      usResMsgHLen;               /* Response Message Length */
-    UCHAR       *pauchResData;              /* Response Data Bufer */
-    USHORT      usResLen;                   /* Response Dara Buffer Length */
+    UCHAR       *pauchResData;              /* Response Data Bufer or pointer to a PIF file handle to receive the data */
+    USHORT      usResLen;                   /* Response Dara Buffer Length or size of the receiving file */
 } CLICOMIF;
 
 
@@ -200,7 +220,7 @@ SHORT   CstSendTerminal(USHORT usTerminalPosition);
 SHORT   CstSendBroadcast(CLICOMIF *pCliMsg);
 SHORT   SstUpdateAsMaster(VOID);
 SHORT   SstUpdateBackUp(VOID);
-SHORT   SstReadAsMaster(VOID);
+SHORT   SstReadAsMaster(VOID);   // check terminal is Master or not
 SHORT   SstReadFAsMaster(VOID);
 
 VOID    CstComCheckError(CLICOMIF *pCliMsg, XGRAM *pCliRcvBuf);

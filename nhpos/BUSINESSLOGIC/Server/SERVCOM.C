@@ -13,7 +13,22 @@
 * Category    : SERVER module, US Hospitality Model
 * Program Name: SERVCOM.C                                            
 * --------------------------------------------------------------------------
-* Abstruct: The provided function names are as follows:  
+*    Georgia Southern University Research Services Foundation
+*    donated by NCR to the research foundation in 2002 and maintained here
+*    since.
+*       2002  -> NHPOS Rel 1.4  (Windows CE for NCR 7448, Visual Studio Embedded)
+*       2003  -> NHPOS Rel 2.0.0  (Windows XP for NCR touch screen, Datacap for EPT)
+*       2006  -> NHPOS Rel 2.0.4  (Windows XP, Rel 2.0.4.51)
+*       2006  -> NHPOS Rel 2.0.5  (Windows XP, US Customs, Store and Forward, Mobile Terminal, Rel 2.0.5.76)
+*       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
+*       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
+*       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
+*
+*    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
+* --------------------------------------------------------------------------
+* Abstruct: The provided function names are as follows:
 *
 *           SerIamMaster()          Check am I Master Terminal ?
 *           SerIamBMaster()         Check am I Backup Master terminal ?
@@ -210,7 +225,7 @@ SHORT SerResponseTargetTerminal (VOID)
 	// this check removed but kept for future usage if problems develop with this functionality.
 	{
 		char  xBuff[128];
-		sprintf (xBuff, "SerResponseTargetTerminal(): %d, %d", SerRcvBuf.auchFaddr[0], SerRcvBuf.auchFaddr[3]);
+		sprintf (xBuff, "SerResponseTargetTerminal(): %d %d", SerRcvBuf.auchFaddr[0], SerRcvBuf.auchFaddr[3]);
 		NHPOS_ASSERT_TEXT(0, xBuff);
 	}
 #endif
@@ -260,15 +275,16 @@ SHORT   SerSendResponse(CLIRESCOM *pResMsgH,
     usSendLen += usResMsgHLen;
 
     if (NULL != puchReqData) {                  /*=== EDIT DATA ===*/
-        memcpy(&SerSndBuf.auchData[usResMsgHLen], &usReqLen, 2);
-        memcpy(&SerSndBuf.auchData[usResMsgHLen + 2], puchReqData, usReqLen);
-        usSendLen += usReqLen + 2;
+        CLIREQDATA * const pResData = (CLIREQDATA * )&SerSndBuf.auchData[usResMsgHLen];
+        pResData->usDataLen = usReqLen;
+        memcpy(pResData->auchData, puchReqData, usReqLen);
+        usSendLen += usReqLen + sizeof(pResData->usDataLen);
     }
                                                 /*=== SEND RESPONSE ===*/
     sError = SerNetSend(usSendLen);
 	if (sError < 0) {
 		char xBuff[128];
-		sprintf(xBuff, "SerNetSend(): sError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
+		sprintf(xBuff, "SerNetSend(): sError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
 	}
 
@@ -292,15 +308,16 @@ SHORT   SerSendResponseToIpAddress(UCHAR *auchFaddr, CLIRESCOM *pResMsgH,
     usSendLen += usResMsgHLen;
 
     if (NULL != puchReqData) {                  /*=== EDIT DATA ===*/
-        memcpy(&SerSndBuf.auchData[usResMsgHLen], &usReqLen, 2);
-        memcpy(&SerSndBuf.auchData[usResMsgHLen + 2], puchReqData, usReqLen);
-        usSendLen += usReqLen + 2;
+        CLIREQDATA * const pResData = (CLIREQDATA *)&SerSndBuf.auchData[usResMsgHLen];
+        pResData->usDataLen = usReqLen;
+        memcpy(pResData->auchData, puchReqData, usReqLen);
+        usSendLen += usReqLen + sizeof(pResData->usDataLen);
     }
                                                 /*=== SEND RESPONSE ===*/
     sError = SerNetSend(usSendLen);
 	if (sError < 0) {
 		char xBuff[128];
-		sprintf(xBuff, "SerNetSend(): sError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
+		sprintf(xBuff, "SerNetSend(): sError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
 	}
 
@@ -345,16 +362,19 @@ SHORT    SerSendRequest( UCHAR uchServer,
     usSendLen += usReqMsgHLen;
 
     if (NULL != puchReqData) {                  /*=== EDIT DATA ===*/
-        memcpy(&SerSndBuf.auchData[usReqMsgHLen], &usReqLen, 2);
-        memcpy(&SerSndBuf.auchData[usReqMsgHLen + 2], puchReqData, usReqLen);
-        usSendLen += usReqLen + 2;
+        CLIREQDATA* const pResData = (CLIREQDATA*)&SerSndBuf.auchData[usReqMsgHLen];
+        pResData->usDataLen = usReqLen;
+        memcpy(pResData->auchData, puchReqData, usReqLen);
+        usSendLen += usReqLen + sizeof(pResData->usDataLen);
     }
                                                 /*=== SEND REQUEST ===*/
 	sError = SerNetSend(usSendLen);
 	if (sError < 0) {
-		char xBuff[128];
-		sprintf(xBuff, "SerSendRequest(): sError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
-		NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
+        if (sError != STUB_BUSY) {
+		    char xBuff[128];
+		    sprintf(xBuff, "SerSendRequest(): sError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
+		    NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
+        }
 	}
 	return sError;
 }
@@ -388,8 +408,8 @@ SHORT    SerSendRequest( UCHAR uchServer,
 */
 SHORT   SerSendError(SHORT sError)
 {
-    CLIREQCOM   *pReqMsgH = (CLIREQCOM *)SerRcvBuf.auchData;
-    CLIRESCOM   *pResMsgH = (CLIRESCOM *)SerSndBuf.auchData;
+    CLIREQCOM   * const pReqMsgH = (CLIREQCOM *)SerRcvBuf.auchData;
+    CLIRESCOM   * const pResMsgH = (CLIRESCOM *)SerSndBuf.auchData;
 	SHORT        sMyError;
                                                 /*=== EDIT HEADER ===*/       
     memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, sizeof(SerSndBuf.auchFaddr));
@@ -406,7 +426,7 @@ SHORT   SerSendError(SHORT sError)
     sMyError = SerNetSend(sizeof(XGHEADER) + sizeof(CLIRESCOM));
 	if (sMyError < 0) {
 		char xBuff[128];
-		sprintf(xBuff, "SerSendError(): sMyError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sMyError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
+		sprintf(xBuff, "SerSendError(): sMyError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sMyError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((sMyError >= 0), xBuff);
 	}
 
@@ -700,7 +720,12 @@ SHORT    SerNetSend(USHORT usSendData)
 	// accomodate use with MWS polling over the Internet with its
 	// latency and delays.
 	PifNetControl(SerNetConfig.usHandle, PIF_NET_SET_STIME, 3000);
-    sError = PifNetSend(SerNetConfig.usHandle, &SerSndBuf, usSendData);
+    
+    do {
+        sError = PifNetSend(SerNetConfig.usHandle, &SerSndBuf, usSendData);
+        sRetry--;
+    } while ((sError == PIF_ERROR_NET_TIMEOUT || sError == PIF_ERROR_NET_BUSY ) && sRetry > 0);
+
     SerNetConfig.fchStatus &= ~SER_NET_SEND;
 
 	return sError;
@@ -746,7 +771,7 @@ SHORT   SerNetReceive(VOID)
                 }
             }
         } else {
-            SerResp.usSize = (USHORT)sError;
+            SerResp.usRcvdLen = (USHORT)sError;
             SerResp.sError = SERV_SUCCESS;
         }
     } while (SERV_ILLEGAL == SerResp.sError);
@@ -1007,7 +1032,7 @@ SHORT    SerBcasTimerRead(VOID)
     
 /*
 *===========================================================================
-** Synopsis:    VOID    Ser_Timer_Start(SERTIMER *pTim);
+** Synopsis:    VOID    Ser_Timer_Start(PIFTIMER *pTim);
 *
 *     InPut:    pTim    - pointer to Timer structure
 *
@@ -1016,27 +1041,20 @@ SHORT    SerBcasTimerRead(VOID)
 ** Description: This function starts Kitchin Printer Timer.
 *===========================================================================
 */
-VOID    Ser_Timer_Start(SERTIMER *pTim, UCHAR uchTermNo)
+VOID    Ser_Timer_Start(PIFTIMER *pTim, UCHAR uchTermNo)
 {
-    DATE_TIME   Timer;
+    PifGetDateTimeTimer(pTim);
 
-    PifGetDateTime(&Timer);
-
-    pTim->uchHour = (UCHAR)Timer.usHour;
-    pTim->uchMin  = (UCHAR)Timer.usMin;
-    pTim->uchSec  = (UCHAR)Timer.usSec;
-	pTim->uchTermNo = uchTermNo;
-
-    if ((0 == Timer.usHour) &&              /* 00:00:00 ? */
-        (0 == Timer.usMin) &&
-        (0 == Timer.usSec)) {
+    if ((0 == pTim->uchHour) &&              /* 00:00:00 ? */
+        (0 == pTim->uchMin) &&
+        (0 == pTim->uchSec)) {
         pTim->uchSec = 1;                   /* -> 00:00:01 */
     }
 }
 
 /*
 *===========================================================================
-** Synopsis:    SHORT    Ser_Timer_Read(SERTIMER *pTim, ULONG ulMAX);
+** Synopsis:    SHORT    Ser_Timer_Read(PIFTIMER  *pTim, ULONG ulMAX);
 *
 *     InPut:    pTim    - pointer to Timer structure
 *               ulMAX   - timer value expired
@@ -1047,18 +1065,13 @@ VOID    Ser_Timer_Start(SERTIMER *pTim, UCHAR uchTermNo)
 ** Description: This function reads and checks Timer.
 *===========================================================================
 */
-SHORT   Ser_Timer_Read(SERTIMER *pTim, ULONG ulMAX)
+SHORT   Ser_Timer_Read(PIFTIMER *pTim, ULONG ulMAX)
 {
-    DATE_TIME   Timer;
-    SERTIMER    CurTime;
+    PIFTIMER    CurTime;
     ULONG       ulOLD, ulNEW;
     
-    PifGetDateTime(&Timer);
+    PifGetDateTimeTimer(&CurTime);
                     
-    CurTime.uchHour = (UCHAR)Timer.usHour;
-    CurTime.uchMin  = (UCHAR)Timer.usMin;
-    CurTime.uchSec  = (UCHAR)Timer.usSec;
-
     ulOLD = (pTim->uchHour * 3600L) + (pTim->uchMin * 60L) + pTim->uchSec;
     ulNEW = (CurTime.uchHour * 3600L) + (CurTime.uchMin * 60L) + CurTime.uchSec;
     
@@ -1163,19 +1176,15 @@ SHORT    SerSendResponseFH(CLIRESCOM *pResMsgH,
                           ULONG  ulOffsetPoint,
                           USHORT usReqLen)
 {
+    CLIREQDATA * const pSendData = (CLIREQDATA*)&SerSndBuf.auchData[usResMsgHLen];
     USHORT  usSendLen;
 	SHORT   sError;
 
 	/*=== BUILD/EDIT MESSAGE ===*/
-    usSendLen = 0;
-    memcpy(&SerSndBuf.auchData[usSendLen], pResMsgH, usResMsgHLen);
-    usSendLen += usResMsgHLen;
-
-    memcpy(&SerSndBuf.auchData[usSendLen], &usReqLen, sizeof(USHORT));
-    usSendLen += sizeof(USHORT);
-
-    SstReadFileFH((SERTMPFILE_DATASTART + ulOffsetPoint + usResMsgHLen), (VOID *)&SerSndBuf.auchData[usSendLen], usReqLen, hsSerTmpFile);
-    usSendLen += usReqLen;
+    memcpy(&SerSndBuf.auchData, pResMsgH, usResMsgHLen);
+    pSendData->usDataLen = usReqLen;
+    SstReadFileFH((SERTMPFILE_DATASTART + ulOffsetPoint + usResMsgHLen), pSendData->auchData, usReqLen, hsSerTmpFile);
+    usSendLen = usResMsgHLen + sizeof(pSendData->usDataLen) + usReqLen;
 
 	/*=== EDIT HEADER ===*/       
 	// fill in the XGRAM header indicating receiver of the message we are building.
@@ -1191,7 +1200,7 @@ SHORT    SerSendResponseFH(CLIRESCOM *pResMsgH,
     sError = SerNetSend(usSendLen);
 	if (sError < 0) {
 		char xBuff[128];
-		sprintf(xBuff, "SerNetSend(): sError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
+		sprintf(xBuff, "SerNetSend(): sError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
 	}
 

@@ -1048,7 +1048,7 @@ SHORT   CliOpPluAssign(PLUIF *pPlu, USHORT usLockHnd)
 	}
 	if (sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
 		char xBuff[128];
-		sprintf (xBuff, "==NOTE: CliOpPluOepRead() sRetCode %d, sErrorM %d, sErrorBM %d", sRetCode, sErrorM, sErrorBM);
+		sprintf (xBuff, "==NOTE: CliOpPluOepRead() sRetCode %d sErrorM %d sErrorBM %d", sRetCode, sErrorM, sErrorBM);
 		NHPOS_NONASSERT_TEXT(xBuff);
 	}
     return sRetCode;
@@ -1349,7 +1349,7 @@ SHORT   CliOpCstrIndRead(CSTRIF *pCstr, USHORT usLockHnd)
 */
 SHORT    SerChangeOpPara(USHORT usType, CLIOPBCAS *pBcasRegNo)
 {
-    UCHAR       uchWriteFlag;
+    UCHAR       uchWriteFlag = 0;
     USHORT      usFunCode;
 
     switch(usType) {
@@ -2725,7 +2725,7 @@ SHORT   CliOpPluOepRead(OPPLUOEPIF *pPlu, USHORT usLockHnd)
 	}
 	if (sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
 		char xBuff[128];
-		sprintf (xBuff, "==NOTE: CliOpPluOepRead() ComReadStatus 0x%x, sRetCode %d, sErrorM %d, sErrorBM %d", usComReadStatus, sRetCode, sErrorM, sErrorBM);
+		sprintf (xBuff, "==NOTE: CliOpPluOepRead() ComReadStatus 0x%4.4x sRetCode %d sErrorM %d sErrorBM %d", usComReadStatus, sRetCode, sErrorM, sErrorBM);
 		NHPOS_NONASSERT_TEXT(xBuff);
 	}
     return sRetCode;

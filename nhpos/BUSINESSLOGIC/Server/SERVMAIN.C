@@ -68,17 +68,17 @@
 VOID THREADENTRY SerStartUp(VOID)
 {
     USHORT  usForEver = 1;
-    CLIREQCOM   *pResp;             /* R3.0 */
 
     SerInitialize();                            /* Server Initialize */
     while(usForEver) {
         SerRevRequest();                        /* Receive Request */ 
         SerExeSpeReq();                         /* Exec. Special Func. */
         if (SERV_SUCCESS == SerResp.sError) {   /* Receive Success ? */
+            CLIREQCOM   * const pResp = (CLIREQCOM*)SerRcvBuf.auchData; /* Add R3.0 */
+
             PifRequestSem(husSerCreFileSem);    /* Request Semapho */
             SerRevMesHand();                    /* Receive msg. handling */
             PifReleaseSem(husSerCreFileSem);    /* Release Semapho */
-            pResp = (CLIREQCOM *)SerRcvBuf.auchData; /* Add R3.0 */
             if ((pResp->usFunCode & CLI_RSTCONTCODE) == CLI_FCSPSPOLLING) {
                 SerResp.sError = SERV_TIME_OUT; /* Dummy */
                 SerErrResHand();                /* Error Handling */

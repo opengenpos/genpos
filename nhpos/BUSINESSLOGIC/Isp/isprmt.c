@@ -107,8 +107,9 @@ VOID RmtInitFileTbl(VOID)
 fhfh*/
 VOID RmtFileServer(VOID)
 {
-    VOID    *pReqMsgH, *pResMsgH;
-    ULONG   ulActPos;
+	VOID    * const pReqMsgH = IspRcvBuf.auchData;
+	VOID    * const pResMsgH = auchIspTmpBuf;
+	ULONG   ulActPos;
 	ULONG	ulActualBytesRead; //11-7-3 RPH
     USHORT  usC, usLen;
     SHORT   sResult;
@@ -118,9 +119,6 @@ VOID RmtFileServer(VOID)
     /* clear response message   */
     usLen = 0;
     memset(auchIspTmpBuf, 0, sizeof(auchIspTmpBuf));
-
-    pReqMsgH = IspRcvBuf.auchData;
-    pResMsgH = auchIspTmpBuf;
 
     ((CLIRESCOM *)pResMsgH)->usFunCode = ((CLIREQCOM *)pReqMsgH)->usFunCode;
     ((CLIRESCOM *)pResMsgH)->usSeqNo   = ((CLIREQCOM *)pReqMsgH)->usSeqNo & CLI_SEQ_CONT;

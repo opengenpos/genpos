@@ -601,11 +601,32 @@ typedef struct {
 
 /*--------------------------------------
     Common Data Message used to format Client, Server, ISP messages
+    Typicaly used for data associated with a message request or message response
+    following the first part of the Common Data Message containing the message
+    Common Message CLIRESCOM struct and parameters.
 ---------------------------------------*/
 typedef struct {
     USHORT  usDataLen;                  /* data length for the data, typically a message struct, that follows */
     UCHAR   auchData[1];                /* variable length data area, typically a copy of a message struct */
 } CLIREQDATA;
+
+/*--------------------------------------
+    Response Message Keep
+    Changes to this struct should be synchronized
+    with changes to the struct SERISPPREVIOUS use in
+    Server subsystem that handles communications
+    between terminals.
+---------------------------------------*/
+typedef struct {
+    SHORT       sError;                      /* Receive Error Code   */
+    USHORT      usRcvdLen;                   /* Receive Data Length  */
+    USHORT      usTimeOutCo;                 /* Time Out Counter     */
+    UCHAR       uchPrevUA;                   /* Previous Unique Address  */
+    USHORT      usPrevMsgHLen;               /* Previous Response Mes. Len */
+    USHORT      usPrevDataOff;               /* Previous Data Offset */
+    CLIREQDATA* pSavBuff;                   /* Saved data pointer   */
+    ULONG       ulSavBuffSize;              /* max size of the save data buffer in bytes to test for buffer overflow */
+} SERISPPREVIOUS;
 
 /*--------------------------------------
     Cashier Message (Request)
@@ -1792,7 +1813,7 @@ SHORT   SerOpRetrieveOperatorMessage (CLIREQMSGBUFFER *pReqMsgH, CLIRESMSGBUFFER
 ===========================================================================
 */
 
-extern  SHORT   hsSerTmpFile;
+extern  PifFileHandle   hsSerTmpFile;
 extern  CLIPLUSAVHAN    CliMMMHand;         /* Save MMM handel */
 extern  CLIPLUSAVHAN    SerMMMHand;         /* Save handles,        Saratoga */
 

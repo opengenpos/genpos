@@ -64,12 +64,10 @@
 */
 VOID    SerRecvDfl(VOID)
 {
-    CLIREQDFL  *pReqMsgH;
-    CLIRESDFL  ResMsgH;
+    CLIREQDFL  * const pReqMsgH = (CLIREQDFL *)SerRcvBuf.auchData;
+    CLIRESDFL  ResMsgH = { 0 };
 	SHORT      sSerSendStatus;
 
-    pReqMsgH = (CLIREQDFL *)SerRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESDFL));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
     ResMsgH.sResCode  = STUB_SUCCESS;
