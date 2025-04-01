@@ -213,16 +213,16 @@ VOID    SerSendInquiry(VOID)
     memcpy(ReqMsgH.ausTranNo, InqData.ausTranNo, 2*CLI_ALLTRANSNO);
     memcpy(ReqMsgH.ausPreTranNo, InqData.ausPreTranNo, 2*CLI_ALLTRANSNO);
 
-    sSerSendStatus = SerSendRequest(CLI_TGT_BMASTER, (CLIREQCOM *)&ReqMsgH, sizeof(CLIREQINQUIRY), NULL, 0);
+    sSerSendStatus = SerSendRequest(PIFNET_TGT_BMASTER, (CLIREQCOM *)&ReqMsgH, sizeof(CLIREQINQUIRY), NULL, 0);
 	if (sSerSendStatus < 0) {
         if (sSerSendStatus != STUB_BUSY || sSerSendStatus != sSerSendStatusOld) {
 		    char xBuff [128];
-		    sprintf (xBuff, "SerSendInquiry(): CLI_TGT_BMASTER sSerSendStatus = %d", sSerSendStatus);
+		    sprintf (xBuff, "SerSendInquiry(): PIFNET_TGT_BMASTER sSerSendStatus = %d", sSerSendStatus);
 		    NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
         }
 	} else if (sSerSendStatusOld == STUB_BUSY) {
         char xBuff[128];
-        sprintf(xBuff, "SerSendInquiry(): Clear - CLI_TGT_BMASTER sSerSendStatusOld == STUB_BUSY   sSerSendStatus = %d", sSerSendStatus);
+        sprintf(xBuff, "SerSendInquiry(): Clear - PIFNET_TGT_BMASTER sSerSendStatusOld == STUB_BUSY   sSerSendStatus = %d", sSerSendStatus);
         NHPOS_ASSERT_TEXT(!(sSerSendStatus != sSerSendStatusOld), xBuff);
     }
 
@@ -284,10 +284,10 @@ VOID    SerSendInqDate(VOID)
     memcpy(ReqMsgH.ausTranNo, InqData.ausTranNo, 2*CLI_ALLTRANSNO);
     memcpy(ReqMsgH.ausPreTranNo, InqData.ausPreTranNo, 2*CLI_ALLTRANSNO);
 
-    sSerSendStatus = SerSendRequest(CLI_TGT_BMASTER, (CLIREQCOM *)&ReqMsgH, sizeof(CLIREQINQUIRY), NULL, 0);
+    sSerSendStatus = SerSendRequest(PIFNET_TGT_BMASTER, (CLIREQCOM *)&ReqMsgH, sizeof(CLIREQINQUIRY), NULL, 0);
 	if (sSerSendStatus < 0) {
 		char xBuff [128];
-		sprintf (xBuff, "SerSendInqDate(): CLI_TGT_BMASTER sSerSendStatus = %d", sSerSendStatus);
+		sprintf (xBuff, "SerSendInqDate(): PIFNET_TGT_BMASTER sSerSendStatus = %d", sSerSendStatus);
 		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 	}
 }
@@ -333,10 +333,10 @@ VOID    SerSendInqReqInq(VOID)
 
     ReqMsgH.usFunCode   = CLI_FCINQREQINQ;
 
-    sSerSendStatus = SerSendRequest(CLI_TGT_MASTER, (CLIREQCOM *)&ReqMsgH, sizeof(CLIREQINQUIRY), NULL, 0);
+    sSerSendStatus = SerSendRequest(PIFNET_TGT_MASTER, (CLIREQCOM *)&ReqMsgH, sizeof(CLIREQINQUIRY), NULL, 0);
 	if (sSerSendStatus < 0) {
 		char xBuff [128];
-		sprintf (xBuff, "SerSendInqDateResp(): CLI_TGT_BMASTER sSerSendStatus = %d", sSerSendStatus);
+		sprintf (xBuff, "SerSendInqReqInq(): PIFNET_TGT_MASTER sSerSendStatus = %d", sSerSendStatus);
 		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 	}
 }

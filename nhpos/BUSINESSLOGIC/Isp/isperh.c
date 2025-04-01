@@ -80,14 +80,14 @@ VOID    IspERHTimeOut(VOID)
         IspCleanUpLockFun();                   /* Clean-up if need  */
         IspChangeStatus(ISP_ST_PASSWORD);      /* Change state to PASSWORD  */
     } else {
-        if (0 == (IspNetConfig.fchStatus & ISP_NET_OPEN)) { /* Check net is open or not */
+        if (0 == (IspNetConfig.fchStatus & PIFNET_NET_OPEN)) { /* Check net is open or not */
             sError = IspNetChkBoard() ;    /* Check system condition */
             if ( sError == PIF_ERROR_NET_NOT_PROVIDED ) {
                 IspAbort(FAULT_BAD_ENVIRONMENT);    /* Abort */
             } 
 
             IspNetOpen();                           /* Open Net */
-            if (0 == (IspNetConfig.fchStatus & ISP_NET_OPEN)) {
+            if (0 == (IspNetConfig.fchStatus & PIFNET_NET_OPEN)) {
                 PifSleep(ISP_SLEEP_WAIT);  /* if not open, then Sleep 5 Seconds */
             }
 

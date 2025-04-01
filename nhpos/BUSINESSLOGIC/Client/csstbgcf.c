@@ -2329,7 +2329,7 @@ SHORT	CliGusStoreFileFH(USHORT usType,
     PifReleaseSem(husCliExeNet);
 
 	CstSetMasterBackupStatus (sErrorM, sErrorBM);
-	if (sError || sErrorM || sErrorBM) {
+	if (sError || sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
 		if (sError || sErrorM != sErrorMsave || sErrorBM != sErrorBMsave) {
 			char xBuff[128];
 
@@ -2427,7 +2427,7 @@ SHORT	CliGusReadLockFH(GCNUM usGCNumber,
     PifReleaseSem(husCliExeNet);
 
 	CstSetMasterBackupStatus (sErrorM, sErrorBM);
-	if (sError || sErrorM || sErrorBM) {
+	if (0 > sError || sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
 		if (sError || sErrorM != sErrorMsave || sErrorBM != sErrorBMsave) {
 			char xBuff[128];
 
@@ -2492,7 +2492,7 @@ SHORT	CliGusReturnsLockClear(GCNUM usGCNumber)
     PifReleaseSem(husCliExeNet);
 
 	CstSetMasterBackupStatus (sErrorM, sErrorBM);
-	if (sError || sErrorM || sErrorBM) {
+	if (0 > sError || sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
 		if (sError || sErrorM != sErrorMsave || sErrorBM != sErrorBMsave) {
 			char xBuff[128];
 
@@ -2671,7 +2671,7 @@ SHORT   CliGusDeleteDeliveryQueue(GCNUM  uchOrderNo,
     PifReleaseSem(husCliExeNet);
 
 	CstSetMasterBackupStatus (sErrorM, sErrorBM);
-	if (sError || sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
+	if (0 > sError || sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
 		if (sError || sErrorM != sErrorMsave || sErrorBM != sErrorBMsave) {
 			char xBuff[128];
 
@@ -2962,7 +2962,7 @@ SHORT   CliGusDeliveryIndRead(USHORT usQueue,
     PifReleaseSem(husCliExeNet);
 
 	CstSetMasterBackupStatus (sErrorM, sErrorBM);
-	if (sError || sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
+	if (0 > sError || sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
 		if (sError || sErrorM != sErrorMsave || sErrorBM != sErrorBMsave) {
 			char xBuff[128];
 

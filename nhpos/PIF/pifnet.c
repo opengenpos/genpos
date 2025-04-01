@@ -750,7 +750,7 @@ SHORT PifNetStartupDiscoverNet (VOID)
 		ULONG  ulHostIpAddressArray[3] = {0};
 		// prepare for updating the filter so that we will see Notice Board broadcasts as these
 		// are filtered based on the Master Terminal and Backup Master Terminal IP address.
-		// see PIF_NET_RESTRICTED or PIF_PORT_FLAG_CLUSTER for filtering of IP traffic.
+		// see PIF_NET_RESTRICTED or PIFNET_PORT_FLAG_CLUSTER for filtering of IP traffic.
 		memcpy (ulHostIpAddressArray + 0, SysConfig.PifNetHostInformation[0].auchHostIpAddress, 4);
 		memcpy (ulHostIpAddressArray + 1, SysConfig.PifNetHostInformation[1].auchHostIpAddress, 4);
 		// See also use of _NetSetClusterInfo() in function PifNetInitialize()
@@ -874,7 +874,7 @@ SHORT  PIFENTRY PifNetOpen(CONST XGHEADER *pHeader)
     }
 
     /* open by pifnet.dll */
-    sNetHandle = PifNetOpenG((XGHEADER *)pHeader);
+    sNetHandle = PifNetOpenG(pHeader);
     if (sNetHandle < 0) {
 //        LeaveCriticalSection(&g_NetCriticalSection);
 		PifSubGetNewIdReserveClear(sNet, aPifNetTable, PIF_MAX_NET);
@@ -928,6 +928,12 @@ SHORT  PIFENTRY PifNetOpen(CONST XGHEADER *pHeader)
 **  return:     handle of network                                   **
 **                                                                  **
 **  Description:Opening UDP/IP by Winsock                           **
+**
+**      There are at least three different network interfaces used
+**      in GenPOS.
+**        - UDP IPv4 address of a terminal device such as a GenPOS terminal
+**        - UDP IPv4 address of a non-terminal device such as Third Party software
+**        - TCP IPv4 address of a non-terminal device such as a WiFi kitchen printer
 **                                                                  **
 **********************************************************************
 fhfh*/
@@ -974,7 +980,7 @@ SHORT  PIFENTRY PifNetOpenEx(CONST XGHEADER FAR *pHeader, USHORT fsMode)
     }
 
     if (fsMode & PIF_NET_DIRECTPORTMODE) {
-        hHandle = PifNetOpenD((XGHEADER *)pHeader);
+        hHandle = PifNetOpenD(pHeader);
         if (hHandle == INVALID_SOCKET) {
 //            LeaveCriticalSection(&g_NetCriticalSection);
 			PifSubGetNewIdReserveClear(sNet, aPifNetTable, PIF_MAX_NET);
@@ -982,7 +988,7 @@ SHORT  PIFENTRY PifNetOpenEx(CONST XGHEADER FAR *pHeader, USHORT fsMode)
             return PIF_ERROR_NET_ERRORS;
         }
 	} else if (fsMode & PIF_NET_TCPCONNECTMODE) {
-        hHandle = PifNetOpenTcp((XGHEADER *)pHeader);
+        hHandle = PifNetOpenTcp(pHeader);
         if (hHandle == INVALID_SOCKET) {
 			// TCP connect request may fail due to device not being connected or not turned on
 			// or to some server which may or may not be operational. Should the TCP connect
@@ -997,7 +1003,7 @@ SHORT  PIFENTRY PifNetOpenEx(CONST XGHEADER FAR *pHeader, USHORT fsMode)
 			return PIF_ERROR_NET_ERRORS;
         }
     } else if (fsMode & PIF_NET_GENERALPORTMODE) {
-        sNetHandle = PifNetOpenG((XGHEADER *)pHeader);
+        sNetHandle = PifNetOpenG(pHeader);
         if (sNetHandle < 0) {
 //            LeaveCriticalSection(&g_NetCriticalSection);
 			PifSubGetNewIdReserveClear(sNet, aPifNetTable, PIF_MAX_NET);
@@ -1330,7 +1336,7 @@ static SHORT  PifNetOpenG(CONST XGHEADER FAR *pHeader)
     SHORT sNetHandle, sReturn;
 
     /* open by pifnet.dll */
-    sNetHandle = _NetOpen((XGHEADER *)pHeader);
+    sNetHandle = _NetOpen(pHeader);
     if (sNetHandle < 0) {
         PifLog(FAULT_AT_PIFNETOPEN, FAULT_SHORT_RESOURCE);
         PifLog(MODULE_ERROR_NO(FAULT_AT_PIFNETOPEN), (USHORT)abs(sNetHandle));
@@ -1387,7 +1393,7 @@ static SHORT  PifNetSendG(USHORT usNet, CONST VOID *pBuffer, ULONG ulBytes)
             (pxgram->auchFaddr[2] == 0) &&
             (pxgram->auchFaddr[3] <= PIF_NET_MAX_IP)) {
 
-            if (pxgram->auchFaddr[3] == 0) {
+            if (pxgram->auchFaddr[3] == 0) {    // indicates PIFNET_TGT_BROADCAST
                 /* set broadcast address */
                 *(LONG*)aPifNetXgram[usNet].auchFaddr = INADDR_BROADCAST;
             } else if (bMyAddress) {
@@ -1441,7 +1447,7 @@ static SHORT  PifNetSendG(USHORT usNet, CONST VOID *pBuffer, ULONG ulBytes)
         ulBytes++;
     } else {
         /* data only mode */
-        if (aPifNetTable[usNet].xgHeader.auchFaddr[3] == 0) {
+        if (aPifNetTable[usNet].xgHeader.auchFaddr[3] == 0) {    // indicates PIFNET_TGT_BROADCAST
             /* set broadcast address */
             *(LONG*)aPifNetXgram[usNet].auchFaddr = INADDR_BROADCAST;
         } else {
@@ -1527,7 +1533,7 @@ static SHORT  PifNetReceiveG(USHORT usNet, VOID FAR *pBuffer, USHORT usBytes)
 							ULONG  ulHostIpAddressArray[3] = {0};
 							// prepare for updating the filter so that we will see Notice Board broadcasts as these
 							// are filtered based on the Master Terminal and Backup Master Terminal IP address.
-							// see PIF_NET_RESTRICTED or PIF_PORT_FLAG_CLUSTER for filtering of IP traffic.
+							// see PIF_NET_RESTRICTED or PIFNET_PORT_FLAG_CLUSTER for filtering of IP traffic.
 							memcpy (ulHostIpAddressArray + 0, SysConfig.PifNetHostInformation[0].auchHostIpAddress, 4);
 							memcpy (ulHostIpAddressArray + 1, SysConfig.PifNetHostInformation[1].auchHostIpAddress, 4);
 							_NetSetClusterInfo (ulHostIpAddressArray);    // This is call to NetSetClusterInfo()
@@ -1638,7 +1644,7 @@ static SOCKET  PifNetOpenD(CONST XGHEADER FAR *pHeader)
         }
     }
 
-    if (pHeader->auchFaddr[3] == 0) {
+    if (pHeader->auchFaddr[3] == 0) {    // indicates PIFNET_TGT_BROADCAST
         /* set broadcast as enable */
         if (setsockopt(hHandle, SOL_SOCKET, SO_BROADCAST, (CHAR FAR *)&fOpt, sizeof(fOpt)) == SOCKET_ERROR) {
             dwError = WSAGetLastError();
@@ -1739,7 +1745,7 @@ static SHORT  PifNetSendD(USHORT usNet, CONST VOID FAR *pBuffer, ULONG ulBytes)
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(pxgram->usFport);
-    if (pxgram->auchFaddr[3] == 0) {
+    if (pxgram->auchFaddr[3] == 0) {    // indicates PIFNET_TGT_BROADCAST
         /* set broadcast address */
         addr.sin_addr.S_un.S_addr = INADDR_BROADCAST;
     } else {
@@ -2077,7 +2083,7 @@ static SHORT  PifNetSendTcp(USHORT usNet, CONST VOID *pBuffer, ULONG ulBytes)
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(pxgram->usFport);
-    if (pxgram->auchFaddr[3] == 0) {
+    if (pxgram->auchFaddr[3] == 0) {    // indicates PIFNET_TGT_BROADCAST
         /* set broadcast address */
         addr.sin_addr.S_un.S_addr = INADDR_BROADCAST;
     } else {

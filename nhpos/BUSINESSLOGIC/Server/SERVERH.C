@@ -111,7 +111,7 @@ VOID    SerERHPowerFail(VOID)
         return;
     } 
 
-    if (SerNetConfig.fchStatus & SER_NET_BACKUP) {
+    if (SerNetConfig.fchStatus & PIFNET_NET_BACKUP) {
         SerChangeStatus(SER_STINQUIRY);     /* inquiry state */
         NbWaitForPowerUp();                 /* wait Notice B/D recovery */
         if (SER_IAM_MASTER) {               /* master ? */

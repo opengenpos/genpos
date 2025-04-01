@@ -447,12 +447,14 @@
 #define     CLI_FCBAKPROGRPT     0x0d50  /* Bak PROGRPT, R3.1 */
 #define     CLI_FCBAKFINAL       0x0f50  /* BAK finalize */
 
+#if defined(POSSIBLE_DEAD_CODE)
 /*------------------------------------------------
     Terget Server Unique Address
 -------------------------------------------------*/
 #define     CLI_TGT_MASTER        1     /* Master terminal unique address */
 #define     CLI_TGT_BMASTER       2     /* B. Master unique address */
 #define     CLI_TGT_BROADCAST   255     /* Broadcast to all terminals in cluster */
+#endif
 
 /*------------------------------------------------
     Port Address definition
@@ -474,17 +476,17 @@
 
 -------------------------------------------------*/
 
+#if 0
 /* use port no. from 1 to 200 for PIFNET.DLL control, except prot no. 7, 2172 */
 
-#define     CLI_PORT_STUB       PIF_PORT_STUB       /* Stub   port number  */
-#define     CLI_PORT_SERVER     PIF_PORT_SERVER     /* Sever  port number  */
-#define     CLI_PORT_NB         PIF_PORT_NB         /* Notice Board  port no. */
-#define     CLI_PORT_ISPSERVER  PIF_PORT_ISPSERVER  /* ISP    Server port no. */
-#define     CLI_PORT_CPM        PIF_PORT_CPM        /* Charge Posting Manager port no. */
-#define     CLI_PORT_CPM_HOST   PIF_PORT_CPM_HOST   /* Charge Post IF to charge post host */
-#define     CLI_PORT_EEPT_HOST  PIF_PORT_EEPT_HOST  /* EEPT IF to enhanced electronic payment terminal host */
+#define     CLI_PORT_STUB       PIFNET_PORT_STUB       /* Stub   port number  */
+#define     CLI_PORT_SERVER     PIFNET_PORT_SERVER     /* Sever  port number  */
+#define     CLI_PORT_NB         PIFNET_PORT_NB         /* Notice Board  port no. */
+#define     CLI_PORT_ISPSERVER  PIFNET_PORT_ISPSERVER  /* ISP    Server port no. */
+#define     CLI_PORT_CPM        PIFNET_PORT_CPM        /* Charge Posting Manager port no. */
+#define     CLI_PORT_CPM_HOST   PIFNET_PORT_CPM_HOST   /* Charge Post IF to charge post host */
+#define     CLI_PORT_EEPT_HOST  PIFNET_PORT_EEPT_HOST  /* EEPT IF to enhanced electronic payment terminal host */
 
-#if 0
 #define     CLI_PORT_STUB       100     /* Stub   port number  */
 #define     CLI_PORT_SERVER     200     /* Sever  port number  */
 #define     CLI_PORT_NB         300     /* Notice Board  port no. */
@@ -529,7 +531,7 @@
 /*------------------------------------------------
     IP Address, Data Definition 
 -------------------------------------------------*/
-#define     CLI_POS_UA          3       /* unique address auchFaddr[?] */
+#define     CLI_POS_UA          3       /* terminal unique address auchFaddr[?], PIF_NET_GENERALPORTMODE only */
 #define     CLI_POS_WBM         0       /* positon of back up system */
 
 /*------------------------------------------------

@@ -919,7 +919,7 @@ VOID  NbMakeSndMessage(VOID)                 /* Make a message to send */
 
     if (uchFdtFlag) {   /* Add R3.0 */
 #if defined(NbWriteMessage)
-		char xBuff[64];
+		char xBuff[128];
 		sprintf(xBuff, "==NOTE: NbMakeSndMessage()  FDTNoticeMessage()  uchFdtFlag=0x%x ", uchFdtFlag);
 		NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
 #endif
@@ -934,7 +934,7 @@ VOID  NbMakeSndMessage(VOID)                 /* Make a message to send */
 			testMsg |= NbSndBuf.NbConMes.auchMessage[usI];
 		}
 		if (testMsg) {
-			char xBuff[64];
+			char xBuff[128];
 			sprintf(xBuff, "==NOTE: NbConMes.auchMessage  0x%x 0x%x 0x%x 0x%x", NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET0], NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET1],
 				NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET2], NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET3]);
 			NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
@@ -1000,6 +1000,14 @@ VOID  NbExecRcvAsMMes(VOID)            /* Execute a received message */
 
     sRet = NbCheckUAddr();
     
+	if ((NbRcvBuf.NbConMes.auchMessage[NB_MESOFFSET0] & 0x00ff) != 0) {
+		// Received a parameter flag so lets log it.
+		char xBuff[128];
+
+		sprintf(xBuff, "==NOTE: NbRcvBuf.NbConMes.auchMessage[NB_MESOFFSET0] = 0x%x", NbRcvBuf.NbConMes.auchMessage[NB_MESOFFSET0]);
+		NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+	}
+
 	// Obtain the semaphore for the Notice Board globals.
 	// We get this here since NbExecRcvSetOnline modifies NbSysFlag.
     PifRequestSem(husNbSemHand);

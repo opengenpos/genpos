@@ -111,7 +111,7 @@ VOID    SerInitialize(VOID)
 	}
 
     if (SER_IAM_MASTER) {                       /* MASTER */
-        if (SerNetConfig.fchStatus & SER_NET_BACKUP) {
+        if (SerNetConfig.fchStatus & PIFNET_NET_BACKUP) {
             SerChangeStatus(SER_STINQUIRY);     /* inquiry state */
             SerSendInquiry();                   /* send inq. request */
         } else {                                /* non back up system ? */

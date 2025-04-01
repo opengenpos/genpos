@@ -178,7 +178,7 @@ VOID    IspLogNetRecv (char *aszPrintLineFirst)
 */
 SHORT   IspIamMaster(VOID)
 {
-    if (IspNetConfig.auchFaddr[CLI_POS_UA] == CLI_TGT_MASTER) {
+    if (IspNetConfig.auchFaddr[CLI_POS_UA] == PIFNET_TGT_MASTER) {
         return (ISP_SUCCESS);           /* if address = "1", then Master */
     } 
     return (ISP_ERR_ILLEGAL);
@@ -199,8 +199,7 @@ SHORT   IspIamMaster(VOID)
 */
 SHORT   IspIamBMaster(VOID)
 {
-    if ((IspNetConfig.auchFaddr[CLI_POS_UA] == CLI_TGT_BMASTER) &&
-        (IspNetConfig.fchStatus & ISP_NET_BACKUP)) {
+    if ((IspNetConfig.auchFaddr[CLI_POS_UA] == PIFNET_TGT_BMASTER) && (IspNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return (ISP_SUCCESS);        /* if address "2" with backup system , then B-Master */
     }
     return (ISP_ERR_ILLEGAL);
@@ -221,11 +220,10 @@ SHORT   IspIamBMaster(VOID)
 */
 SHORT   IspIamSatellite(VOID)
 {
-    if (IspNetConfig.auchFaddr[CLI_POS_UA] == CLI_TGT_MASTER) {
+    if (IspNetConfig.auchFaddr[CLI_POS_UA] == PIFNET_TGT_MASTER) {
         return (ISP_ERR_ILLEGAL);
     }
-    if ((IspNetConfig.auchFaddr[CLI_POS_UA] == CLI_TGT_BMASTER) &&
-        (IspNetConfig.fchStatus & ISP_NET_BACKUP)) {
+    if ((IspNetConfig.auchFaddr[CLI_POS_UA] == PIFNET_TGT_BMASTER) && (IspNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return (ISP_ERR_ILLEGAL);
     }
     return (ISP_SUCCESS);       
@@ -257,9 +255,9 @@ VOID    IspSendResponse(CLIRESCOM   *pResMsgH,
 {
     ULONG  ulSendLen;
 
-    memcpy(IspSndBuf.auchFaddr, IspRcvBuf.auchFaddr, sizeof(IspSndBuf.auchFaddr));
-    IspSndBuf.usFport = IspRcvBuf.usFport;
-    IspSndBuf.usLport = CLI_PORT_ISPSERVER;
+    // fill in the XGRAM header indicating receiver of the message we are building.
+    IspSndBuf.xgHeader = IspRcvBuf.xgHeader;
+    IspSndBuf.usLport = PIFNET_PORT_ISPSERVER;          // ensure local port is set correctly
     ulSendLen = sizeof(XGHEADER);
                                                 /*=== EDIT MESSAGE ===*/
     memcpy(IspSndBuf.auchData, pResMsgH, ulResMsgHLen);
@@ -294,9 +292,9 @@ VOID    IspSendError(SHORT sError)
     CLIREQCOM   *pReqMsgH = (CLIREQCOM *)IspRcvBuf.auchData;
     CLIRESCOM   *pResMsgH = (CLIRESCOM *)IspSndBuf.auchData;
      
-    memcpy(IspSndBuf.auchFaddr, IspRcvBuf.auchFaddr, PIF_LEN_IP);
-    IspSndBuf.usFport = IspRcvBuf.usFport;
-    IspSndBuf.usLport = CLI_PORT_ISPSERVER;
+    // fill in the XGRAM header indicating receiver of the message we are building.
+    IspSndBuf.xgHeader = IspRcvBuf.xgHeader;
+    IspSndBuf.usLport = PIFNET_PORT_ISPSERVER;          // ensure local port is set correctly
                                                  /*=== EDIT MESSAGE ===*/
 
     pResMsgH->usFunCode = pReqMsgH->usFunCode;   /* Set function code */
@@ -422,23 +420,20 @@ USHORT  IspComReadStatus(VOID)
 SHORT    IspNetOpen(VOID)
 {
     SYSCONFIG CONST *SysCon = PifSysConfig();
-	XGHEADER        IPdata = {0};
-    SHORT           sHandle;
 
     memset(&IspNetConfig, 0, sizeof(IspNetConfig));
 
-    memcpy(IspNetConfig.auchFaddr, SysCon->auchLaddr, PIF_LEN_IP);
+    IspNetConfig.xgHeader.auchAddr = *(AUCHADDR *)SysCon->auchLaddr;
+    IspNetConfig.xgHeader.usLport = PIFNET_PORT_ISPSERVER;
+    IspNetConfig.xgHeader.usFport = PIFNET_PORT_ANYPORT ;
+
     if (1 == usBMOption) {    /* saratoga */
-        IspNetConfig.fchStatus |= ISP_NET_BACKUP;    /* Set with backup system */
+        IspNetConfig.fchStatus |= PIFNET_NET_BACKUP;    /* Set with backup system */
     }
 
-    IPdata.usLport = CLI_PORT_ISPSERVER ;
-    IPdata.usFport = ANYPORT ;
-    sHandle = PifNetOpen(&IPdata);   /* Open network */
-
-    if (0 <= sHandle) {                              
-        IspNetConfig.usHandle   = (USHORT)sHandle;   /* if success, then save handle */
-        IspNetConfig.fchStatus |= ISP_NET_OPEN;      /* Set open flag */
+    IspNetConfig.usHandle = PifNetOpen(&IspNetConfig.xgHeader);   /* Open network */
+    if (0 <= IspNetConfig.usHandle) {
+        IspNetConfig.fchStatus |= PIFNET_NET_OPEN;      /* Set open flag */
 
 		/* Set normal & timeout mode */
         PifNetControl(IspNetConfig.usHandle, PIF_NET_SET_MODE, PIF_NET_NMODE | PIF_NET_TMODE);
@@ -447,10 +442,18 @@ SHORT    IspNetOpen(VOID)
         
         return (ISP_SUCCESS);
     }
+    else {
+        CliDispDescriptor(CLI_MODULE_ISP, CLI_DESC_START_ON ) ; /* Display  " COMM " */
 
-    CliDispDescriptor(CLI_MODULE_ISP, CLI_DESC_START_ON ) ; /* Display  " COMM " */
+        char  xBuff[128];
+        sprintf(xBuff, "**ERROR: IspNetOpen() PifNetOpen failed error %d", IspNetConfig.usHandle);
+        NHPOS_ASSERT_TEXT((0 <= IspNetConfig.usHandle), xBuff);
 
-    return (ISP_ERR_ILLEGAL);
+        PifLog(MODULE_ISP_ABORT, FAULT_BAD_ENVIRONMENT);
+        PifLog(MODULE_ERROR_NO(MODULE_ISP_ABORT), (USHORT)abs(IspNetConfig.usHandle));
+
+        return (ISP_ERR_ILLEGAL);
+    }
 }
 
 /*
@@ -468,7 +471,8 @@ SHORT    IspNetOpen(VOID)
 VOID    IspNetClose(VOID)
 {
     PifNetClose(IspNetConfig.usHandle);         /* Close for power down recovry */
-    IspNetConfig.fchStatus &= ~ISP_NET_OPEN;    /* Reset NET_OPEN flag */
+    IspNetConfig.fchStatus &= ~PIFNET_NET_OPEN;    /* Reset NET_OPEN flag */
+    IspNetConfig.usHandle = PIF_NET_INVALID_HANDLE;
 }
 
 VOID	IspNetSynchSeqNo (VOID)
@@ -492,11 +496,11 @@ SHORT   IspNetSend(ULONG ulSendData)
 {
     SHORT   sError = PIF_ERROR_NET_OFFLINE, sRetry=5;
 
-    if (IspNetConfig.fchStatus & ISP_NET_OPEN) {    /* if NET_OPEN, the send data */
+    if (IspNetConfig.fchStatus & PIFNET_NET_OPEN) {    /* if NET_OPEN, the send data */
 
         /* IspNetConfig.fchStatus |= ISP_NET_SEND;   */
 		// test requiring an ACK/NAK
-		if (IspNetConfig.fchStatus & ISP_NET_USING_ACKNAK) {    /* if using Ack/Nak then use PIF_NET_SET_STIME */
+		if (IspNetConfig.fchStatus & PIFNET_NET_USING_ACKNAK) {    /* if using Ack/Nak then use PIF_NET_SET_STIME */
 			PifNetControl(IspNetConfig.usHandle, PIF_NET_SET_STIME, 5000);
 		} else {
 			PifNetControl(IspNetConfig.usHandle, PIF_NET_SET_STIME, 0);
@@ -546,11 +550,12 @@ VOID    IspNetReceive(VOID)
     SHORT       sError, sPrevError;
     USHORT      usPrevErrorCo;
 
-    if (0 == (IspNetConfig.fchStatus & ISP_NET_OPEN)) {
+    if (0 == (IspNetConfig.fchStatus & PIFNET_NET_OPEN)) {
         IspResp.sError = ISP_ERR_TIME_OUT;               /* if not open, then return */
         return;
     }
 
+	IspNetConfig.fchStatus |= PIFNET_NET_RECEIVE;
 	// There are a number of functions within the Isp subsystem that use the
 	// time out as way of counting off time such as function IspERHTimeOut().
 	// Do not change this time out lightly!
@@ -562,9 +567,7 @@ VOID    IspNetReceive(VOID)
     do {
 		CHAR   xBuff[256];
 
-		IspNetConfig.fchStatus |= ISP_NET_RECEIVE;   
-        sError = PifNetReceive(IspNetConfig.usHandle, (VOID *)&IspRcvBuf, sizeof(XGRAM));
-        IspNetConfig.fchStatus &= ~ISP_NET_RECEIVE;
+        sError = PifNetReceive(IspNetConfig.usHandle, &IspRcvBuf, sizeof(XGRAM));
 
         if (0 > sError) {                             /* Check receive condition */
             if (PIF_ERROR_NET_POWER_FAILURE == sError) {
@@ -599,6 +602,8 @@ VOID    IspNetReceive(VOID)
 			IspLogNetRecv (xBuff);
 		}
     } while (ISP_ERR_ILLEGAL == IspResp.sError);  /* if ILLEGAL, then retry 3 times */
+
+    IspNetConfig.fchStatus &= ~PIFNET_NET_RECEIVE;
 }
 
 

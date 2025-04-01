@@ -667,10 +667,10 @@ SHORT RptTerminalConfiguration(USHORT (*RptSampleConfigurationLine) (TCHAR *tsLi
 				break;
 
 			sPrintPort = 0;
-			sPrintPort = ((UserTally[usI].usUserPort == PIF_PORT_SERVER) ? 1 : sPrintPort);
-			sPrintPort = ((UserTally[usI].usUserPort == PIF_PORT_ISPSERVER) ? 2 : sPrintPort);
-			sPrintPort = ((UserTally[usI].usUserPort == PIF_PORT_STUB) ? 3 : sPrintPort);
-			sPrintPort = ((UserTally[usI].usUserPort == PIF_PORT_NB) ? 4 : sPrintPort);
+			sPrintPort = ((UserTally[usI].usUserPort == PIFNET_PORT_SERVER) ? 1 : sPrintPort);
+			sPrintPort = ((UserTally[usI].usUserPort == PIFNET_PORT_ISPSERVER) ? 2 : sPrintPort);
+			sPrintPort = ((UserTally[usI].usUserPort == PIFNET_PORT_STUB) ? 3 : sPrintPort);
+			sPrintPort = ((UserTally[usI].usUserPort == PIFNET_PORT_NB) ? 4 : sPrintPort);
 			if (sPrintPort) {
 				_stprintf(infobuffer, _T("  Thread %s port %d"), tcsPortNames[sPrintPort], UserTally[usI].usUserPort);
 				if (0 == RptSampleConfigurationLine (infobuffer)) {

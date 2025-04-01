@@ -289,7 +289,7 @@ VOID    IspRecvPassLogOn(CLIREQISP  *pReqMsgH)
 	// enterprise style customer with multiple sites installed within an enterprise style LAN.
 	// Due to the nature of the equipment and provisioning used, we are seeing network communication errors
 	// in which some messages from GenPOS to the remote application are being dropped.
-	IspNetConfig.fchStatus &= ~ISP_NET_USING_ACKNAK;   /* clear using Ack/Nak indicator in case earlier version of PCIF */
+	IspNetConfig.fchStatus &= ~PIFNET_NET_USING_ACKNAK;   /* clear using Ack/Nak indicator in case earlier version of PCIF */
 	IspRecvLogOnVersionInfo.LastLogOn = *pReqMsgH;
 	memcpy(IspRecvLogOnVersionInfo.auchFaddr, IspRcvBuf.auchFaddr, sizeof(IspRecvLogOnVersionInfo.auchFaddr));
 
@@ -299,7 +299,7 @@ VOID    IspRecvPassLogOn(CLIREQISP  *pReqMsgH)
 		// is received.  We have also implemented a version identification beginning with GenPOS Rel 2.2.1.141
 		// in the Logon message.  The PCIF will now put a version number into fields of the Logon request message
 		// which previously had been zeroed out. See function IspVersionInfoGet() in PCIF DLL file R20_PCSTBISP.C
-		IspNetConfig.fchStatus |= ISP_NET_USING_ACKNAK;   /* if using Ack/Nak then use Ack/Nak when sending */
+		IspNetConfig.fchStatus |= PIFNET_NET_USING_ACKNAK;   /* if using Ack/Nak then use Ack/Nak when sending */
 	}
     IspSendPassResponse(sError);               /* Send ?? response */
 
@@ -518,7 +518,7 @@ VOID    IspRecvPassUnlockKB(VOID)
 */
 VOID    IspRecvPassLogOff(VOID)
 {
-	IspNetConfig.fchStatus &= ~ISP_NET_USING_ACKNAK;   /* clear using Ack/Nak indicator with logout request from remote application */
+	IspNetConfig.fchStatus &= ~PIFNET_NET_USING_ACKNAK;   /* clear using Ack/Nak indicator with logout request from remote application */
 	{
 		CLIREQISP  LastLogOn = {0};
 		IspRecvLogOnVersionInfo.LastLogOn = LastLogOn;  // clear the version information

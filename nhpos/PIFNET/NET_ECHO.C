@@ -212,7 +212,7 @@ VOID	NetEchoServer(PECHARG pArg)
 	/* --- initialize --- */
 
 	memset(&hdrAddress, '\0', sizeof(hdrAddress));
-	hdrAddress.usFport = ANYPORT;				/* no specific target addr.	*/
+	hdrAddress.usFport = PIFNET_PORT_ANYPORT;		/* no specific target addr.	*/
 	hdrAddress.usLport = pArg->usPort;			/* my port number			*/
 	sRet               = 0;						/* assume no error			*/
 

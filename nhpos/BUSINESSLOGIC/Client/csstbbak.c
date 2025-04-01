@@ -248,7 +248,7 @@ SHORT   SerStartBackUp(VOID)
     if (CLI_IAM_MASTER) {
 		SERINQSTATUS    InqData;
 
-        if (0 == (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+        if (0 == (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 			PifLog (MODULE_MAINT_LOG_ID, LOG_EVENT_MAINT_BKUP_NO_BACKUP);
             return STUB_NO_BACKUP;
         }
@@ -371,7 +371,7 @@ SHORT   SerChangeInqStat(VOID)
 
     if (CLI_IAM_MASTER) {
 		if (fsComStatus & CLI_STS_M_UPDATE) {
-			if (CliNetConfig.fchStatus & CLI_NET_BACKUP) {
+			if (CliNetConfig.fchStatus & PIFNET_NET_BACKUP) {
 				sRetCode = STUB_SUCCESS;
 			}
 			else

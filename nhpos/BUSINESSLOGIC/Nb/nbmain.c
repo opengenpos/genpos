@@ -308,16 +308,16 @@ VOID  NbErrResHand(SHORT sRet)
         usNbState =  NB_SENDSTATE;              /* Set state to SEND */
         
         if ( uchUadd ==  NB_MASTERUADD ) {
-			if ( NbSndBuf.NbMesHed.auchFaddr[3] == (UCHAR)NB_BMASTERUADD) { 
+			if ( NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] == (UCHAR)NB_BMASTERUADD) {
 				usNbRcvFBM ++;            /* Increment Backup Master failure count */
 			}
-            NbSndBuf.NbMesHed.auchFaddr[3] = (UCHAR)NB_BMASTERUADD;
+            NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] = (UCHAR)NB_BMASTERUADD;
         }
 		else if ( uchUadd ==  NB_BMASTERUADD && usBMOption == NB_WITH_BACKUP_MASTER) {
-			if ( NbSndBuf.NbMesHed.auchFaddr[3] == (UCHAR)NB_MASTERUADD) { 
+			if ( NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] == (UCHAR)NB_MASTERUADD) {
 				usNbRcvFMT ++;            /* Increment Master failure count */
 			}
-            NbSndBuf.NbMesHed.auchFaddr[3] = (UCHAR)NB_MASTERUADD;
+            NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] = (UCHAR)NB_MASTERUADD;
 		} else {
 			// this is a Satellite Terminal.  If we are a non-Backup system then
 			// the only broadcaster is the Master Terminal.  If we are not seeing
@@ -412,7 +412,7 @@ VOID  NbRcvMesHand(VOID)
         NbSetMTOnline();
         usNbRcvFMT = 0 ;                    /* Clear Counter  */
         usNbNetErr ++;                      /* Controls a detected net error count */
-        NbSndBuf.NbMesHed.auchFaddr[3] = (UCHAR)NB_MASTERUADD;  /* Set BM address */
+        NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] = (UCHAR)NB_MASTERUADD;  /* Set BM address */
     
         usNbState =  NB_SENDSTATE;              /* Send quick response */
         return;
@@ -423,8 +423,8 @@ VOID  NbRcvMesHand(VOID)
 
         usNbState =  NB_WAITSTATE_DELAY ; /* Set state to Delay  */
 
-        if ( NbSndBuf.NbMesHed.auchFaddr[3] != (UCHAR)0 ) { 
-            NbSndBuf.NbMesHed.auchFaddr[3] = (UCHAR)0;  /* Set all address */
+        if ( NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] != (UCHAR)0 ) {
+            NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] = (UCHAR)0;  /* Set all address */
             usNbState =  NB_SENDSTATE;              /* Send quick response */
         }
         break;
@@ -434,7 +434,7 @@ VOID  NbRcvMesHand(VOID)
         usNbRcvFBM = 0 ;                          /* Clear Counter  */
         usNbState =  NB_SENDSTATE;              /* Send quick response */
         usNbNetErr ++;                      /* Controls a detected net error count */
-        NbSndBuf.NbMesHed.auchFaddr[3] = (UCHAR)0;  /* Set all address */
+        NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] = (UCHAR)0;  /* Set all address */
         return;
         break;
 
@@ -561,7 +561,7 @@ VOID  NbExecuteSend(USHORT fsSystemInf)
 
     NbMakeConfirmMessage(usTadd, fsSystemInf); /* Check offline counter */
 
-    if ( NbSndBuf.NbMesHed.auchFaddr[3] == (UCHAR)0 ) { 
+    if ( NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] == (UCHAR)0 ) {
         NbMakeSndMessage();         /* Make a message to send */
         NbPreCheckOffline();        /* Check offline counter */
     } 
@@ -570,16 +570,16 @@ VOID  NbExecuteSend(USHORT fsSystemInf)
 
     if ( PIF_ERROR_NET_POWER_FAILURE != sRet ) {
         if ( usTadd == NB_MASTERUADD) {
-            if ( NbSndBuf.NbMesHed.auchFaddr[3] != (UCHAR)0 ) { 
+            if ( NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] != (UCHAR)0 ) {
                 if ( sRet < 0 )  {
-                    NbSndBuf.NbMesHed.auchFaddr[3] = (UCHAR)0;  /* Set all address */
+                    NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] = (UCHAR)0;  /* Set all address */
                     usNbState =  NB_SENDSTATE;                  /* Set state to SEND */
                     return;
                 }
             }
         } else {
-            if ( NbSndBuf.NbMesHed.auchFaddr[3] != (UCHAR)0 ) { 
-                NbSndBuf.NbMesHed.auchFaddr[3] = (UCHAR)0;  /* Set All address */
+            if ( NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] != (UCHAR)0 ) {
+                NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] = (UCHAR)0;  /* Set All address */
                 return;
             }
         }

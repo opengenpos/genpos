@@ -797,7 +797,7 @@ SHORT GusReadLock  (GCNUM  usGCNumber,
 
 					Gcf_DriveIndexDeleteSpl (&Gcf_FileHed, i, ulDriveIndexSerHitPoint);
 					if (sMaster == STUB_SUCCESS) {
-						NbWriteMessage(NB_MESOFFSET1, (UCHAR)(NB_REQPAYMENT1 << i));
+						NbWriteMessage(NB_MESOFFSET1, (NB_REQPAYMENT1 << i));
 					}
 				}
 			}
@@ -2222,7 +2222,7 @@ SHORT GusReadLockFH(GCNUM  usGCNumber,
 				if (Gcf_DriveIndexSer(Gcf_FileHed.usCurDrive[i], usGCNumber, &ulDriveIndexSerHitPoint, Gcf_FileHed.offulDrvNOFile[i]) == GCF_SUCCESS) {
 					Gcf_DriveIndexDeleteSpl (&Gcf_FileHed, i, ulDriveIndexSerHitPoint);
 					if (sMaster == STUB_SUCCESS) {
-						NbWriteMessage(NB_MESOFFSET1, (UCHAR)(NB_REQPAYMENT1 << i));
+						NbWriteMessage(NB_MESOFFSET1, (NB_REQPAYMENT1 << i));
 					}
 				}
 			}

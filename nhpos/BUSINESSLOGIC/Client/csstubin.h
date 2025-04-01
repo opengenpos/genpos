@@ -74,31 +74,33 @@
 #define     CLI_STS_BACKUP_FOUND BLI_STS_BACKUP          /* Notice Board indicates Backup messages received, BLI_STS_BACKUP */
 #define     CLI_STS_M_REACHABLE  BLI_STS_M_REACHABLE     /* master off-line but is reachable, BLI_STS_M_REACHABLE */
 
+#if defined(POSSIBLE_DEAD_CODE)
 //------------------------------------------------
 //     SAT Status Definition
 //     used with CliNetConfig.fchSatStatus to indicate
 //     Satellite Terminal status.
 //-------------------------------------------------
-#define     CLI_SAT_DISCONNECTED    0x0001     // Terminal is a Disconnected Satellite, see also PIF_CLUSTER_DISCONNECTED_SAT
-#define     CLI_SAT_UPTODATE        0x0002     // Terminal is up to date with parameters.
-#define     CLI_SAT_JOINED          0x0004     // Terminal has been joined to a cluster.  see also PIF_CLUSTER_JOINED_SAT
+#define     CLI_SAT_DISCONNECTED    PIFNET_SAT_DISCONNECTED     // Terminal is a Disconnected Satellite, see also PIF_CLUSTER_DISCONNECTED_SAT
+#define     CLI_SAT_UPTODATE        PIFNET_SAT_UPTODATE         // Terminal is up to date with parameters.
+#define     CLI_SAT_JOINED          PIFNET_SAT_JOINED           // Terminal has been joined to a cluster.  see also PIF_CLUSTER_JOINED_SAT
 
 /*------------------------------------------------
     NET Status Definition
 	used with CliNetConfig.fchStatus to indicate
 	network layer status
 -------------------------------------------------*/
-#define     CLI_NET_OPEN        0x01        /* NET opened */
-#define     CLI_NET_SEND        0x02        /* NET sending */
-#define     CLI_NET_RECEIVE     0x04        /* NET receiving */
-#define     CLI_NET_BACKUP      0x10        /* NET back up system */
-#define     CLI_NET_DISP20      0x20        /* NET display 2 x 20 */
+#define     CLI_NET_OPEN        PIFNET_NET_OPEN        /* NET opened */
+#define     CLI_NET_SEND        PIFNET_NET_SEND        /* NET sending */
+#define     CLI_NET_RECEIVE     PIFNET_NET_RECEIVE     /* NET receiving */
+#define     CLI_NET_BACKUP      PIFNET_NET_BACKUP      /* NET back up system */
+//#define     CLI_NET_DISP20      0x20        /* NET display 2 x 20, used with old DISP_2X20 operator display for NCR 2170 */
 
 /*------------------------------------------------
     ERROR CODE (Display)
 -------------------------------------------------*/
 #define     CLI_ERRORCODE_BUSY      10      /* Error Code, Master Busy */
 #define     CLI_ERRORCODE_BACKUP    11      /* Error Code, Back Up */
+#endif
 
 /*
 ===========================================================================

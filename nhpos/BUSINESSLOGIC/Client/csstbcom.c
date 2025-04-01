@@ -139,7 +139,7 @@ static USHORT  usCstfsSystemInf = 0;      /* Client side special Notice Board st
 
 /* Function prototypes for static functions located in this file. */
 static SHORT   CstComChekInquiry(VOID);
-static VOID    CstComMakeMessage(USHORT usServer, USHORT usPort, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
+static VOID    CstComMakeMessage(USHORT usServer, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
 static VOID    CstComSendReceive(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf);
 static USHORT  CstComMakeMultiData(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
 static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf);
@@ -276,7 +276,7 @@ SHORT    CstLogLine (char *aszPrintLine)
 */
 SHORT   CstIamMaster(VOID)
 {
-    if (CLI_TGT_MASTER == CliNetConfig.auchFaddr[CLI_POS_UA]) {
+    if (PIFNET_TGT_MASTER == CliNetConfig.auchFaddr[CLI_POS_UA]) {
         return STUB_SUCCESS;
     } 
     return STUB_ILLEGAL;
@@ -294,10 +294,30 @@ SHORT   CstIamMaster(VOID)
 */
 SHORT   CstIamBMaster(VOID)
 {
-    if ((CLI_TGT_BMASTER == CliNetConfig.auchFaddr[CLI_POS_UA]) && (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+    if ((PIFNET_TGT_BMASTER == CliNetConfig.auchFaddr[CLI_POS_UA]) && (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return STUB_SUCCESS;
     }
     return STUB_ILLEGAL;
+}
+
+/*
+*===========================================================================
+** Synopsis:    PIFNETSTATUS    CstPifNetStatus(VOID);
+*
+** Return:      PIFNETSTAUS with the Client Stub PIFNET status
+*
+** Description:  This function provides a copy of the current Client Stub
+*                PIFNET status from the CliNetConfig 
+*===========================================================================
+*/
+PIFNETSTATUS CstPifNetStatus(VOID)
+{
+	PIFNETSTATUS  sStatus = { 0 };
+
+	sStatus.fchStatus = CliNetConfig.fchStatus;
+	sStatus.fchSatStatus = CliNetConfig.fchSatStatus;
+
+	return sStatus;
 }
 
 /*
@@ -312,7 +332,7 @@ SHORT   CstIamBMaster(VOID)
 */
 SHORT   CstIamDisconnectedSatellite(VOID)
 {
-    if (CliNetConfig.fchSatStatus & CLI_SAT_DISCONNECTED) {
+    if (CliNetConfig.fchSatStatus & PIFNET_SAT_DISCONNECTED) {
         return STUB_SUCCESS;
     }
 	return STUB_ILLEGAL;
@@ -334,7 +354,7 @@ SHORT   CstIamDisconnectedUnjoinedSatellite(VOID)
 {
 	// If we are a disconnected Satellite and we are not joined to a cluster
 	// then indicate success.
-    if ((CliNetConfig.fchSatStatus & (CLI_SAT_DISCONNECTED | CLI_SAT_JOINED)) == CLI_SAT_DISCONNECTED) {
+    if ((CliNetConfig.fchSatStatus & (PIFNET_SAT_DISCONNECTED | PIFNET_SAT_JOINED)) == PIFNET_SAT_DISCONNECTED) {
         return STUB_SUCCESS;
     }
 	return STUB_ILLEGAL;
@@ -376,7 +396,7 @@ USHORT CstSetMasterBackupStatus (SHORT  sErrorM, SHORT  sErrorBM)
 		// the Backup Master and we have a Backup Master provisioned then mark
 		// the Master Terminal as Out Of Date.  CstSendBMaster() will return
 		// STUB_DISCOVERY if there is not a Backup provisioned.
-		if (0 != (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+		if (0 != (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 			CstMTOutOfDate();
 			usOutOfDateIndic |= 0x01;
 		}
@@ -636,7 +656,7 @@ SHORT   CstSendMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
     }
 #endif
 
-    CstComMakeMessage(CLI_TGT_MASTER, CLI_PORT_STUB, pCliMsg, pCliSndBuf); //create\fill data structure for sending message to master
+    CstComMakeMessage(PIFNET_TGT_MASTER, pCliMsg, pCliSndBuf); //create\fill data structure for sending message to master
     CstComSendReceive(pCliMsg, pCliSndBuf, pCliRcvBuf); //sends request to terget server and receives response (loops until replied to)
 
 	// We are implementing a new communications status indicator of CLI_STS_M_REACHABLE
@@ -692,7 +712,7 @@ SHORT   CstSendBMaster(VOID)
 	I_Will_Create_An_Error++;
 #endif
 #pragma message("  ****   ")
-    CstComMakeMessage(CLI_TGT_MASTER, CLI_PORT_STUB, pCliMsg, &CliSndBuf);
+    CstComMakeMessage(PIFNET_TGT_MASTER, pCliMsg, &CliSndBuf);
     CstComSendReceive(pCliMsg, &CliSndBuf, &CliRcvBuf);
 
 	if ((pCliMsg->sError == STUB_M_DOWN) || (CstComReadStatus() & CLI_STS_M_OFFLINE)) {
@@ -740,7 +760,7 @@ SHORT   CstSendBMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCl
        return STUB_DISCOVERY; // do not send to Backup Master, simply return the SUCCESS message
 	}
 
-	if (0 == (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+	if (0 == (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return STUB_DISCOVERY;
     }
 
@@ -748,7 +768,7 @@ SHORT   CstSendBMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCl
 
 	// check to see if the Backup Master Terminal option was
 	// detected by function CstNetOpen().  If not, then just return.
-    if (0 == (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+    if (0 == (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 		if ((usCstComReadStatus & CLI_STS_BACKUP_FOUND) == 0) {
 			return STUB_DISCOVERY;
 		}
@@ -820,7 +840,7 @@ SHORT   CstSendBMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCl
         return STUB_SELF;
     }
 
-    CstComMakeMessage(CLI_TGT_BMASTER, CLI_PORT_STUB, pCliMsg, pCliSndBuf);
+    CstComMakeMessage(PIFNET_TGT_BMASTER, pCliMsg, pCliSndBuf);
     CstComSendReceive(pCliMsg, pCliSndBuf, pCliRcvBuf);
 
     return pCliMsg->sError;
@@ -845,7 +865,7 @@ SHORT   CstSendTerminal(USHORT usTerminalPosition)
 	CLICOMIF *pCliMsg = &CliMsg;
 	SHORT  sRetStatus = STUB_SUCCESS;
 
-    CstComMakeMessage(usTerminalPosition, CLI_PORT_STUB, pCliMsg, &CliSndBuf); //create\fill data structure for sending message to terminal
+    CstComMakeMessage(usTerminalPosition, pCliMsg, &CliSndBuf); //create\fill data structure for sending message to terminal
     CstComSendReceive(pCliMsg, &CliSndBuf, &CliRcvBuf); //sends request to terget server and receives response (loops until replied to)
 
     return CliMsg.sError;  //message successfully sent to master (failures return above)
@@ -870,7 +890,7 @@ SHORT   CstSendBroadcast(CLICOMIF *pCliMsg)
 	extern XGRAM       CliRcvBuf;          /* Receive Buffer */
 	SHORT  sRetStatus = STUB_SUCCESS;
 
-    CstComMakeMessage(CLI_TGT_BROADCAST, CLI_PORT_STUB, pCliMsg, &CliSndBuf);
+    CstComMakeMessage(PIFNET_TGT_BROADCAST, pCliMsg, &CliSndBuf);
     CstComSendReceive(pCliMsg, &CliSndBuf, &CliRcvBuf);
 
     return STUB_SUCCESS;
@@ -975,7 +995,7 @@ SHORT   SstReadFAsMaster(VOID)
 
     sError = sErrorM = CstSendMaster();                         /* Send to Master */
     if (STUB_M_DOWN == sError || STUB_TIME_OUT == sError) {   /* master down */
-		if (0 != (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+		if (0 != (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 			sError = CstSendBMaster();                        /* Send to B Master */
 			if (STUB_BM_DOWN == sError || STUB_TIME_OUT == sError) {                     /* Backup Master down */
 				sError = sErrorM;
@@ -987,10 +1007,9 @@ SHORT   SstReadFAsMaster(VOID)
 
 /*
 *===========================================================================
-** Synopsis:    VOID    CstComMakeMessage(UCHAR uchServer, USHORT usPort, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
+** Synopsis:    VOID    CstComMakeMessage(UCHAR uchServer, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
 *
-*     Input:    uchServer   - uniuqe address of target server
-*               usPort      - port on target host such as CLI_PORT_STUB
+*     Input:    uchServer   - uniuqe address of target server terminal, Master or Backup Master
 *               pCliMsg     - pointer to CliMsg struct for this message
 *               pCliSndBuf  - pointer to the CliSndBuf struct containing the data to send
 *
@@ -999,20 +1018,18 @@ SHORT   SstReadFAsMaster(VOID)
 ** Description: This function makes send message.
 *===========================================================================
 */
-static VOID    CstComMakeMessage(USHORT usServer, USHORT usPort, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
+static VOID    CstComMakeMessage(USHORT usServer, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
 {
-    memcpy(pCliSndBuf->auchFaddr, CliNetConfig.auchFaddr, PIF_LEN_IP);
-    pCliSndBuf->auchFaddr[CLI_POS_UA] = (UCHAR)usServer;
-	if (usServer == CLI_TGT_BROADCAST) {
+	pCliSndBuf->xgHeader = CliNetConfig.xgHeader;
+    pCliSndBuf->xgHeader.auchFaddr[CLI_POS_UA] = (UCHAR)usServer;
+	if (usServer == PIFNET_TGT_BROADCAST) {
 		// Set the send address to be a broadcast on the LAN
 		// if the target server is broadcast.
 		pCliSndBuf->auchFaddr[0] = 192;
 		pCliSndBuf->auchFaddr[1] = 0;
 		pCliSndBuf->auchFaddr[2] = 0;
-		pCliSndBuf->auchFaddr[3] = 0;
+		pCliSndBuf->auchFaddr[CLI_POS_UA] = 0;    // indicates PIFNET_TGT_BROADCAST
 	}
-    pCliSndBuf->usFport = CLI_PORT_SERVER;
-    pCliSndBuf->usLport = usPort;             // typically CLI_PORT_STUB
 
     pCliMsg->pReqMsgH->usFunCode = (pCliMsg->usFunCode & CLI_RSTBACKUPFG);
     pCliMsg->pReqMsgH->usSeqNo = 0;
@@ -1247,13 +1264,13 @@ static USHORT  CstComMakeMultiData(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
 		++ pSend->usSeqNo;
 	}
 
-    if (CLI_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+    if (PIFNET_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
         if (0 == (CstComReadStatus() & CLI_STS_BM_UPDATE)) {
             pSend->usFunCode |= CLI_SETBMDOWN;
         } else {
             pSend->usFunCode &= ~CLI_SETBMDOWN;
         }
-    } else if (CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+    } else if (PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
         if (0 == (CstComReadStatus() & CLI_STS_M_UPDATE)) {
             pSend->usFunCode &= ~CLI_FCWBACKUP;
         }
@@ -1322,7 +1339,7 @@ VOID    CstComRespHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf
 	}
 
     pCliMsg->sRetCode = pResp->sReturn;
-    if ((CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) && (pSend->usFunCode & CLI_FCWBACKUP))
+    if ((PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) && (pSend->usFunCode & CLI_FCWBACKUP))
 	{
 		// Check to see if we still have connectivity to the Backup Master
 		// terminal.  We will check a particular message which is used fairly
@@ -1587,10 +1604,10 @@ static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
         }
 #else
         pCliMsg->sError = STUB_UNMATCH_TRNO;
-        if (CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+        if (PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
             pCliMsg->sError = STUB_BM_DOWN;
         }
-        if (CLI_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+        if (PIFNET_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
             pCliMsg->sError = STUB_M_DOWN;
         }
 
@@ -1639,7 +1656,7 @@ static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
         } 
  
         /*----  Skip if Shared function --------*/
-        if (CLI_IAM_MASTER && CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+        if (CLI_IAM_MASTER && PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
             pCliMsg->sError = STUB_BM_DOWN;
             pCliMsg->sRetCode = STUB_RETCODE_BM_DOWN_ERROR;
         }
@@ -1659,7 +1676,7 @@ static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
     }  
 
     /*----  Skip if Shared function --------*/
-    if (CLI_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+    if (PIFNET_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
         if (0 == (CstComReadStatus() & CLI_STS_M_UPDATE)) {
             pCliMsg->sError = STUB_SUCCESS;
         }
@@ -1855,7 +1872,7 @@ SHORT   CstDisplayError(SHORT sError, USHORT usTarget)
 		break;
 
     default:
-        if (CLI_TGT_MASTER == usTarget) {
+        if (PIFNET_TGT_MASTER == usTarget) {
             usErrCode = LDT_LNKDWN_ADR;
         } else {
             usErrCode = LDT_SYSBSY_ADR;
@@ -1879,11 +1896,11 @@ SHORT   CstDisplayError(SHORT sError, USHORT usTarget)
     if (FSC_CLEAR == uchFSC) {              /* CLEAR key depressed ? */
         return 1;
     }
-    if (CLI_IAM_MASTER && (1 == usBMOption) && CLI_TGT_BMASTER == usTarget) {
+    if (CLI_IAM_MASTER && (1 == usBMOption) && PIFNET_TGT_BMASTER == usTarget) {
 		PifLog(MODULE_STB_LOG, LOG_ERROR_STB_COM_BM_DWN_02);
 //        CstBMOutOfDate();
     }
-    if (CLI_IAM_BMASTER && CLI_TGT_MASTER == usTarget) {
+    if (CLI_IAM_BMASTER && PIFNET_TGT_MASTER == usTarget) {
 		PifLog(MODULE_STB_LOG, LOG_ERROR_STB_COM_MA_DWN_01);
 //        CstMTOutOfDate();
     }
@@ -2241,19 +2258,9 @@ VOID    CstSleep(VOID)
 VOID    CstNetOpen(VOID)
 {
     SYSCONFIG CONST * const SysCon = PifSysConfig();
-    XGHEADER        IPdata = {0};
-    SHORT           sHandle;
 
-    CliNetConfig.fchStatus = 0;
-    CliNetConfig.fchSatStatus = 0;
-
-	if (SysCon->usTerminalPosition & PIF_CLUSTER_DISCONNECTED_SAT)
-		CliNetConfig.fchSatStatus |= CLI_SAT_DISCONNECTED;
-
-	if (SysCon->usTerminalPosition & PIF_CLUSTER_JOINED_SAT)
-		CliNetConfig.fchSatStatus |= CLI_SAT_JOINED;
-
-    memcpy (CliNetConfig.auchFaddr, SysCon->auchLaddr, PIF_LEN_IP);
+	memset(&CliNetConfig, 0, sizeof(CliNetConfig));
+	CliNetConfig.usHandle = PIF_NET_INVALID_HANDLE;
 
     if (((0 == SysCon->auchLaddr[0]) &&
          (0 == SysCon->auchLaddr[1]) &&
@@ -2262,39 +2269,45 @@ VOID    CstNetOpen(VOID)
         CliNetConfig.auchFaddr[0] = 0;        
         CliNetConfig.auchFaddr[1] = 0;        
         CliNetConfig.auchFaddr[2] = 0;        
-        CliNetConfig.auchFaddr[3] = 1;      /* stand alone system */
+        CliNetConfig.auchFaddr[CLI_POS_UA] = 1;      /* stand alone system */
 		NHPOS_ASSERT_TEXT(0, "**WARNING: CstNetOpen() communications board not provided.");
         return;
     }
 
-    if (CLI_ALLTRANSNO < SysCon->auchLaddr[3]) {
-//        PifAbort(MODULE_STB_ABORT, FAULT_BAD_ENVIRONMENT);
-    }    
+	CliNetConfig.xgHeader.auchAddr = *(AUCHADDR*)SysCon->auchLaddr;
+	CliNetConfig.xgHeader.usLport = PIFNET_PORT_STUB;
+	CliNetConfig.xgHeader.usFport = PIFNET_PORT_SERVER;
+
     if ( 1 == usBMOption ) {    /* saratoga - indicate that we are a Backup System */
-        CliNetConfig.fchStatus |= CLI_NET_BACKUP;
-    }
-    if (DISP_2X20 == SysCon->uchOperType) {
-        CliNetConfig.fchStatus |= CLI_NET_DISP20;
+        CliNetConfig.fchStatus |= PIFNET_NET_BACKUP;
     }
 
-    IPdata.usLport = CLI_PORT_STUB;
-    IPdata.usFport = ANYPORT;
-    sHandle = PifNetOpen(&IPdata);
+	if (SysCon->usTerminalPosition & PIF_CLUSTER_DISCONNECTED_SAT)
+		CliNetConfig.fchSatStatus |= PIFNET_SAT_DISCONNECTED;
 
-    if (0 <= sHandle) {
+	if (SysCon->usTerminalPosition & PIF_CLUSTER_JOINED_SAT)
+		CliNetConfig.fchSatStatus |= PIFNET_SAT_JOINED;
+
+//    Old 2x20 (2 lines, 20 columns) operator display for NCR 2170 is obsolete but
+// 	  still used for customer display though it's mostly LCD screens now.
+//    if (DISP_2X20 == SysCon->uchOperType) {
+//        CliNetConfig.fchStatus |= CLI_NET_DISP20;
+//    }
+
+	CliNetConfig.usHandle = PifNetOpen(&CliNetConfig.xgHeader);      // if there is an error the handle will be an invalid value
+    if (0 <= CliNetConfig.usHandle) {
 		char  xBuff[128];
-        CliNetConfig.usHandle = (USHORT)sHandle;
-        CliNetConfig.fchStatus |= CLI_NET_OPEN;
+        CliNetConfig.fchStatus |= PIFNET_NET_OPEN;
         PifNetControl(CliNetConfig.usHandle, PIF_NET_SET_MODE, PIF_NET_NMODE | PIF_NET_TMODE);
 		sprintf (xBuff, "==NOTE: CstNetOpen() PifNetOpen fchStatus 0x%x", CliNetConfig.fchStatus);
 		NHPOS_NONASSERT_TEXT(xBuff);
     } else {
 		char  xBuff[128];
-		sprintf (xBuff, "**ERROR: CstNetOpen() PifNetOpen failed error %d", sHandle);
-		NHPOS_ASSERT_TEXT((0 <= sHandle), xBuff);
+		sprintf (xBuff, "**ERROR: CstNetOpen() PifNetOpen failed error %d", CliNetConfig.usHandle);
+		NHPOS_ASSERT_TEXT((0 <= CliNetConfig.usHandle), xBuff);
 
         PifLog(MODULE_STB_ABORT, FAULT_BAD_ENVIRONMENT);
-        PifLog(MODULE_ERROR_NO(MODULE_STB_ABORT), (USHORT)abs(sHandle));
+        PifLog(MODULE_ERROR_NO(MODULE_STB_ABORT), (USHORT)abs(CliNetConfig.usHandle));
         PifAbort(MODULE_STB_ABORT, FAULT_BAD_ENVIRONMENT);
     }
 }
@@ -2311,7 +2324,8 @@ VOID    CstNetOpen(VOID)
 VOID    CstNetClose(VOID)
 {
     PifNetClose(CliNetConfig.usHandle);
-    CliNetConfig.fchStatus &= ~CLI_NET_OPEN;
+    CliNetConfig.fchStatus &= ~PIFNET_NET_OPEN;
+	CliNetConfig.usHandle = PIF_NET_INVALID_HANDLE;
 }
 
 /*
@@ -2325,7 +2339,7 @@ VOID    CstNetClose(VOID)
 */
 VOID    CstNetClear(VOID)
 {
-    if (CliNetConfig.fchStatus & CLI_NET_OPEN) {
+    if (CliNetConfig.fchStatus & PIFNET_NET_OPEN) {
         PifNetControl(CliNetConfig.usHandle, PIF_NET_CLEAR);
     }
 }
@@ -2346,9 +2360,9 @@ SHORT    CstNetSend(USHORT usSize, XGRAM *pCliSndBuf)
     SHORT   sError = PIF_ERROR_NET_ACCESS_DENIED;
 	SHORT   sRetry=3;
 
-    if (CliNetConfig.fchStatus & CLI_NET_OPEN) {
+    if (CliNetConfig.fchStatus & PIFNET_NET_OPEN) {
 
-        CliNetConfig.fchStatus |= CLI_NET_SEND;
+        CliNetConfig.fchStatus |= PIFNET_NET_SEND;
 
 		// Set a timeout for the send so that if the server is
 		// busy, we will get notified immediately.  Look at
@@ -2375,7 +2389,7 @@ SHORT    CstNetSend(USHORT usSize, XGRAM *pCliSndBuf)
 			((PIF_ERROR_NET_TIMEOUT == sError) && (sRetry > 0)) ||
 			((PIF_ERROR_NET_BUSY == sError) && (sRetry > 0)) );
         
-        CliNetConfig.fchStatus &= ~CLI_NET_SEND;
+        CliNetConfig.fchStatus &= ~PIFNET_NET_SEND;
     }
 
 	return sError;
@@ -2399,7 +2413,7 @@ SHORT  CstNetReceive(USHORT usMDC, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *
     SHORT       sError;
     USHORT      usTimer, usPrevErrorCo;
 
-    if (0 == (CliNetConfig.fchStatus & CLI_NET_OPEN)) {
+    if (0 == (CliNetConfig.fchStatus & PIFNET_NET_OPEN)) {
         pCliMsg->sError = STUB_TIME_OUT;
         pCliMsg->sRetCode = STUB_RETCODE_TIME_OUT_ERROR;
         return STUB_TIME_OUT;
@@ -2468,10 +2482,9 @@ SHORT  CstNetReceive(USHORT usMDC, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *
 		We go ahead and do it explicitly here.  See CstComSendReceive () for how the steps
 		for a Client send message, receive response, process response is handled.
 	 */
+    CliNetConfig.fchStatus |= PIFNET_NET_RECEIVE;
     do {
-        CliNetConfig.fchStatus |= CLI_NET_RECEIVE;
         sError = PifNetReceive(CliNetConfig.usHandle, pCliRcvBuf, sizeof(XGRAM));
-        CliNetConfig.fchStatus &= ~CLI_NET_RECEIVE;
 
         if (0 > sError) {
             if (PIF_ERROR_NET_POWER_FAILURE == sError) {
@@ -2513,6 +2526,8 @@ SHORT  CstNetReceive(USHORT usMDC, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *
 		}
     } while (STUB_ILLEGAL == sError);
 
+    CliNetConfig.fchStatus &= ~PIFNET_NET_RECEIVE;
+
     CliDispDescriptor(CLI_MODULE_STUB, CLI_DESC_STOP_BLINK);
     pCliMsg->sError = sError;
 
@@ -2548,7 +2563,7 @@ SHORT   CstSendTarget(UCHAR uchUaddr, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRA
         return STUB_ILLEGAL;
     }
 
-    CstComMakeMessage(uchUaddr, CLI_PORT_STUB, pCliMsg, pCliSndBuf);
+    CstComMakeMessage(uchUaddr, pCliMsg, pCliSndBuf);
     CstComSendReceive(pCliMsg, pCliSndBuf, pCliRcvBuf);
 
 	// Transform a Backup down or Master down message into
@@ -2769,7 +2784,7 @@ SHORT   CstSendMasterFH( USHORT usType )
 		}
 	}
 
-	CstComMakeMessage(CLI_TGT_MASTER, CLI_PORT_STUB, &CliMsg, &CliSndBuf);
+	CstComMakeMessage(PIFNET_TGT_MASTER, &CliMsg, &CliSndBuf);
     CstComSendReceiveFH(usType, &CliMsg, &CliSndBuf, &CliRcvBuf);
 
 	// We are implementing a new communications status indicator of CLI_STS_M_REACHABLE
@@ -2833,7 +2848,7 @@ SHORT   CstSendBMasterFH( USHORT usType )
        return STUB_DISCOVERY; // do not send to Backup Master, simply return the STUB_DISCOVERY message
 	}
 
-	if (0 == (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+	if (0 == (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return STUB_DISCOVERY;
     }
 
@@ -2910,7 +2925,7 @@ SHORT   CstSendBMasterFH( USHORT usType )
 	}
 	sBackMasterErrorSave = 0;
 
-    CstComMakeMessage(CLI_TGT_BMASTER, CLI_PORT_STUB, &CliMsg, &CliSndBuf);
+    CstComMakeMessage(PIFNET_TGT_BMASTER, &CliMsg, &CliSndBuf);
     CstComSendReceiveFH(usType, &CliMsg, &CliSndBuf, &CliRcvBuf);
 
     return CliMsg.sError;
@@ -2936,7 +2951,7 @@ SHORT   CstSendTerminalFH(USHORT usType, USHORT usTerminalPosition)
 	extern  CLICOMIF   CliMsg;
 	SHORT  sRetStatus = STUB_SUCCESS;
 
-    CstComMakeMessage(usTerminalPosition, CLI_PORT_STUB, &CliMsg, &CliSndBuf);
+    CstComMakeMessage(usTerminalPosition, &CliMsg, &CliSndBuf);
     CstComSendReceiveFH(usType, &CliMsg, &CliSndBuf, &CliRcvBuf);
 
     return CliMsg.sError;  //message successfully sent to master (failures return above)
@@ -3111,7 +3126,7 @@ static USHORT  CstComMakeMultiDataFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
         pSend->usSeqNo &= CLI_SEQ_CONT;
         ++ pSend->usSeqNo;
     }
-    if (CLI_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+    if (PIFNET_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
         if (0 == (CstComReadStatus() & CLI_STS_BM_UPDATE)) {
             pSend->usFunCode |= CLI_SETBMDOWN;
         } else {
@@ -3146,7 +3161,7 @@ SHORT   SstReadFAsMasterFH(USHORT usType)
 
     sError = sErrorM = CstSendMasterFH(usType);                   /* Send to Master */
     if (STUB_M_DOWN == sErrorM || STUB_TIME_OUT == sErrorM) {     /* master down */
-		if (0 != (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+		if (0 != (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 			sError = CstSendBMasterFH(usType);                    /* Send to B Master */
 			if (STUB_SUCCESS != sError) {                         /* Backup Master down */
 				char xBuff[128];
@@ -3183,7 +3198,7 @@ SHORT    CstComRespHandleFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcv
         return pCliMsg->sError;
     }
 
-    if ((CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) && (pSend->usFunCode & CLI_FCWBACKUP)) {
+    if ((PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) && (pSend->usFunCode & CLI_FCWBACKUP)) {
         if (0 > pResp->sReturn) {
             if (((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCEJREAD) && (pResp->sReturn == EJ_NOTHING_DATA)) {
                 pCliMsg->sError = STUB_SUCCESS;

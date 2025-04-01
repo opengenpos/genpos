@@ -643,7 +643,7 @@ VOID    SerESRBMDown(VOID)
 {
     if (SER_IAM_MASTER) {
         if ((SERV_SUCCESS == SerResp.sError) && (SER_STNORMAL == usSerStatus) &&
-            (CLI_TGT_BMASTER != SerRcvBuf.auchFaddr[CLI_POS_UA])) {
+            (PIFNET_TGT_BMASTER != SerRcvBuf.auchFaddr[CLI_POS_UA])) {
             USHORT  fsComStatus = SerComReadStatus();
 
             if ((fsComStatus & SER_COMSTS_M_UPDATE) && (fsComStatus & SER_COMSTS_BM_UPDATE) && (fsComStatus & SER_COMSTS_BM_OFFLINE)) {

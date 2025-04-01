@@ -113,17 +113,19 @@
 #define ISP_ST_MULTI_RECV           0x0200   /* Multi  receive state       */
 #define ISP_ST_PASSWORD             0x0400   /* Exchange password state    */
 
+#if defined(POSSIBLE_DEAD_CODE)
 /*
 ------------------------------------------
     NET Status  (IspNetConfig.fchStatus)
 ------------------------------------------
 */
-#define ISP_NET_OPEN                0x01     /* NET opened */
-#define ISP_NET_SEND                0x02     /* NET sending */
-#define ISP_NET_RECEIVE             0x04     /* NET receiving */
-#define ISP_NET_BACKUP              0x10     /* NET back up system */
-#define ISP_NET_PROHIBIT_SEND       0x20     /* NET prohibit sending */
-#define ISP_NET_USING_ACKNAK        0x40     /* we are using PIF_NET_SET_STIME to implement Ack/Nak for ISP thread */
+#define ISP_NET_OPEN                PIFNET_NET_OPEN     /* NET opened */
+#define ISP_NET_SEND                PIFNET_NET_SEND     /* NET sending */
+#define ISP_NET_RECEIVE             PIFNET_NET_RECEIVE     /* NET receiving */
+#define ISP_NET_BACKUP              PIFNET_NET_BACKUP     /* NET back up system */
+#define ISP_NET_PROHIBIT_SEND       PIFNET_NET_PROHIBIT_SEND     /* NET prohibit sending */
+#define ISP_NET_USING_ACKNAK        PIFNET_NET_USING_ACKNAK     /* we are using PIF_NET_SET_STIME to implement Ack/Nak for ISP thread */
+#endif
 
 /*
 ------------------------------------------

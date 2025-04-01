@@ -134,7 +134,7 @@ VOID    SerRecvCpm(VOID)
                 memcpy(CpmSndBuf.CpmMesHed.auchFaddr, SerNetConfig.auchFaddr, PIF_LEN_IP);
                 CpmSndBuf.CpmMesHed.auchFaddr[CLI_POS_UA] = (UCHAR)usUA;
                 CpmSndBuf.CpmMesHed.usFport = SerRcvBuf.usFport;
-                CpmSndBuf.CpmMesHed.usLport = CLI_PORT_CPM;
+                CpmSndBuf.CpmMesHed.usLport = PIFNET_PORT_CPM;
                 memcpy(&CpmSndBuf.CpmResDat, &ResMsgH, sizeof(CLIRESCPM));
                 CpmSndBuf.CpmResDat.usFunCode ++;
 

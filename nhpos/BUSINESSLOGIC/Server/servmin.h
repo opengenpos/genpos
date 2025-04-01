@@ -95,6 +95,7 @@
 
 #define     SER_MAX_KP          8               /* maximum kp # */ /* V1.0.0.4 */
 
+#if defined(POSSIBLE_DEAD_CODE)
 /*
 ------------------------------------------
     NET Status  (SerNetConfig.fchStatus)
@@ -102,19 +103,20 @@
 	network layer status
 ------------------------------------------
 */
-#define     SER_NET_OPEN        0x01        /* NET opened */
-#define     SER_NET_SEND        0x02        /* NET sending */
-#define     SER_NET_RECEIVE     0x04        /* NET receiving */
-#define     SER_NET_BACKUP      0x10        /* NET back up system */
+#define     SER_NET_OPEN        PIFNET_NET_OPEN          /* NET opened */
+#define     SER_NET_SEND        PIFNET_NET_SEND          /* NET sending */
+#define     SER_NET_RECEIVE     PIFNET_NET_RECEIVE       /* NET receiving */
+#define     SER_NET_BACKUP      PIFNET_NET_BACKUP        /* NET back up system */
 
 //------------------------------------------------
 //     SAT Status Definition
 //     used with SerNetConfig.fchSatStatus to indicate
 //     Satellite Terminal status.
 //-------------------------------------------------
-#define     SER_SAT_DISCONNECTED    0x0001     // Terminal is a Disconnected Satellite, see also PIF_CLUSTER_DISCONNECTED_SAT
-#define     SER_SAT_UPTODATE        0x0002     // Terminal is up to date with parameters.
-#define     SER_SAT_JOINED          0x0004     // Terminal has been joined to a cluster.  see also PIF_CLUSTER_JOINED_SAT
+#define     SER_SAT_DISCONNECTED    PIFNET_SAT_DISCONNECTED    // Terminal is a Disconnected Satellite, see also PIF_CLUSTER_DISCONNECTED_SAT
+#define     SER_SAT_UPTODATE        PIFNET_SAT_UPTODATE        // Terminal is up to date with parameters.
+#define     SER_SAT_JOINED          PIFNET_SAT_JOINED          // Terminal has been joined to a cluster.  see also PIF_CLUSTER_JOINED_SAT
+#endif
 
 /*
 ------------------------------------------

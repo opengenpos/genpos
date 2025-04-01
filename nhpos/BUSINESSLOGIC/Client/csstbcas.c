@@ -1203,7 +1203,7 @@ SHORT   CliCasDelayedBalance(UCHAR uchTermNo, ULONG ulState)
 		// We depend on the CstSendBMasterFH () function to handle the
 		// error condition indication to the operator and the caller
 		// to display an error dialog if the Master Terminal is down.
-		if (0 != (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+		if (0 != (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 			if (CAS_PERFORM != CliMsg.sRetCode) {
 				CliMsg.sRetCode = sCliRetCode;
 			}
@@ -1266,7 +1266,7 @@ SHORT  CliCasIndRead(CASIF *pCasif)
 	// a Backup Master provisioned.
 	if (sErrorM == STUB_M_DOWN) {
 		CliMsg.sRetCode = CAS_NOT_ALLOWED;
-		if (0 != (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+		if (0 != (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 			sErrorBM = CstSendBMaster();
 			sMove = 1;
 			if (sErrorBM == STUB_SELF) {

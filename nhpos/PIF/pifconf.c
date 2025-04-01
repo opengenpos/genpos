@@ -625,7 +625,7 @@ static USHORT PifGetSerialConfig(TCHAR *pachDevice, UCHAR uchDeviceId, USHORT us
 
 		RflStr2IpAddr (SysConfig.xgComHeader[uchPort].auchFaddr, atchPort);
 		SysConfig.xgComHeader[uchPort].usFport = 6001;       // this is the default LAN port for a GIANT receipt printer in LAN mode.
-		SysConfig.xgComHeader[uchPort].usLport = ANYPORT;    // not used for a TCP type of connection.
+		SysConfig.xgComHeader[uchPort].usLport = PIFNET_PORT_ANYPORT;    // not used for a TCP type of connection.
 
 		if (PifGetParameter(pachDevice, SCF_DATANAME_IPPORT, &dwDataType, (LPVOID)atchPort, sizeof(atchPort), &dwNoBytesRead) == SCF_SUCCESS)
 		{
