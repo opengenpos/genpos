@@ -1692,7 +1692,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
     ITEMCOMMONLOCAL  *pWorkCommon = ItemCommonGetLocalPointer();
     ITEMSALESLOCAL   *pWorkSales = ItemSalesGetLocalPointer();
     TRANGCFQUAL      *WorkGCF = TrnGetGCFQualPtr();
-	ITEMSALES        ItemSales = {0};
+    ITEMDATASIZEUNION   WorkSales;
     ITEMDISC         ItemDisc = {0};
 	USHORT			 usCondNumber = 0;
     SHORT            sStatus, sSize, sQty;
@@ -1746,21 +1746,21 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 	ItemPreviousItem (0, 0);  // if there is anything in memory resident data buffer then lets flush it first.
 
     /*----- Get Void Item from LCD Cursor -----*/
-    if (MldGetCursorDisplay(MLD_SCROLL_1, &ItemSales, &usCondNumber, MLD_GET_COND_NUM) != MLD_SUCCESS) {
+    if (MldGetCursorDisplay(MLD_SCROLL_1, &WorkSales, &usCondNumber, MLD_GET_COND_NUM) != MLD_SUCCESS) {
         return(LDT_PROHBT_ADR);
     }
 
-	if (ItemSales.uchMajorClass == CLASS_ITEMSALES && ItemSales.uchMinorClass == CLASS_ITEMORDERDEC) {
+	if (WorkSales.ItemHeader.uchMajorClass == CLASS_ITEMSALES && WorkSales.ItemHeader.uchMinorClass == CLASS_ITEMORDERDEC) {
 		// do not allow a Cursor Void or a Cursor Return of any sort to be used with Order Declare.
         return(LDT_PROHBT_ADR);
 	}
 
-	if (ItemSales.uchMajorClass != CLASS_ITEMTENDER) {
+	if (WorkSales.ItemHeader.uchMajorClass != CLASS_ITEMTENDER) {
 		if (pRegOther->uchFsc) {
 			// there is balance due so do not allow anything other than a tip return.
 			return(LDT_PROHBT_ADR);
 		}
-		if (pRegOther->uchMinorClass == CLASS_UICURSORVOID && (ItemSales.fbModifier & RETURNS_ORIGINAL) != 0) {
+		if (pRegOther->uchMinorClass == CLASS_UICURSORVOID && (WorkSales.ItemSalesBuff.fbModifier & RETURNS_ORIGINAL) != 0) {
 			// if cursor void on an item from the original transaction then prohibit the action.
 			return(LDT_PROHBT_ADR);
 		}
@@ -1775,7 +1775,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 	if (TranCurQualPtr->fsCurStatus & CURQUAL_TRAY) {
 		// if we are doing Tray Total then allow Cursor Void only on items entered
 		// after the last Tray Total Key press.
-		if (ItemSales.usUniqueID <= ItemTotalLocalPtr->usUniqueID) {
+		if (WorkSales.ItemSalesBuff.usUniqueID <= ItemTotalLocalPtr->usUniqueID) {
 			return(LDT_PROHBT_ADR);
 		}
 	}
@@ -1785,9 +1785,9 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 	MldGetCursorDisplay(MLD_SCROLL_1, NULL, &ItemDisc, MLD_GET_SALES_DISC);
 
     /*----- Send Previous Item to Transaction Module -----*/
-	if((usCondNumber) && (ItemSales.uchCondNo) && (CliParaMDCCheck(MDC_DEPT3_ADR, ODD_MDC_BIT3)))
+	if((usCondNumber) && (WorkSales.ItemSalesBuff.uchCondNo) && (CliParaMDCCheck(MDC_DEPT3_ADR, ODD_MDC_BIT3)))
 	{
-		ItemPreviousCondiment(&ItemSales.Condiment[usCondNumber - 1],MLD_CONDIMENT_VOID);
+		ItemPreviousCondiment(&WorkSales.ItemSalesBuff.Condiment[usCondNumber - 1],MLD_CONDIMENT_VOID);
 		return(ITM_SUCCESS);
 	} else if (pWorkCommon->ItemSales.uchMajorClass == CLASS_ITEMSALES || pWorkCommon->ItemSales.uchMajorClass == CLASS_ITEMCOUPON ||
 				pWorkCommon->ItemSales.uchMajorClass == CLASS_ITEMDISC || pWorkCommon->ItemDisc.uchMajorClass == CLASS_ITEMDISC) {
@@ -1795,14 +1795,14 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
     }
 
     /* ----- verify terget item status ---- */
-    switch(ItemSales.uchMajorClass) {
+    switch(WorkSales.ItemHeader.uchMajorClass) {
     case    CLASS_ITEMSALES:
-        if ((ItemSales.fbModifier & (VOID_MODIFIER | RETURNS_MODIFIER_1 | RETURNS_MODIFIER_2 | RETURNS_MODIFIER_3)) == VOID_MODIFIER) {
+        if ((WorkSales.ItemSalesBuff.fbModifier & (VOID_MODIFIER | RETURNS_MODIFIER_1 | RETURNS_MODIFIER_2 | RETURNS_MODIFIER_3)) == VOID_MODIFIER) {
             return(LDT_PROHBT_ADR);
         }
 
 		if (pRegOther->uchMinorClass >= CLASS_UICURSORTRETURN1 && pRegOther->uchMinorClass <= CLASS_UICURSORTRETURN3) {
-			if ((ItemSales.fbModifier & (RETURNS_MODIFIER_1 | RETURNS_MODIFIER_2 | RETURNS_MODIFIER_3)) != 0) {
+			if ((WorkSales.ItemSalesBuff.fbModifier & (RETURNS_MODIFIER_1 | RETURNS_MODIFIER_2 | RETURNS_MODIFIER_3)) != 0) {
 				return(LDT_PROHBT_ADR);
 			}
 		}
@@ -1813,30 +1813,30 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 			return(LDT_PROHBT_ADR);
 		}
 
-        if (ItemSales.uchMinorClass == CLASS_DEPTMODDISC ||
-            ItemSales.uchMinorClass == CLASS_PLUMODDISC ||
-            ItemSales.uchMinorClass == CLASS_SETMODDISC ||
-            ItemSales.uchMinorClass == CLASS_OEPMODDISC ||     /* R3.0 */
-            ItemSales.uchMinorClass == CLASS_DEPTITEMDISC ||
-            ItemSales.uchMinorClass == CLASS_PLUITEMDISC ||
-            ItemSales.uchMinorClass == CLASS_SETITEMDISC ||
-            ItemSales.uchMinorClass == CLASS_OEPITEMDISC ||
-            (ItemSales.ControlCode.auchPluStatus[2] & PLU_SCALABLE) )
+        if (WorkSales.ItemSalesBuff.uchMinorClass == CLASS_DEPTMODDISC ||
+            WorkSales.ItemSalesBuff.uchMinorClass == CLASS_PLUMODDISC ||
+            WorkSales.ItemSalesBuff.uchMinorClass == CLASS_SETMODDISC ||
+            WorkSales.ItemSalesBuff.uchMinorClass == CLASS_OEPMODDISC ||     /* R3.0 */
+            WorkSales.ItemSalesBuff.uchMinorClass == CLASS_DEPTITEMDISC ||
+            WorkSales.ItemSalesBuff.uchMinorClass == CLASS_PLUITEMDISC ||
+            WorkSales.ItemSalesBuff.uchMinorClass == CLASS_SETITEMDISC ||
+            WorkSales.ItemSalesBuff.uchMinorClass == CLASS_OEPITEMDISC ||
+            (WorkSales.ItemSalesBuff.ControlCode.auchPluStatus[2] & PLU_SCALABLE) )
 		{
 			// now allow for a partial quantity void of a quantity of an item with a discount.
 			// requested by Amtrak.  However scalable items are still prohibited if amount entered.
-            if ((ItemSales.ControlCode.auchPluStatus[2] & PLU_SCALABLE) && pRegOther->lAmount) {
+            if ((WorkSales.ItemSalesBuff.ControlCode.auchPluStatus[2] & PLU_SCALABLE) && pRegOther->lAmount) {
                 return(LDT_PROHBT_ADR);
             }
 			{
 				if (pRegOther->uchMinorClass == CLASS_UICURSORTRETURN1) {
-					ItemSales.fbModifier |= RETURNS_MODIFIER_1;
+                    WorkSales.ItemSalesBuff.fbModifier |= RETURNS_MODIFIER_1;
 				}
 				else if (pRegOther->uchMinorClass == CLASS_UICURSORTRETURN2) {
-					ItemSales.fbModifier |= RETURNS_MODIFIER_2;
+                    WorkSales.ItemSalesBuff.fbModifier |= RETURNS_MODIFIER_2;
 				}
 				else if (pRegOther->uchMinorClass == CLASS_UICURSORTRETURN3) {
-					ItemSales.fbModifier |= RETURNS_MODIFIER_3;
+                    WorkSales.ItemSalesBuff.fbModifier |= RETURNS_MODIFIER_3;
 				}
 			}
         }
@@ -1844,7 +1844,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 
     case    CLASS_ITEMDISC:
 		{
-			ITEMDISC  *pDisc = (ITEMDISC *)&ItemSales;
+			ITEMDISC  *pDisc = &WorkSales.ItemDiscBuff;
 
 			if (pDisc->uchMinorClass == CLASS_ITEMDISC1) {
 				return(LDT_PROHBT_ADR);
@@ -1869,7 +1869,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 
     case    CLASS_ITEMCOUPON:
 		{
-			ITEMCOUPON    *pCoupon = (ITEMCOUPON *)&ItemSales;
+			ITEMCOUPON    *pCoupon = &WorkSales.ItemCouponBuff;
 
 			if (ItemSalesLocal.fbSalesStatus & SALES_TRANSACTION_DISC) {
 				// if operator has done a transaction discount then do
@@ -1888,7 +1888,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 
     case    CLASS_ITEMTENDER:
 		{
-			ITEMTENDER   *pTender = (ITEMTENDER *)&ItemSales;
+			ITEMTENDER   *pTender = &WorkSales.ItemTenderBuff;
 
 			if ((pTender->fbModifier & (VOID_MODIFIER | RETURNS_MODIFIER_1 | RETURNS_MODIFIER_2 | RETURNS_MODIFIER_3)) == VOID_MODIFIER) {
 				return(LDT_PROHBT_ADR);
@@ -1914,7 +1914,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 
     /*----- Check Void Item Size -----*/
     sSize = 0;
-    if ((sStatus = ItemCommonCheckSize(&ItemSales, sSize)) < 0) {
+    if ((sStatus = ItemCommonCheckSize(&WorkSales.ItemSalesBuff, sSize)) < 0) {
         return(LDT_TAKETL_ADR);
     }
 
@@ -1929,30 +1929,30 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
     }
 
     /*----- Search Void Item -----*/
-    if (ItemSales.uchMajorClass == CLASS_ITEMSALES) {
+    if (WorkSales.ItemHeader.uchMajorClass == CLASS_ITEMSALES) {
         if (pRegOther->lAmount == 0L) {
 #if 0
 	// RJC  test
-            if (ItemSales.uchMinorClass == CLASS_DEPTMODDISC ||
-                ItemSales.uchMinorClass == CLASS_PLUMODDISC ||
-                ItemSales.uchMinorClass == CLASS_SETMODDISC ||
-                ItemSales.uchMinorClass == CLASS_OEPMODDISC ||     /* R3.0 */
-                ItemSales.uchMinorClass == CLASS_DEPTITEMDISC ||
-                ItemSales.uchMinorClass == CLASS_PLUITEMDISC ||
-                ItemSales.uchMinorClass == CLASS_SETITEMDISC ||
-                ItemSales.uchMinorClass == CLASS_OEPITEMDISC ||
-                (ItemSales.ControlCode.auchPluStatus[2] & PLU_SCALABLE) )
+            if (WorkSales.ItemSalesBuff.uchMinorClass == CLASS_DEPTMODDISC ||
+                WorkSales.ItemSalesBuff.uchMinorClass == CLASS_PLUMODDISC ||
+                WorkSales.ItemSalesBuff.uchMinorClass == CLASS_SETMODDISC ||
+                WorkSales.ItemSalesBuff.uchMinorClass == CLASS_OEPMODDISC ||     /* R3.0 */
+                WorkSales.ItemSalesBuff.uchMinorClass == CLASS_DEPTITEMDISC ||
+                WorkSales.ItemSalesBuff.uchMinorClass == CLASS_PLUITEMDISC ||
+                WorkSales.ItemSalesBuff.uchMinorClass == CLASS_SETITEMDISC ||
+                WorkSales.ItemSalesBuff.uchMinorClass == CLASS_OEPITEMDISC ||
+                (WorkSales.ItemSalesBuff.ControlCode.auchPluStatus[2] & PLU_SCALABLE) )
 			{
 
                 sQty = 1;
             } else {
-                sQty = abs((SHORT)(ItemSales.lQTY / 1000L));
+                sQty = abs((SHORT)(WorkSales.ItemSalesBuff.lQTY / 1000L));
             }
 #else
-			if (ItemSales.ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
+			if (WorkSales.ItemSalesBuff.ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
 				sQty = 1;
 			} else {
-				sQty = (SHORT)(ItemSales.lQTY / 1000L);
+				sQty = (SHORT)(WorkSales.ItemSalesBuff.lQTY / 1000L);
 			}
 #endif
         } else {
@@ -1962,7 +1962,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
         sQty = 1;
     }
 
-	if (ItemSales.uchMajorClass != CLASS_ITEMTENDER) {
+	if (WorkSales.ItemHeader.uchMajorClass != CLASS_ITEMTENDER) {
 		USHORT    i;
 		SHORT     sStorage = TRN_TYPE_ITEMSTORAGE;
 
@@ -1986,7 +1986,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 			sStorage = TRN_TYPE_ITEMSTORAGE;
 		}
 
-		if ((sStatus = TrnVoidSearch(&ItemSales, sQty, sStorage)) != TRN_SUCCESS) {
+		if ((sStatus = TrnVoidSearch(&WorkSales.ItemSalesBuff, sQty, sStorage)) != TRN_SUCCESS) {
 			return(sStatus);
 		}
 		if (ItemDisc.uchMajorClass != 0) {
@@ -2026,18 +2026,18 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 	}
 
 	/*----- Void Action -----*/
-    switch(ItemSales.uchMajorClass) {
+    switch(WorkSales.ItemHeader.uchMajorClass) {
     case    CLASS_ITEMSALES:
-		ItemSales.sCouponQTY = sQty;      // make sure that coupon quantity is set for an item that is being cursor voided.
+        WorkSales.ItemSalesBuff.sCouponQTY = sQty;      // make sure that coupon quantity is set for an item that is being cursor voided.
         if (pRegOther->lAmount) {
-            ItemSales.lQTY = pRegOther->lAmount;
+            WorkSales.ItemSalesBuff.lQTY = pRegOther->lAmount;
             if (TranCurQualPtr->fsCurStatus & CURQUAL_PRESELECT_MASK) { /* preselect void trans. */
-                ItemSales.lQTY *= -1;
-				ItemSales.sCouponQTY *= -1;
+                WorkSales.ItemSalesBuff.lQTY *= -1;
+                WorkSales.ItemSalesBuff.sCouponQTY *= -1;
 #if 0
 				//if we are doing a cursor void, if there is an amount, we only need to
 				//subtract the amount that the user has voided. JHHJ SR 861
-				ItemSales.lProduct = (ItemSales.lUnitPrice * (ItemSales.lQTY/1000));
+                WorkSales.ItemSalesBuff.lProduct = (WorkSales.ItemSalesBuff.lUnitPrice * (WorkSales.ItemSalesBuff.lQTY/1000));
 #endif
             }
         }
@@ -2048,12 +2048,12 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 			ItemDisc.lAmount = (ItemDisc.lAmount * sQty) / abs(ItemDisc.lQTY);
 			ItemDisc.lQTY = sQty;
             if ((ItemDisc.fbReduceStatus & REDUCE_NOT_HOURLY) == 0) {
-                ItemSales.fbReduceStatus &= ~REDUCE_NOT_HOURLY;
+                WorkSales.ItemSalesBuff.fbReduceStatus &= ~REDUCE_NOT_HOURLY;
             }
         }
 
 		if (pRegOther->uchMinorClass == CLASS_UICURSORVOID) {
-			if ((sStatus = ItemSalesCursorVoid(&ItemSales, sQty)) != ITM_SUCCESS) {
+			if ((sStatus = ItemSalesCursorVoid(&WorkSales.ItemSalesBuff, sQty)) != ITM_SUCCESS) {
 				return(sStatus);
 			}
 
@@ -2063,7 +2063,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 			// The function ItemDiscCalculation() calculates the amount based on the percentage if there is a rate
 			// so it needs to know what the item price is.  If this is a fixed amount discount, the function
 			// will ignore this value.
-			lItemizerBuff = ItemSales.lProduct;
+			lItemizerBuff = WorkSales.ItemSalesBuff.lProduct;
 		} else {
 			ULONG  ulCurrentModifier = TrnQualModifierReturnTypeTest();
 
@@ -2081,9 +2081,9 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 						return LDT_BLOCKEDBYMDC_ADR;
 					}
 				}
-				ItemSales.fbModifier |= (VOID_MODIFIER | RETURNS_MODIFIER_1);
-                ItemSales.fbReduceStatus |= REDUCE_RETURNED;
-				ItemSales.usReasonCode = 1;
+                WorkSales.ItemSalesBuff.fbModifier |= (VOID_MODIFIER | RETURNS_MODIFIER_1);
+                WorkSales.ItemSalesBuff.fbReduceStatus |= REDUCE_RETURNED;
+                WorkSales.ItemSalesBuff.usReasonCode = 1;
 			}
 			else if (pRegOther->uchMinorClass == CLASS_UICURSORTRETURN2) {
 				// now check the MDC settings for mixing return types against our current
@@ -2099,9 +2099,9 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 						return LDT_BLOCKEDBYMDC_ADR;
 					}
 				}
-				ItemSales.fbModifier |= (VOID_MODIFIER | RETURNS_MODIFIER_2);
-                ItemSales.fbReduceStatus |= REDUCE_RETURNED;
-				ItemSales.usReasonCode = 2;
+                WorkSales.ItemSalesBuff.fbModifier |= (VOID_MODIFIER | RETURNS_MODIFIER_2);
+                WorkSales.ItemSalesBuff.fbReduceStatus |= REDUCE_RETURNED;
+                WorkSales.ItemSalesBuff.usReasonCode = 2;
 			}
 			else if (pRegOther->uchMinorClass == CLASS_UICURSORTRETURN3) {
 				// now check the MDC settings for mixing return types against our current
@@ -2117,22 +2117,22 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 						return LDT_BLOCKEDBYMDC_ADR;
 					}
 				}
-				ItemSales.fbModifier |= (VOID_MODIFIER | RETURNS_MODIFIER_3);
-                ItemSales.fbReduceStatus |= REDUCE_RETURNED;
-				ItemSales.usReasonCode = 3;
+                WorkSales.ItemSalesBuff.fbModifier |= (VOID_MODIFIER | RETURNS_MODIFIER_3);
+                WorkSales.ItemSalesBuff.fbReduceStatus |= REDUCE_RETURNED;
+                WorkSales.ItemSalesBuff.usReasonCode = 3;
 			}
 			else {
 				NHPOS_ASSERT(pRegOther->uchMinorClass == CLASS_UICURSORTRETURN1);
 			}
 
 			/*----- SUPERVISOR INTERVENTION -----*/
-			if ((sStatus = ItemSalesSpvInt(&ItemSales)) != ITM_SUCCESS) {
+			if ((sStatus = ItemSalesSpvInt(&WorkSales.ItemSalesBuff)) != ITM_SUCCESS) {
 				// Supervisor intervention did not work so turn off the void modifier.
-				ItemSales.fbModifier &= ~(VOID_MODIFIER | RETURNS_MODIFIER_1 | RETURNS_MODIFIER_2 | RETURNS_MODIFIER_3);
+                WorkSales.ItemSalesBuff.fbModifier &= ~(VOID_MODIFIER | RETURNS_MODIFIER_1 | RETURNS_MODIFIER_2 | RETURNS_MODIFIER_3);
 				return(sStatus);
 			}
 
-			if ((sStatus = ItemSalesCursorVoidReturns(&ItemSales, sQty)) != ITM_SUCCESS) {
+			if ((sStatus = ItemSalesCursorVoidReturns(&WorkSales.ItemSalesBuff, sQty)) != ITM_SUCCESS) {
 				return(sStatus);
 			}
 			{
@@ -2148,15 +2148,15 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 		// The function ItemDiscCalculation() calculates the amount based on the percentage if there is a rate
 		// so it needs to know what the item price is.  If this is a fixed amount discount, the function
 		// will ignore this value.
-		lItemizerBuff = ItemSales.lProduct;
+		lItemizerBuff = WorkSales.ItemSalesBuff.lProduct;
         
-		ItemSales.fbModifier &= ~RETURNS_ORIGINAL;  // New item so ensure original marker is off if this is a return
-		ItemSales.fsLabelStatus &= ~ITM_CONTROL_RETURNORIG;
-		TrnQualModifierReturnTypeSet(ItemSales.fbModifier);
+        WorkSales.ItemSalesBuff.fbModifier &= ~RETURNS_ORIGINAL;  // New item so ensure original marker is off if this is a return
+        WorkSales.ItemSalesBuff.fsLabelStatus &= ~ITM_CONTROL_RETURNORIG;
+		TrnQualModifierReturnTypeSet(WorkSales.ItemSalesBuff.fbModifier);
 
 		/*----- Void Action for Item Discount -----*/
-		ItemDisc.usReasonCode = ItemSales.usReasonCode;               // the item discount reason code is the same as the item sales reason code
-		ItemDisc.fsPrintStatus |= (ItemSales.fsPrintStatus & 0x0f);   // the item discount has the same print settings as the item sales, e.g. EJ, slip, receipt
+		ItemDisc.usReasonCode = WorkSales.ItemSalesBuff.usReasonCode;               // the item discount reason code is the same as the item sales reason code
+		ItemDisc.fsPrintStatus |= (WorkSales.ItemSalesBuff.fsPrintStatus & 0x0f);   // the item discount has the same print settings as the item sales, e.g. EJ, slip, receipt
 
 		if (ItemDisc.uchMajorClass == CLASS_ITEMDISC) {
 			// handle cursor returns with discounts if this is a cursor return
@@ -2184,21 +2184,21 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 			if ((sStatus = ItemDiscCursorVoid(&ItemDisc)) != ITM_SUCCESS) {
 				return(sStatus);
 			}
-//			TrnStorage (&ItemSales);
+//			TrnStorage (&WorkSales.ItemSalesBuff);
 //			TrnStorage (&ItemDisc);
-			TrnSalesAndDisc ( &ItemSales, &ItemDisc );
+			TrnSalesAndDisc ( &WorkSales.ItemSalesBuff, &ItemDisc );
 			// ensure that there is no data let in the memory resident area that might get flushed to transaction storage
 			// we have seen cases of discount information remaining resulting in an extra item discount record
 			// added to the transaction file when doing cursor void of an item with a discount.
 			ItemPreviousItemClearStore (2, 0, 0);
 		} else {
-			TrnStorage (&ItemSales);
+			TrnStorage (&WorkSales.ItemSalesBuff);
 		}
         break;
 
     case    CLASS_ITEMDISC:
 		{
-			ITEMDISC *itemSalesDisc = (ITEMDISC *)&ItemSales;
+			ITEMDISC *itemSalesDisc = &WorkSales.ItemDiscBuff;
 
 			if (WorkGCF->fsGCFStatus & GCFQUAL_TRETURN) {
 				itemSalesDisc->fbDiscModifier |= RETURNS_TRANINDIC;  // New item so mark it as a return
@@ -2240,7 +2240,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 
     case    CLASS_ITEMCOUPON:
 		{
-			ITEMCOUPON *itemSalesCoupon = (ITEMCOUPON *)&ItemSales;
+			ITEMCOUPON *itemSalesCoupon = &WorkSales.ItemCouponBuff;
 
 			itemSalesCoupon->fbModifier &= ~RETURNS_ORIGINAL;  // New item so ensure original marker is off if this is a return
 			itemSalesCoupon->fsPrintStatus |= (PRT_RECEIPT | PRT_JOURNAL);  // ensure printing to receipt and journal is enabled.
@@ -2269,7 +2269,7 @@ SHORT   ItemOtherCursorVoid(UIFREGOTHER *pRegOther)
 
     case    CLASS_ITEMTENDER:
 		{
-			ITEMTENDER      *pTender = (ITEMTENDER *)&ItemSales;
+			ITEMTENDER      *pTender = &WorkSales.ItemTenderBuff;
 			TRANGCFQUAL     *pWorkGCF = TrnGetGCFQualPtr();
 			ITEMSALESLOCAL  *pItemSalesLocal = ItemSalesGetLocalPointer ();
 
