@@ -173,7 +173,7 @@ extern UCHAR	fchPrintDown;		/* save status of printer up or down */
 \** --------------------------------- **/
 
 /* -- PrCTran_.c -- */
-SHORT PrtChkStorage(SHORT *hsRead1, SHORT *hsRead2, TRANINFORMATION *pTran);
+SHORT PrtChkStorage(PifFileHandle * hsRead1, PifFileHandle * hsRead2, TRANINFORMATION *pTran);
 VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo *PluChitInfoList, int PluChitInfoListIndex, int PluChitOrderDeclareAdr);
 VOID  PrtCallIPD(TRANINFORMATION  *pTran, SHORT hsStorage);
 VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, SHORT hsStorage, PluChitInfoAll *PluChit );
