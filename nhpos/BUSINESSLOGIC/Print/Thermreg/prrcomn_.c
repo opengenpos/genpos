@@ -1170,6 +1170,7 @@ SHORT  PrtGetTaxMod(TCHAR *pszDest, USHORT usDestLen, SHORT fsTax, USHORT fbMod)
             break;
 
         case  CANTAX_BAKED << 1:
+//        case CANTAX_SPEC_BAKED << 1:         should this be added to accommodate special baked goods?  RJC Apr-02-2025
             SM.uchAddress    = SPC_TXMOD9_ADR;
             break;
 

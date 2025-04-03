@@ -279,13 +279,54 @@ extern "C"{
 #define  STD_PLU_ITEMIZERS_PLUS  (STD_PLU_ITEMIZERS+2+3)    // Number of PLU Itemizers plus limitable/Tax-On-Tax and GST/PST. see TRANCANADA_LIMITABLE and TRANCANADA_PST1TOT
 
 /*
- *    Canadian tax calculations use a series of tax buckets such as the following.
+ * Notes on Canadian retail taxes.
+ * 
+ *    Some provinces collect the GST (federal Goods and Services Tax) and the PST (Provincial Sales Tax) separately,
+ *    while others combine these into one tax, HST (Harmonized Sales Tax), since 1997 to simplify the process.
+ *
+ *    Each tax has its specifics:
+ *     - GST, set at 5%, is a value-added tax imposed by the federal government.
+ *     - PST is a province-specific retail sales tax with varying rates. Not all provinces charge it.
+ *     - HST combines PST and GST, which are collected by the CRA and disbursed to provinces. Some provices do this.
+ *     - QST is a province-specific sales tax in the province of Quebec.
+ * 
+ *    Some items such as grocery items are not taxable. And some items such as baked goods
+ *    which are taxable in some circumstances, e.g. as single servings, are not taxable in
+ *    others such as when purchased as a group of six or more.
+ * 
+ *    Canadian tax calculations use a series of tax buckets such as the following. As items
+ *    are rung up, the type of item and the type of tax that is to be collected on the item
+ *    are accumulated in the various tax buckets.
+ * 
  *    These defines are in include file regstrct.h and others are in transact.h.
  *    See also CANTAX_MEAL, etc. and how they are used as well as TAX_MOD_MASK bits in pItemSales->fbModifier
  *    See also MOD_TAXABLE1, etc. and how they are used with ItemModLocal.fsTaxable.
  * 
+ *    See the tax affection calculations in functions such as ItemTotalSEPostAffectTax().
+ * 
+ *    See as well the tax calculation in the following functions:
+ *      - ItemCanTax() in file ittax.c (this file seems to contain most of the tax computation)
+ *      - ItemTotalFTAmount() in file ittotal4.c
+ * 
+ *    -------------------------------------------------------------------------------------------------------------------
+ *    **  WARNING and NOTE about Canadian Tax Calculations  **
+ * 
  *    Special baked goods was added for Tim Hortons - Tim Horton's tax calc error, perhaps defects of implementation?
  * 
+ *    It appears that hard coded array indices have resulted in errors from tax affectation. In particular it looks like
+ *    by inserting Special baked goods tax bucket as index nine, there is a conflict with the tax buckets that
+ *    are after the list of tax buckets that come after because all the places where the hard coded indices for
+ *    PLU Itemizers for Canada are [9], [10], [11], [12], and [13] need to be updated by incrementing the array index.
+ * 
+ *    Some of this work has been done using the new defines for those special tax calculation buckets however it has not
+ *    been tested. I have attempted to identify places where this change needs to be made by inserting a comment with the
+ *    suggested PLU Itemizer defined constant. However I don't know enough to be able to test these suggested changes or
+ *    to replicate the tax calculation problem Tim Horton's was experiencing.
+ * 
+ *     Look for places where CANTAX_SPEC_BAKED or TRANCANADA_LIMITABLE or TRANCANADA_TAXONTAX and after defines are in comments.
+ *         Richard Chambers, Apr-02-2025
+ *    -------------------------------------------------------------------------------------------------------------------
+ *
  *    List of tax itemizer buckets, STD_PLU_ITEMIZERS_PLUS or STD_PLU_ITEMIZERS+2+3 (formerly hard coded as 9+2+3).
  *    See as well struct TRANCANADAITEMIZERS.
  * 
