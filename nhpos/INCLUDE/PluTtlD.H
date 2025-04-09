@@ -140,6 +140,16 @@
 #endif
 #endif
 
+// following define is a temporary define for testing SQLite integration
+// in GenPOS. Currently we are using this to ifdef out the ADO drivers.
+// these changes that are turned on by using this defined constant are
+// being used to test running GenPOS under WINE on Ubuntu Linux.
+// Testing using the SQLite ODBC driver under WINE indicated a problem
+// with loading the SQLite ODBC driver causing the test application to
+// crash. See the following Stack Overflow post which contains details.
+//   https://stackoverflow.com/questions/78639279/cant-open-lib-usr-lib-x86-64-linux-gnu-odbc-libsqlite3odbc-0-9998-so-file
+// 
+//#define SQLITE_TEST   1
 
 /*** dbfile option ***/
 #define PLUTOTAL_DBFILE_READ          (0x0001)    /* read                     */
@@ -169,6 +179,7 @@
 #define PLUTOTAL_E_EXIST            1002        /*                          */
 #define PLUTOTAL_E_DUP              1003        /* duplicate                */
 #define PLUTOTAL_E_FULL             1004        /* over max record          */
+#define PLUTOTAL_SQLITE_TEST        1005        /* indicates test SQLITE_TEST defined. normally interpreted as PLUTOTAL_SUCCESS */
 #define PLUTOTAL_E_ILLEAGAL         9998        /* illeagal parameter       */
 #define PLUTOTAL_E_FAILURE          9999        /* failure                  */
 /* ### ADD Saratoga Backup status (060100) */

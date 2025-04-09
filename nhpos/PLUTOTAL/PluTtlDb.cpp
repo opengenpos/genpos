@@ -16,8 +16,15 @@ static char THIS_FILE[]=__FILE__;
 
 int         CnPluTotalDb::s_nObjCnt;                // object counter
 //CnAdoXPRec* CnPluTotalDb::s_pRec[RECORDSET_NUM];    // record sets
+#if defined(SQLITE_TEST)
+// replace the real objects with fake objects to eliminate
+// compiler errors when stubbing out database interface.
+int * CnPluTotalDb::__pRecS;	// recordset (ADOCE)
+int * CnPluTotalDb::__pRecO;	// recordset (ADOCE)
+#else
 CnAdoXPRec* CnPluTotalDb::__pRecS;	// recordset (ADOCE)
 CnAdoXPRec* CnPluTotalDb::__pRecO;	// recordset (ADOCE)
+#endif
 const int   CnPluTotalDb::s_IdxNum         = 3;
 
 //////////////////////////////////////////////////////////////////////
@@ -71,11 +78,18 @@ void    CnPluTotalDb::CreateObject(LPCTSTR szDbFileName){
     m_vAC_DbFileName = m_strDbFileName;
 #endif
 
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    if (__pRecS == NULL)
+        __pRecS = new int;
+    if (__pRecO == NULL)
+        __pRecO = new int;
+#else
     if(__pRecS == NULL)
         __pRecS = new CnAdoXPRec;
     if(__pRecO == NULL)
         __pRecO = new CnAdoXPRec;
-
+#endif
     CnPluTotalDb::s_nObjCnt++;
 }
 
@@ -97,6 +111,9 @@ void    CnPluTotalDb::DestroyObject(){
 
 ULONG   CnPluTotalDb::CreateDbFile(){
 	ULONG ulStatus;
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
 #ifndef _WIN32_WCE_EMULATION
     CString     szSqlCode;
 #ifdef XP_PORT
@@ -133,10 +150,14 @@ ULONG   CnPluTotalDb::CreateDbFile(){
 	__pRecO->Close();
 
 	CoUninitialize();
+#endif
 	return  PLUTOTAL_SUCCESS;
 }
 
 ULONG   CnPluTotalDb::CreateDbBackUpFile(){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
 #ifndef _WIN32_WCE_EMULATION
     CString     szSqlCode;
 
@@ -144,7 +165,7 @@ ULONG   CnPluTotalDb::CreateDbBackUpFile(){
 
 	szSqlCode.Format(PLUTOTAL_DB_BACKUP_BACKUP, (LPCTSTR)m_strDbFileName, (LPCTSTR)m_strDbFileName);
 
-	m_hr = __pRecO->OpenRec(CnVariant(szSqlCode),ConnectionStringNoDB,adOpenKeyset,adLockOptimistic,adCmdText);
+    m_hr = __pRecO->OpenRec(CnVariant(szSqlCode),ConnectionStringNoDB,adOpenKeyset,adLockOptimistic,adCmdText);
 
 //    __pRecO->Close();
     if(FAILED(m_hr)) {
@@ -170,11 +191,15 @@ ULONG   CnPluTotalDb::CreateDbBackUpFile(){
 	__pRecO->Close();
 
 	CoUninitialize();
+#endif
 	return  PLUTOTAL_SUCCESS;
 }
 
 
 ULONG   CnPluTotalDb::DropDbFile(){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
 #ifndef _WIN32_WCE_EMULATION
     CString     szSqlCode;
     szSqlCode.Format(_T("DROP DATABASE %s"), (LPCTSTR)m_strDbFileName);
@@ -191,6 +216,7 @@ ULONG   CnPluTotalDb::DropDbFile(){
         return  PLUTOTAL_E_FAILURE;
     }
 #endif
+#endif
     return  PLUTOTAL_SUCCESS;
 }
 
@@ -200,6 +226,9 @@ ULONG   CnPluTotalDb::CreateTable(const __CnTblFormat &TblFormat){
     CString     strSqlCode;         // SQL statement
     strSqlCode.Format(_T("CREATE TABLE %s (%s)"), (LPCWSTR)TblFormat.strName, (LPCWSTR)TblFormat.strFldFormat);
 	_bstr_t strConnect = ConnectionString;
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
     m_hr = __pRecO->OpenRec(CnVariant(strSqlCode),strConnect,adOpenKeyset,adLockOptimistic,adCmdText);
 
     __pRecO->Close();   // one shot!!!
@@ -234,6 +263,7 @@ ULONG   CnPluTotalDb::CreateTable(const __CnTblFormat &TblFormat){
             }
         }
     }
+#endif
     return  PLUTOTAL_SUCCESS;
 }
 
@@ -243,6 +273,9 @@ ULONG   CnPluTotalDb::DropTable(LPCTSTR strTblName){
 
     strSqlCode.Format(_T("DROP TABLE %s "),strTblName);
 	_bstr_t strConnect = ConnectionString;
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
     m_hr = __pRecO->OpenRec(COleVariant(strSqlCode),strConnect,adOpenKeyset,adLockOptimistic,adCmdText);
     __pRecO->Close();   // one shot!!!
 
@@ -262,6 +295,7 @@ ULONG   CnPluTotalDb::DropTable(LPCTSTR strTblName){
 		}
 		return  PLUTOTAL_E_FAILURE;
 	}
+#endif
 
     return PLUTOTAL_SUCCESS;
 }
@@ -270,6 +304,9 @@ ULONG   CnPluTotalDb::DropTable(LPCTSTR strTblName){
 ULONG   CnPluTotalDb::CreateIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName,LPCTSTR lpszFldNames){
     CString strSqlCode;
     strSqlCode.Format(_T("CREATE INDEX %s ON %s ( %s ) "),lpszIdxName,lpszTblName,lpszFldNames);
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
 #ifdef XP_PORT
 	_bstr_t strConnect = ConnectionString;
     m_hr = __pRecO->OpenRec(COleVariant(strSqlCode),strConnect,adOpenKeyset,adLockOptimistic,adCmdText);
@@ -283,6 +320,7 @@ ULONG   CnPluTotalDb::CreateIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName,LPCTST
 		NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
         return  PLUTOTAL_E_FAILURE;
 	}
+#endif
 
     return  PLUTOTAL_SUCCESS;
 }
@@ -290,6 +328,9 @@ ULONG   CnPluTotalDb::CreateIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName,LPCTST
 ULONG   CnPluTotalDb::DropIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName){
     CString strSqlCode;
     strSqlCode.Format(_T("DROP INDEX %s.%s"),lpszTblName,lpszIdxName);
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
 #ifdef XP_PORT
 	_bstr_t strConnect = ConnectionString;
     m_hr = __pRecO->OpenRec(COleVariant(strSqlCode),strConnect,adOpenKeyset,adLockOptimistic,adCmdText);
@@ -303,6 +344,7 @@ ULONG   CnPluTotalDb::DropIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName){
 		NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
         return  PLUTOTAL_E_FAILURE;
 	}
+#endif
 
     return  PLUTOTAL_SUCCESS;
 }
@@ -351,6 +393,9 @@ ULONG   CnPluTotalDb::DropIndexEx(const __CnTblFormat &TblFormat)
 // ### ADD (041500)
 ULONG   CnPluTotalDb::CheckTable(LPCTSTR lpcTblName){
     ULONG   ulSts = PLUTOTAL_SUCCESS;
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
 #ifdef XP_PORT
 	_bstr_t strConnect = ConnectionString;
     m_hr = __pRecO->OpenRec(COleVariant(lpcTblName), strConnect,adOpenForwardOnly,adLockReadOnly,adCmdTable);
@@ -365,12 +410,18 @@ ULONG   CnPluTotalDb::CheckTable(LPCTSTR lpcTblName){
         ulSts = PLUTOTAL_NOT_FOUND;
     }
     __pRecO->Close();
+#endif
+
     return  ulSts;
 }
 
 
 ULONG   CnPluTotalDb::get_RecordCnt(LPCTSTR szTblName,LONG * plRecCnt){
     CnVariant   varTableName(szTblName);
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    * plRecCnt = 1;   // always indicate 1
+#else
 #ifdef XP_PORT
     // open recoredset
 	_bstr_t strConnect = ConnectionString;
@@ -396,11 +447,15 @@ ULONG   CnPluTotalDb::get_RecordCnt(LPCTSTR szTblName,LONG * plRecCnt){
 
 GETRECCNT_ERR:
     __pRecO->Close();
+#endif
     return  PLUTOTAL_E_FAILURE;
 }
 
 
 ULONG   CnPluTotalDb::ExecSQL(LPCTSTR szSqlCode){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
 #ifdef XP_PORT
 	_bstr_t strConnect = ConnectionString;
     m_hr = __pRecO->OpenRec(CnVariant(szSqlCode), strConnect, adOpenForwardOnly,adLockOptimistic,adCmdText);
@@ -428,6 +483,7 @@ ULONG   CnPluTotalDb::ExecSQL(LPCTSTR szSqlCode){
 		}
 		return  PLUTOTAL_E_FAILURE;
 	}
+#endif
 
     return PLUTOTAL_SUCCESS;
 }
@@ -443,7 +499,10 @@ ULONG   CnPluTotalDb::RestoreDB(LPCTSTR szSQlCode){
 	activeConn.Format(ConnectionStringTemp,L"master");
 	_bstr_t strConnect = activeConn;
 
-	//We set the database to be in single user mode while we do this database reset
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
+    //We set the database to be in single user mode while we do this database reset
 	//so that no one else can access the database information while we reset the DB
 	//SR 725 JHHJ
 SINGLE_USER_DB:
@@ -550,6 +609,7 @@ MULTI_USER_DB:
 		usError = 0;
 		goto SINGLE_USER_DB;
 	}
+#endif
 
     return PLUTOTAL_SUCCESS;
 }
@@ -558,6 +618,9 @@ MULTI_USER_DB:
 
 // New Functions
 ULONG   CnPluTotalDb::OpenRec(LPCTSTR lpcTableName){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
 #ifdef XP_PORT
 	_bstr_t strConnect = ConnectionString;
     m_hr = __pRecO->OpenRec(CnVariant(lpcTableName), strConnect,adOpenKeyset,adLockOptimistic,adCmdTable);
@@ -584,6 +647,8 @@ ULONG   CnPluTotalDb::OpenRec(LPCTSTR lpcTableName){
 		}
 		return  PLUTOTAL_E_FAILURE;
     }
+#endif
+
     return  PLUTOTAL_SUCCESS;
 }
 
@@ -592,6 +657,10 @@ ULONG   CnPluTotalDb::OpenRec(LPCTSTR szSqlCode,const BOOL bClose,LONG * plRecCn
     *plRecCnt = 0;
 
     ULONG   ulStatus, ulSts = PLUTOTAL_SUCCESS;
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    *plRecCnt = 1;
+#else
 #ifdef XP_PORT
 	_bstr_t strConnect = ConnectionString;
     m_hr = __pRecO->OpenRec(CnVariant(szSqlCode), strConnect, adOpenKeyset,adLockOptimistic,adCmdText);
@@ -619,17 +688,26 @@ ULONG   CnPluTotalDb::OpenRec(LPCTSTR szSqlCode,const BOOL bClose,LONG * plRecCn
     if(*plRecCnt == 0L){
         ulSts = PLUTOTAL_NOT_FOUND;
     }
+#endif
     return  ulSts;
 }
 
 
 VOID    CnPluTotalDb::CloseRec(void){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
     if(__pRecO->IsOpened())
         __pRecO->Close();
+#endif
 }
 
 
 ULONG   CnPluTotalDb::GetRec(VARIANT vGetFields,LPVARIANT lpvValues){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(!__pRecO->IsOpened())
         return  PLUTOTAL_E_FAILURE;
     COleVariant vStart;
@@ -640,11 +718,15 @@ ULONG   CnPluTotalDb::GetRec(VARIANT vGetFields,LPVARIANT lpvValues){
 	vStart.Clear();	/* 09/03/01 */
     if(FAILED(m_hr))
         return  PLUTOTAL_E_FAILURE;
-
     return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 ULONG   CnPluTotalDb::PutRec(VARIANT vPutFields,VARIANT vValues){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(!__pRecO->IsOpened())
         return  PLUTOTAL_E_FAILURE;
 
@@ -653,10 +735,15 @@ ULONG   CnPluTotalDb::PutRec(VARIANT vPutFields,VARIANT vValues){
         return  PLUTOTAL_E_FAILURE;
 
     return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 
 ULONG   CnPluTotalDb::AddRec(VARIANT vPutFields,VARIANT vValues){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(!__pRecO->IsOpened())
         return  PLUTOTAL_E_FAILURE;
 
@@ -666,10 +753,15 @@ ULONG   CnPluTotalDb::AddRec(VARIANT vPutFields,VARIANT vValues){
     }
 
     return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 
 ULONG   CnPluTotalDb::DelRec(const LONG lRecNum){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(!__pRecO->IsOpened())
         return  PLUTOTAL_E_FAILURE;
     if(lRecNum < 1)
@@ -680,6 +772,7 @@ ULONG   CnPluTotalDb::DelRec(const LONG lRecNum){
         return  PLUTOTAL_E_FAILURE;
     }
     return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 // *** DEBUG & TEST ************************************
@@ -688,6 +781,10 @@ ULONG   CnPluTotalDb::DelRec(const LONG lRecNum){
 
 // *** record set series
 ULONG   CnPluTotalDb::OpenRecoredset(const LPCTSTR szSqlCode,CursorTypeEnum CursorType,LockTypeEnum LockType,long lOption){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(__pRecS->IsOpened() == TRUE)
         return  PLUTOTAL_E_OPENED;
 
@@ -708,56 +805,81 @@ ULONG   CnPluTotalDb::OpenRecoredset(const LPCTSTR szSqlCode,CursorTypeEnum Curs
     __pRecS->MoveFirst();
 
     return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 
 ULONG   CnPluTotalDb::CloseRecoredset(void){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+#else
     if(__pRecS->IsOpened() == FALSE)
         return  PLUTOTAL_E_FAILURE;
     __pRecS->Close();
+#endif
     return  PLUTOTAL_SUCCESS;
 }
 
 ULONG   CnPluTotalDb::MoveFirst(void){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(__pRecS->IsOpened() == FALSE)
         return  PLUTOTAL_E_FAILURE;
     m_hr = __pRecS->MoveFirst();
     if(FAILED(m_hr))
         return  PLUTOTAL_E_FAILURE;
-    return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 ULONG   CnPluTotalDb::MoveLast(void){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(__pRecS->IsOpened() == FALSE)
         return  PLUTOTAL_E_FAILURE;
     m_hr = __pRecS->MoveLast();
     if(FAILED(m_hr))
         return  PLUTOTAL_E_FAILURE;
-    return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 
 ULONG   CnPluTotalDb::MoveNext(void){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(__pRecS->IsOpened() == FALSE)
         return  PLUTOTAL_E_FAILURE;
     m_hr = __pRecS->MoveNext();
     if(FAILED(m_hr))
         return  PLUTOTAL_E_FAILURE;
-    return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 
 ULONG   CnPluTotalDb::MovePrev(void){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(__pRecS->IsOpened() == FALSE)
         return  PLUTOTAL_E_FAILURE;
     m_hr = __pRecS->MovePrevious();
     if(FAILED(m_hr))
         return  PLUTOTAL_E_FAILURE;
-    return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 
 ULONG   CnPluTotalDb::GetRow(const CnVariant vFldNames,CnVariant * pvValues){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(__pRecS->IsOpened() == FALSE)
         return  PLUTOTAL_E_FAILURE;
 
@@ -774,10 +896,16 @@ ULONG   CnPluTotalDb::GetRow(const CnVariant vFldNames,CnVariant * pvValues){
         return  PLUTOTAL_EOF;
     else
         return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 
 ULONG   CnPluTotalDb::get_RecordCnt(LONG * plRecCnt){
+#if defined(SQLITE_TEST)
+    m_hr = 0;    // pretned that the command worked.
+    *plRecCnt = 1;
+    return  PLUTOTAL_SQLITE_TEST;
+#else
     if(__pRecS->IsOpened() == FALSE){
         *plRecCnt = 0L;
         return  PLUTOTAL_E_FAILURE;
@@ -787,6 +915,7 @@ ULONG   CnPluTotalDb::get_RecordCnt(LONG * plRecCnt){
         return  PLUTOTAL_E_FAILURE;
     else
         return  PLUTOTAL_SUCCESS;
+#endif
 }
 
 

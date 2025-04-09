@@ -138,7 +138,7 @@ SHORT   TtlPLUupdate(USHORT usStatus, TCHAR *puchPLUNo, UCHAR uchAjectNo,
 
     /*** update Current Daily/PTD ***/
     ulSts = PluTotalFind(g_hdDB,PLUTOTAL_ID_DAILY_CUR,puchPLUNo,uchAdjIdxWrk,&prRecBuf);
-    if(ulSts == PLUTOTAL_NOT_FOUND){
+    if(ulSts == PLUTOTAL_NOT_FOUND || ulSts == PLUTOTAL_SQLITE_TEST){
         /* status */
         PluTotalGetRecCnt(g_hdDB,PLUTOTAL_ID_DAILY_CUR,&ulRecCnt);
         if(ulRecCnt == 0){

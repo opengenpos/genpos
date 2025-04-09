@@ -442,6 +442,26 @@ BOOL    CnPluTotal::Var2PluTtlRec(const COleVariant vRecData,PLUTOTAL_REC * pRec
 
 
 BOOL    CnPluTotal::Var2PluTtlRec(const COleVariant vRecData,PLUTOTAL_STATUS * pStsData){
+#if defined(SQLITE_TEST)
+    PLUTOTAL_DATE     testFrom = { 2025,1,1,6,0,0 };
+    PLUTOTAL_DATE     testTo= { 0 };
+    pStsData->ulResetStatus = 0;
+
+    // From date
+    pStsData->dateFrom = testFrom;
+
+    // To date
+    pStsData->dateTo = testTo;
+
+    // Counter
+    pStsData->lAllTotal = 0;    // DCURRENCY
+
+    // Amount // ### ADD (041800)
+    pStsData->lAmount = 0;      // DCURRENCY
+
+    // Version
+    pStsData->lVersion = 0;
+#else
     if(vRecData.vt == VT_EMPTY)
         return  FALSE;
 
@@ -453,7 +473,6 @@ BOOL    CnPluTotal::Var2PluTtlRec(const COleVariant vRecData,PLUTOTAL_STATUS * p
 
     // structure size
     pStsData->usSize = sizeof(PLUTOTAL_STATUS);
-
     // ResetStatus
     vWrk.Clear();                               // V1.0.0.4
     saRec.GetElement(lIdx,&vWrk);
@@ -493,7 +512,7 @@ BOOL    CnPluTotal::Var2PluTtlRec(const COleVariant vRecData,PLUTOTAL_STATUS * p
 	/***/
     saRec.Clear();                            // V1.0.0.4
 //    saRec.Destroy();                            // V1.0.0.4
-
+#endif
     return  TRUE;
 }
 
@@ -1057,6 +1076,9 @@ ULONG   CnPluTotal::InsertN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
 
 
 ULONG   CnPluTotal::InsertN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
+#if defined(SQLITE_TEST)
+    ULONG ulSts = PLUTOTAL_SUCCESS;
+#else
     CnPluTotalDb*   pDB = _DataBaseObject(nTblID);
     if(pDB == NULL)
         return  PLUTOTAL_E_ILLEAGAL;
@@ -1124,11 +1146,15 @@ ULONG   CnPluTotal::InsertN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
 //        saValues.Destroy();                         // V1.0.0.4
     }
     PutLog(TEXT("### InsertN   "),nTblID,RecData,ulSts);
+#endif
     return  ulSts;
 }
 
 
 ULONG   CnPluTotal::UpdateN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
+#if defined(SQLITE_TEST)
+    ULONG ulSts = PLUTOTAL_SUCCESS;
+#else
     CnPluTotalDb*   pDB = _DataBaseObject(nTblID);
     if(pDB == NULL)
         return  PLUTOTAL_E_ILLEAGAL;
@@ -1193,6 +1219,7 @@ ULONG   CnPluTotal::UpdateN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
     }
     pDB->CloseRec();
     PutLog(TEXT("### UpdateN   "),nTblID,RecData,ulSts);
+#endif
     return  ulSts;
 }
 
@@ -1530,7 +1557,7 @@ ULONG   CnPluTotal::LoadStatus(const SHORT nStsTblID,PLUTOTAL_STATUS * pStatusRe
     saFields.Clear();                     // V1.0.0.4
 //    saFields.Destroy();                     // V1.0.0.4
     pDB->CloseRec();
-    if(ulSts != PLUTOTAL_SUCCESS)
+    if(ulSts != PLUTOTAL_SUCCESS && ulSts != PLUTOTAL_SQLITE_TEST)
         return  ulSts;
 
     // variant -> PLUTOTAL_REC
