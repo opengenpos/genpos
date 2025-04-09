@@ -23,8 +23,10 @@
 *       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
 *       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
 *       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
 *
 *    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
 * --------------------------------------------------------------------------
 * Abstruct: The provided function names are as follows:
 *
@@ -81,11 +83,9 @@
 */
 VOID    IspRecvEtk(VOID)
 {
-    CLIREQETK   *pReqMsgH;
-    CLIRESETK   ResMsgH;
+    CLIREQETK   * const pReqMsgH = (CLIREQETK *)IspRcvBuf.auchData;
+    CLIRESETK   ResMsgH = { 0 };
 
-    pReqMsgH = (CLIREQETK *)IspRcvBuf.auchData;
-    memset(&ResMsgH , 0, sizeof(CLIRESETK));
     ResMsgH.usFunCode     = pReqMsgH->usFunCode;
     ResMsgH.sResCode      = STUB_SUCCESS;
     ResMsgH.sReturn       = ISP_SUCCESS;
@@ -138,9 +138,11 @@ VOID    IspRecvEtk(VOID)
 
     case CLI_FCETKCURALLIDRD:            /* ETK all cur id read   */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESETK)];
-        ResMsgH.sReturn = SerEtkCurAllIdRead(4*FLEX_ETK_MAX, (ULONG *)IspResp.pSavBuff->auchData);
+        IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESETK);
+        ResMsgH.sReturn = SerEtkCurAllIdRead(sizeof(ULONG)*FLEX_ETK_MAX, (ULONG *)IspResp.pSavBuff->auchData);
         if (0 <= ResMsgH.sReturn) {
-            IspResp.pSavBuff->usDataLen = 4*ResMsgH.sReturn;
+            IspResp.pSavBuff->usDataLen = sizeof(ULONG)*ResMsgH.sReturn;
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             ResMsgH.sResCode = STUB_MULTI_SEND;
         } else {
             ResMsgH.usDataLen = 0;
@@ -149,9 +151,11 @@ VOID    IspRecvEtk(VOID)
 
     case CLI_FCETKSAVALLIDRD:            /* ETK all sav id read   */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESETK)];
-        ResMsgH.sReturn = SerEtkSavAllIdRead(4*FLEX_ETK_MAX, (ULONG *)IspResp.pSavBuff->auchData);
+        IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESETK);
+        ResMsgH.sReturn = SerEtkSavAllIdRead(sizeof(ULONG)*FLEX_ETK_MAX, (ULONG *)IspResp.pSavBuff->auchData);
         if (0 <= ResMsgH.sReturn) {
-            IspResp.pSavBuff->usDataLen = 4*ResMsgH.sReturn;
+            IspResp.pSavBuff->usDataLen = sizeof(ULONG)*ResMsgH.sReturn;
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             ResMsgH.sResCode = STUB_MULTI_SEND;
         } else {
             ResMsgH.usDataLen = 0;

@@ -57,9 +57,7 @@ public:
 
 	ULONG	SelectRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID,ULONG SearchCond);
 	ULONG	FirstRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID);
-	ULONG	LastRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID);
 	ULONG	NextRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID);
-	ULONG	PrevRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID);
 	ULONG	GetRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nId,PLUTOTAL_REC *pRecData);
 	ULONG	GetNumRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblId,ULONG *pulRecNum);
 	ULONG	ReleaseRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblId);

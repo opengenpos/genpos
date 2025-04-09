@@ -61,17 +61,13 @@
 */
 VOID    SerRecvKps(VOID)
 {
-    CLIREQKITPRINT  *pReqMsgH;
-    CLIRESKITPRINT  ResMsgH;
-    USHORT          usSendLen, usDataLen, usWriteLen;
+    CLIREQKITPRINT  * const pReqMsgH = (CLIREQKITPRINT *)SerRcvBuf.auchData;
+    CLIRESKITPRINT  ResMsgH = { 0 };
+    USHORT          usSendLen = 0, usDataLen = 0, usWriteLen = 0;
 
-    pReqMsgH = (CLIREQKITPRINT *)SerRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESKITPRINT));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
     ResMsgH.sResCode  = STUB_SUCCESS;
-
-    usDataLen = 0;
 
     switch(pReqMsgH->usFunCode & CLI_RSTCONTCODE) {
 
@@ -100,11 +96,7 @@ VOID    SerRecvKps(VOID)
         break;
 
     case    CLI_FCKPSALTMANKP:
-        ResMsgH.sReturn = CliParaAllWrite(CLASS_PARAMANUALTKITCH,
-                                          SerResp.pSavBuff->auchData,
-                                          SerResp.pSavBuff->usDataLen,
-                                          0,
-                                          &usWriteLen);
+        ResMsgH.sReturn = CliParaAllWrite(CLASS_PARAMANUALTKITCH, SerResp.pSavBuff->auchData, SerResp.pSavBuff->usDataLen, 0, &usWriteLen);
         usSendLen = sizeof(CLIRESALTKP);
         break;
 

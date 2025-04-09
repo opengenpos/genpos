@@ -33,7 +33,7 @@ CFrameworkWndItemAdHoc::CFrameworkWndItemAdHoc(int id, int row, int column, int 
 	m_pChainNext = 0;
 	m_pChainNextParent = 0;
 
-	controlAttributes.m_nType = WindowContainerAdHoc;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::WindowContainerAdHoc;
 }
 
 	
@@ -43,7 +43,7 @@ CFrameworkWndItemAdHoc::CFrameworkWndItemAdHoc(CWindowControl *wc) :
 	m_pChainNext = 0;
 	m_pChainNextParent = 0;
 
-	controlAttributes.m_nType = WindowContainerAdHoc;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::WindowContainerAdHoc;
 }
 
 CFrameworkWndItemAdHoc::~CFrameworkWndItemAdHoc()
@@ -798,7 +798,7 @@ BOOL CFrameworkWndItem::PopupSupervisorWindow (CWindowControl *pParent)
 			NumpadButton->btnAttributes.m_myPattern = windowAttributes.oepBtnPattern;
 			NumpadButton->controlAttributes.m_colorText = windowAttributes.oepBtnFontColor;
 			NumpadButton->controlAttributes.lfControlFont = windowAttributes.oepBtnFont;
-			NumpadButton->btnAttributes.capAlignment = CWindowButton::CaptionAlignmentVMiddle;
+			NumpadButton->btnAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
 			NumpadButton->m_DialogId = (CFrameworkWndButton::SPL_BTN_START + nButton);
 
 			if (NumpadButton->WindowCreate(this, NumpadButton->m_DialogId, 100)) {
@@ -829,7 +829,7 @@ BOOL CFrameworkWndItem::PopupSupervisorWindow (CWindowControl *pParent)
 		NumpadButton->btnAttributes.m_myPattern = windowAttributes.oepBtnPattern;
 		NumpadButton->controlAttributes.m_colorText = windowAttributes.oepBtnFontColor;
 		NumpadButton->controlAttributes.lfControlFont = windowAttributes.oepBtnFont;
-		NumpadButton->btnAttributes.capAlignment = CWindowButton::CaptionAlignmentVMiddle;
+		NumpadButton->btnAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
 		NumpadButton->m_DialogId = (CFrameworkWndButton::SPL_BTN_START + nButton);
 
 		if (NumpadButton->WindowCreate(this, NumpadButton->m_DialogId, 100)) {
@@ -868,7 +868,7 @@ BOOL CFrameworkWndItem::PopupSupervisorWindow (CWindowControl *pParent)
 		ClearButton->btnAttributes.m_myPattern = windowAttributes.oepBtnPattern;
 		ClearButton->controlAttributes.m_colorText = windowAttributes.oepBtnFontColor;
 		ClearButton->controlAttributes.lfControlFont = windowAttributes.oepBtnFont;
-		ClearButton->btnAttributes.capAlignment = CWindowButton::CaptionAlignmentVMiddle;
+		ClearButton->btnAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
 		ClearButton->m_DialogId = CFrameworkWndButton::SPL_BTN_DONE;
 
 		if (ClearButton->WindowCreate(this, ClearButton->m_DialogId, 100)) {

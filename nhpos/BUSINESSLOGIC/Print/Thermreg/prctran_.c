@@ -154,9 +154,9 @@ VOID    PrtInitialize(VOID)
 */
 USHORT PrtPrintTran(TRANINFORMATION *pTran)
 {
-    SHORT   sRet, i;
-    SHORT   hsRead1, hsRead2;           /* storage file handle */
-    UCHAR   uchTotal;
+    SHORT           sRet, i;
+    PifFileHandle   hsRead1, hsRead2;           /* storage file handle */
+    UCHAR           uchTotal;
 
     /* ---- not clear static area at split check printing ---- */
     if (!(fsPrtStatus & PRT_SPLIT_PRINT) || !auchPrtSeatCtl[0]) {
@@ -340,15 +340,15 @@ USHORT PrtPrintTran(TRANINFORMATION *pTran)
 USHORT PrtPrintSplit(TRANINFORMATION *pTran, TRANINFSPLIT *pSplit,
                                                 USHORT usType, USHORT usNo)
 {
-    SHORT           hsTranConsStorage;      /* consoli storage file handle */
+    PifFileHandle   hsTranConsStorage;      /* consoli storage file handle */
     USHORT          usTranConsStoFSize;     /* consoli storage file size */
     USHORT          usTranConsStoVli;       /* consoli storage Vli */
-    SHORT           hsTranConsIndex;        /* handle of cons. storage index */
-    SHORT           hsTranNoConsIndex;      /* handle of no cons. storage index */
+    PifFileHandle   hsTranConsIndex;        /* handle of cons. storage index */
+    PifFileHandle   hsTranNoConsIndex;      /* handle of no cons. storage index */
     ULONG           fsCurStatus;
     UCHAR           auchFinSeat[NUM_SEAT];
     SHORT   sRet;
-    SHORT   hsRead1, hsRead2;           /* storage file handle */
+    PifFileHandle   hsRead1, hsRead2;           /* storage file handle */
     UCHAR           uchTotal;
 
 
@@ -499,7 +499,7 @@ USHORT PrtPrintSplit(TRANINFORMATION *pTran, TRANINFSPLIT *pSplit,
 *            TPM prints sends data to kitchen printer, then sends to other printer.
 *===========================================================================
 */
-SHORT PrtChkStorage( SHORT *hsRead1, SHORT *hsRead2, TRANINFORMATION *pTran )
+SHORT PrtChkStorage( PifFileHandle * hsRead1, PifFileHandle * hsRead2, TRANINFORMATION *pTran )
 {
     UCHAR  uchPrtStorage = pTran->TranCurQual.uchPrintStorage;
     UCHAR  uchKitStorage = pTran->TranCurQual.uchKitchenStorage;
@@ -878,7 +878,7 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, SHORT hsStorage, PluChitInfo
     ULONG           ulStorageReadSize;
     ULONG           ulTtlIdxReadSize;
     ULONG           ulCurIdxReadSize;
-    SHORT           hsIndexFile;
+    PifFileHandle   hsIndexFile;
     USHORT          usItemReadLen;
 	SHORT           PluChitInfoListIndex = 0;
     PRTIDXHDR       IdxFileInfo;
@@ -916,7 +916,7 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, SHORT hsStorage, PluChitInfo
     uchCurItemCo     = ( sizeof( auchIdxWork ) / sizeof( PRTIDX ));
 
     while ( ulTtlIdxReadSize < IdxFileInfo.usIndexVli ) {
-        TrnReadFile( (USHORT)(sizeof( PRTIDXHDR ) + ulTtlIdxReadSize), (VOID *)auchIdxWork, (USHORT)sizeof( auchIdxWork ), hsIndexFile, &ulCurIdxReadSize);
+        TrnReadFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize), auchIdxWork, sizeof( auchIdxWork ), hsIndexFile, &ulCurIdxReadSize);
         if ( IdxFileInfo.usIndexVli < ( ulTtlIdxReadSize + ulCurIdxReadSize )) {
             ulCurIdxReadSize = IdxFileInfo.usIndexVli - ulTtlIdxReadSize;
             uchCurItemCo     = ( UCHAR )( ulCurIdxReadSize / sizeof( PRTIDX )) + 1;

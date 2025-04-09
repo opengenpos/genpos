@@ -23,8 +23,10 @@
 *       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
 *       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
 *       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
 *
 *    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
 * --------------------------------------------------------------------------
 * Abstract: The provided function names are as follows:
 *
@@ -249,8 +251,10 @@ VOID    IspRecvOpr(VOID)
     case CLI_FCOPPLUFILEUPD :   /* OP PLU  file update sub index  */
     case CLI_FCPARAALLREAD :    /* PARA all read  rameter */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESOPPARA)];
+        IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESOPPARA);
         pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQOPPARA));
         IspResp.pSavBuff->usDataLen = pReqBuff->usDataLen;
+        NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
         pPlu = (PLUIF *)IspResp.pSavBuff->auchData;
         break;
 
@@ -259,8 +263,10 @@ VOID    IspRecvOpr(VOID)
 
     case CLI_FCOPOEPPLUREAD :      /* OP OPE PLU read , saratoga */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESOPPARA)];
+        IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESOPPARA);
         pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQOPPARA));
         IspResp.pSavBuff->usDataLen = sizeof(PLUIF_OEP);
+        NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
         pPlu = (PLUIF *)IspResp.pSavBuff->auchData;
         memcpy(IspResp.pSavBuff->auchData, pReqBuff->auchData, pReqBuff->usDataLen);
         break;
@@ -271,8 +277,10 @@ VOID    IspRecvOpr(VOID)
     default:                    /* not used */
         pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQOPPARA));
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESOPPARA)];
+        IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESOPPARA);
         IspResp.pSavBuff->usDataLen = pReqBuff->usDataLen;
         memcpy(IspResp.pSavBuff->auchData, pReqBuff->auchData, pReqBuff->usDataLen);
+        NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
         pPlu = (PLUIF *)IspResp.pSavBuff->auchData;
         break;
     }

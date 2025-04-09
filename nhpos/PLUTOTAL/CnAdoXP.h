@@ -139,11 +139,12 @@ public:
 		return m_hr;
 	}
 
-	virtual	HRESULT	Delete(long AffectRecords = 1){ 
+	virtual	HRESULT	Delete(){
 		m_errorMessage.Empty();
 		try {
-			AffectEnum enAffectRecords = (enum AffectEnum)AffectRecords;
-			m_hr = m_pRecordSet->Delete(enAffectRecords);
+			//  adAffectCurrent  1      Affects only the current record.
+			//  See AffectEnum _RecordsetPtr in Microsoft Documentation for details.
+			m_hr = m_pRecordSet->Delete(adAffectCurrent);
 			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Delete hr 0x%x "), m_hr);
 		}
 		catch(_com_error &e) {
@@ -228,6 +229,11 @@ public:
 		return m_hr;
 	}
 
+	// For the following move methods see the documentation at Microsoft.
+	//    MoveFirst, MoveLast, MoveNext, and MovePrevious Methods (ADO)
+	//
+	//  Moves to the first, last, next, or previous record in a specified
+	//  Recordset object and makes that record the current record.
 	virtual	HRESULT	MoveFirst(void){
 		m_errorMessage.Empty();
 		try {

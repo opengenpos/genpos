@@ -68,13 +68,11 @@
 VOID    SerRecvEtk(VOID)
 {
 	SHORT           sSerSendStatus = 0;
-    CLIREQETK       *pReqMsgH;
-    CLIRESETKTIME   ResMsgH;
-	CLIRESETK		ResMsgH2;
+    CLIREQETK       * const pReqMsgH = (CLIREQETK *)SerRcvBuf.auchData;
+    CLIRESETKTIME   ResMsgH = { 0 };
+    CLIRESETK		ResMsgH2 = { 0 };
 	static ULONG    aulRcvBuffer[FLEX_ETK_MAX];
 
-    pReqMsgH = (CLIREQETK *)SerRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESETKTIME));
     ResMsgH.usFunCode     = pReqMsgH->usFunCode;
     ResMsgH.sResCode      = STUB_SUCCESS;
     ResMsgH.usSeqNo       = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -139,7 +137,6 @@ VOID    SerRecvEtk(VOID)
         break;
 
     case CLI_FCETKCURALLIDRD:            /* ETK all cur id read   */
-		memset(&ResMsgH2, 0, sizeof(CLIRESETK));
 		ResMsgH2.usFunCode     = pReqMsgH->usFunCode;
 		ResMsgH2.sResCode      = STUB_SUCCESS;
 		ResMsgH2.usSeqNo       = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -147,6 +144,7 @@ VOID    SerRecvEtk(VOID)
 		ResMsgH2.usFieldNo     = pReqMsgH->usFieldNo;
 		
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESETK)];
+        SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESETK);
 
 		ResMsgH2.sReturn = EtkCurAllIdReadIncr(sizeof(ResMsgH2.auchETKData), (ULONG *)&ResMsgH2.auchETKData, ResMsgH2.usFieldNo);
 

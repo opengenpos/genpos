@@ -197,7 +197,7 @@ void CNewLayoutView::OnDraw(CDC* pDC)
 	while (pw) 
 	{
 		//only display windows that are non popup. If a popup window is the active window, we will show it also
-		if(pw->controlAttributes.isVirtualWindow || pw->controlAttributes.m_myId == uiActiveID || pw->controlAttributes.m_nType == CWindowControl::WindowGroup) 
+		if(pw->controlAttributes.isVirtualWindow || pw->controlAttributes.m_myId == uiActiveID || pw->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowGroup)
 		{
 			pw->controlAttributes.CurrentID = uiActiveID;
 			pw->WindowDisplay(pDC);
@@ -297,7 +297,7 @@ void CNewLayoutView::PopupButtonEditDialog (int row, int column)
 			//is there an existing control here?
 			if (nSearch == 4) {
 				//is this control a button
-				if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::ButtonControl){
+				if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 					//get the button that was clicked in and cast it to CWindowButtonExt
 					CWindowControl *wc = pw->GetDataThis ();
 					CWindowButtonExt *pb = CWindowButtonExt::TranslateCWindowControl (wc);
@@ -404,7 +404,7 @@ void CNewLayoutView::PopupButtonEditDialog (int row, int column)
 					}
 				}
 				//user clciked in a text area - let them know they cannot create a button here
-				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::TextControl){
+				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 					AfxMessageBox( IDS_TEXTEXIST,  MB_OK,  0 );
 				}
 			}
@@ -705,7 +705,7 @@ void CNewLayoutView::PopupListBoxEditDialog (int row, int column)
 			//is there an existing control here?
 			if (nSearch == 4) {
 				//is this control a button
-				if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::ListBoxControl){
+				if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::ListBoxControl){
 					//get the button that was clicked in and cast it to CWindowButtonExt
 					CWindowControl *wc = pw->GetDataThis ();
 					CWindowListBoxExt *pb = CWindowListBoxExt::TranslateCWindowControl (wc);
@@ -804,7 +804,7 @@ void CNewLayoutView::PopupListBoxEditDialog (int row, int column)
 					}
 				}
 				//user clciked in a text area - let them know they cannot create a button here
-				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::TextControl){
+				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 					AfxMessageBox( IDS_TEXTEXIST,  MB_OK,  0 );
 				}
 			}
@@ -957,7 +957,7 @@ void CNewLayoutView::OnLButtonDblClk(UINT nFlags, CPoint point)
 			if(ww != NULL){
 				CWindowControl *subControl = pDoc->SearchForSubWinItem(row, column, ww, uiActiveID);
 
-				if(subControl->controlAttributes.m_nType == CWindowControl::TextControl){
+				if(subControl->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 					PopAddTextWindow (row, column);
 					return;
 				}
@@ -980,7 +980,7 @@ void CNewLayoutView::OnLButtonDblClk(UINT nFlags, CPoint point)
 				//if pwc is valid and not null
 				if(pwc != NULL){
 					//if user clciked a text control
-					if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+					if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 						//call function to edit text control
 						if(CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == CWindowText::TypeOEP){
 							PopSetOEPWin(row,column);
@@ -992,13 +992,13 @@ void CNewLayoutView::OnLButtonDblClk(UINT nFlags, CPoint point)
 						}
 					}
 					//user clciked a button item
-					else if(pwc->controlAttributes.m_nType == CWindowControl::ButtonControl){
+					else if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 						//call function to edit button control
 						PopupButtonEditDialog (row, column);
 						return;
 					}
 					//user clicked a label control
-					else if(pwc->controlAttributes.m_nType == CWindowControl::LabelControl){
+					else if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 						//set the point that was clicked so it can be used by label edit function
 						cpLastRButton = point;
 						OnAddLabel();
@@ -1214,17 +1214,17 @@ BOOL CNewLayoutView::OnCommand(WPARAM wParam, LPARAM lParam)
 					//pwc does exist and is valid
 					if(pwc != NULL){
 						//the control is a button
-						if(pwc->controlAttributes.m_nType == CWindowControl::TextControl && LOWORD(wParam) == IDS_POPUP_EDITTEXT /*&& pwc->controlAttributes.m_myId == CWindowText::TypeOEP*/){
+						if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl && LOWORD(wParam) == IDS_POPUP_EDITTEXT /*&& pwc->controlAttributes.m_myId == CWindowText::TypeOEP*/){
 							//call function to edit a button
 							PopAddTextWindow(row,column);
 							return TRUE;
 						}
-						if(pwc->controlAttributes.m_nType == CWindowControl::TextControl && LOWORD(wParam) == ID_POP1_EDIT_OEPWINDOW && CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == CWindowText::TypeOEP){
+						if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl && LOWORD(wParam) == ID_POP1_EDIT_OEPWINDOW && CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == CWindowText::TypeOEP){
 							//call function to edit a button
 							PopSetOEPWin(row,column);
 							return TRUE;
 						}
-						if(pwc->controlAttributes.m_nType == CWindowControl::ButtonControl && LOWORD(wParam) == IDS_POPUP_EDITBTN){
+						if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl && LOWORD(wParam) == IDS_POPUP_EDITBTN){
 							//call function to edit a button
 							PopupButtonEditDialog (row, column);
 							return TRUE;
@@ -1610,7 +1610,7 @@ void CNewLayoutView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		if(pw->controlAttributes.m_myId > uiGlobalID){
 			uiGlobalID = pw->controlAttributes.m_myId;
 		}
-		if(pw->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pw->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			UINT subID = GetSubID(CWindowItemExt::TranslateCWindowControl(pw));
 			if(subID > uiGlobalID){
 				uiGlobalID = subID;
@@ -1749,7 +1749,7 @@ void CNewLayoutView::UpdateTripleWindow(int row, int column, CWindowItemExt *wi,
 
 	CWindowControl *pwc = wi->GetDataFirst ();
 	while(pwc){
-		if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 			if(CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == (CWindowTextExt::CWindowTextType)wt->textAttributes.type ||
 				CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == (CWindowTextExt::CWindowTextType)(wt->textAttributes.type + 100) ||
 				CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == (CWindowTextExt::CWindowTextType)(wt->textAttributes.type + 200)){
@@ -1867,7 +1867,7 @@ void CNewLayoutView::PopAddTextWindow(int row, int column)
 			}
 			else if(nSearch ==4){
 				BOOL addData = FALSE;
-				if(pWndItem->GetDataThis()->controlAttributes.m_nType == CWindowControl::TextControl){
+				if(pWndItem->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 					CWindowTextExt *pb = 0;
 					CWindowControl *wc = pWndItem->GetDataThis ();
 
@@ -1875,7 +1875,7 @@ void CNewLayoutView::PopAddTextWindow(int row, int column)
 
 						CWindowControl *pwc = pWndItem->GetDataFirst ();
 						while(pwc){
-							if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+							if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 								if(CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == CWindowTextExt::TranslateCWindowControl(wc)->textAttributes.type - 100 ||
 									CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == CWindowTextExt::TranslateCWindowControl(wc)->textAttributes.type - 200){
 										pb = CWindowTextExt::TranslateCWindowControl (pwc);
@@ -1928,7 +1928,7 @@ void CNewLayoutView::PopAddTextWindow(int row, int column)
 									CWindowControl *pwc = pw->GetDataFirst ();
 
 									while(pwc){
-										if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+										if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 											if(CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == pb->textAttributes.type  ||
 												CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == pb->textAttributes.type + 200 ||
 												CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == pb->textAttributes.type + 200){
@@ -2320,13 +2320,13 @@ void CNewLayoutView::OnChangeDefaults()
 		CWindowControl *pwc = pw->GetDataFirst ();
 		while(pwc){
 			switch(pwc->controlAttributes.m_nType){
-			case CWindowControl::TextControl:		//text
+			case CWindowControl::CWindowControlType::TextControl:		//text
 				if(pwc->controlAttributes.useDefault){
 					pwc->controlAttributes.m_colorFace = pw->WindowDef.defaultAttributes.TextWinDefault;
 					pwc->controlAttributes.m_colorText = pw->WindowDef.defaultAttributes.FontColorDefault;
 				}
 				break;
-			case CWindowControl::ButtonControl:		//button
+			case CWindowControl::CWindowControlType::ButtonControl:		//button
 				if(pwc->controlAttributes.useDefault){
 					CWindowButton *wb = CWindowButton::TranslateCWindowControl (pwc);
 					wb->controlAttributes.m_colorFace = pw->WindowDef.defaultAttributes.ButtonDefault;
@@ -2411,7 +2411,7 @@ void CNewLayoutView::OnLButtonDown(UINT nFlags, CPoint point)
 
 				//if pwc is valid and not null
 				if(pwc != NULL){
-					if(pwc->controlAttributes.m_nType == CWindowControl::TextControl && CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == CWindowText::TypeOEP){
+					if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl && CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == CWindowText::TypeOEP){
 						dragControl = ww;
 					}
 					else{
@@ -2454,11 +2454,11 @@ void CNewLayoutView::ClearSelection(CWindowControl *wc)
 	CWindowDocumentExt * pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
-	if(wc->controlAttributes.m_nType == CWindowControl::DocumentContainer){
+	if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::DocumentContainer){
 		ClearDocumentSelection();
 		return;
 	}
-	if(wc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+	if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 		CWindowItemExt* wi = CWindowItemExt::TranslateCWindowControl(wc);
 
 		CWindowControl *bi = 0;
@@ -2467,7 +2467,7 @@ void CNewLayoutView::ClearSelection(CWindowControl *wc)
 		while (pos){
 			bi = wi->ButtonItemList.GetNext (pos);
 
-			if(bi->controlAttributes.m_nType == CWindowControl::WindowContainer){
+			if(bi->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 				CWindowItemExt *pw = CWindowItemExt::TranslateCWindowControl (bi);
 				pw->controlAttributes.Selected = FALSE;
 
@@ -2530,7 +2530,7 @@ void CNewLayoutView::HighlightSelectionOLD(CDC *pDC, int row, int column)
 				if(selectedWin != NULL){
 					CWindowControl *selectedControl = pDoc->SearchForSubWinItem(row, column, selectedWin, uiActiveID);
 
-					if(selectedControl->controlAttributes.m_nType == CWindowControl::WindowContainer){
+					if(selectedControl->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 						CWindowItemExt *sw = CWindowItemExt::TranslateCWindowControl(selectedControl);
 						sw->controlAttributes.Selected = !sw->controlAttributes.Selected;
 
@@ -2588,7 +2588,7 @@ void CNewLayoutView::HighlightSelectionOLD(CDC *pDC, int row, int column)
 		while (pos){
 			pDoc->pclListCurrent = pos;
 			bi = pDoc->listControls.GetNext (pos);
-			if(bi->controlAttributes.m_nType != CWindowControl::WindowContainer){
+			if(bi->controlAttributes.m_nType != CWindowControl::CWindowControlType::WindowContainer){
 				continue;
 			}
 			CWindowItemExt *pw = CWindowItemExt::TranslateCWindowControl (bi);
@@ -2687,7 +2687,7 @@ void CNewLayoutView::OnPopupCut()
 			while (currentPos) {
 				CWindowControl *pwc = pw->ButtonItemList.GetNext (currentPos);
 				// control is a text item
-				if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+				if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 					if(CWindowTextExt::TranslateCWindowControl(pwc)->textAttributes.type == CWindowText::TypeOEP){
 						tempControl = CopyControl(CWindowItemExt::TranslateCWindowControl(pwc->pContainer),row,column);
 						myApp->ClipBoardList.AddTail(tempControl);
@@ -2702,7 +2702,7 @@ void CNewLayoutView::OnPopupCut()
 					}
 				}
 				// control is a button
-				else if(pwc->controlAttributes.m_nType == CWindowControl::ButtonControl){
+				else if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 					CWindowButtonExt *ti = CWindowButtonExt::TranslateCWindowControl (pwc);
 					if(ti->controlAttributes.Selected){
 						tempControl = CopyControl(pwc,row,column);
@@ -2711,7 +2711,7 @@ void CNewLayoutView::OnPopupCut()
 					}
 				}
 				// control is a label
-				else if(pwc->controlAttributes.m_nType == CWindowControl::LabelControl){
+				else if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 					CWindowLabelExt *ti = CWindowLabelExt::TranslateCWindowControl (pwc);
 					if(ti->controlAttributes.Selected){
 						tempControl = CopyControl(pwc,row,column);
@@ -2792,7 +2792,7 @@ void CNewLayoutView::OnPopupCopy()
 			while (currentPos) {
 				CWindowControl *pwc = pw->ButtonItemList.GetNext (currentPos);
 				// control is a text item
-				if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+				if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 					CWindowTextExt *ti = CWindowTextExt::TranslateCWindowControl (pwc);
 					//is the control selected - copy it and add to clip board list
 					if(ti->controlAttributes.Selected){
@@ -2801,7 +2801,7 @@ void CNewLayoutView::OnPopupCopy()
 					}
 				}
 				// control is a button
-				else if(pwc->controlAttributes.m_nType == CWindowControl::ButtonControl){
+				else if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 					CWindowButtonExt *ti = CWindowButtonExt::TranslateCWindowControl (pwc);
 					//is the control selected - copy it and add to clip board list
 					if(ti->controlAttributes.Selected){
@@ -2810,7 +2810,7 @@ void CNewLayoutView::OnPopupCopy()
 					}
 				}
 				// control is a label
-				else if(pwc->controlAttributes.m_nType == CWindowControl::LabelControl){
+				else if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 					CWindowLabelExt *ti = CWindowLabelExt::TranslateCWindowControl (pwc);
 					//is the control selected - copy it and add to clip board list
 					if(ti->controlAttributes.Selected){
@@ -2862,7 +2862,7 @@ void CNewLayoutView::OnPopupPaste()
 	int cnt = 0;
 	while (currentPos) {
 		CWindowControl *wc = myApp->ClipBoardList.GetNext (currentPos);
-		if(wc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 
 			CWindowItemExt* tempWindow = CreateNewWindow(wc,row,column);
 			if(!tempWindow){
@@ -2916,7 +2916,7 @@ void CNewLayoutView::OnPopupPaste()
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		if(wc->controlAttributes.m_nType == CWindowControl::TextControl){
+		if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 			cnt++;
 			CWindowTextExt *pwc = CreateNewText(wc,pw,row,column,cnt);
 			if(pwc != NULL){
@@ -2930,7 +2930,7 @@ void CNewLayoutView::OnPopupPaste()
 				AfxMessageBox(IDS_DUP_TEXT, MB_OK, 0);
 			}
 		}
-		if(wc->controlAttributes.m_nType == CWindowControl::ButtonControl) {
+		if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl) {
 			cnt++;
 			CWindowButtonExt *pwc = CreateNewButton(wc,pw,row,column,cnt);
 			if(pwc != NULL) {
@@ -2939,7 +2939,7 @@ void CNewLayoutView::OnPopupPaste()
 				pw->windowAttributes.Show = TRUE;
 			}
 		}
-		if(wc->controlAttributes.m_nType == CWindowControl::LabelControl){
+		if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 			cnt++;
 			CWindowLabelExt *pwc = CreateNewLabel(wc,pw,row,column,cnt);
 			if(pwc != NULL) {
@@ -2966,7 +2966,7 @@ void CNewLayoutView::OnPopupPaste()
 CWindowControl* CNewLayoutView::CopyControl(CWindowControl *pwc,int row, int column)
 {
 	//we are copying a window and everything in it
-	if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+	if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 		CWindowItemExt *wi = CWindowItemExt::TranslateCWindowControl (pwc);
 
 		//create a new window using the selected windows attributes
@@ -2979,13 +2979,13 @@ CWindowControl* CNewLayoutView::CopyControl(CWindowControl *pwc,int row, int col
 		CWindowControl *wc = wi->GetDataFirst ();
 		while(wc){
 			//control is a sub window
-			if(wc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+			if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 				CWindowControl* tempSubWindow = CopyControl(wc,row,column);
 				tempWindow->AddDataLast(CWindowItemExt::TranslateCWindowControl(tempSubWindow));
 
 			}
 			//control is a text area
-			if(wc->controlAttributes.m_nType == CWindowControl::TextControl){
+			if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 
 				CWindowTextExt *wt = new CWindowTextExt(wc);
 
@@ -2994,7 +2994,7 @@ CWindowControl* CNewLayoutView::CopyControl(CWindowControl *pwc,int row, int col
 
 			}
 			//control is a button
-			if(wc->controlAttributes.m_nType == CWindowControl::ButtonControl){
+			if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 				CWindowButtonExt *pb = new CWindowButtonExt(wc);
 
 				pb->btnAttributes.capAlignment = CWindowButtonExt::TranslateCWindowControl(wc)->btnAttributes.capAlignment;
@@ -3011,7 +3011,7 @@ CWindowControl* CNewLayoutView::CopyControl(CWindowControl *pwc,int row, int col
 				InvalidateRect (NULL, FALSE);
 			}
 			//control is a label
-			if(wc->controlAttributes.m_nType == CWindowControl::LabelControl){
+			if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 				CWindowLabelExt *pb = new CWindowLabelExt(wc);
 
 				pb->labelAttributes.capAlignment = CWindowLabelExt::TranslateCWindowControl(wc)->labelAttributes.capAlignment;
@@ -3029,13 +3029,13 @@ CWindowControl* CNewLayoutView::CopyControl(CWindowControl *pwc,int row, int col
 		return (CWindowControl*)tempWindow;
 	}
 
-	if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+	if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 
 		CWindowTextExt* tempText = new CWindowTextExt(pwc);
 		return (CWindowControl*)tempText;
 	}
 
-	if(pwc->controlAttributes.m_nType == CWindowControl::ButtonControl){
+	if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 
 		CWindowButtonExt* tempButton = new CWindowButtonExt(pwc);
 
@@ -3052,7 +3052,7 @@ CWindowControl* CNewLayoutView::CopyControl(CWindowControl *pwc,int row, int col
 
 		return (CWindowControl*)tempButton;
 	}
-	if(pwc->controlAttributes.m_nType == CWindowControl::LabelControl){
+	if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 		CWindowLabelExt *tempLabel = new CWindowLabelExt(pwc);
 
 		tempLabel->labelAttributes.capAlignment = CWindowLabelExt::TranslateCWindowControl(pwc)->labelAttributes.capAlignment;
@@ -3098,7 +3098,7 @@ CWindowItemExt * CNewLayoutView::CreateNewWindow(CWindowControl *wc, int row, in
 
 	CWindowControl *pwc = wi->GetDataFirst ();
 	while(pwc != NULL){
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			CWindowItemExt *newSub = CreateNewWindow(pwc,pwc->controlAttributes.m_nRow + moveRow,pwc->controlAttributes.m_nColumn + moveColumn);
 			if(newSub != NULL){
 				newSub->windowAttributes.Show = FALSE;
@@ -3106,7 +3106,7 @@ CWindowItemExt * CNewLayoutView::CreateNewWindow(CWindowControl *wc, int row, in
 				tempWindow->AddDataLast(newSub);
 			}
 		}
-		if(pwc->controlAttributes.m_nType == CWindowControl::TextControl){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 
 			CWindowTextExt *newText = CreateNewText(pwc,tempWindow,row,column,1);
 			if(newText != NULL){
@@ -3118,7 +3118,7 @@ CWindowItemExt * CNewLayoutView::CreateNewWindow(CWindowControl *wc, int row, in
 			}
 
 		}
-		if(pwc->controlAttributes.m_nType == CWindowControl::ButtonControl){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 			CWindowButtonExt *newBtn = CreateNewButton(pwc,tempWindow,row,column,1);
 			if(newBtn !=NULL){
 				newBtn->controlAttributes.m_nRow = pwc->controlAttributes.m_nRow ;
@@ -3128,7 +3128,7 @@ CWindowItemExt * CNewLayoutView::CreateNewWindow(CWindowControl *wc, int row, in
 			}
 
 		}
-		if(pwc->controlAttributes.m_nType == CWindowControl::LabelControl){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 			CWindowLabelExt *newLbl = CreateNewLabel(pwc,tempWindow,row,column,1);
 			if(newLbl !=NULL){
 				newLbl->controlAttributes.m_nRow = pwc->controlAttributes.m_nRow ;
@@ -3314,7 +3314,7 @@ UINT CNewLayoutView::GetSubID(CWindowItemExt *wi)
 	CWindowControl *wc = wi->GetDataFirst();
 	while (wc) 
 	{
-		if (wc->controlAttributes.m_nType == CWindowControl::WindowContainer)
+		if (wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer)
 		{
 			id = wc->controlAttributes.m_myId;
 			subID = GetSubID(CWindowItemExt::TranslateCWindowControl(wc));
@@ -3342,7 +3342,7 @@ BOOL CNewLayoutView::RemoveSubWin(CWindowItemExt *wi)
 	POSITION  currentPosLast = currentPos;
 	while (currentPos) {
 		CWindowControl *pwc = pParent->ButtonItemList.GetNext (currentPos);
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer &&
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer &&
 			pwc->controlAttributes.m_myId == wi->controlAttributes.m_myId){
 				delete pwc;
 				pParent->ButtonItemList.RemoveAt (currentPosLast);
@@ -3373,7 +3373,7 @@ void CNewLayoutView::PopSetOEPWin(int row, int column)
 	if(nSearch ==4){
 		CWindowControl *pWndCntrl = pDoc->GetDataThis();
 		CWindowItemExt *pWndItem = CWindowItemExt::TranslateCWindowControl(pWndCntrl);
-		if(pWndItem->GetDataThis()->controlAttributes.m_nType == CWindowControl::TextControl && CWindowTextExt::TranslateCWindowControl(pWndItem->GetDataThis())->textAttributes.type == CWindowText::TypeOEP){
+		if(pWndItem->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl && CWindowTextExt::TranslateCWindowControl(pWndItem->GetDataThis())->textAttributes.type == CWindowText::TypeOEP){
 			CWindowTextExt *pb = 0;
 			CWindowControl *wc = pWndItem->GetDataThis ();
 
@@ -3655,7 +3655,7 @@ void CNewLayoutView::ClearDocumentSelection()
 	while (pos){
 		bi = pDoc->listControls.GetNext (pos);
 
-		if(bi->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(bi->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			CWindowItemExt *pw = CWindowItemExt::TranslateCWindowControl (bi);
 			pw->controlAttributes.Selected = FALSE;
 
@@ -3663,19 +3663,19 @@ void CNewLayoutView::ClearDocumentSelection()
 
 			while (pwc)
 			{
-				if(pwc->controlAttributes.m_nType == CWindowControl::TextControl)
+				if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl)
 				{
 					(CWindowTextExt::TranslateCWindowControl(pwc))->controlAttributes.Selected = FALSE;
 				}
-				if(pwc->controlAttributes.m_nType == CWindowControl::ButtonControl)
+				if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl)
 				{
 					(CWindowButtonExt::TranslateCWindowControl(pwc))->controlAttributes.Selected = FALSE;
 				}
 				// if a label is selected, the previous selections need to be unselected - CSMALL 10/12/05
-				if(pwc->controlAttributes.m_nType == CWindowControl::LabelControl){
+				if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 					(CWindowLabelExt::TranslateCWindowControl(pwc))->controlAttributes.Selected = FALSE;
 				}
-				if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+				if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 					(CWindowItemExt::TranslateCWindowControl(pwc))->controlAttributes.Selected = FALSE;
 					ClearSelection((CWindowControl*)pwc);
 				}
@@ -3683,10 +3683,10 @@ void CNewLayoutView::ClearDocumentSelection()
 			}
 		}
 		else{
-			if(bi->controlAttributes.m_nType == CWindowControl::TextControl){
+			if(bi->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 				(CWindowTextExt::TranslateCWindowControl(bi))->controlAttributes.Selected = FALSE;
 			}
-			if(bi->controlAttributes.m_nType == CWindowControl::ButtonControl){
+			if(bi->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 				(CWindowButtonExt::TranslateCWindowControl(bi))->controlAttributes.Selected = FALSE;
 			}
 		}
@@ -3718,7 +3718,7 @@ void CNewLayoutView::OnLButtonUp(UINT nFlags, CPoint point)
 	CScrollView ::OnLButtonUp(nFlags, point);
 	if(moveDragControl && dragControl != NULL){
 
-		if(dragControl->controlAttributes.m_nType == CWindowControl::ButtonControl || dragControl->controlAttributes.m_nType == 1 || dragControl->controlAttributes.m_nType == 4){
+		if(dragControl->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl || dragControl->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl || dragControl->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 			CWindowItemExt *dragParent = CWindowItemExt::TranslateCWindowControl(dragControl->pContainer);
 
 			//create a CRect to contain the screen area of this button
@@ -3754,7 +3754,7 @@ void CNewLayoutView::OnLButtonUp(UINT nFlags, CPoint point)
 					AfxMessageBox(IDS_WINDOW_ERR, MB_OK,0);
 			}
 		}
-		if (dragControl->controlAttributes.m_nType == CWindowControl::WindowContainer)
+		if (dragControl->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer)
 		{
 			if(dragControl->pContainer)
 			{
@@ -3822,7 +3822,7 @@ void CNewLayoutView::OnDragWindow(int diffColumn, int diffRow, CWindowItemExt *w
 		//get the next control
 		CWindowControl *pwc = wi->ButtonItemList.GetNext (currentPos);
 
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			pwc->controlAttributes.m_nColumn += diffColumn;
 			pwc->controlAttributes.m_nRow += diffRow;
 			OnDragWindow(diffColumn,diffRow,CWindowItemExt::TranslateCWindowControl(pwc));
@@ -3977,7 +3977,7 @@ void CNewLayoutView::OnAddLabel()
 			//is there an existing control here?
 			if (nSearch == 4) {
 				//is this control a label
-				if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::LabelControl){
+				if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl){
 					//get the label that was clicked in and cast it to CWindowLabelExt
 					CWindowControl *wc = pw->GetDataThis ();
 					CWindowLabelExt *pl = CWindowLabelExt::TranslateCWindowControl (wc);
@@ -4090,11 +4090,11 @@ void CNewLayoutView::OnAddLabel()
 					}
 				}
 				//user clciked in a text area - let them know they cannot create a label here
-				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::TextControl){
+				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 					AfxMessageBox( IDS_TEXTEXIST,  MB_OK,  0 );
 				}
 				//user clciked in a btn area - let them know they cannot create a label here
-				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::ButtonControl){
+				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 					AfxMessageBox( IDS_BTNEXISTS,  MB_OK,  0 );
 				}
 			}
@@ -4263,7 +4263,7 @@ void CNewLayoutView::OnAddEditBox()
 			//is there an existing control here?
 			if (nSearch == 4) {
 				//is this control a label
-				if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::EditBoxControl){
+				if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::EditBoxControl){
 					//get the label that was clicked in and cast it to CWindowLabelExt
 					CWindowControl *wc = pw->GetDataThis ();
 					CWindowEditBoxExt *pl = CWindowEditBoxExt::TranslateCWindowControl (wc);
@@ -4372,11 +4372,11 @@ void CNewLayoutView::OnAddEditBox()
 					}
 				}
 				//user clciked in a text area - let them know they cannot create a label here
-				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::TextControl){
+				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::TextControl){
 					AfxMessageBox( IDS_TEXTEXIST,  MB_OK,  0 );
 				}
 				//user clciked in a btn area - let them know they cannot create a label here
-				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::ButtonControl){
+				else if(pw->GetDataThis()->controlAttributes.m_nType == CWindowControl::CWindowControlType::ButtonControl){
 					AfxMessageBox( IDS_BTNEXISTS,  MB_OK,  0 );
 				}
 			}
@@ -4517,31 +4517,31 @@ void CNewLayoutView::_indicateSelectedItem(CWindowControl *pWinControl)
 		//tmpTxt.Format(_T("Name:%s, Caption:%s, Type:%d\n"), pWinControl->myName, pWinControl->myCaption, pWinControl->controlAttributes.m_nType);
 		switch (pWinControl->controlAttributes.m_nType)
 		{
-		case CWindowControl::TextControl:
+		case CWindowControl::CWindowControlType::TextControl:
 			{
 			// TODO
 			CWindowTextExt *pTextControl = CWindowTextExt::TranslateCWindowControl(pWinControl);
 			tmpTxt.LoadString((CWindowTextExt::TranslateCWindowControl(pWinControl)->textAttributes.type) + IDS_TXT_SING_RCT_MAIN);
 			}
 			break;
-		case CWindowControl::ButtonControl:
+		case CWindowControl::CWindowControlType::ButtonControl:
 			tmpTxt.Format(_T("BUTTON - %s"), pWinControl->myCaption);
 			((CLeftView *)m_TreeView)->UpdateButtonControlTree ((CWindowButtonExt *)pWinControl);
 			break;
-		case CWindowControl::WindowContainer:
+		case CWindowControl::CWindowControlType::WindowContainer:
 			tmpTxt.Format(_T("WINDOW - %s"), pWinControl->myName);
 			break;
-		case CWindowControl::LabelControl:
+		case CWindowControl::CWindowControlType::LabelControl:
 			tmpTxt.Format(_T("LABEL  - %s"), pWinControl->myCaption);
 			break;
-		case CWindowControl::ListBoxControl:
+		case CWindowControl::CWindowControlType::ListBoxControl:
 			tmpTxt.Format(_T("LISTBOX  - %s"), pWinControl->myCaption);
 			break;
-		case CWindowControl::DocumentContainer:
+		case CWindowControl::CWindowControlType::DocumentContainer:
 			break;
-		case CWindowControl::WindowGroup:
+		case CWindowControl::CWindowControlType::WindowGroup:
 			break;
-		case CWindowControl::WindowContainerAdHoc:
+		case CWindowControl::CWindowControlType::WindowContainerAdHoc:
 			break;
 		default:
 			ASSERT(0);

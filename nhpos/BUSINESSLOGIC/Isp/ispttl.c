@@ -139,10 +139,10 @@ static SHORT   IspMakeUpdateFormat(UCHAR *pReqMsg, ITEMAFFECTION *pAffect)
 
     if (pPickData->usFunc == ISP_FUNC_LOAN) {
         pAffect->uchMinorClass = CLASS_LOANAFFECT;
-        pAffect->lAmount       = pPickData->ulTotal * lSign;
+        pAffect->lAmount       = (DCURRENCY)pPickData->ulTotal * lSign;
     } else {
         pAffect->uchMinorClass = CLASS_PICKAFFECT;
-        pAffect->lAmount       = pPickData->ulTotal * -1L * lSign;
+        pAffect->lAmount       = (DCURRENCY)pPickData->ulTotal * -1L * lSign;
     }
 
     switch (pAffect->uchTotalID) {
@@ -914,16 +914,15 @@ SHORT   IspRecvTtlResetCas(CLIREQRESETTL *pReqMsgH)
 */
 SHORT   IspRecvTtlRead(CLIREQRESETTL *pReqMsgH)
 {
-    CLIREQDATA      *pReqBuff;
+    CLIREQDATA      * const pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQRESETTL));
     CLITTLCASWAI    *pTtl;
     SHORT           sError;
 	SHORT           sRetLen = 0;
 
     IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESTOTAL)];
-    pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQRESETTL));
+    IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESTOTAL);
 
     IspResp.pSavBuff->usDataLen = 0;
-
     memcpy(IspResp.pSavBuff->auchData, pReqBuff->auchData, pReqBuff->usDataLen);
     
     pTtl = (CLITTLCASWAI *)IspResp.pSavBuff->auchData;
@@ -964,6 +963,7 @@ SHORT   IspRecvTtlRead(CLIREQRESETTL *pReqMsgH)
     
         if ( 0 < sError ) {
             IspResp.pSavBuff->usDataLen = (USHORT)sError;  /* Save length */
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             sError = ISP_SUCCESS;
         }
     } 
@@ -995,15 +995,14 @@ SHORT   IspRecvTtlRead(CLIREQRESETTL *pReqMsgH)
 #endif
 SHORT   IspRecvTtlReadPlu(CLIREQRESETTL *pReqMsgH)
 {
-    CLIREQDATA  *pReqBuff;
+    CLIREQDATA  * const pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQRESETTL));
     X_TTLPLU    *pTtl;
     SHORT       sError, i;
 
     IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESTOTAL)];
-    pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQRESETTL));
+    IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESTOTAL);
 
     IspResp.pSavBuff->usDataLen = 0;
-
     memcpy(IspResp.pSavBuff->auchData, pReqBuff->auchData, pReqBuff->usDataLen);
     
     pTtl = (X_TTLPLU *)IspResp.pSavBuff->auchData;
@@ -1029,6 +1028,7 @@ SHORT   IspRecvTtlReadPlu(CLIREQRESETTL *pReqMsgH)
         }
         if (((sError = SerTtlTotalRead(pTtl++)) == TTL_SUCCESS) || (sError == TTL_NOTINFILE)) {
             IspResp.pSavBuff->usDataLen += sizeof(TTLPLU);
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             sError = ISP_SUCCESS;
         } 
 #endif
@@ -1058,15 +1058,14 @@ SHORT   IspRecvTtlReadPlu(CLIREQRESETTL *pReqMsgH)
 */
 SHORT   IspRecvTtlReadPluEx(CLIREQRESETTL *pReqMsgH)
 {
-    CLIREQDATA  *pReqBuff;
+    CLIREQDATA  * const pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQRESETTL));
     X_TTLPLUEX  *pTtlEx;
     SHORT       sError, i, sTblId;
 
     IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESTOTAL)];
-    pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQRESETTL));
+    IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - sizeof(CLIRESTOTAL);
 
     IspResp.pSavBuff->usDataLen = 0;
-
     memcpy(IspResp.pSavBuff->auchData, pReqBuff->auchData, pReqBuff->usDataLen);
     
     pTtlEx = (X_TTLPLUEX *)IspResp.pSavBuff->auchData;
@@ -1174,6 +1173,7 @@ SHORT   IspRecvTtlReadPluEx(CLIREQRESETTL *pReqMsgH)
     
     if (sError == ISP_SUCCESS) {
         IspResp.pSavBuff->usDataLen = sizeof(TTLPLUEX);
+        NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
     }
     return(sError);
 }

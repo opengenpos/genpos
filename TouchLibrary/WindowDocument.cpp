@@ -56,7 +56,7 @@ CWindowDocument::CWindowDocument(int nGridColumns, int nGridRows) : CWindowContr
 {	
 	//initialize attributes
 	documentAttributes.signatureStart = 0xABCDEF87;
-	controlAttributes.m_nType = DocumentContainer;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::DocumentContainer;
 	CWindowGroup *wg = new CWindowGroup();
 	documentAttributes.myStartupClientRect.SetRect(0,0,600,450);
 	documentAttributes.myClientRect.SetRect(0,0,600,450);
@@ -223,7 +223,7 @@ BOOL CWindowDocument::ToggleWindow (CWindowControl *pParent, UINT nId)
 		}
 		//if id matches and the control is a window item
 		if (pc->controlAttributes.m_myId == nId) {
-			if (pc->controlAttributes.m_nType == CWindowControl::WindowContainer) {
+			if (pc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer) {
 				CWindowItem *pw = CWindowItem::TranslateCWindowControl (pc);
 				if (pw && pw->windowAttributes.GroupNum != 0) {
 					// this window is part of a Window Group so we may need to treat it differently
@@ -303,7 +303,7 @@ BOOL CWindowDocument::GetWindowName(UINT nId, TCHAR *tcsName)
 			}
 		}
 		//if id matches and the control is a window item
-		if (pc->controlAttributes.m_myId == nId && pc->controlAttributes.m_nType == CWindowControl::WindowContainer) {
+		if (pc->controlAttributes.m_myId == nId && pc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer) {
 			// indicate that we have found a window with this window id.
 			// if a buffer is provided then copy the name of the window into it.
 			if (tcsName) {
@@ -346,7 +346,7 @@ BOOL CWindowDocument::PopupWindow (CWindowControl *pParent, UINT nId)
 			}
 		}
 		//if id matches and the control is a window item
-		if (pc->controlAttributes.m_myId == nId && pc->controlAttributes.m_nType == CWindowControl::WindowContainer) {
+		if (pc->controlAttributes.m_myId == nId && pc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer) {
 			return pc->PopupWindow (this);
 		}
 		pc = GetDataNext ();	//get next control in the documents list
@@ -810,14 +810,14 @@ CWindowControl * CWindowDocument::SearchNextWindowItemDown(CWindowControl *pc, U
 	CWindowControl* pcTemp;
 
 	//is the control a window ite,
-	if(pc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+	if(pc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 		//get the first control in the window items control list
 		pwc = ((CWindowItem*)pc)->GetDataFirst();
 		while(pwc){
 			//if this controls id does not match the specified id
 			if(pwc->controlAttributes.m_myId != nId){
 				//is it a window item
-				if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+				if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 					//recursively call this function to search for sub window items of this subwindow item
 					pcTemp = SearchNextWindowItemDown(pwc, nId);
 					//was a sub window item found
@@ -827,7 +827,7 @@ CWindowControl * CWindowDocument::SearchNextWindowItemDown(CWindowControl *pc, U
 				}
 			}
 			//this control id matches the specified id - check to see if it is a window item
-			else if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+			else if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 				return pwc;
 			}
 			//get the next control in the list

@@ -89,7 +89,7 @@
 */
 SHORT    SerRMHCheckData(VOID)
 {
-    CLIREQCOM   *pResp = (CLIREQCOM *)SerRcvBuf.auchData;
+    CLIREQCOM   * const pResp = (CLIREQCOM *)SerRcvBuf.auchData;
     USHORT      usMsgHLen;
 
     if (0 == (usMsgHLen = SerChekFunCode(pResp->usFunCode))) {
@@ -98,22 +98,22 @@ SHORT    SerRMHCheckData(VOID)
         return SERV_ILLEGAL;
     }
     if (pResp->usSeqNo & CLI_SEQ_SENDDATA) {
-		CLIREQDATA  *pRespData = (CLIREQDATA *)&SerRcvBuf.auchData[usMsgHLen];
+		CLIREQDATA  * const pRespData = (CLIREQDATA *)&SerRcvBuf.auchData[usMsgHLen];
 
-        if (SerResp.usSize != (sizeof(XGHEADER) + usMsgHLen + 2 + pRespData->usDataLen)) {
+        if (SerResp.usRcvdLen != (sizeof(XGHEADER) + usMsgHLen + sizeof(pRespData->usDataLen) + pRespData->usDataLen)) {
 			CHAR  xBuff[128];
 
-			sprintf (xBuff, "==NOTE: SerRMHCheckData usFunCode 0x%x, usSeqNo 0x%x, addr 0x%x usDataLen %d", pResp->usFunCode, pResp->usSeqNo, *((ULONG *)SerRcvBuf.auchFaddr), pRespData->usDataLen);
+			sprintf (xBuff, "==NOTE: SerRMHCheckData usFunCode 0x%x usSeqNo 0x%x addr 0x%x usDataLen %d", pResp->usFunCode, pResp->usSeqNo, *((ULONG *)SerRcvBuf.auchFaddr), pRespData->usDataLen);
 			NHPOS_ASSERT_TEXT(0, xBuff);
             PifLog(MODULE_SER_LOG, LOG_ERROR_SER_CODE_01);
             PifLog(MODULE_DATA_VALUE(MODULE_SER_LOG), LOG_ERROR_SER_LOSS_DATA);
             PifLog(MODULE_DATA_VALUE(MODULE_SER_LOG), pResp->usFunCode);
             return SERV_ILLEGAL;
         }
-    } else if (SerResp.usSize != sizeof(XGHEADER) + usMsgHLen) {
+    } else if (SerResp.usRcvdLen != sizeof(XGHEADER) + usMsgHLen) {
 		CHAR  xBuff[128];
 
-		sprintf (xBuff, "==NOTE: SerRMHCheckData usFunCode 0x%x, usSeqNo 0x%x, addr 0x%x", pResp->usFunCode, pResp->usSeqNo, *((ULONG *)SerRcvBuf.auchFaddr));
+		sprintf (xBuff, "==NOTE: SerRMHCheckData usFunCode 0x%x usSeqNo 0x%x addr 0x%x", pResp->usFunCode, pResp->usSeqNo, *((ULONG *)SerRcvBuf.auchFaddr));
 		NHPOS_ASSERT_TEXT(0, xBuff);
         PifLog(MODULE_SER_LOG, LOG_ERROR_SER_CODE_02);
         PifLog(MODULE_DATA_VALUE(MODULE_SER_LOG), LOG_ERROR_SER_LOSS_DATA);
@@ -134,7 +134,7 @@ SHORT    SerRMHCheckData(VOID)
 */
 VOID    SerRMHInquiry(VOID)
 {
-    CLIREQCOM   *pResp = (CLIREQCOM *)SerRcvBuf.auchData;
+    CLIREQCOM   * const pResp = (CLIREQCOM *)SerRcvBuf.auchData;
 
     if (CLI_FCINQ != (pResp->usFunCode & CLI_FCMSG_TYPE)) {
         /* SerSendError(STUB_BUSY); */  /* no response to satellite */
@@ -158,13 +158,12 @@ VOID    SerRMHInquiry(VOID)
 */
 VOID    SerRMHNormal(VOID)
 {
-    CLIREQCOM   *pResp = (CLIREQCOM *)SerRcvBuf.auchData;
-    SHORT       sError;
+    CLIREQCOM   * const pResp = (CLIREQCOM *)SerRcvBuf.auchData;
  
     if (CLI_FCBAK == (pResp->usFunCode & CLI_BAKMSG_TYPE)) {
         ;                                   /* no response */
     } else {
-        sError = SerRecvMultiple(pResp);
+        SHORT       sError = SerRecvMultiple(pResp);
         if (STUB_SUCCESS != sError) {
             SerSendError(sError);
         } else {
@@ -185,16 +184,15 @@ VOID    SerRMHNormal(VOID)
 */
 VOID    SerRMHMulSnd(VOID)
 {
-    CLIREQCOM   *pResp = (CLIREQCOM *)SerRcvBuf.auchData;
+    CLIREQCOM   * const pResp = (CLIREQCOM *)SerRcvBuf.auchData;
 
     if (CLI_FCINQ == (pResp->usFunCode & CLI_FCMSG_TYPE)) {
         SerSendError(STUB_BUSY);
     } else if (CLI_FCBAK == (pResp->usFunCode & CLI_BAKMSG_TYPE)) {
         ;                                   /* no response */
     } else {
-		SHORT       sSerSendStatus;
+		SHORT       sSerSendStatus = SerSendNextFrame(pResp);
 
-        sSerSendStatus = SerSendNextFrame(pResp);
         if (STUB_MULTI_SEND == sSerSendStatus) {
             ;
         } else if (STUB_SUCCESS == sSerSendStatus) {
@@ -217,15 +215,14 @@ VOID    SerRMHMulSnd(VOID)
 */
 VOID    SerRMHMulRcv(VOID)
 {
-    CLIREQCOM   *pResp = (CLIREQCOM *)SerRcvBuf.auchData;
-    SHORT       sError;
+    CLIREQCOM   * const pResp = (CLIREQCOM *)SerRcvBuf.auchData;
 
     if (CLI_FCINQ == (pResp->usFunCode & CLI_FCMSG_TYPE)) {
         SerSendError(STUB_BUSY);
     } else if (CLI_FCBAK == (pResp->usFunCode & CLI_BAKMSG_TYPE)) {
         ;                                   /* no response */
     } else {
-        sError = SerRecvNextFrame(pResp);
+        SHORT       sError = SerRecvNextFrame(pResp);
         if (STUB_SUCCESS == sError) {
             SerRecvNormal(pResp);
 //        } else if (STUB_IGNORE == sError) {
@@ -248,7 +245,7 @@ VOID    SerRMHMulRcv(VOID)
 */
 VOID    SerRMHBackUp(VOID)
 {
-    CLIREQCOM   *pResp = (CLIREQCOM *)SerRcvBuf.auchData;
+    CLIREQCOM   * const pResp = (CLIREQCOM *)SerRcvBuf.auchData;
 
     if (SER_IAM_SATELLITE) {
         return;
@@ -257,9 +254,8 @@ VOID    SerRMHBackUp(VOID)
     if (CLI_FCINQ == (pResp->usFunCode & CLI_FCMSG_TYPE)) {
         SerRecvInq();
     } else if (CLI_FCBAK == (pResp->usFunCode & CLI_BAKMSG_TYPE)) {
-		SHORT  sError;
+		SHORT  sError = SerSendBakNextFrame(pResp);
 
-		sError = SerSendBakNextFrame(pResp);
         if (STUB_MULTI_SEND == sError) {
             ;
         } else if (STUB_SUCCESS == sError) {
@@ -306,12 +302,9 @@ VOID    SerRecvNormal(CLIREQCOM *pReqMsgH)
 	// already existed in the ISP Thread to allow a remote application such as CWS
 	// to interrogate Master Terminal is On-line through the PCIF interface.
 	if ( CLI_FCOSYSTEMSTATUS == usFun ) {
-		CLIREQSYSTEMSTATUS      *pReqMsgH;
-		CLIRESSYSTEMSTATUS      ResMsgH;
+		CLIREQSYSTEMSTATUS      * const pReqMsgH = (CLIREQSYSTEMSTATUS *)SerRcvBuf.auchData;
+        CLIRESSYSTEMSTATUS      ResMsgH = { 0 };
 	   
-		pReqMsgH = (CLIREQSYSTEMSTATUS *)SerRcvBuf.auchData ;
-		memset(&ResMsgH, 0, sizeof(CLIRESSYSTEMSTATUS));
-
 		ResMsgH.usFunCode     = pReqMsgH->usFunCode;
 		ResMsgH.sResCode      = STUB_SUCCESS;
 		ResMsgH.usSeqNo       = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -339,11 +332,11 @@ VOID    SerRecvNormal(CLIREQCOM *pReqMsgH)
 
         default:                     /* not used */
 			if (sSerChekStatus == SERV_NOT_MASTER) {
-				sprintf (xBuff, "SerRecvNormal(): SERV_NOT_MASTER usUA %d, usFunCode 0x%x, usReqSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
+				sprintf (xBuff, "SerRecvNormal(): SERV_NOT_MASTER usUA %d usFunCode 0x%x usReqSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
 				NHPOS_ASSERT_TEXT(!SERV_NOT_MASTER, xBuff);
 				SerSendError(STUB_NOT_MASTER);
 			} else {
-				sprintf (xBuff, "SerRecvNormal(): STUB_BUSY usUA %d, usFunCode 0x%x, usReqSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
+				sprintf (xBuff, "SerRecvNormal(): STUB_BUSY usUA %d usFunCode 0x%x usReqSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
 				NHPOS_ASSERT_TEXT(!STUB_BUSY,  xBuff);
 				SerSendError(STUB_BUSY);
 			}
@@ -432,7 +425,7 @@ SHORT   SerRecvMultiple(CLIREQCOM *pReqMsgH)
 	// sequence of packets to be processed.
     if (1 != (pReqMsgH->usSeqNo & CLI_SEQ_CONT)) {
 		char xBuff[256];
-		sprintf (xBuff, "SerRecvMultiple(): STUB_FRAME_SEQERR usUA %d, usFunCode 0x%x, usReqSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
+		sprintf (xBuff, "SerRecvMultiple(): STUB_FRAME_SEQERR usUA %d usFunCode 0x%x usReqSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((1 == (pReqMsgH->usSeqNo & CLI_SEQ_CONT)), xBuff);
         return STUB_FRAME_SEQERR;
     }
@@ -440,6 +433,7 @@ SHORT   SerRecvMultiple(CLIREQCOM *pReqMsgH)
     usReqMsgHLen = SerChekFunCode(pReqMsgH->usFunCode);
     pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + usReqMsgHLen);
     SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[usReqMsgHLen];
+    SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - usReqMsgHLen;
     memcpy(auchSerTmpBuf, pReqMsgH, usReqMsgHLen);
 
     usFun = pReqMsgH->usFunCode & CLI_RSTCONTCODE;
@@ -450,10 +444,19 @@ SHORT   SerRecvMultiple(CLIREQCOM *pReqMsgH)
 	// contain large amounts of data.
     if ((usFun == CLI_FCGCFSTORE) || (usFun == CLI_FCTTLUPDATE)) {
 		NHPOS_ASSERT((SERTMPFILE_DATASTART + usReqMsgHLen) < 0xffff);
-		NHPOS_ASSERT((pReqBuff->usDataLen + SerResp.pSavBuff->usDataLen) < 0xffff);
+        if ((pReqBuff->usDataLen + SerResp.pSavBuff->usDataLen) >= 0xffff) {
+            char xBuffer[128];
+            sprintf_s(xBuffer, 128, "SerRecvMultiple: usFun 0x%x usSeqNo 0x%x pReqBuff %d + SerResp %d >= 0xffff", usFun, pReqMsgH->usSeqNo, pReqBuff->usDataLen, SerResp.pSavBuff->usDataLen);
+		    NHPOS_ASSERT_TEXT((pReqBuff->usDataLen + SerResp.pSavBuff->usDataLen) < 0xffff, xBuffer);
+        }
         SstWriteFileFH(SERTMPFILE_DATASTART, pReqMsgH, usReqMsgHLen, hsSerTmpFile);
         SstWriteFileFH((SERTMPFILE_DATASTART + usReqMsgHLen), (VOID *)pReqBuff->auchData, pReqBuff->usDataLen, hsSerTmpFile);
 	} else if (usFun == CLI_FCCOPONNENGINEMSGFH) {
+        if ((pReqBuff->usDataLen + SerResp.pSavBuff->usDataLen) >= 0xffff) {
+            char xBuffer[128];
+            sprintf_s(xBuffer, 128, "SerRecvMultiple: usFun 0x%x usSeqNo 0x%x pReqBuff %d + SerResp %d >= 0xffff", usFun, pReqMsgH->usSeqNo, pReqBuff->usDataLen, SerResp.pSavBuff->usDataLen);
+            NHPOS_ASSERT_TEXT((pReqBuff->usDataLen + SerResp.pSavBuff->usDataLen) < 0xffff, xBuffer);
+        }
         SstWriteFileFH(SERTMPFILE_DATASTART, (VOID *)pReqBuff->auchData, pReqBuff->usDataLen, hsSerTmpFile);
     } else {
         memcpy(SerResp.pSavBuff->auchData, pReqBuff->auchData, pReqBuff->usDataLen);
@@ -505,7 +508,7 @@ SHORT   SerRecvMultiple(CLIREQCOM *pReqMsgH)
 */
 SHORT   SerRecvNextFrame(CLIREQCOM *pReqMsgH)
 {
-    CLIREQCOM   *pSavMsgH = (CLIREQCOM *)auchSerTmpBuf;
+    CLIREQCOM   * const pSavMsgH = (CLIREQCOM *)auchSerTmpBuf;
     USHORT      usFun;
 
 	// If this message is not part of a stream of multiple packets
@@ -542,7 +545,7 @@ SHORT   SerRecvNextFrame(CLIREQCOM *pReqMsgH)
 
     if (SerResp.uchPrevUA && SerRcvBuf.auchFaddr[CLI_POS_UA] != SerResp.uchPrevUA) {
 		char xBuff[256];
-		sprintf (xBuff, "SerRecvNextFrame(): STUB_BUSY_MULTI  usUA %d, usPrevUA %d, usFunCode 0x%x, usSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], SerResp.uchPrevUA, pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
+		sprintf (xBuff, "SerRecvNextFrame(): STUB_BUSY_MULTI  usUA %d usPrevUA %d usFunCode 0x%x usSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], SerResp.uchPrevUA, pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((SerRcvBuf.auchFaddr[CLI_POS_UA] == SerResp.uchPrevUA), xBuff);
         return STUB_BUSY_MULTI;
     }
@@ -551,7 +554,7 @@ SHORT   SerRecvNextFrame(CLIREQCOM *pReqMsgH)
     usFun = pReqMsgH->usFunCode & CLI_RSTCONTCODE;
     if (usFun != (pSavMsgH->usFunCode & CLI_RSTCONTCODE)) {
 		char xBuff[256];
-		sprintf (xBuff, "SerRecvNextFrame(): STUB_FAITAL  usUA %d, usFunCode 0x%x, usPrevFunCode 0x%x, usSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pSavMsgH->usFunCode, pReqMsgH->usSeqNo);
+		sprintf (xBuff, "SerRecvNextFrame(): STUB_FAITAL  usUA %d usFunCode 0x%x usPrevFunCode 0x%x usSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pSavMsgH->usFunCode, pReqMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((usFun == (pSavMsgH->usFunCode & CLI_RSTCONTCODE)), xBuff);
         SerChangeStatus(SER_STNORMAL);
         return STUB_FAITAL;
@@ -559,7 +562,7 @@ SHORT   SerRecvNextFrame(CLIREQCOM *pReqMsgH)
     if ((pReqMsgH->usSeqNo & CLI_SEQ_CONT) != ((pSavMsgH->usSeqNo & CLI_SEQ_CONT) + 1)) {
 	    if ((pReqMsgH->usSeqNo & CLI_SEQ_CONT) == ((pSavMsgH->usSeqNo & CLI_SEQ_CONT) )) {
 			char xBuff[256];
-			sprintf (xBuff, "SerRecvNextFrame(): STUB_IGNORE usUA %d, usFunCode 0x%x, usReqSeqNo 0x%x, usSavSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo, pSavMsgH->usSeqNo);
+			sprintf (xBuff, "SerRecvNextFrame(): STUB_IGNORE usUA %d usFunCode 0x%x usReqSeqNo 0x%x usSavSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo, pSavMsgH->usSeqNo);
 			NHPOS_ASSERT_TEXT(((pReqMsgH->usSeqNo & CLI_SEQ_CONT) != ((pSavMsgH->usSeqNo & CLI_SEQ_CONT) )), xBuff);
 			// fall through and treat as if we are doing this rather than have already done it.
 			// this is in case we get a duplicate message due to retransmit.
@@ -570,13 +573,13 @@ SHORT   SerRecvNextFrame(CLIREQCOM *pReqMsgH)
 			}
 		} else {
 			char xBuff[256];
-			sprintf(xBuff, "SerRecvNextFrame(): STUB_FRAME_SEQERR usUA %d, usFunCode 0x%x, usReqSeqNo 0x%x, usSavSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo, pSavMsgH->usSeqNo);
+			sprintf(xBuff, "SerRecvNextFrame(): STUB_FRAME_SEQERR usUA %d usFunCode 0x%x usReqSeqNo 0x%x usSavSeqNo 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo, pSavMsgH->usSeqNo);
 			NHPOS_ASSERT_TEXT( ((pReqMsgH->usSeqNo & CLI_SEQ_CONT) == ((pSavMsgH->usSeqNo & CLI_SEQ_CONT) + 1)), xBuff);
 			SerChangeStatus(SER_STNORMAL);
 			return STUB_FRAME_SEQERR;
 		}
 	} else {
-		CLIREQDATA  *pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + SerResp.usPrevMsgHLen);
+		CLIREQDATA  * const pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + SerResp.usPrevMsgHLen);
 	    
 		if ((usFun == CLI_FCGCFSTORE) || (usFun == CLI_FCTTLUPDATE)) {
 			NHPOS_ASSERT((SERTMPFILE_DATASTART + SerResp.usPrevMsgHLen + SerResp.pSavBuff->usDataLen) < 0xffff);
@@ -618,10 +621,9 @@ SHORT   SerRecvNextFrame(CLIREQCOM *pReqMsgH)
 */
 SHORT    SerSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
 {
-    USHORT      usDataMax, usDataLen;
+    TrnVliOffset    usDataMax, usDataSiz;
     USHORT      usFunCode;
 	SHORT       sSerSendStatus;
-	char        xBuff[256];
 
     if (SER_STNORMAL == usSerStatus) {
         SerResp.usPrevDataOff = 0;
@@ -629,12 +631,12 @@ SHORT    SerSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
         SerResp.usPrevMsgHLen = usResMsgHLen;
         SerResp.uchPrevUA     = SerRcvBuf.auchFaddr[CLI_POS_UA];
     }
-    usDataLen = SerResp.pSavBuff->usDataLen - SerResp.usPrevDataOff;
+    usDataSiz = SerResp.pSavBuff->usDataLen - SerResp.usPrevDataOff;
     usDataMax = PIF_LEN_UDATA_MAX(usResMsgHLen);
 	/* Leave room for IP address, headers, and additional data (see functions
 	 * SerSendResponse and PifNetSendG/D) */
-    if (usDataLen > usDataMax) {                /* still exist send data */
-        usDataLen = usDataMax;
+    if (usDataSiz > usDataMax) {                /* still exist send data */
+        usDataSiz = usDataMax;
         SerChangeStatus(SER_STMULSND);
     } else {                                    /* all data send */
         if (pResMsgH->usFunCode & CLI_FCWCONFIRM) {
@@ -653,20 +655,22 @@ SHORT    SerSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
     if ((usFunCode == CLI_FCGCFREADLOCK) ||
         (usFunCode == CLI_FCGCFINDREAD) ||
         (usFunCode == CLI_FCGCFCHECKREAD)) {
-        sSerSendStatus = SerSendResponseFH(pResMsgH, usResMsgHLen, SerResp.usPrevDataOff, usDataLen);
+        sSerSendStatus = SerSendResponseFH(pResMsgH, usResMsgHLen, SerResp.usPrevDataOff, usDataSiz);
 		if (sSerSendStatus < 0) {
-			sprintf(xBuff, "SerSendResponseFH(): sSerSendStatus = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sSerSendStatus, *((ULONG *)SerRcvBuf.auchFaddr), pResMsgH->usFunCode, pResMsgH->usSeqNo);
+            char        xBuff[128];
+            sprintf(xBuff, "SerSendResponseFH(): sSerSendStatus = %d  0x%x usFunCode 0x%x  usSeqNo 0x%x", sSerSendStatus, *((ULONG *)SerRcvBuf.auchFaddr), pResMsgH->usFunCode, pResMsgH->usSeqNo);
 			NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 		}
     } else {
-        sSerSendStatus = SerSendResponse(pResMsgH, usResMsgHLen, SerResp.pSavBuff->auchData + SerResp.usPrevDataOff, usDataLen);
+        sSerSendStatus = SerSendResponse(pResMsgH, usResMsgHLen, SerResp.pSavBuff->auchData + SerResp.usPrevDataOff, usDataSiz);
 		if (sSerSendStatus < 0) {
-			sprintf(xBuff, "SerSendResponse(): sSerSendStatus = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sSerSendStatus, *((ULONG *)SerRcvBuf.auchFaddr), pResMsgH->usFunCode, pResMsgH->usSeqNo);
+            char        xBuff[128];
+            sprintf(xBuff, "SerSendResponse(): sSerSendStatus = %d  0x%x  usFunCode 0x%x  usSeqNo 0x%x", sSerSendStatus, *((ULONG *)SerRcvBuf.auchFaddr), pResMsgH->usFunCode, pResMsgH->usSeqNo);
 			NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 		}
     }
     /* SerResp.usPrevDataOffSav = SerResp.usPrevDataOff; */
-    SerResp.usPrevDataOff += usDataLen;
+    if (sSerSendStatus >= 0) SerResp.usPrevDataOff += usDataSiz;
 
 	return sSerSendStatus;
 }
@@ -688,7 +692,7 @@ SHORT    SerSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
 */
 SHORT   SerSendNextFrame(CLIREQCOM *pReqMsgH)
 {
-    CLIRESCOM   *pSavMsgH = (CLIRESCOM *)auchSerTmpBuf;  // SerSendNextFrame()
+    CLIRESCOM   * const pSavMsgH = (CLIRESCOM *)auchSerTmpBuf;  // SerSendNextFrame()
 	SHORT       sSerSendStatus;
 	char        xBuff [256];
                                             
@@ -697,21 +701,21 @@ SHORT   SerSendNextFrame(CLIREQCOM *pReqMsgH)
     }                                           /* another UA ? */
     if (SerResp.uchPrevUA && SerRcvBuf.auchFaddr[CLI_POS_UA] != SerResp.uchPrevUA) {
 		char xBuff[128];
-		sprintf (xBuff, "SerSendNextFrame(): STUB_BUSY_MULTI  usUA %d, usPrevUA %d, usFunCode 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], SerResp.uchPrevUA, pReqMsgH->usFunCode);
+		sprintf (xBuff, "SerSendNextFrame(): STUB_BUSY_MULTI  usUA %d usPrevUA %d usFunCode 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], SerResp.uchPrevUA, pReqMsgH->usFunCode);
 		NHPOS_ASSERT_TEXT((SerRcvBuf.auchFaddr[CLI_POS_UA] == SerResp.uchPrevUA), xBuff);
         return STUB_BUSY_MULTI;
     }                                           
     /* same function code ? */
     if ((pReqMsgH->usFunCode & CLI_RSTCONTCODE) != (pSavMsgH->usFunCode & CLI_RSTCONTCODE)) {
         SerChangeStatus(SER_STNORMAL);
-		sprintf (xBuff, "SerSendNextFrame(): STUB_FAITAL 0x%x, usReqFunCode = 0x%x, usSavFunCode = 0x%x, usReqSeqNo = 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), pReqMsgH->usFunCode, pSavMsgH->usFunCode, pReqMsgH->usSeqNo);
+		sprintf (xBuff, "SerSendNextFrame(): STUB_FAITAL 0x%x usReqFunCode = 0x%x usSavFunCode = 0x%x usReqSeqNo = 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), pReqMsgH->usFunCode, pSavMsgH->usFunCode, pReqMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT(((pReqMsgH->usFunCode & CLI_RSTCONTCODE) == (pSavMsgH->usFunCode & CLI_RSTCONTCODE)), xBuff);
         return STUB_FAITAL;
     }                                           /* sequence # OK ? */
     if ((pReqMsgH->usSeqNo & CLI_SEQ_CONT) != ((pSavMsgH->usSeqNo & CLI_SEQ_CONT) + 1)) {
         SerChangeStatus(SER_STNORMAL);
         SerChekGCFUnLock();
-		sprintf (xBuff, "SerSendNextFrame(): STUB_FRAME_SEQERR 0x%x, usReqFunCode = 0x%x, usReqSeqNo 0x%x, usSavSeqNo 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), pReqMsgH->usFunCode, pReqMsgH->usSeqNo, pSavMsgH->usSeqNo);
+		sprintf (xBuff, "SerSendNextFrame(): STUB_FRAME_SEQERR 0x%x usReqFunCode = 0x%x usReqSeqNo 0x%x usSavSeqNo 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), pReqMsgH->usFunCode, pReqMsgH->usSeqNo, pSavMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT(((pReqMsgH->usSeqNo & CLI_SEQ_CONT) == ((pSavMsgH->usSeqNo & CLI_SEQ_CONT) + 1)), xBuff);
         return STUB_FRAME_SEQERR;
 /***
@@ -737,7 +741,7 @@ SHORT   SerSendNextFrame(CLIREQCOM *pReqMsgH)
     sSerSendStatus = SerSendMultiple(pSavMsgH, SerResp.usPrevMsgHLen); 
 	if (sSerSendStatus < 0) {
 		char xBuff [128];
-		sprintf (xBuff, "SerSendNextFrame(): 0x%x, sSerSendStatus = %d, usReqFunCode = 0x%x, usReqSeqNo = 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), sSerSendStatus, pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
+		sprintf (xBuff, "SerSendNextFrame(): 0x%x sSerSendStatus = %d usReqFunCode = 0x%x usReqSeqNo = 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), sSerSendStatus, pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((sSerSendStatus >= 0), xBuff);
 	}
 
@@ -759,21 +763,21 @@ SHORT   SerSendNextFrame(CLIREQCOM *pReqMsgH)
 */
 VOID    SerSendBakMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
 {
-    USHORT      usDataMax, usDataLen;
+    TrnVliOffset    usDataMax, usDataSiz;
+	SHORT  sError;
     USHORT      usFunCode;
-	char        xBuff[256];
 
     if (0 == SerResp.usPrevMsgHLen) {
         SerResp.usPrevDataOff = 0;
         /* SerResp.usPrevDataOffSav = 0; */
         SerResp.usPrevMsgHLen = usResMsgHLen;
     }
-    usDataLen = SerResp.pSavBuff->usDataLen - SerResp.usPrevDataOff;
+    usDataSiz = SerResp.pSavBuff->usDataLen - SerResp.usPrevDataOff;
     usDataMax = PIF_LEN_UDATA_MAX(usResMsgHLen);
 	/* Leave room for IP address, headers, and additional data (see functions
 	 * SerSendResponse and PifNetSendG/D) */
-    if (usDataLen > usDataMax) {                /* still exist send data */
-        usDataLen = usDataMax;
+    if (usDataSiz > usDataMax) {                /* still exist send data */
+        usDataSiz = usDataMax;
     } else {                                    /* all data send */
         SerResp.usPrevMsgHLen = 0;
         pResMsgH->sResCode = STUB_SUCCESS;
@@ -788,22 +792,22 @@ VOID    SerSendBakMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
         (usFunCode == CLI_FCGCFINDREAD)  ||
         (usFunCode == CLI_FCGCFCHECKREAD)  ||
         (usFunCode == CLI_FCBAKGCF)) {
-		SHORT  sError;
-        sError = SerSendResponseFH(pResMsgH, usResMsgHLen, SerResp.usPrevDataOff, usDataLen);
+        sError = SerSendResponseFH(pResMsgH, usResMsgHLen, SerResp.usPrevDataOff, usDataSiz);
 		if (sError < 0) {
-			sprintf(xBuff, "SerSendResponseFH(): 0x%x, sError = %d, usFunCode = 0x%x, usSeqNo = 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), sError, pResMsgH->usFunCode, pResMsgH->usSeqNo);
+	        char        xBuff[128];
+			sprintf(xBuff, "SerSendResponseFH(): 0x%x  sError = %d  usFunCode = 0x%x  usSeqNo = 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), sError, pResMsgH->usFunCode, pResMsgH->usSeqNo);
 			NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
 		}
     } else {
-        SHORT  sError;
-        sError = SerSendResponse(pResMsgH, usResMsgHLen, SerResp.pSavBuff->auchData + SerResp.usPrevDataOff, usDataLen);
+        sError = SerSendResponse(pResMsgH, usResMsgHLen, SerResp.pSavBuff->auchData + SerResp.usPrevDataOff, usDataSiz);
 		if (sError < 0) {
-			sprintf(xBuff, "SerSendResponse(): 0x%x, sError = %d, usFunCode = 0x%x, usSeqNo = 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), sError, pResMsgH->usFunCode, pResMsgH->usSeqNo);
+            char        xBuff[128];
+            sprintf(xBuff, "SerSendResponse(): 0x%x  sError = %d  usFunCode = 0x%x  usSeqNo = 0x%x", *((ULONG *)SerRcvBuf.auchFaddr), sError, pResMsgH->usFunCode, pResMsgH->usSeqNo);
 			NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
 		}
     }
     /* SerResp.usPrevDataOffSav = SerResp.usPrevDataOff; */
-    SerResp.usPrevDataOff += usDataLen;
+    if (sError >= 0) SerResp.usPrevDataOff += usDataSiz;
 }
 
 /*
@@ -822,7 +826,7 @@ VOID    SerSendBakMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
 */
 SHORT   SerSendBakNextFrame(CLIREQCOM *pReqMsgH)
 {
-    CLIRESCOM   *pSavMsgH = (CLIRESCOM *)auchSerTmpBuf;  // SerSendBakNextFrame()
+    CLIRESCOM   * const pSavMsgH = (CLIRESCOM *)auchSerTmpBuf;  // SerSendBakNextFrame()
 	char        xBuff[256];
               
     if (0 == SerResp.usPrevMsgHLen) {
@@ -834,13 +838,13 @@ SHORT   SerSendBakNextFrame(CLIREQCOM *pReqMsgH)
     /* same function code ? */
     if ((pReqMsgH->usFunCode & CLI_RSTCONTCODE) != (pSavMsgH->usFunCode & CLI_RSTCONTCODE)) {
         SerResp.usPrevMsgHLen = 0;
-		sprintf (xBuff, "SerSendBakNextFrame(): STUB_FAITAL usUA %d, usFunCode = 0x%x, pSavMsgH->usFunCode = 0x%x, usSeqNo = 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pSavMsgH->usFunCode, pReqMsgH->usSeqNo);
+		sprintf (xBuff, "SerSendBakNextFrame(): STUB_FAITAL usUA %d usFunCode = 0x%x pSavMsgH->usFunCode = 0x%x usSeqNo = 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pSavMsgH->usFunCode, pReqMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT(((pReqMsgH->usFunCode & CLI_RSTCONTCODE) == (pSavMsgH->usFunCode & CLI_RSTCONTCODE)), xBuff);
         return STUB_FAITAL;
     }                                           /* sequence # OK ? */
     if ((pReqMsgH->usSeqNo & CLI_SEQ_CONT) != ((pSavMsgH->usSeqNo & CLI_SEQ_CONT) + 1)) {
         SerResp.usPrevMsgHLen = 0;
-		sprintf (xBuff, "SerSendBakNextFrame(): STUB_FRAME_SEQERR usUA %d, usFunCode = 0x%x, usSeqNo = 0x%x, pSavMsgH->usSeqNo = 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo, pSavMsgH->usSeqNo);
+		sprintf (xBuff, "SerSendBakNextFrame(): STUB_FRAME_SEQERR usUA %d usFunCode = 0x%x usSeqNo = 0x%x pSavMsgH->usSeqNo = 0x%x", SerRcvBuf.auchFaddr[CLI_POS_UA], pReqMsgH->usFunCode, pReqMsgH->usSeqNo, pSavMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT(((pReqMsgH->usSeqNo & CLI_SEQ_CONT) == ((pSavMsgH->usSeqNo & CLI_SEQ_CONT) + 1)), xBuff);
         return STUB_FRAME_SEQERR;
 /****
@@ -1117,10 +1121,9 @@ USHORT  SerChekFunCode(USHORT usFunCode)
 */
 SHORT   SerChekResponse(VOID)
 {
-    CLIRESCOM   *pResp = (CLIRESCOM *)SerRcvBuf.auchData;
-    USHORT      fsComStatus;
+    CLIRESCOM   * const pResp = (CLIRESCOM *)SerRcvBuf.auchData;
+    USHORT      fsComStatus = SerComReadStatus();
     
-    fsComStatus = SerComReadStatus();
     if (SER_IAM_MASTER) {
         if (0 == (fsComStatus & SER_COMSTS_M_UPDATE)) {
             return SERV_NOT_MASTER;             /* I am Out Of Service */
@@ -1161,7 +1164,5 @@ SHORT   SerChekResponse(VOID)
     }
     return SERV_SUCCESS;
 }
-
-
 
 /*===== END OF SOURCE =====*/

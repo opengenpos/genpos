@@ -196,15 +196,19 @@ VOID    SerESRChgBMStat(VOID)
 
     SstReadFlag(&fsSpeStatus);
     if (fsSpeStatus & SER_SPESTS_BMOD) {
-        if ((SER_STNORMAL == usSerStatus) || ((SER_STINQUIRY == usSerStatus) && 
-             (fsSpeStatus & SER_SPESTS_INQTIMEOUT))) {
-            if (SER_IAM_MASTER && (SerComReadStatus() & SER_COMSTS_M_UPDATE)) {
+        if ((SER_STNORMAL == usSerStatus) || ((SER_STINQUIRY == usSerStatus) && (fsSpeStatus & SER_SPESTS_INQTIMEOUT))) {
+            USHORT          fsComStatus = SerComReadStatus();
+
+            if (SER_IAM_MASTER && (fsComStatus & SER_COMSTS_M_UPDATE)) {
                 SstChangeInqStat(SER_INQ_M_UPDATE);
                 PifLog(MODULE_SER_LOG, LOG_ERROR_SER_STUB_BMOD);
                 SerSendNtbStart();          /* start on-line information */
                 SerChangeStatus(SER_STNORMAL);
                 sError = STUB_SUCCESS;
             } else {
+                char  xBuff[128];
+                sprintf_s(xBuff, 128, "**NOTE: SER_IAM_MASTER %d fsComStatus 0x%x not proper for SerESRChgBMStat()", SerIamMaster(), fsComStatus);
+                NHPOS_ASSERT_TEXT(0, xBuff);
                 sError = STUB_ILLEGAL;
 			}
             sSerExeError = sError;  // Set status before releasing the semaphore
@@ -238,13 +242,18 @@ VOID    SerESRChgMTStat(VOID)
     SstReadFlag(&fsSpeStatus);
     if (fsSpeStatus & SER_SPESTS_MTOD) {
         if ((SER_STNORMAL == usSerStatus) || ((SER_STINQUIRY == usSerStatus) && (fsSpeStatus & SER_SPESTS_INQTIMEOUT))) {
-            if (SER_IAM_BMASTER && (SerComReadStatus() & SER_COMSTS_BM_UPDATE)) {
+            USHORT          fsComStatus = SerComReadStatus();
+
+            if (SER_IAM_BMASTER && (fsComStatus & SER_COMSTS_BM_UPDATE)) {
                 SstChangeInqStat(SER_INQ_BM_UPDATE);
                 PifLog(MODULE_SER_LOG, LOG_ERROR_SER_STUB_MTOD);
                 SerSendNtbStart();          /* start on-line information */
                 SerChangeStatus(SER_STNORMAL);
                 sError = STUB_SUCCESS;
             } else {
+                char  xBuff[128];
+                sprintf_s(xBuff, 128, "**NOTE: SER_IAM_BMASTER %d fsComStatus 0x%x not proper for SerESRChgMTStat()", SerIamBMaster(), fsComStatus);
+                NHPOS_ASSERT_TEXT(0, xBuff);
                 sError = STUB_NOT_UPTODATE;
 			}
             sSerExeError = sError;  // Set status before releasing the semaphore
@@ -268,8 +277,6 @@ VOID    SerESRChgMTStat(VOID)
 VOID    SerESRBackUpFinal(VOID)
 {
     USHORT          fsSpeStatus;
-    DATE_TIME       NewPifDate;
-    CLIINQDATE      NewInqDate;
 
     if (SER_IAM_SATELLITE) {
         return;
@@ -277,6 +284,9 @@ VOID    SerESRBackUpFinal(VOID)
 
     SstReadFlag(&fsSpeStatus);
     if (fsSpeStatus & SER_SPESTS_FINAL_AC42) {
+        DATE_TIME       NewPifDate;
+        CLIINQDATE      NewInqDate;
+
         PifGetDateTime(&NewPifDate);
         SerConvertInqDate(&NewPifDate, &NewInqDate);
         SstChangeInqStat(SER_INQ_M_UPDATE | SER_INQ_BM_UPDATE);
@@ -333,10 +343,11 @@ VOID    SerESRNonBKSys(VOID)
 VOID    SerESRAC85onMT(VOID)
 {
     SHORT           sError;
-    USHORT          fsComStatus, fsSpeFlag;
-    SERINQSTATUS    InqData;
 
     if (SER_STINQUIRY == usSerStatus) {
+        USHORT          fsSpeFlag;
+        SERINQSTATUS    InqData;
+
         SstReadFlag(&fsSpeFlag);
         SstReadInqStat(&InqData);
         if (fsSpeFlag & SER_SPESTS_INQTIMEOUT) {
@@ -346,15 +357,20 @@ VOID    SerESRAC85onMT(VOID)
                        (0 == InqData.CurDate.usDay)) {
                 sError = STUB_SUCCESS;
             } else {
-				NHPOS_ASSERT(!" SerESRAC85onMT() InqData.usStatus not proper for AC85");
+                char  xBuff[128];
+                sprintf_s(xBuff, 128, " SerESRAC85onMT() InqData.usStatus 0x%x not proper for AC85", InqData.usStatus);
+                NHPOS_ASSERT_TEXT(0, xBuff);
                 sError = STUB_ILLEGAL;
             }
         } else {
-			NHPOS_ASSERT(!" SerESRAC85onMT() sError = STUB_DUR_INQUIRY");
+            char  xBuff[128];
+            sprintf_s(xBuff, 128, " SerESRAC85onMT()  fsSpeFlag 0x%x not proper for AC85", fsSpeFlag);
+            NHPOS_ASSERT_TEXT(0, xBuff);
             sError = STUB_DUR_INQUIRY;
         }
     } else if (SER_STNORMAL == usSerStatus) {
-        fsComStatus = SerComReadStatus();
+        USHORT          fsComStatus = SerComReadStatus();
+
         if ((fsComStatus & SER_COMSTS_M_UPDATE) &&
             (fsComStatus & SER_COMSTS_BM_UPDATE)) {
             sError = STUB_SUCCESS;
@@ -363,11 +379,15 @@ VOID    SerESRAC85onMT(VOID)
         } else if (! (fsComStatus & SER_COMSTS_BM_UPDATE) ) {
             sError = STUB_SUCCESS;
         } else {
-			NHPOS_ASSERT(!" SerESRAC85onMT() fsComStatus not proper for AC85");
+            char  xBuff[128];
+            sprintf_s(xBuff, 128, "**NOTE: fsComStatus 0x%x not proper for AC85", fsComStatus);
+            NHPOS_ASSERT_TEXT(0, xBuff);
             sError = STUB_ILLEGAL;
         }
     } else {
-			NHPOS_ASSERT(!" SerESRAC85onMT() usSerStatus not appropriate");
+            char  xBuff[128];
+            sprintf_s(xBuff, 128, "**NOTE: SerESRAC85onMT()  usSerStatus 0x%x not proper for AC85", usSerStatus);
+            NHPOS_ASSERT_TEXT(0, xBuff);
             return ;
     }
 
@@ -404,10 +424,11 @@ VOID    SerESRAC85onMT(VOID)
 VOID    SerESRAC85onBM(VOID)
 {
     SHORT           sError;
-    USHORT          fsComStatus, fsSpeFlag;
-    SERINQSTATUS    InqData;
 
     if (SER_STINQUIRY == usSerStatus) {
+        USHORT          fsSpeFlag;
+        SERINQSTATUS    InqData;
+
         SstReadFlag(&fsSpeFlag);
         SstReadInqStat(&InqData);
         if (fsSpeFlag & SER_SPESTS_INQTIMEOUT) {
@@ -426,7 +447,8 @@ VOID    SerESRAC85onBM(VOID)
             sError = STUB_DUR_INQUIRY;
         }
     } else if (SER_STNORMAL == usSerStatus) {
-        fsComStatus = SerComReadStatus();
+        USHORT          fsComStatus = SerComReadStatus();
+
         if ((fsComStatus & SER_COMSTS_BM_UPDATE) && (fsComStatus & SER_COMSTS_M_UPDATE)) {
             sError = STUB_SUCCESS;
         } else if (fsComStatus & SER_COMSTS_M_OFFLINE) {
@@ -442,7 +464,9 @@ VOID    SerESRAC85onBM(VOID)
             sError = STUB_ILLEGAL;
         }
     } else {
-		NHPOS_ASSERT(!" SerESRAC85onBM() usSerStatus not appropriate");
+        char  xBuff[128];
+        sprintf_s(xBuff, 128, "**NOTE: SerESRAC85onBM()  usSerStatus 0x%x not proper for AC85", usSerStatus);
+        NHPOS_ASSERT_TEXT(0, xBuff);
         sError = STUB_ILLEGAL;
     }
 
@@ -531,7 +555,7 @@ VOID    SerESRAC42onMT(VOID)
 	{
 		char  xBuff[128];
 
-		sprintf_s (xBuff, 128, "==NOTE: SerESRAC42onMT(): usSerStatus = %d, sError = %d, fsComStatus=0x%x", usSerStatus, sError, fsComStatus);
+		sprintf_s (xBuff, 128, "==NOTE: SerESRAC42onMT(): usSerStatus = %d  sError = %d  fsComStatus=0x%x", usSerStatus, sError, fsComStatus);
 		NHPOS_NONASSERT_TEXT(xBuff);
 	}
 
@@ -559,12 +583,11 @@ VOID    SerESRAC42onMT(VOID)
 */
 VOID    SerESRAC42onBM(VOID)
 {
-    USHORT  fsComStatus = 0;
+    USHORT  fsComStatus = SerComReadStatus();
     SHORT   sError = STUB_SUCCESS;
 
     sSerExeError = STUB_SUCCESS;  // default result code to success for SerESRAC42onBM()
 
-    fsComStatus = SerComReadStatus();
 	if (SER_STNORMAL == usSerStatus) {
         if (0 == (fsComStatus & SER_COMSTS_BM_UPDATE)) {
 			PifLog (MODULE_SER_LOG, LOG_EVENT_SER_AC42_BM_NOTUPDATE);
@@ -590,7 +613,7 @@ VOID    SerESRAC42onBM(VOID)
 	{
 		char  xBuff[128];
 
-		sprintf_s (xBuff, 128, "SerESRAC42onBM(): usSerStatus = %d, sError = %d, fsComStatus = 0x%x", usSerStatus, sError, fsComStatus);
+		sprintf_s (xBuff, 128, "==NOTE: SerESRAC42onBM(): usSerStatus = %d  sError = %d  fsComStatus = 0x%x", usSerStatus, sError, fsComStatus);
 		NHPOS_NONASSERT_TEXT(xBuff);
 	}
 
@@ -618,17 +641,12 @@ VOID    SerESRAC42onBM(VOID)
 */
 VOID    SerESRBMDown(VOID)
 {
-    USHORT  fsComStatus;
-
     if (SER_IAM_MASTER) {
-        if ((SERV_SUCCESS == SerResp.sError) &&
-            (SER_STNORMAL == usSerStatus) &&
-            (CLI_TGT_BMASTER != SerRcvBuf.auchFaddr[CLI_POS_UA])) {
-            fsComStatus = SerComReadStatus();
-            if ((fsComStatus & SER_COMSTS_M_UPDATE) &&
-                (fsComStatus & SER_COMSTS_BM_UPDATE) &&
-                (fsComStatus & SER_COMSTS_BM_OFFLINE)) {
+        if ((SERV_SUCCESS == SerResp.sError) && (SER_STNORMAL == usSerStatus) &&
+            (PIFNET_TGT_BMASTER != SerRcvBuf.auchFaddr[CLI_POS_UA])) {
+            USHORT  fsComStatus = SerComReadStatus();
 
+            if ((fsComStatus & SER_COMSTS_M_UPDATE) && (fsComStatus & SER_COMSTS_BM_UPDATE) && (fsComStatus & SER_COMSTS_BM_OFFLINE)) {
                 SstChangeInqStat(SER_INQ_M_UPDATE);
                 PifLog(MODULE_SER_LOG, LOG_ERROR_SER_OFFLINE_BMOD);
                 SerSendNtbStart();

@@ -60,11 +60,9 @@
 */
 VOID    SerRecvSps(VOID)
 {
-    CLIREQSHR  *pReqMsgH;
-    CLIRESSHR  ResMsgH;
+    CLIREQSHR  *pReqMsgH = (CLIREQSHR *)SerRcvBuf.auchData;
+    CLIRESSHR  ResMsgH = { 0 };
 
-    pReqMsgH = (CLIREQSHR *)SerRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESSHR));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
     ResMsgH.sResCode  = STUB_SUCCESS;

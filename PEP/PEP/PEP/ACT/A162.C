@@ -122,13 +122,30 @@ BOOL    WINAPI  A162DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 	case WM_SETFONT:
 		if (hResourceFont) {
 			int j;
-			for(j=IDD_A162_DESC01; j<=IDD_A162_CAPTION2; j++)
+            for (j = 0; j < 4; j++)
+            {
+                SendDlgItemMessage(hDlg, IDD_A162_LANE_1_T1_DESC + j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+                SendDlgItemMessage(hDlg, IDD_A162_LANE_1_T1_EDIT + j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            }
+
+            for(j=IDD_A162_DESC01; j<=IDD_A162_CAPTION2; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
-			SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
-			SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
-		}
+
+            for (j = IDD_A162_SYSTYPE_DESC00; j <= IDD_A162_TERMTYPE_DESC14; j++)
+            {
+                SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            }
+            
+            SendDlgItemMessage(hDlg, IDD_A162_BTNSET01, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDD_A162_CAPSET01, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDD_A162_BTNSET02, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDD_A162_CAPSET02, WM_SETFONT, (WPARAM)hResourceFont, 0);
+
+            SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
+        }
 		return FALSE;
 
     case WM_MOUSEWHEEL:
@@ -202,17 +219,17 @@ BOOL    WINAPI  A162DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		case IDD_A162_BTNSET02:
 			// Set the AC162 provisioning for a mixed Counter Terminal and Drive Thru
 			// type of system.  Terminals #1 - 3 are counter terminals, Terminal # 4
-			// is a Drive Thru, Side #1 as Order/Payment and Terminal #5 is Delivery.
+			// is a Drive Thru, Side #1 as Order/Payment and Terminal #5 is Delivery for Side #1.
 			//
 			// For each Counter terminal beginning with address pair 4 and 5 for Terminal #1:
 			//   Set the System Type to 0, Ordering/Payment System
 			//   Set the Terminal Type to 12, COUNTER Terminal for UNPAID TRANSACTION - FULL Screen
 			// For Terminal #4
-			//   Set the System Type to 
-			//   Set the Terminal Type to 
+			//   Set the System Type to Order/Payment and Delivery (two terminals)
+			//   Set the Terminal Type to Order/Payment terminal
 			// For Terminal #5
-			//   Set the System Type to 
-			//   Set the Terminal Type to 
+			//   Set the System Type to Order/Payment and Delivery (two terminals)
+			//   Set the Terminal Type to Delivery terminal
 			memset (abData, 0, sizeof(abData));
 			{
 				int i;
@@ -220,15 +237,15 @@ BOOL    WINAPI  A162DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 					abData[i] = 0; i++;    // set the System Type
 					abData[i] = 12; i++;   // set the Terminal Type
 				}
-				abData[0] = 5;       // Term # of Delivery Terminal for DT Side#1
-				abData[2] = 4;       // Term # of PAYMENT Terminal for DT Side#1
+				abData[0] = 5;       // Term # of Delivery Terminal for DT Side#1, Side#2 is zero
+				abData[2] = 4;       // Term # of PAYMENT Terminal for DT Side#1, Side#2 is zero
 
 				i = (4 - 1) * 2 + 4; // calculate to Terminal #4, System Type
-				abData[i] = 2; i++;  // set the System Type, Order & pay at one terminal, deliver at another
-				abData[i] = 1; i++;  // set the Terminal Type, Order/Payment DT Terminal for DT Side#1 - 3 part Screen
+				abData[i] = FX_DRIVE_SYSTYPE_2T_OP_D; i++;       // set the System Type, Order & pay at one terminal, deliver at another
+				abData[i] = FX_DRIVE_ORDER_PAYMENT_TERM_1; i++;  // set the Terminal Type, Order/Payment DT Terminal for DT Side#1 - 3 part Screen
 				// Terminal #5 follows immediately after Terminal #4
-				abData[i] = 2; i++;  // set the System Type, Order & pay at one terminal, deliver at another
-				abData[i] = 3; i++;  // set the Terminal Type, Delivery DT Terminal for DT Side#1 - 3 part Screen
+				abData[i] = FX_DRIVE_SYSTYPE_2T_OP_D; i++;       // set the System Type, Order & pay at one terminal, deliver at another
+				abData[i] = FX_DRIVE_DELIV_1; i++;               // set the Terminal Type, Delivery DT Terminal for DT Side#1 - 3 part Screen
 			}
 			/* ----- Set Description to StaticText ----- */
 			A162RedrawText(hDlg, abData);
@@ -272,7 +289,7 @@ VOID    A162InitDlg(HWND hDlg, LPBYTE lpbData)
 
     /* ----- Set Top Index & Bottom Index ----- */
     unTopIndex    = A162_SCBAR_MIN;
-    unBottomIndex = A162_ONE_PAGE;
+    unBottomIndex = unTopIndex + A162_ONE_PAGE;
 
     for (wID = IDD_A162_EDIT01; wID <= IDD_A162_EDIT10; wID++) {
         /* ----- Change Font to Fixed Font ----- */
@@ -553,6 +570,18 @@ VOID    A162RedrawText(HWND hDlg, LPBYTE lpbData)
     WCHAR    szWork[A162_DESC_LEN];
     WCHAR    szRengWork[A162_DESC_RENG_LEN];
 
+    for (unCount = 0; unCount < 4; unCount++) {
+        /* ----- Load Strings from Resource ----- */
+        LoadString(hResourceDll, IDS_A162_DESC01 + unCount, szWork, A162_DESC_LEN);
+        /* ----- Set Loaded Strings to StaticText ----- */
+        DlgItemRedrawText(hDlg, IDD_A162_LANE_1_T1_DESC + unCount, szWork);
+        /* ----- Load Renge Strings from Resource ----- */
+//        LoadString(hResourceDll, IDS_A162_RENG01 + unCount, szRengWork, A162_DESC_RENG_LEN);
+        /* ----- Set Loaded Renge Strings to StaticText ----- */
+//        DlgItemRedrawText(hDlg, IDD_A162_RENG01 + unCount, szRengWork);
+        /* ----- Set Data to EditText ----- */
+        SetDlgItemInt(hDlg, IDD_A162_LANE_1_T1_EDIT + unCount, (UINT) * (lpbData + (BYTE)unCount), FALSE);
+    }
     for (unCount = unTopIndex; unCount <= unBottomIndex; unCount++, unLoop++) {
         /* ----- Load Strings from Resource ----- */
         LoadString(hResourceDll, IDS_A162_DESC01 + unCount, szWork, A162_DESC_LEN);
@@ -564,6 +593,12 @@ VOID    A162RedrawText(HWND hDlg, LPBYTE lpbData)
         DlgItemRedrawText(hDlg, IDD_A162_RENG01 + unLoop, szRengWork);
         /* ----- Set Data to EditText ----- */
         SetDlgItemInt(hDlg, IDD_A162_EDIT01 + unLoop, (UINT)*(lpbData + (BYTE)unCount), FALSE);
+    }
+    for (unCount = IDS_A162_SYSTYPE_DESC00; unCount <= IDS_A162_TERMTYPE_DESC14; unCount++) {
+        /* ----- Load Strings from Resource ----- */
+        LoadString(hResourceDll, IDS_A162_SYSTYPE_DESC00 + (unCount - IDS_A162_SYSTYPE_DESC00), szWork, A162_DESC_LEN);
+        /* ----- Set Loaded Strings to StaticText ----- */
+        DlgItemRedrawText(hDlg, IDD_A162_SYSTYPE_DESC00 + (unCount - IDS_A162_SYSTYPE_DESC00), szWork);
     }
 }
 

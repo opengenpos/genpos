@@ -106,10 +106,10 @@ BOOL CWindowButtonExt::WindowDisplay (CDC* pDC)
 	pDC->SetBkMode (TRANSPARENT);
 
 	CBrush hatchBrush;
-	if(btnAttributes.m_myPattern == ButtonPatternHoriz){
+	if(btnAttributes.m_myPattern == ButtonPattern::ButtonPatternHoriz){
 		hatchBrush.CreateHatchBrush(HS_HORIZONTAL, 
 			RGB(DARKEN(RED(controlAttributes.m_colorFace)), DARKEN(GREEN(controlAttributes.m_colorFace)), DARKEN(BLUE(controlAttributes.m_colorFace))));
-	}else if(btnAttributes.m_myPattern == ButtonPatternVert){
+	}else if(btnAttributes.m_myPattern == ButtonPattern::ButtonPatternVert){
 		hatchBrush.CreateHatchBrush(HS_VERTICAL, 
 			RGB(DARKEN(RED(controlAttributes.m_colorFace)), DARKEN(GREEN(controlAttributes.m_colorFace)), DARKEN(BLUE(controlAttributes.m_colorFace))));
 	}
@@ -133,21 +133,21 @@ BOOL CWindowButtonExt::WindowDisplay (CDC* pDC)
 	CBrush *pOldBrush = pDC->SelectObject(&brushButton);
 
 
-	if (btnAttributes.m_myShape == CWindowButton::ButtonShapeRect){
+	if (btnAttributes.m_myShape == CWindowButton::ButtonShape::ButtonShapeRect){
 		pDC->Rectangle(myRect);
-		if(btnAttributes.m_myPattern != ButtonPatternNone){
+		if(btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 			pDC->SelectObject(&hatchBrush);
 			pDC->Rectangle(myRect);
 		}
-	}else if (btnAttributes.m_myShape == CWindowButton::ButtonShapeElipse){
+	}else if (btnAttributes.m_myShape == CWindowButton::ButtonShape::ButtonShapeElipse){
 		pDC->Ellipse(myRect);
-		if(btnAttributes.m_myPattern != ButtonPatternNone){
+		if(btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 			pDC->SelectObject(&hatchBrush);
 			pDC->Ellipse(myRect);
 		}
-	}else if (btnAttributes.m_myShape == CWindowButton::ButtonShapeRoundedRect){
+	}else if (btnAttributes.m_myShape == CWindowButton::ButtonShape::ButtonShapeRoundedRect){
 		pDC->RoundRect(myRect, CPoint (17, 17));
-		if(btnAttributes.m_myPattern != ButtonPatternNone){
+		if(btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 			pDC->SelectObject(&hatchBrush);
 			pDC->RoundRect(myRect, CPoint (17, 17));
 		}
@@ -308,12 +308,12 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 
 	myBrush.CreateSolidBrush(pButtonWnd->controlAttributes.m_colorFace);
 
-	if(pButtonWnd->btnAttributes.m_myPattern == ButtonPatternHoriz){
+	if(pButtonWnd->btnAttributes.m_myPattern == ButtonPattern::ButtonPatternHoriz){
 		hatchBrush.CreateHatchBrush(HS_HORIZONTAL, 
 			RGB(DARKEN(RED(pButtonWnd->controlAttributes.m_colorFace)),
 				DARKEN(GREEN(pButtonWnd->controlAttributes.m_colorFace)), 
 				DARKEN(BLUE(pButtonWnd->controlAttributes.m_colorFace))));
-	}else if(pButtonWnd->btnAttributes.m_myPattern == ButtonPatternVert){
+	}else if(pButtonWnd->btnAttributes.m_myPattern == ButtonPattern::ButtonPatternVert){
 		hatchBrush.CreateHatchBrush(HS_VERTICAL, 
 			RGB(DARKEN(RED(pButtonWnd->controlAttributes.m_colorFace)),
 				DARKEN(GREEN(pButtonWnd->controlAttributes.m_colorFace)),
@@ -341,7 +341,7 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 		bottomEdge.CreateSolidBrush(RGB(0x00, 0x00, 0x00));
 	}
 
-	if(pButtonWnd->btnAttributes.m_myShape == ButtonShapeRect){
+	if(pButtonWnd->btnAttributes.m_myShape == ButtonShape::ButtonShapeRect){
 		pDC->SelectObject(bottomEdge);
 		pDC->Rectangle(myRect.left, myRect.top, myRect.right, myRect.bottom);
 		pDC->SelectObject(topEdge);
@@ -351,18 +351,18 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 		pDC->SelectObject(myBrush);
 		if(lpDraw->itemState == ODS_FOCUS){
 			pDC->Rectangle(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2);
-			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPatternNone){
+			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 				pDC->SelectObject(hatchBrush);
 				pDC->Rectangle(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2);
 			}
 		}else{
 			pDC->Rectangle(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4);
-			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPatternNone){
+			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 				pDC->SelectObject(hatchBrush);
 				pDC->Rectangle(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4);
 			}
 		}
-	}else if(pButtonWnd->btnAttributes.m_myShape == ButtonShapeElipse){
+	}else if(pButtonWnd->btnAttributes.m_myShape == ButtonShape::ButtonShapeElipse){
 		pDC->SelectObject(bottomEdge);
 		pDC->Ellipse(myRect.left, myRect.top, myRect.right, myRect.bottom);
 		pDC->SelectObject(topEdge);
@@ -372,18 +372,18 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 		pDC->SelectObject(myBrush);
 		if(lpDraw->itemState == ODS_FOCUS){
 			pDC->Ellipse(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2);
-			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPatternNone){
+			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 				pDC->SelectObject(hatchBrush);
 				pDC->Ellipse(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2);
 			}
 		}else{
 			pDC->Ellipse(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4);
-			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPatternNone){
+			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 				pDC->SelectObject(hatchBrush);
 				pDC->Ellipse(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4);
 			}
 		}
-	}else if(pButtonWnd->btnAttributes.m_myShape == ButtonShapeRoundedRect){
+	}else if(pButtonWnd->btnAttributes.m_myShape == ButtonShape::ButtonShapeRoundedRect){
 		pDC->SelectObject(bottomEdge);
 		pDC->RoundRect(myRect.left, myRect.top, myRect.right, myRect.bottom, 17, 17);
 		pDC->SelectObject(topEdge);
@@ -393,13 +393,13 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 		pDC->SelectObject(myBrush);
 		if(lpDraw->itemState == ODS_FOCUS){
 			pDC->RoundRect(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2, 17, 17);
-			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPatternNone){
+			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 				pDC->SelectObject(hatchBrush);
 				pDC->RoundRect(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2, 17, 17);
 			}
 		}else{
 			pDC->RoundRect(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4, 17, 17);
-			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPatternNone){
+			if(pButtonWnd->btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 				pDC->SelectObject(hatchBrush);
 				pDC->RoundRect(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4, 17, 17);
 			}
@@ -447,18 +447,18 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 
 		//Horizontal Alignment
 		if(lpDraw->itemState == ODS_FOCUS){
-			if(pButtonWnd->btnAttributes.horIconAlignment == IconAlignmentHLeft){//Image to left
+			if(pButtonWnd->btnAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHLeft){//Image to left
 				xPos = 2 + 2;
-			}else if(pButtonWnd->btnAttributes.horIconAlignment == IconAlignmentHRight){//Image to right
+			}else if(pButtonWnd->btnAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHRight){//Image to right
 				xPos = (myRect.right - cxSource - 3);
 			}else {//Horizontal center
 				xPos = ((myRect.right - cxSource) / 2) + 1;
 			}
 		}else
 		{
-			if(pButtonWnd->btnAttributes.horIconAlignment == IconAlignmentHLeft){//Image to left
+			if(pButtonWnd->btnAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHLeft){//Image to left
 				xPos = 2;
-			}else if(pButtonWnd->btnAttributes.horIconAlignment == IconAlignmentHRight){//Image to right
+			}else if(pButtonWnd->btnAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHRight){//Image to right
 				xPos = myRect.right - cxSource - 5;
 			}else {//Horizontal center
 				xPos = ((myRect.right - cxSource) / 2) - 1;
@@ -467,18 +467,18 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 		
 		//Vertical Alignment
 		if(lpDraw->itemState == ODS_FOCUS){
-			if(pButtonWnd->btnAttributes.vertIconAlignment == IconAlignmentVTop){//Image to top
+			if(pButtonWnd->btnAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVTop){//Image to top
 				yPos = 2 + 2;
-			}else if(pButtonWnd->btnAttributes.vertIconAlignment == IconAlignmentVBottom){//Image to bottom
+			}else if(pButtonWnd->btnAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVBottom){//Image to bottom
 				yPos = (myRect.bottom - cySource - 3);
 			}else{//Vertical Center
 				yPos = ((myRect.bottom - cySource) / 2) + 1;
 			}
 		}else
 		{
-			if(pButtonWnd->btnAttributes.vertIconAlignment == IconAlignmentVTop){//Image to top
+			if(pButtonWnd->btnAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVTop){//Image to top
 				yPos = 2;
-			}else if(pButtonWnd->btnAttributes.vertIconAlignment == IconAlignmentVBottom){//Image to bottom
+			}else if(pButtonWnd->btnAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVBottom){//Image to bottom
 				yPos = myRect.bottom - cySource - 5;
 			}else{//Vertical Center
 				yPos = ((myRect.bottom - cySource) / 2) - 1;
@@ -517,7 +517,7 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 	}
 
 	switch(pButtonWnd->btnAttributes.capAlignment){
-	case CaptionAlignmentVBottom:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVBottom:
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);//calculate text area size on button
 		if(textRect.bottom <= tempRect.bottom){
 			//top of bottom aligned text is the height/size of the button(myRect.bottom) minus
@@ -538,7 +538,7 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 		}
 		break;
 
-	case CaptionAlignmentVTop:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVTop:
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);//calculate text area size on button
 		textRect.top = tempRect.top + 2;
 		textRect.bottom = tempRect.bottom;
@@ -553,9 +553,9 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 		}
 		break;
 
-	case CaptionAlignmentHLeft:
-	case CaptionAlignmentHRight:
-	case CaptionAlignmentHCenter:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHLeft:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHRight:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHCenter:
 		{
 			int textWidth = 0;//width of single character
 			int textHeight = 0;//height of single character
@@ -587,11 +587,11 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 			if(textRect.top < 2){
 				textRect.top = 2;
 			}
-			if(pButtonWnd->btnAttributes.capAlignment == CaptionAlignmentHLeft){//LEFT JUSTIFY
+			if(pButtonWnd->btnAttributes.capAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHLeft){//LEFT JUSTIFY
 				//move the left start point one character width from left side
 				textRect.left += textWidth * 5/3;
 				textRect.right = textRect.left + textWidth * 5/3;
-			}else if(pButtonWnd->btnAttributes.capAlignment == CaptionAlignmentHRight){//RIGHT JUSTIFY
+			}else if(pButtonWnd->btnAttributes.capAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHRight){//RIGHT JUSTIFY
 				//move the left start point one character width from right side
 				//multiply by two because the text is printed to the right of the
 				//start point so leave one character width from side and account
@@ -621,7 +621,7 @@ void CWindowButtonExt::DrawButton(int nIDCtl, LPDRAWITEMSTRUCT lpDraw, CWindowIt
 		}
 		break;
 
-	case CaptionAlignmentVMiddle://vertically center and horizontally center text
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle://vertically center and horizontally center text
 		//same as default no break
 	default:
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);

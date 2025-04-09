@@ -37,7 +37,7 @@ CWindowItem::CWindowItem(UINT id /* = 0 */, int row /* = 0 */, int column /* = 0
 	: CWindowControl(id, row, column, width, height)
 {
 	//initialize attributes 
-	controlAttributes.m_nType = WindowContainer;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::WindowContainer;
 	memset (&windowAttributes, 0, sizeof(windowAttributes));
 
 	windowAttributes.Show = TRUE;
@@ -50,8 +50,8 @@ CWindowItem::CWindowItem(UINT id /* = 0 */, int row /* = 0 */, int column /* = 0
 	windowAttributes.oepBtnDown = 4;
 	windowAttributes.oepBtnAcross = 3;
 
-	windowAttributes.oepBtnShape = CWindowButton::ButtonShapeRect;
-	windowAttributes.oepBtnPattern = CWindowButton::ButtonPatternNone;
+	windowAttributes.oepBtnShape = CWindowButton::ButtonShape::ButtonShapeRect;
+	windowAttributes.oepBtnPattern = CWindowButton::ButtonPattern::ButtonPatternNone;
 	windowAttributes.oepBtnColor = RGB(220, 220, 220);
 	windowAttributes.oepBtnFontColor = RGB(0, 0, 0);
 }
@@ -64,7 +64,7 @@ CWindowItem::CWindowItem(CWindowControl *wc) :
 
 	if (!wc || CWindowItem::TranslateCWindowControl(wc) == 0) {
 		//initialize attributes 
-		controlAttributes.m_nType = WindowContainer;
+		controlAttributes.m_nType = CWindowControl::CWindowControlType::WindowContainer;
 
 		windowAttributes.Show = TRUE;
 		windowAttributes.signatureStart = 0xABCDEF87;
@@ -75,8 +75,8 @@ CWindowItem::CWindowItem(CWindowControl *wc) :
 		windowAttributes.oepBtnDown = 4;
 		windowAttributes.oepBtnAcross = 3;
 
-		windowAttributes.oepBtnShape = CWindowButton::ButtonShapeRect;
-		windowAttributes.oepBtnPattern = CWindowButton::ButtonPatternNone;
+		windowAttributes.oepBtnShape = CWindowButton::ButtonShape::ButtonShapeRect;
+		windowAttributes.oepBtnPattern = CWindowButton::ButtonPattern::ButtonPatternNone;
 		windowAttributes.oepBtnColor = RGB(220, 220, 220);
 		windowAttributes.oepBtnFontColor = RGB(0, 0, 0);
 	}
@@ -306,7 +306,7 @@ BOOL CWindowItem::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO
 					if(!this->controlAttributes.isVirtualWindow){
 						CWindowControl *pwc = CWindowDocument::pDoc->GetDataFirst ();
 						while (pwc) {
-							if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer && pwc != this){
+							if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer && pwc != this){
 								if(pwc->m_hWnd)
 									pwc->EnableWindow(TRUE);
 							}

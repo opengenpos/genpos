@@ -757,17 +757,15 @@ ULONG   CnPluTotalDb::AddRec(VARIANT vPutFields,VARIANT vValues){
 }
 
 
-ULONG   CnPluTotalDb::DelRec(const LONG lRecNum){
+ULONG   CnPluTotalDb::DelRec(void){
 #if defined(SQLITE_TEST)
     m_hr = 0;    // pretned that the command worked.
     return  PLUTOTAL_SQLITE_TEST;
 #else
     if(!__pRecO->IsOpened())
         return  PLUTOTAL_E_FAILURE;
-    if(lRecNum < 1)
-        return  PLUTOTAL_E_ILLEAGAL;
 
-    m_hr = __pRecO->Delete(lRecNum);
+    m_hr = __pRecO->Delete();
     if(FAILED(m_hr)){
         return  PLUTOTAL_E_FAILURE;
     }

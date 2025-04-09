@@ -43,7 +43,7 @@ CWindowControl::CWindowControl(){
 	memset (&controlAttributes, 0, sizeof(controlAttributes));
 	
 	controlAttributes.signatureStart = 0xABCDEF87;
-	controlAttributes.m_nType = UnknownControl;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::UnknownControl;
 	controlAttributes.m_myId = 0;
 	controlAttributes.m_nRow = 1;
 	controlAttributes.m_nColumn = 1;
@@ -123,7 +123,7 @@ CWindowControl::CWindowControl (UINT id, int row, int column, int width , int he
 	controlAttributes.signatureStart = 0xABCDEF87;
 	controlAttributes.useDefault = TRUE;
 	controlAttributes.m_myId = id;
-	controlAttributes.m_nType = UnknownControl;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::UnknownControl;
 	controlAttributes.m_nRow = row;
 	controlAttributes.m_nColumn = column;
 	controlAttributes.m_usHeightMultiplier = height;
@@ -275,7 +275,7 @@ BOOL CWindowControl::PopupWindow (CWindowControl *pParent)
 		BringWindowToTop();
 		Invalidate(FALSE);
 		UpdateWindow();
-		if(controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			SetForegroundWindow();
 		}
 	}
@@ -295,7 +295,7 @@ BOOL CWindowControl::PopdownWindow ()
 			pPrev->BringWindowToTop();
 			pPrev->Invalidate(FALSE);
 			pPrev->UpdateWindow();
-			if(pPrev->controlAttributes.m_nType == CWindowControl::WindowContainer){
+			if(pPrev->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 				pPrev->SetForegroundWindow();
 			}
 			pPrev = 0;

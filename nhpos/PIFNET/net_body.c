@@ -1889,7 +1889,7 @@ USHORT  ExeNetOpen(POPNDAT pOpen, USHORT usBytes, PPKTINF pPacket)
 	USHORT      usPortFlags;
 
 	usPortFlags = pOpen->usLport;
-	pOpen->usLport &= PIF_PORT_FLAG_REMOVE;
+	pOpen->usLport &= PIFNET_PORT_FLAG_REMOVE;
 
     /* --- is valid port no. given ? --- */
     if (pOpen->usLport > PORT_LOCAL_MAX) {      /* over max. port no. ?     */
@@ -1900,7 +1900,7 @@ USHORT  ExeNetOpen(POPNDAT pOpen, USHORT usBytes, PPKTINF pPacket)
     pUser = GetLocalUser(pOpen->usLport, pPacket->pUsers, pPacket->usUsers);
 
     /* --- already exist the same port user ? --- */
-    if ((pOpen->usLport != ANYPORT) && pUser) { /* might be duplicate user  */
+    if ((pOpen->usLport != PIFNET_PORT_ANYPORT) && pUser) { /* might be duplicate user  */
         return ((USHORT)(PIF_ERROR_NET_BAD_DATA));
     }
 
@@ -1913,7 +1913,7 @@ USHORT  ExeNetOpen(POPNDAT pOpen, USHORT usBytes, PPKTINF pPacket)
     pUser = GetUserTable(usNet, pPacket->pUsers, pPacket->usUsers);
 	if (pUser) {
 		/* --- normalize my local port number --- */
-		if (! (usLocalPort = (pOpen->usLport == ANYPORT) ? 0 : pOpen->usLport)) {
+		if (! (usLocalPort = (pOpen->usLport == PIFNET_PORT_ANYPORT) ? 0 : pOpen->usLport)) {
 			usLocalPort = usNet + PORT_AUTO_ASSIGN;
 		}
 
@@ -1926,8 +1926,8 @@ USHORT  ExeNetOpen(POPNDAT pOpen, USHORT usBytes, PPKTINF pPacket)
 		pUser->usRemotePort = pOpen->usFport;       /* target port number       */
 		pUser->usLocalPort  = usLocalPort;          /* local port number        */
 		pUser->usSendTimer  = DEF_SEND_TIME;        /* timeout value in msec.   */
-		pUser->fsFlags     |= (pOpen->usFport == ANYPORT) ? PIF_NET_NMODE : PIF_NET_DMODE;
-		pUser->fsFlags     |= (usPortFlags & PIF_PORT_FLAG_CLUSTER) ? PIF_NET_RESTRICTED : 0;  // port restricted to cluster messages only
+		pUser->fsFlags     |= (pOpen->usFport == PIFNET_PORT_ANYPORT) ? PIF_NET_NMODE : PIF_NET_DMODE;
+		pUser->fsFlags     |= (usPortFlags & PIFNET_PORT_FLAG_CLUSTER) ? PIF_NET_RESTRICTED : 0;  // port restricted to cluster messages only
 		pUser->ulSourceAddr = 0;
 
 		/* --- initialize user queue --- */

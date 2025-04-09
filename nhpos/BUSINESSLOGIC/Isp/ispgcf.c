@@ -13,11 +13,22 @@
 * Category    : ISP Server Module, US Hospitality Model
 * Program Name: ISPGCF.C                                            
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
+*    Georgia Southern University Research Services Foundation
+*    donated by NCR to the research foundation in 2002 and maintained here
+*    since.
+*       2002  -> NHPOS Rel 1.4  (Windows CE for NCR 7448, Visual Studio Embedded)
+*       2003  -> NHPOS Rel 2.0.0  (Windows XP for NCR touch screen, Datacap for EPT)
+*       2006  -> NHPOS Rel 2.0.4  (Windows XP, Rel 2.0.4.51)
+*       2006  -> NHPOS Rel 2.0.5  (Windows XP, US Customs, Store and Forward, Mobile Terminal, Rel 2.0.5.76)
+*       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
+*       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
+*       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
+*
+*    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
 * --------------------------------------------------------------------------
-* Abstract: The provided function names are as follows:  
+* Abstract: The provided function names are as follows:
 *
 *           IspRecvGCF();         Entry point of Guest check function handling
 *
@@ -71,7 +82,7 @@
 */
 VOID    IspRecvGCF(VOID)
 {
-    CLIREQGCF       *pReqMsgH = (CLIREQGCF *)IspRcvBuf.auchData;
+    CLIREQGCF       * const pReqMsgH = (CLIREQGCF *)IspRcvBuf.auchData;
     CLIRESGCF       ResMsgH = { 0 };
 
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
@@ -85,11 +96,13 @@ VOID    IspRecvGCF(VOID)
 
     case    CLI_FCGCFREADLOCK:   /* Read and Lock */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESGCF)];
+        IspResp.ulSavBuffSize = SERISP_MAX_LEN(sizeof(CLIRESGCF));
         IspResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
 
         ResMsgH.sReturn = SerGusReadLock(pReqMsgH->usGCN, IspResp.pSavBuff->auchData, IspResp.pSavBuff->usDataLen, GCF_REORDER);
         if (0 <= ResMsgH.sReturn) {
             IspResp.pSavBuff->usDataLen = ResMsgH.sReturn;
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             usIspLockedGCFNO = pReqMsgH->usGCN;      /* save GCF */
             fsIspLockedFC   |= ISP_LOCK_INDGCF;      /* set INDGCF falg */
             ResMsgH.sResCode = STUB_MULTI_SEND;
@@ -137,12 +150,14 @@ VOID    IspRecvGCF(VOID)
 
     case CLI_FCGCFINDREAD :	  /* GCF read ind GCN */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESGCF)];
+        IspResp.ulSavBuffSize = SERISP_MAX_LEN(sizeof(CLIRESGCF));
         IspResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
 
         ResMsgH.sReturn = SerGusIndRead(pReqMsgH->usGCN, IspResp.pSavBuff->auchData, IspResp.pSavBuff->usDataLen);
         
         if (0 <= ResMsgH.sReturn) {
             IspResp.pSavBuff->usDataLen = ResMsgH.sReturn;
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             ResMsgH.sResCode = STUB_MULTI_SEND;
         } else {
             IspResp.pSavBuff->usDataLen = 0;
@@ -163,12 +178,14 @@ VOID    IspRecvGCF(VOID)
 
     case CLI_FCGCFREADAGCNO	: /* GCF read all GCN # */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESGCF)];
+        IspResp.ulSavBuffSize = SERISP_MAX_LEN(sizeof(CLIRESGCF));
         IspResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
     
         ResMsgH.sReturn = SerGusAllIdRead(pReqMsgH->usGCType, (USHORT *)IspResp.pSavBuff->auchData, IspResp.pSavBuff->usDataLen);
         
         if (0 <= ResMsgH.sReturn) {
             IspResp.pSavBuff->usDataLen = ResMsgH.sReturn;
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             ResMsgH.sResCode = STUB_MULTI_SEND;
         } else {
             IspResp.pSavBuff->usDataLen = 0;
@@ -198,11 +215,13 @@ VOID    IspRecvGCF(VOID)
 
     case CLI_FCGCFALLIDBW :   /* GCF All ID Read By Waiter */
         IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESGCF)];
+        IspResp.ulSavBuffSize = SERISP_MAX_LEN(sizeof(CLIRESGCF));
         IspResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
 
         ResMsgH.sReturn = SerGusAllIdReadBW(pReqMsgH->usGCType, pReqMsgH->ulWaiterNo, (USHORT *)IspResp.pSavBuff->auchData, IspResp.pSavBuff->usDataLen);
         if (0 <= ResMsgH.sReturn) {
             IspResp.pSavBuff->usDataLen = ResMsgH.sReturn;
+            NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
             ResMsgH.sResCode = STUB_MULTI_SEND;
         } else {
             IspResp.pSavBuff->usDataLen = 0;
@@ -255,7 +274,7 @@ VOID    IspRecvGCF(VOID)
 */
 VOID    IspCheckGCFUnLock(VOID)
 {
-    CLIRESGCF   *pResMsgH = (CLIRESGCF *)auchIspTmpBuf;
+    CLIRESGCF   * const pResMsgH = (CLIRESGCF *)auchIspTmpBuf;
 
     if ( CLI_FCGCFREADLOCK == (pResMsgH->usFunCode & CLI_RSTCONTCODE )) {
         IspCleanUpLockGCF(ISP_LOCK_INDGCF);  /* Unlock a GCF */

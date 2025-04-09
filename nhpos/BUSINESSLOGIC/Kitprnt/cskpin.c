@@ -2170,7 +2170,7 @@ SHORT   KpsCheckAsMaster(VOID)
     SYSCONFIG CONST *pSysconfig = PifSysConfig();    /* get system configration */;
 
     NbReadAllMessage(&NbInf);
-    if (CLI_TGT_MASTER == pSysconfig->auchLaddr[CLI_POS_UA]) {
+    if (PIFNET_TGT_MASTER == pSysconfig->auchLaddr[PIFNET_POS_UA]) {
         if (!(NbInf.fsSystemInf & NB_MTUPTODATE)) {
             return KPS_NOT_AS_MASTER;
         }

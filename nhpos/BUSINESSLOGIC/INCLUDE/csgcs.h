@@ -179,7 +179,7 @@ the TCHARs pushed the size over the limit.*/
 #define  GCF_MAX_GCF_NUMBER      5000  /* Maximum drive size *///800 JHHJ Guestcheck Change 800->5000 3-15-04
 #define  GCF_MAX_DRIVE_NUMBER    1999   /* Define Maximum Drive Thorugh Number *///99 JHHJ Guestcheck Change 99->999 3-15-04
 #define	 GCF_MAX_CHK_NUMBER		 9999  // Define Maximum Check Number for Non Store/Recall Guestchecks JHHJ 3-1-05
-#define  GCF_FILE_HEAD_POSITION  0L   /* File rewind */
+#define  GCF_FILE_HEAD_POSITION  0L   /* beginning of file where the file management data, GCF_FILEHED, is located. */
 #define  GCF_SET_ALL_LOCK        0xff /* ALL LOCK FLAG SET DATA */
 #define  GCF_READ_FLAG_MASK      0x01 /* Control flag mask bit */
 #define  GCF_DRIVE_THROUGH_MASK  0x80 /* drive through type mask bit */
@@ -265,8 +265,8 @@ SHORT   GusSearchForBarCode (USHORT usType, UCHAR *uchUniqueIdentifier, GCF_STAT
 SHORT   GusReqBackUp(VOID);
 SHORT   GusResBackUp(UCHAR  *puchRcvData, USHORT usRcvLen, UCHAR  *puchSndData, ULONG *pulSndLen);
 
-SHORT   GusReqBackUpFH(SHORT hsFileHandle);
-SHORT   GusResBackUpFH(UCHAR  *puchRcvData, USHORT usRcvLen, SHORT  hsFileHandle, ULONG ulOffset, USHORT *pusSndLen);
+SHORT   GusReqBackUpFH(PifFileHandle hsFileHandle);
+SHORT   GusResBackUpFH(UCHAR  *puchRcvData, USHORT usRcvLen, PifFileHandle  hsFileHandle, ULONG ulOffset, ULONG *pulSndLen);
 
 // The following #if is used to enable or disable
 // functionality to issues NHPOS_ASSERT log entries when

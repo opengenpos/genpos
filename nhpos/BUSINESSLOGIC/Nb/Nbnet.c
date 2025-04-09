@@ -98,21 +98,24 @@ SHORT  NbNetOpen(VOID)
     SYSCONFIG CONST  * pSys = PifSysConfig();          /* Read system configulation */
     SHORT sRet, sRetry;
 
+    memset(&NbSndBuf.NbMesHed, 0, sizeof(NbSndBuf.NbMesHed));
+    husNbNetHand = PIF_NET_INVALID_HANDLE;
+
     sRet = NbNetChkBoard(NB_MASTERUADD);
 
     if ( sRet ) { 
         return(sRet);                        /* If not 0, then NOT PROVIDED */
     }    
 
-    memcpy ((UCHAR *)&NbSndBuf.NbMesHed.auchFaddr[0], &pSys->auchLaddr[0], PIF_LEN_IP);
+    NbSndBuf.NbMesHed.auchAddr = *(AUCHADDR*)pSys->auchLaddr;
+    NbSndBuf.NbMesHed.auchFaddr[PIFNET_POS_UA] = (UCHAR)0;  /* Set All address */
+    NbSndBuf.NbMesHed.usFport = PIFNET_PORT_ANYPORT ;       /* Set port No.    */
+    NbSndBuf.NbMesHed.usLport = (PIFNET_PORT_NB | PIFNET_PORT_FLAG_CLUSTER);   /* Set port No.    */
 
-    NbSndBuf.NbMesHed.auchFaddr[3] = (UCHAR)0;  /* Set All address */
-    NbSndBuf.NbMesHed.usFport = ANYPORT ;       /* Set port No.    */
-    NbSndBuf.NbMesHed.usLport = (PIF_PORT_NB | PIF_PORT_FLAG_CLUSTER);   /* Set port No.    */
 
     sRetry = 0; /* ### ADD (2171 for Win32) V1.0 */
     for (;;) {
-        sRet = PifNetOpen((CONST XGHEADER *)&NbSndBuf.NbMesHed);
+        sRet = PifNetOpen(&NbSndBuf.NbMesHed);
 
         if (sRet >= 0) {
             break;                          /* if success, then retun */
@@ -128,7 +131,7 @@ SHORT  NbNetOpen(VOID)
     }
 
     husNbNetHand = sRet;                        /*  Save network handle */
-    NbSndBuf.NbMesHed.usFport = PIF_PORT_NB;    /* Set port No.    */
+    NbSndBuf.NbMesHed.usFport = PIFNET_PORT_NB;    /* Set port No.    */
 
     sRet = PifNetControl(husNbNetHand, PIF_NET_SET_MODE, PIF_NET_NMODE | PIF_NET_TMODE);
 
@@ -166,7 +169,7 @@ SHORT  NbNetReceive(VOID)
         return(sRet);                        /* if fail, then return */
     }
 
-    sRet = PifNetReceive(husNbNetHand, (VOID *)&NbRcvBuf, sizeof(NbRcvBuf));
+    sRet = PifNetReceive(husNbNetHand, &NbRcvBuf, sizeof(NbRcvBuf));
 
 #if NOTICEBOARD_ISOLATE
 	// allows for a test of what happens when a particular terminal is unable to receive
@@ -204,7 +207,7 @@ SHORT  NbNetReceive(VOID)
 
     if ( sRet == sizeof(NbRcvBuf)) {      /* Check receive data length */
         sRet = NB_SUCCESS;
-		NbSetMTBM_Online (NbRcvBuf.NbMesHed.auchFaddr[3]);  /* Set online indicator */
+		NbSetMTBM_Online (NbRcvBuf.NbMesHed.auchFaddr[PIFNET_POS_UA]);  /* Set online indicator */
     }  else {
         PifLog(MODULE_NB_LOG, LOG_ERROR_NB_NET_RECV_INVALIDDATA);
         sRet = NB_INVALIDDATA;                      /* Received illeagal data */
@@ -227,9 +230,22 @@ SHORT  NbNetReceive(VOID)
 */
 SHORT  NbNetSend(VOID)
 {
+#if defined(NbWriteMessage)
+    static NBCONTMES   NbConMesSave = { 0 };
+#endif
     SHORT sRet,sI;
                          
-	// Set a timeout for the send so that if the server is
+#if defined(NbWriteMessage)
+    if (memcmp (NbConMesSave.auchMessage, NbSndBuf.NbConMes.auchMessage, sizeof(NbSndBuf.NbConMes.auchMessage)) != 0) {
+        char xBuff[64];
+        sprintf(xBuff, "==NOTE: NbConMes.auchMessage  0x%x 0x%x 0x%x 0x%x", NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET0], NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET1],
+            NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET2], NbSndBuf.NbConMes.auchMessage[NB_MESOFFSET3]);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+        NbConMesSave = NbSndBuf.NbConMes;    // save a copy of the current message so that we won't repeat the same log multiple times.
+    }
+#endif
+
+    // Set a timeout for the send so that if the server is
 	// busy, we will get notified immediately.  Look at
 	// SerRecvNextFrame () in servrmh.c in the Server subsystem
 	// for an example of Server responding with STUB_BUSY.
@@ -237,7 +253,7 @@ SHORT  NbNetSend(VOID)
 
     for ( sI = 0; sI < 5 ; sI++ )
 	{
-        sRet = PifNetSend(husNbNetHand, (VOID *)&NbSndBuf, sizeof(NbSndBuf));
+        sRet = PifNetSend(husNbNetHand, &NbSndBuf, sizeof(NbSndBuf));
 
         if ( ( sRet != PIF_ERROR_NET_WRITE ) && 
              ( sRet != PIF_ERROR_NET_OFFLINE ) &&
@@ -358,7 +374,7 @@ SHORT  NbNetChkBoard(USHORT UAdd)
         return(PIF_ERROR_NET_NOT_PROVIDED);  /* If all 0, then NOT PROVIDED */
     } 
    
-    if ( 0 == pSys->auchLaddr[3] ) {
+    if ( 0 == pSys->auchLaddr[PIFNET_POS_UA] ) {
         PifLog(MODULE_NB_LOG, LOG_ERROR_NB_NET_NOT_PROVIDED);
         return(PIF_ERROR_NET_NOT_PROVIDED);  /* If UADDR 0, then NOT PROVIDED */
     }

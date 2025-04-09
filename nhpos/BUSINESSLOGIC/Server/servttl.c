@@ -82,26 +82,20 @@
 */
 VOID    SerRecvTtl(VOID)
 {
-    CLIREQTOTAL     *pReqMsgH;
-    CLIREQRESETTL   *pReqRstH;
-    CLIREQCASTEND   *pReqCasH;
+    CLIREQTOTAL     * const pReqMsgH = (CLIREQTOTAL *)SerRcvBuf.auchData;
+    CLIREQRESETTL   * const pReqRstH = (CLIREQRESETTL *)SerRcvBuf.auchData;
+    CLIREQCASTEND   * const pReqCasH = (CLIREQCASTEND *)SerRcvBuf.auchData;
     CLIREQDATA      *pSavBuff, *pRcvBuff;
-    CLIRESTOTAL     ResMsgH;
-    CLIRESCASTEND   ResCasH;
+    CLIRESTOTAL     ResMsgH = { 0 };
+    CLIRESCASTEND   ResCasH = { 0 };
     SHORT           sError, i;
 	USHORT          usDataLength = 0;
 	SHORT           sSerSendStatus;
 
-    pReqMsgH = (CLIREQTOTAL *)SerRcvBuf.auchData;
-    pReqRstH = (CLIREQRESETTL *)SerRcvBuf.auchData;
-    pReqCasH = (CLIREQCASTEND *)SerRcvBuf.auchData;
-
-    memset(&ResMsgH, 0, sizeof(CLIRESTOTAL));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.sResCode  = STUB_SUCCESS;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
 
-    memset(&ResCasH, 0, sizeof(CLIRESCASTEND));
     ResCasH.usFunCode = pReqCasH->usFunCode;
     ResCasH.sResCode  = STUB_SUCCESS;
     ResCasH.usSeqNo   = pReqCasH->usSeqNo & CLI_SEQ_CONT;
@@ -150,6 +144,7 @@ VOID    SerRecvTtl(VOID)
         if (TTL_SUCCESS == ResMsgH.sReturn) {
             pRcvBuff->usDataLen = sizeof(TTLCASHIER);
             SerResp.pSavBuff = pRcvBuff;
+            SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESTOTAL);
             ResMsgH.sResCode = STUB_MULTI_SEND;
         } else {
             pRcvBuff->usDataLen = 0;
@@ -167,6 +162,7 @@ VOID    SerRecvTtl(VOID)
         if (TTL_SUCCESS == ResMsgH.sReturn || TTL_NOTINFILE == ResMsgH.sReturn) {
             pRcvBuff->usDataLen = usDataLength;
 			SerResp.pSavBuff = pRcvBuff;
+            SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESTOTAL);
             ResMsgH.sResCode = STUB_MULTI_SEND;
         } else {
             pRcvBuff->usDataLen = 0;
@@ -176,9 +172,8 @@ VOID    SerRecvTtl(VOID)
 
     case    CLI_FCTTLREADTLCASTEND:         /* Saratoga */
 		{
-			TTLCASTENDER    TtlCas;
+            TTLCASTENDER    TtlCas = { 0 };
 
-			memset(&TtlCas, 0, sizeof(TTLCASTENDER));
 			TtlCas.ulCashierNumber = pReqCasH->ulCashierNumber;
 			ResMsgH.sReturn = TtlTenderAmountRead(&TtlCas);
 			if (TTL_SUCCESS == ResMsgH.sReturn) {
@@ -580,13 +575,13 @@ SHORT   SerChekTtlDelete(CLIREQRESETTL *pReqMsgH, CLIRESTOTAL *pResMsgH)
 */
 SHORT   SerRecvTtlReadPluEx(CLIREQRESETTL *pReqMsgH)
 {
-    CLIREQDATA  *pReqBuff;
+    CLIREQDATA  * const pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQRESETTL));
     TTLPLUEX    *pTtlEx;
     SHORT       sError, i, sTblId;
 
     SerResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[sizeof(CLIRESTOTAL)];
-	pTtlEx = (VOID *)SerResp.pSavBuff->auchData;
-	pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + sizeof(CLIREQRESETTL));
+    SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESTOTAL);
+    pTtlEx = (VOID *)SerResp.pSavBuff->auchData;
 
     SerResp.pSavBuff->usDataLen = 0;
 

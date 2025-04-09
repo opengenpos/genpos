@@ -118,7 +118,7 @@ SHORT   SerCpmEptReadResetTally(UCHAR uchType,  CPMEPT_TALLY *pTally)
 */
 UCHAR   CliCpmGetAsMasUaddr(VOID)
 {
-    UCHAR   uchUMA  = CLI_TGT_MASTER;
+    UCHAR   uchUMA  = PIFNET_TGT_MASTER;
     USHORT  fsComStatus = CstComReadStatus();
 
     if ((CLI_IAM_MASTER) && (fsComStatus & CLI_STS_M_UPDATE)) {
@@ -126,7 +126,7 @@ UCHAR   CliCpmGetAsMasUaddr(VOID)
     }
     if ((CLI_IAM_BMASTER) && (fsComStatus & CLI_STS_BM_UPDATE)) {
         if (0 == (fsComStatus & CLI_STS_M_UPDATE)) {
-            uchUMA = CLI_TGT_BMASTER; 
+            uchUMA = PIFNET_TGT_BMASTER; 
         }
     }
     return (uchUMA);

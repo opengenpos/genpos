@@ -355,6 +355,14 @@ SHORT  UicRPHand(UCHAR uchReq, USHORT usSys)
         return(UIC_SUCCESS);
     }
 
+    {
+        char xBuff[128];
+        PIFNETSTATUS sStatus = CstPifNetStatus();
+
+        sprintf(xBuff, "UicRPHand(): Notice Board message 0x%x  Client 0x%x  0x%x", uchReq, sStatus.fchStatus, sStatus.fchSatStatus);
+        NHPOS_NONASSERT_TEXT(xBuff);
+    }
+
     if ( uchReq & NB_REQALLPARA) {         /* Request All para , then execute. */
         NbResetMessage(NB_MESOFFSET0, NB_RSTALLPARA);
         PifLog(MODULE_UIC_LOG, LOG_EVENT_UIC_CHANGE_PARA);      /* Write log     */

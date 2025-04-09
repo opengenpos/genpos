@@ -17,9 +17,6 @@
 class CWindowEditBox : public CWindowControl  
 {
 public:
-	typedef enum {CaptionAlignmentHLeft = 0, CaptionAlignmentHCenter, CaptionAlignmentHRight, CaptionAlignmentVTop, CaptionAlignmentVMiddle, CaptionAlignmentVBottom} CaptionAlignment;
-	typedef enum {IconAlignmentHLeft = 0, IconAlignmentHCenter, IconAlignmentHRight} HorizontalIconAlignment;
-	typedef enum {IconAlignmentVTop = 0, IconAlignmentVMiddle, IconAlignmentVBottom} VerticalIconAlignment;
 
 	/*Structure containing all the attributes to be serialized for the WindowEditBox class
 	any new attributes need to be added at the end of the struct so data from 
@@ -51,7 +48,7 @@ public:
 	int nEndOfArchive;
 
 	static CWindowEditBox * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc && pwc->controlAttributes.m_nType == EditBoxControl)
+		if (pwc && pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::EditBoxControl)
 			return (static_cast <CWindowEditBox *> (pwc));
 		else
 			return NULL;

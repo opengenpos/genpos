@@ -861,7 +861,6 @@ SHORT   TtlReqBackEachPlu(const SHORT nMinorClass);                     /* ### A
 USHORT  TtlResBackEachPlu(TTLBACKUP_RES *pSend,const USHORT usMaxLen);  /* ### ADD 2172 Rel1.0 (01/25/00) */
 
 SHORT TtlPLUOpenRec(const SHORT nTblId,const ULONG ulSearchOpt,ULONG *pulRecNum);
-SHORT TtlPLUOpenRecNoSem(const SHORT nTblID, const ULONG ulSearchOpt, ULONG *pulRecNum);
 SHORT TtlPLUGetRec(TTLPLU * pDst);
 SHORT TtlPLUGetRecNoSem(TTLPLU * pDst);
 SHORT TtlPLUCloseRec(VOID);

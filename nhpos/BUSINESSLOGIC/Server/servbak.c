@@ -70,21 +70,23 @@
 */
 VOID    SerRecvBak(VOID)
 {
-    CLIREQBACKUP    *pReqMsgH = (CLIREQBACKUP*)SerRcvBuf.auchData;
+    CLIREQBACKUP    * const pReqMsgH = (CLIREQBACKUP*)SerRcvBuf.auchData;
+    CLIREQDATA      * const pSavBuff = (CLIREQDATA *)&SerRcvBuf.auchData[sizeof(CLIREQBACKUP)];
+    CLIREQDATA      * const pRcvBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESBACKUP)];
     CLIRESBACKUP    ResMsgH = { 0 };
-    CLIREQDATA      * pSavBuff = (CLIREQDATA *)&SerRcvBuf.auchData[sizeof(CLIREQBACKUP)];
-    CLIREQDATA      * pRcvBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESBACKUP)];
+    SERINQSTATUS    InqData = { 0 };
+    CLIREQDATABAK   * pReqData;
+    ULONG           ulDataLen;
     USHORT          usDataLen;
-	USHORT			usMaxTmpBuff;
-    DATE_TIME       NewPifDate;
-    CLIINQDATE      NewInqDate;
-    SERINQSTATUS    InqData;
-    CLIREQDATABAK   *pReqData;
+    USHORT			usMaxTmpBuff;
 	SHORT           sSerSendStatus;
 
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
     ResMsgH.sResCode  = STUB_MULTI_SEND;
+
+    SerResp.pSavBuff = pRcvBuff;
+    SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESBACKUP);
 
     usDataLen = SERISP_MAX_LEN(sizeof(CLIRESBACKUP));
 
@@ -99,10 +101,11 @@ VOID    SerRecvBak(VOID)
 
     case    CLI_FCBAKGCF:
         SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);
-        usDataLen = usMaxTmpBuff - sizeof(CLIRESBACKUP) - 2; 
-        ResMsgH.sReturn = GusResBackUpFH(pSavBuff->auchData, pSavBuff->usDataLen, hsSerTmpFile, SERTMPFILE_DATASTART + sizeof(CLIRESCOM), &usDataLen);
+        ulDataLen = usDataLen = usMaxTmpBuff - (SERTMPFILE_DATASTART + sizeof(CLIRESCOM));
+        ResMsgH.sReturn = GusResBackUpFH(pSavBuff->auchData, pSavBuff->usDataLen, hsSerTmpFile, SERTMPFILE_DATASTART + sizeof(CLIRESCOM), &ulDataLen);
+        usDataLen = ulDataLen;
         if (0 > ResMsgH.sReturn) {
-            usDataLen = 0;
+            ulDataLen = usDataLen = 0;
         } 
         break;
 
@@ -150,8 +153,8 @@ VOID    SerRecvBak(VOID)
         pReqData->fsBcasInf = InqData.fsBcasInf;
         ResMsgH.sReturn  = STUB_SUCCESS;
         ResMsgH.sResCode = STUB_SUCCESS;
-        ResMsgH.usSeqNo |= (CLI_SEQ_RECVDATA + CLI_SEQ_RECVEND);
-        sSerSendStatus = SerSendResponse((CLIRESCOM *)&ResMsgH, sizeof(CLIRESBACKUP), (UCHAR *)pRcvBuff->auchData, sizeof(CLIREQDATABAK));
+        ResMsgH.usSeqNo |= (CLI_SEQ_RECVDATA | CLI_SEQ_RECVEND);
+        sSerSendStatus = SerSendResponse((CLIRESCOM *)&ResMsgH, sizeof(CLIRESBACKUP), (UCHAR *)pReqData, sizeof(CLIREQDATABAK));
 		if (sSerSendStatus < 0) {
 			char xBuff [128];
 			sprintf (xBuff, "usFunCode = 0x%x, usSeqNo = 0x%x, sSerSendStatus = %d", pReqMsgH->usFunCode, pReqMsgH->usSeqNo, sSerSendStatus);
@@ -159,6 +162,9 @@ VOID    SerRecvBak(VOID)
 		}
 
         if (SER_IAM_MASTER) {
+            DATE_TIME       NewPifDate = { 0 };
+            CLIINQDATE      NewInqDate = { 0 };
+
             PifSleep(SER_SLEEP_TIMER);      /* delay */
             PifGetDateTime(&NewPifDate);
             SerConvertInqDate(&NewPifDate, &NewInqDate);
@@ -170,10 +176,10 @@ VOID    SerRecvBak(VOID)
         break;
 
     default:                                    /* not used */
+        SerResp.pSavBuff->usDataLen = 0;
         return;
         break;
     }
-    SerResp.pSavBuff = pRcvBuff;
     SerResp.pSavBuff->usDataLen = usDataLen;
     SerSendBakMultiple((CLIRESCOM *)&ResMsgH, sizeof(CLIRESBACKUP));
 }

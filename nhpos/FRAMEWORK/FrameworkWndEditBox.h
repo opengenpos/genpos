@@ -23,7 +23,7 @@ public:
 	CFont*	m_labelFont;
 
 	static CFrameworkWndEditBox * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == EditBoxControl)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::EditBoxControl)
 			return (static_cast <CFrameworkWndEditBox *> (pwc));
 		else
 			return NULL;

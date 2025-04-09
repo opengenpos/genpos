@@ -118,7 +118,7 @@ SHORT   CstTtlMasterReset(VOID)
     CliMsg.usResMsgHLen = sizeof(CLIRESTOTAL);
 
     if (STUB_SELF == (sErrorM = CstSendMaster())) {
-        SstResetIndTransNo(CLI_TGT_MASTER);
+        SstResetIndTransNo(PIFNET_TGT_MASTER);
 		usCliTranNo =  0;
         CliMsg.sRetCode = TTL_SUCCESS;
 		sErrorM = STUB_SUCCESS;
@@ -133,7 +133,7 @@ SHORT   CstTtlMasterReset(VOID)
 
 	sCliRetCode = CliMsg.sRetCode;
     if (STUB_SELF == (sErrorBM = CstSendBMaster())) {
-        SstResetIndTransNo(CLI_TGT_BMASTER);
+        SstResetIndTransNo(PIFNET_TGT_BMASTER);
 		usCliTranNo =  0;
 		sErrorBM = STUB_SUCCESS;
 		CliMsg.sRetCode = TTL_SUCCESS;
@@ -711,7 +711,7 @@ SHORT   CliTtlUpdateFileFH(ULONG ulOffset, SHORT hsFileHandle, USHORT usSize)
     if (STUB_SELF == (sErrorM = CstSendMasterFH(!CLI_FCBAKGCF))) {
         CliMsg.sRetCode = CstTtlUpdateFileFH(ulOffset, hsFileHandle, usSize, &uchDelayBalance);
         if (TTL_SUCCESS == CliMsg.sRetCode) {
-            usCliTranNo = SstIncTransNo(CLI_TGT_MASTER, ReqMsgH.usTransNo);
+            usCliTranNo = SstIncTransNo(PIFNET_TGT_MASTER, ReqMsgH.usTransNo);
                                 /* Change ++usCliTranNo to ReqMsgH.usTransNo, Dec/1/2000 */
         }
 		sErrorM = STUB_SUCCESS;
@@ -733,7 +733,7 @@ SHORT   CliTtlUpdateFileFH(ULONG ulOffset, SHORT hsFileHandle, USHORT usSize)
 		sErrorBM = STUB_SUCCESS;
 		if (TTL_SUCCESS == CliMsg.sRetCode) {
 			/* Change ++usCliTranNo to ReqMsgH.usTransNo, Dec/1/2000 */
-			usCliTranNoTemp = SstIncTransNo(CLI_TGT_BMASTER, ReqMsgH.usTransNo);
+			usCliTranNoTemp = SstIncTransNo(PIFNET_TGT_BMASTER, ReqMsgH.usTransNo);
 		}
         if (STUB_SUCCESS != sErrorM) {
 			if (TTL_SUCCESS == CliMsg.sRetCode) {

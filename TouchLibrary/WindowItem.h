@@ -91,7 +91,7 @@ public:
 	virtual void ControlSerialize (CArchive &ar);
 
 	static CWindowItem * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc && pwc->controlAttributes.m_nType == WindowContainer)
+		if (pwc && pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer)
 			return (static_cast <CWindowItem *> (pwc));
 		else
 			return NULL;

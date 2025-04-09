@@ -1348,6 +1348,9 @@ VOID   ItemModeInDisplay(UIFREGMODEIN *pData);
 /*
 * --------------------------------------------------------------------------
     Common Module's Functions Declaration
+
+    See function ItemCanTax() which is an entry point into the Canadian tax computation.
+
 * --------------------------------------------------------------------------
 */
     typedef struct {

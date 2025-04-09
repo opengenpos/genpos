@@ -24,7 +24,7 @@ CWindowListBox::CWindowListBox(CWindowControl *wc) :
 	//initialize attributes if not constructing from an existing object
 	if (!wc) {
 		m_Icon = _T("");
-		controlAttributes.m_nType = ListBoxControl;
+		controlAttributes.m_nType = CWindowControl::CWindowControlType::ListBoxControl;
 		lbAttributes.HorizontalOriented = TRUE;
 		lbAttributes.signatureStart = 0xABCDEF87;
 	}
@@ -36,7 +36,7 @@ CWindowListBox::CWindowListBox (int id, int row, int column, int width, int heig
 	CWindowControl(id, row, column, width, height)
 {
 	m_Icon = _T("");
-	controlAttributes.m_nType = ListBoxControl;
+	controlAttributes.m_nType = CWindowControl::CWindowControlType::ListBoxControl;
 	lbAttributes.HorizontalOriented = TRUE;
 	lbAttributes.signatureStart = 0xABCDEF87;
 }

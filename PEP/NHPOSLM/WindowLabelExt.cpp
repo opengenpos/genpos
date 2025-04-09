@@ -342,18 +342,18 @@ void CWindowLabelExt::OnPaint(void)
 		//for now the Image is centered on the button
 
 		//Horizontal Alignment
-		if(labelAttributes.horIconAlignment == IconAlignmentHLeft){//Image to left
+		if(labelAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHLeft){//Image to left
 			xPos = 1;
-		}else if(labelAttributes.horIconAlignment == IconAlignmentHRight){//Image to right
+		}else if(labelAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHRight){//Image to right
 			xPos = myRect.right - cxSource - 2;
 		}else {//Horizontal center
 			xPos = ((myRect.right - cxSource) / 2) - 1;
 		}
 		
 		//Vertical Alignment
-		if(labelAttributes.vertIconAlignment == IconAlignmentVTop){//Image to top
+		if(labelAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVTop){//Image to top
 			yPos = 1;
-		}else if(labelAttributes.vertIconAlignment == IconAlignmentVBottom){//Image to bottom
+		}else if(labelAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVBottom){//Image to bottom
 			yPos = myRect.bottom - cySource - 2;
 		}else{//Vertical Center
 			yPos = ((myRect.bottom - cySource) / 2) - 1;
@@ -411,7 +411,7 @@ void CWindowLabelExt::OnPaint(void)
 	CString csButtonText(myCaption);
 
 	switch(labelAttributes.capAlignment){
-	case CaptionAlignmentVBottom:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVBottom:
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);//calculate text area size on button
 		if(textRect.bottom <= tempRect.bottom){
 			//top of bottom aligned text is the height/size of the button(myRect.bottom) minus
@@ -428,7 +428,7 @@ void CWindowLabelExt::OnPaint(void)
 		
 		break;
 
-	case CaptionAlignmentVTop:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVTop:
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);//calculate text area size on button
 		textRect.top = tempRect.top + 2;
 		textRect.bottom = tempRect.bottom;
@@ -439,9 +439,9 @@ void CWindowLabelExt::OnPaint(void)
 		
 		break;
 
-	case CaptionAlignmentHLeft:
-	case CaptionAlignmentHRight:
-	case CaptionAlignmentHCenter:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHLeft:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHRight:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHCenter:
 		{
 			int textWidth = 0;//width of single character
 			int textHeight = 0;//height of single character
@@ -473,11 +473,11 @@ void CWindowLabelExt::OnPaint(void)
 			if(textRect.top < 2){
 				textRect.top = 2;
 			}
-			if(labelAttributes.capAlignment == CaptionAlignmentHLeft){//LEFT JUSTIFY
+			if(labelAttributes.capAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHLeft){//LEFT JUSTIFY
 				//move the left start point one character width from left side
 				textRect.left += textWidth * 5/3;
 				textRect.right = textRect.left + textWidth * 5/3;
-			}else if(labelAttributes.capAlignment == CaptionAlignmentHRight){//RIGHT JUSTIFY
+			}else if(labelAttributes.capAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHRight){//RIGHT JUSTIFY
 				//move the left start point one character width from right side
 				//multiply by two because the text is printed to the right of the
 				//start point so leave one character width from side and account
@@ -502,7 +502,7 @@ void CWindowLabelExt::OnPaint(void)
 		}
 		break;
 
-	case CaptionAlignmentVMiddle://vertically center and horizontally center text
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle://vertically center and horizontally center text
 		//same as default no break
 	default:
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);

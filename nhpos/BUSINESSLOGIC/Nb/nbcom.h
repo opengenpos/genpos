@@ -26,6 +26,9 @@
 *
 * Oct-05-99:01.00.00:M.Teraki   : Added #pragma(...)
 *
+** OpenGenPOS **
+* 
+* Mar-05-25:02.04.00:R.Chambers  : removed NB_STACK and no longer needed stack.
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -43,7 +46,6 @@
 *===========================================================================
 */
 
-#define NB_STACK              (((500+150)*2)/2) /* Stack Size, Saratoga   */
 #define NB_WITH_BACKUP_MASTER 1              /* With Backup Master System */
 
 /* Define function code for Zig Zag */
@@ -110,14 +112,14 @@
 #pragma pack(1)
 #endif
 
-
+// See also struct NBMESSAGE and uses of NB_MAX_MESSAGE.
 typedef struct {
         USHORT  usNbFunCode;
         USHORT  usSeqNO;
         USHORT  fsSystemInf;
         USHORT  fsBackupInf;
 		ULONG   ulParaHashCurrent;
-        TCHAR   auchMessage[NB_MAX_MESSAGE];
+        NBMESSAGE_T   auchMessage[NB_MAX_MESSAGE];
 }NBCONTMES;
 
 typedef struct {
@@ -151,9 +153,8 @@ extern USHORT  usNbRcvFBM;              /* Received a message from B-Master */
 extern USHORT  usNbSndCnt;              /* Controls a request same message counter */
 extern USHORT  usNbPreDesc;             /* Saves previous descriptor data   */
 
-extern USHORT  husNbSemHand;            /* Controls to read/write flags     */
-extern USHORT  usNbStack[NB_STACK];     /* Stack size                       */
-extern USHORT  husNbBkupSem;            /* Controls to Backup Copy 02/06/2001 */
+extern PifSemHandle  husNbSemHand;            /* Controls to read/write flags     */
+extern PifSemHandle  husNbBkupSem;            /* Controls to Backup Copy 02/06/2001 */
 
 /*--- Check for net work condition for system ------------------------------*/
 extern SHORT   sNbSavRes;               /* Send counter of confirm msg */

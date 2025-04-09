@@ -13,7 +13,22 @@
 * Category    : ISP Serber , US Hospitality Model
 * Program Name: ISPRMH.C                                            
 * --------------------------------------------------------------------------
-* Abstruct: The provided function names are as follows:  
+*    Georgia Southern University Research Services Foundation
+*    donated by NCR to the research foundation in 2002 and maintained here
+*    since.
+*       2002  -> NHPOS Rel 1.4  (Windows CE for NCR 7448, Visual Studio Embedded)
+*       2003  -> NHPOS Rel 2.0.0  (Windows XP for NCR touch screen, Datacap for EPT)
+*       2006  -> NHPOS Rel 2.0.4  (Windows XP, Rel 2.0.4.51)
+*       2006  -> NHPOS Rel 2.0.5  (Windows XP, US Customs, Store and Forward, Mobile Terminal, Rel 2.0.5.76)
+*       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
+*       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
+*       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
+*
+*    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
+* --------------------------------------------------------------------------
+* Abstruct: The provided function names are as follows:
 *
 *       IspRMHPassWord();          Receive during password state
 *       IspRMHNormal();         C  Receive during normal   state
@@ -139,11 +154,11 @@ VOID    IspRMHNormal(VOID)
     } else {
 		SHORT  sError;
 
-        sError = IspRecvMultiple(pResp);
+        sError = IspRecvMultiple();
         if (STUB_SUCCESS != sError) {
             IspSendError(sError);         /* Error response */
         } else {
-            IspRecvNormal(pResp);         /* Normal response */
+            IspRecvNormal(pResp->usFunCode);         /* Normal response */
         }
     }
 }
@@ -172,11 +187,11 @@ VOID    IspRMHMulSnd(VOID)
     } else {
 		SHORT  sError;
 
-        sError = IspSendNextFrame(pResp);        /* Check next frame data */
+        sError = IspSendNextFrame();             /* Check next frame data */
         if (STUB_MULTI_SEND == sError) {
                                                  /* Current is blank */
         } else if (STUB_SUCCESS == sError) {
-            IspRecvNormal(pResp);             
+            IspRecvNormal(pResp->usFunCode);
         } else {
             IspSendError(sError);                /* Error response  */
             if (ISP_ST_NORMAL == usIspState ) {  /* if NORMAL state */
@@ -210,9 +225,9 @@ VOID    IspRMHMulRcv(VOID)
     } else {
 		SHORT  sError;
 
-        sError = IspRecvNextFrame(pResp);      /*  Receive next frame data */
+        sError = IspRecvNextFrame();      /*  Receive next frame data */
         if (STUB_SUCCESS == sError) {
-            IspRecvNormal(pResp);              /*  Execute a received function */
+            IspRecvNormal(pResp->usFunCode);              /*  Execute a received function */
         } else {
             IspSendError(sError);              /* Error response */
         }
@@ -222,8 +237,8 @@ VOID    IspRMHMulRcv(VOID)
 
 /*
 *===========================================================================
-** Synopsis:    VOID    IspRecvNormal(CLIREQCOM *pReqMsgH);
-*     InPut:    pReqMsgH    - Pointer of received request message
+** Synopsis:    VOID    IspRecvNormal(pResp->usFunCode);
+*     InPut:    usFunCode  - message function code from received request message
 *     Output:   nothing
 *     InOut:    nothing
 *
@@ -232,10 +247,10 @@ VOID    IspRMHMulRcv(VOID)
 ** Description: This function decides a function to call each modele.
 *===========================================================================
 */
-VOID    IspRecvNormal(CLIREQCOM *pReqMsgH)
+VOID    IspRecvNormal(USHORT  usFunCode)
 {
     SHORT      fsComStatus;
-    USHORT     usFun = (pReqMsgH->usFunCode & CLI_FCMSG_TYPE);   /* What kind of message ? */
+    USHORT     usFun = (usFunCode & CLI_FCMSG_TYPE);   /* What kind of message ? */
 
     /* --- clean up ej status, after the comm. down of ej reset, R2.0 GCA */
     if (CLI_FCEJ != usFun)
@@ -264,7 +279,7 @@ VOID    IspRecvNormal(CLIREQCOM *pReqMsgH)
 
         switch( usFun ) {  /* What kind of message ? */
         case    CLI_FCCAS:              /* Cashier Function */
-            IspRecvSatCasWai((USHORT)(pReqMsgH->usFunCode & CLI_RSTCONTCODE));
+            IspRecvSatCasWai((USHORT)(usFunCode & CLI_RSTCONTCODE));
             break;
         
         case    CLI_FCOP:               /* Op. Para and Parameter Function */
@@ -346,10 +361,11 @@ VOID    IspRecvNormal(CLIREQCOM *pReqMsgH)
 ** Description: This function checks to receive multi. data.
 *===========================================================================
 */
-SHORT   IspRecvMultiple(CLIREQCOM *pReqMsgH)
+SHORT   IspRecvMultiple(VOID)
 {
+    CLIREQCOM   * const pReqMsgH = (CLIREQCOM *)IspRcvBuf.auchData;
     CLIREQDATA  *pReqBuff;
-    USHORT      usReqMsgHLen;
+    USHORT      usReqMsgHLen = IspCheckFunCode(pReqMsgH->usFunCode);
 
     if (0 == pReqMsgH->usSeqNo) {    
         return (STUB_SUCCESS);       /* Received without data function */
@@ -361,12 +377,14 @@ SHORT   IspRecvMultiple(CLIREQCOM *pReqMsgH)
         return (STUB_SUCCESS);                       /* Received 1 frame data */
     }                                                
 
-    usReqMsgHLen     = IspCheckFunCode(pReqMsgH->usFunCode);
-    pReqBuff         = (CLIREQDATA *)((UCHAR *)pReqMsgH + usReqMsgHLen);
+    pReqBuff = (CLIREQDATA *)(IspRcvBuf.auchData + usReqMsgHLen);
+
     IspResp.pSavBuff = (CLIREQDATA *)&auchIspTmpBuf[usReqMsgHLen];
+    IspResp.ulSavBuffSize = sizeof(auchIspTmpBuf) - usReqMsgHLen;
 
     memcpy(auchIspTmpBuf, pReqMsgH, usReqMsgHLen);       /* Save header */
     IspResp.pSavBuff->usDataLen = pReqBuff->usDataLen;
+    NHPOS_ASSERT(IspResp.ulSavBuffSize >= IspResp.pSavBuff->usDataLen);
     memcpy(IspResp.pSavBuff->auchData, pReqBuff->auchData, pReqBuff->usDataLen);
     
     if (0 == (pReqMsgH->usSeqNo & CLI_SEQ_SENDEND)) {    /* if not last data */
@@ -380,7 +398,7 @@ SHORT   IspRecvMultiple(CLIREQCOM *pReqMsgH)
 
 /*
 *===========================================================================
-** Synopsis:    SHORT   IspRecvNextFrame(CLIREQCOM *pReqMsgH);
+** Synopsis:    SHORT   IspRecvNextFrame(VOID);
 *     Input:    pReqMsgH    - Pointer of received request message
 *     Output:   nothing
 *     InOut:    nothing
@@ -394,10 +412,11 @@ SHORT   IspRecvMultiple(CLIREQCOM *pReqMsgH)
 ** Description: This function checks to receive during multi. receiving state.
 *===========================================================================
 */
-SHORT   IspRecvNextFrame(CLIREQCOM *pReqMsgH)
+SHORT   IspRecvNextFrame(VOID)
 {
-    CLIREQCOM   *pSavMsgH = (CLIREQCOM *)auchIspTmpBuf;
-    CLIREQDATA  *pReqBuff;        
+    CLIREQCOM   * const pReqMsgH = (CLIREQCOM*)IspRcvBuf.auchData;
+    CLIREQCOM   * const pSavMsgH = (CLIREQCOM *)auchIspTmpBuf;
+    CLIREQDATA  *pReqBuff;
                                 
     if (0 == pReqMsgH->usSeqNo) {               /* Another req. received */
         IspChangeStatus(ISP_ST_NORMAL);
@@ -418,7 +437,8 @@ SHORT   IspRecvNextFrame(CLIREQCOM *pReqMsgH)
         IspChangeStatus(ISP_ST_NORMAL);
         return (STUB_FRAME_SEQERR + STUB_RETCODE);
     }
-    pReqBuff = (CLIREQDATA *)((UCHAR *)pReqMsgH + IspResp.usPrevMsgHLen);
+
+    pReqBuff = (CLIREQDATA *)(IspRcvBuf.auchData + IspResp.usPrevMsgHLen);
     memcpy(IspResp.pSavBuff->auchData + IspResp.pSavBuff->usDataLen, pReqBuff->auchData, pReqBuff->usDataLen);
 
     IspResp.pSavBuff->usDataLen += pReqBuff->usDataLen;
@@ -449,19 +469,19 @@ SHORT   IspRecvNextFrame(CLIREQCOM *pReqMsgH)
 */
 VOID    IspSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
 {
-    USHORT      usDataMax, usDataLen;
+    TrnVliOffset    usDataMax, usDataSiz;
 
     if (ISP_ST_NORMAL == usIspState) {         /* Is current NORMAL ? */
         IspResp.usPrevDataOff = 0;
         IspResp.usPrevMsgHLen = usResMsgHLen;
         IspResp.uchPrevUA     = IspRcvBuf.auchFaddr[CLI_POS_UA];
     }
-    usDataLen = IspResp.pSavBuff->usDataLen - IspResp.usPrevDataOff;
+    usDataSiz = IspResp.pSavBuff->usDataLen - IspResp.usPrevDataOff;
     usDataMax = PIF_LEN_UDATA_MAX(usResMsgHLen);
 	/* Leave room for IP address, headers, and additional data (see functions
 	 * IspSendResponse and PifNetSendG/D) */
-    if (usDataLen > usDataMax) {                /* still exist send data */
-        usDataLen = usDataMax;
+    if (usDataSiz > usDataMax) {                /* still exist send data */
+        usDataSiz = usDataMax;
         IspChangeStatus(ISP_ST_MULTI_SEND);
     } else {                                    /* all data send */
         if (pResMsgH->usFunCode & CLI_FCWCONFIRM) {
@@ -475,15 +495,15 @@ VOID    IspSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
     pResMsgH->usSeqNo |= CLI_SEQ_RECVDATA;
     memcpy(auchIspTmpBuf, pResMsgH, usResMsgHLen);
                                                 /** Send Response **/    
-    IspSendResponse(pResMsgH, usResMsgHLen, IspResp.pSavBuff->auchData + IspResp.usPrevDataOff, usDataLen);
+    IspSendResponse(pResMsgH, usResMsgHLen, IspResp.pSavBuff->auchData + IspResp.usPrevDataOff, usDataSiz);
 
-    IspResp.usPrevDataOff += usDataLen;       /* Advance next pointer */
+    IspResp.usPrevDataOff += usDataSiz;       /* Advance next pointer */
 }
 
 /*
 *===========================================================================
-** Synopsis:    SHORT   IspSendNextFrame(CLIREQCOM *pReqMsgH);
-*     Input:    pReqMsgH    - Pointer of received request message
+** Synopsis:    SHORT   IspSendNextFrame(VOID);
+*     Input:    nothing
 *     Output:   nothing
 *     InOut:    nothing
 *
@@ -496,9 +516,10 @@ VOID    IspSendMultiple(CLIRESCOM *pResMsgH, USHORT usResMsgHLen)
 ** Description: This function checks to receive during multi. sending state.
 *===========================================================================
 */
-SHORT   IspSendNextFrame(CLIREQCOM *pReqMsgH)
+SHORT   IspSendNextFrame(VOID)
 {
-    CLIRESCOM   *pSavMsgH = (CLIRESCOM *)auchIspTmpBuf;
+    CLIREQCOM   * const pReqMsgH = (CLIREQCOM*)IspRcvBuf.auchData;
+    CLIRESCOM   * const pSavMsgH = (CLIRESCOM *)auchIspTmpBuf;
                                             
     if (0 == pReqMsgH->usSeqNo) {               /* another req. received */
         IspChangeStatus(ISP_ST_NORMAL);
@@ -830,7 +851,7 @@ SHORT   IspCheckResponse(VOID)
 SHORT    IspCheckNetRcvData(VOID)      
 {
     if (ISP_SUCCESS == IspResp.sError) {    /* Receive Success ? */
-		CLIREQCOM       *pReqM = (CLIREQCOM *)IspRcvBuf.auchData;
+		CLIREQCOM       * const pReqM = (CLIREQCOM *)IspRcvBuf.auchData;
 		CLIREQDATA      *pBuff;        
 		USHORT          usDataLen = IspCheckFunCode( pReqM->usFunCode );
 
@@ -875,7 +896,7 @@ SHORT    IspCheckNetRcvData(VOID)
 */
 VOID    IspRecvSatCasWai(USHORT usFun)
 {
-    CLIREQCASHIER   *pReqMsgH = (CLIREQCASHIER *)IspRcvBuf.auchData;
+    CLIREQCASHIER   * const pReqMsgH = (CLIREQCASHIER *)IspRcvBuf.auchData;
     CLIRESCASHIER   ResMsgH = {0};
     CASIF           Casif = {0};
     SHORT           sError;

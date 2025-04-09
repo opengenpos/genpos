@@ -162,22 +162,15 @@ VOID   PIFENTRY PifGetDateTime(DATE_TIME *pDateTime)
 }
 
 // update only DATE_TIME fields needed for a timer such as PIFTIMER
-VOID   PIFENTRY PifGetDateTimeTimer(DATE_TIME* pDateTime)
+VOID   PIFENTRY PifGetDateTimeTimer(PIFTIMER * pDateTime)
 {
 	SYSTEMTIME  SystemTime;
 
 	GetLocalTime(&SystemTime);
 
-	memset(pDateTime, 0, sizeof(DATE_TIME));
-
-	pDateTime->usYear = SystemTime.wYear;
-	pDateTime->usMonth = SystemTime.wMonth;
-	pDateTime->usWDay = SystemTime.wDayOfWeek;
-	pDateTime->usMDay = SystemTime.wDay;
-	pDateTime->usHour = SystemTime.wHour;
-	pDateTime->usMin = SystemTime.wMinute;
-	pDateTime->usSec = SystemTime.wSecond;
-	/* SystemTime.wMilliseconds */
+	pDateTime->uchHour = (UCHAR) SystemTime.wHour;
+	pDateTime->uchMin = (UCHAR)SystemTime.wMinute;
+	pDateTime->uchSec = (UCHAR)SystemTime.wSecond;
 }
 
 /*fhfh

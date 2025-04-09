@@ -107,6 +107,7 @@ SHORT   CliIsMasterOrBMaster(VOID); /* Saratoga */
 
 SHORT   CstIamMaster(VOID);
 SHORT   CstIamBMaster(VOID);
+PIFNETSTATUS CstPifNetStatus(VOID);
 SHORT   CstIamDisconnectedSatellite(VOID);
 SHORT   CstIamDisconnectedUnjoinedSatellite(VOID);
 SHORT   CstIamSatellite(VOID);

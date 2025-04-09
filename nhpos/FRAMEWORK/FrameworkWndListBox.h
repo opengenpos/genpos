@@ -55,7 +55,7 @@ public:
 	static void sendListBoxMessageToBL(CHARDATA* pCharData);//Sends data into BusinessLogic From Button Press
 
 	static CFrameworkWndListBox * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == ListBoxControl)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ListBoxControl)
 			return (static_cast <CFrameworkWndListBox *> (pwc));
 		else
 			return NULL;

@@ -323,7 +323,7 @@ extern "C"{
 	#define PIF_NET_NMODE        0x01      /* normal mode              */
 	#define PIF_NET_DMODE        0x02      /* data only mode           */
 	#define PIF_NET_TMODE        0x20      /* timeout options          */
-	#define PIF_NET_RESTRICTED   0x40      // Virtual port restricted to messages only within this cluster, PIF_PORT_FLAG_CLUSTER
+	#define PIF_NET_RESTRICTED   0x40      // Virtual port restricted to messages only within this cluster, PIFNET_PORT_FLAG_CLUSTER
 
 	// additional internal net_body.c flags used for network connection state.
 	// included here because used in conjunction with the above PIF_NET_SET_MODE flags.
@@ -347,6 +347,10 @@ extern "C"{
 #define	PIF_NET_RESET_SEQNO	      28       // Reset the message sequence number to zero in (pUser->infSending).usSeqNo
 #define PIF_NET_GET_USER_INFO     30       /* retrieve the pUser stats */
 
+// following status bits used with function PifNetOpenEx() to indicate the type of network connection.
+// NHPOS 1.4 had PIF_NET_GENERALPORTMODE, for terminals within a cluster, and PIF_NET_DIRECTPORTMODE, for Third Party
+// software that used the PCIF interface.
+// with GenPOS 2.1 we added PIF_NET_TCPCONNECTMODE, for TCP devices such as LAN kitchen printers.
 #define PIF_NET_GENERALPORTMODE 0x0001     // standard terminal mode with UDP protocol and XGHEADER header. see PifNetOpenG().
 #define PIF_NET_DIRECTPORTMODE  0x0002     // direct UDP protocol that does not use standard terminal mode. See PifNetOpenD().
 #define PIF_NET_TCPCONNECTMODE  0x0004     // direct TCP protocol for special services such as remote LAN kitchen printer.
@@ -373,21 +377,77 @@ extern "C"{
 	NetManager() which are involved in the initialization of the
 	network layer with the various virtual port queues.
 -------------------------------------------------*/
-#define ANYPORT 0       /* indicate any port assignment */
+#define PIFNET_PORT_ANYPORT      0       /* indicate any port assignment */
 
 /* use port no. from 1 to 200 for PIFNET.DLL control, except prot no. 7, 2172 */
-#define PIF_PORT_STUB        10     /* Stub or Client port number. See CstNetOpen() and CstInitialize(). See also CLI_PORT_STUB  */
-#define PIF_PORT_SERVER      20     /* Server port number. See SerStartUp(). See also CLI_PORT_SERVER  */
-#define PIF_PORT_NB          30     /* Notice Board port no. See also CLI_PORT_NB */
-#define PIF_PORT_ISPSERVER   40     /* ISP or Remote Host Server port no. See IspMain() and IspNetOpen(). See also CLI_PORT_ISPSERVER */
-#define PIF_PORT_CPM         50     /* Charge Posting Manager port no. See also CLI_PORT_CPM */
-#define PIF_PORT_CPM_HOST    60     /* Charge Post IF to charge post host. See also CLI_PORT_CPM_HOST */
-#define PIF_PORT_EEPT_HOST   70     /* EEPT IF to enhanced electronic payment terminal host. See also CLI_PORT_EEPT_HOST */
+#define PIFNET_PORT_STUB        10     /* Stub or Client port number. See CstNetOpen() and CstInitialize(). See also CLI_PORT_STUB  */
+#define PIFNET_PORT_SERVER      20     /* Server port number. See SerStartUp(). See also CLI_PORT_SERVER  */
+#define PIFNET_PORT_NB          30     /* Notice Board port no. See also CLI_PORT_NB */
+#define PIFNET_PORT_ISPSERVER   40     /* ISP or Remote Host Server port no. See IspMain() and IspNetOpen(). See also CLI_PORT_ISPSERVER */
+#define PIFNET_PORT_CPM         50     /* Charge Posting Manager port no. See also CLI_PORT_CPM */
+#define PIFNET_PORT_CPM_HOST    60     /* Charge Post IF to charge post host. See also CLI_PORT_CPM_HOST */
+#define PIFNET_PORT_EEPT_HOST   70     /* EEPT IF to enhanced electronic payment terminal host. See also CLI_PORT_EEPT_HOST */
 
-#define PIF_PORT_FLAG_REMOVE   0x00ff    // used to remove flags to keep only the port number
-#define PIF_PORT_FLAG_CLUSTER  0x0100    // Flag indicates that messages should be filtered to be from Master or Backup Master only
+#define PIFNET_PORT_FLAG_REMOVE   0x00ff    // used to remove flags to keep only the port number
+#define PIFNET_PORT_FLAG_CLUSTER  0x0100    // Flag indicates that messages should be filtered to be from Master or Backup Master only
 
 #define PIF_NET_MAX_IP      16     /* max. cluster size */
+
+/*
+------------------------------------------
+    NET Status  (PIFNETCONFIG.fchStatus)
+    See struct PIFNETCONFIG below.
+------------------------------------------
+*/
+#define PIFNET_NET_OPEN                0x01     /* NET opened */
+#define PIFNET_NET_SEND                0x02     /* NET sending */
+#define PIFNET_NET_RECEIVE             0x04     /* NET receiving */
+#define PIFNET_NET_BACKUP              0x10     /* NET back up system */
+#define PIFNET_NET_PROHIBIT_SEND       0x20     /* NET prohibit sending */
+#define PIFNET_NET_USING_ACKNAK        0x40     /* we are using PIF_NET_SET_STIME to implement Ack/Nak for ISP thread */
+
+//------------------------------------------------
+//     SAT Status Definition
+//     used with PIFNETCONFIG.fchSatStatus to indicate
+//     Satellite Terminal status.
+// 
+//     See struct PIFNETCONFIG below.
+//-------------------------------------------------
+#define     PIFNET_SAT_DISCONNECTED    0x0001     // Terminal is a Disconnected Satellite, see also PIF_CLUSTER_DISCONNECTED_SAT
+#define     PIFNET_SAT_UPTODATE        0x0002     // Terminal is up to date with parameters.
+#define     PIFNET_SAT_JOINED          0x0004     // Terminal has been joined to a cluster.  see also PIF_CLUSTER_JOINED_SAT
+
+/*------------------------------------------------
+    Target GenPOS terminal Unique Address - CLI_POS_UA
+
+    There are at least three different network interfaces used
+    in GenPOS.
+      - UDP IPv4 address of a terminal device such as a GenPOS terminal, PIF_NET_GENERALPORTMODE
+      - UDP IPv4 address of a non-terminal device such as Third Party software, PIF_NET_DIRECTPORTMODE
+      - TCP IPv4 address of a non-terminal device such as a WiFi kitchen printer, PIF_NET_TCPCONNECTMODE
+
+    See the initialization code in PifNetStartupDiscoverNet() for terminal discovery.
+
+    The NHPOS Network Layer does a translation between the
+    actual IPv4 address of a terminal and the standard IPv4
+    address of a terminal. This is for PIF_NET_GENERALPORTMODE
+    devices only such as the terminals in a cluster.
+
+    The standard IPv4 address provided to the layers abouve the
+    NHPOS Network Layer have an IPv4 address of 192.0.0.x where x
+    is the terminal number or terminal unique address. See PifNetSendG().
+
+    NOTE: To check the Backup Master terminal requires two steps.
+          The first is to check the terminal number of the fourth
+          array element of the IPv4 address (CLI_POS_UA). The second is to check
+          that a Backup Master has been provisioned. See PIFNET_NET_BACKUP.
+-------------------------------------------------*/
+#define     PIFNET_TGT_MASTER        1     /* Master terminal unique address, PIF_NET_GENERALPORTMODE only */
+#define     PIFNET_TGT_BMASTER       2     /* B. Master unique address, PIF_NET_GENERALPORTMODE only, PIFNET_NET_BACKUP only */
+#define     PIFNET_TGT_BROADCAST   255     /* Broadcast to all terminals in cluster, PIF_NET_GENERALPORTMODE only */
+
+#define     PIFNET_POS_UA          3       /* terminal unique address auchFaddr[?], PIF_NET_GENERALPORTMODE only */
+
 
 /* used with "control keyboard, PifControlKeyboard()" */
 #define PIF_KEY_ENABLE      0
@@ -799,6 +859,9 @@ NOTE: See also IspRecvSysConfig() and the PCIF message format buffer
 typedef short PifFileHandle;
 #define PIF_FILE_INVALID_HANDLE  0xffff
 
+typedef short PifNetHandle;
+#define PIF_NET_INVALID_HANDLE  (PifNetHandle)0xffff
+
 typedef unsigned short PifSemHandle;
 #define PIF_SEM_INVALID_HANDLE  0xffff
 
@@ -991,7 +1054,10 @@ extern UifPrinterBarcodeStruct  UifPrinterBarcodeSettings;
 /* Interface and the Simulator to access the table of pointer to a function. */
 typedef VOID (PIFENTRY *PIFDEF)(VOID);
 
- 
+typedef struct auchAddr {
+    UCHAR   auchAddr[PIF_LEN_IP];    // IPv4 address array wrapped in a struct for easy assignment
+} AUCHADDR ;
+
 /************************
  *  Declare Structures  *
  ************************/
@@ -1027,12 +1093,22 @@ typedef struct {           // see function PifGetDateTime(DATE_TIME *pDateTime),
  *       the port number in the header is not the IP address port number
  *       which is a fixed IP port used for NHPOS UDP network traffic.
  *       The port number in the header is the NHPOS task port number used
- *       by the NHPOS network layer to determine the NHPOS task or thread
- *       that is supposed to receive the message such as Client, Server, etc.
+ *       by the NHPOS network layer to determine the two NHPOS tasks or threads
+ *       that are sending and receiving messages being sent such as Client, Server, etc.
+ *       usFport is always the Far terminal endpoint port and usLport is the
+ *       Local terminal endpoint port.
  *
  *       However for a TCP connection, the usFport contains the destination IP port
  *       number for the TCP connection since TCP connections are to devices
  *       other than an NHPOS terminal such as receipt printers on a LAN.
+ * 
+ * NOTE: The XGHEADER in a received network message contains the IPv4 address of
+ *       the sending terminal along with the source task. The value in the member
+ *       usFport is the task port number of the task of the Far or other terminal.
+ *       This value is from the member usSourcePort of the received data message
+ *       so you can search for that to find where the assignment is done.
+ *       THIS MEANS usFport CONTAINS THE TASK PORT THAT SENT THE REQUEST AND
+ *       usFport CONTAINS THE TASK PORT TO SEND THE RESPONSE TO.
  *
  * The message data area of the XGRAM struct contains the request data and
  * the response data. The uppper part of the NHPOS Client network layer uses
@@ -1044,8 +1120,11 @@ typedef struct {           // see function PifGetDateTime(DATE_TIME *pDateTime),
 */
 
 typedef struct {
-    UCHAR   auchFaddr[PIF_LEN_IP];   // Far or destination IPv4 host address for UDP or TCP traffic
-    USHORT  usFport;                 // Far or destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
+    union {
+        UCHAR     auchFaddr[PIF_LEN_IP];   // Far or destination IPv4 host address for UDP or TCP traffic
+        AUCHADDR  auchAddr;
+    };
+    USHORT  usFport;                 // Far or sender/destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
     USHORT  usLport;                 // Local or source NHPOS network layer port or task identifier for UDP traffic
 } XGHEADER, * PXGHEADER;
 
@@ -1055,16 +1134,26 @@ typedef struct {
  * block of request and response data to transport. See details above.
 */
 typedef struct {
-    UCHAR   auchFaddr[PIF_LEN_IP];   // Far or destination IPv4 host address for UDP or TCP traffic
-    USHORT  usFport;                 // Far or destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
-    USHORT  usLport;                 // Local or source NHPOS network layer port or task identifier for UDP traffic
+    union {         // anonymous union to allow assignment of header when formating response to a request
+        struct {    // same layout for the anonymous struct as for struct XGHEADER
+            UCHAR   auchFaddr[PIF_LEN_IP];   // Far or sender/destination IPv4 host address for UDP or TCP traffic
+            USHORT  usFport;                 // Far or sender/destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
+            USHORT  usLport;                 // Local or source NHPOS network layer port or task identifier for UDP traffic
+        };
+        XGHEADER xgHeader;
+    };
     UCHAR   auchData[PIF_LEN_UDATA]; // buffer for request, CLIREQDATA, followed by response, CLIRESCOM.
 } XGRAM, * PXGRAM;
 
 typedef struct {
-    UCHAR   auchFaddr[PIF_LEN_IP];   // Far or destination IPv4 host address for UDP or TCP traffic
-    USHORT  usFport;                 // Far or destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
-    USHORT  usLport;                 // Local or source NHPOS network layer port or task identifier for UDP traffic
+    union {         // anonymous union to allow assignment of header when formating response to a request
+        struct {    // same layout for the anonymous struct as for struct XGHEADER
+            UCHAR   auchFaddr[PIF_LEN_IP];   // Far or sender/destination IPv4 host address for UDP or TCP traffic
+            USHORT  usFport;                 // Far or sender/destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
+            USHORT  usLport;                 // Local or source NHPOS network layer port or task identifier for UDP traffic
+        };
+        XGHEADER xgHeader;
+    };
     UCHAR   auchData[PIF_LEN_UDATA_EX]; // buffer for response, CLIRESCOM, followed by request, CLIREQDATA.
 } XGRAMEX, * PXGRAMEX;  /* for externel communication, 2172 */
 
@@ -1081,10 +1170,22 @@ typedef struct {                                /* XGNAME structure         */
     NET work configuration structure
 ---------------------------------------*/
 typedef struct {
-    UCHAR       auchFaddr[PIF_LEN_IP];      /* IP Address saved */
-    USHORT      usHandle;                   /* NET work handle saved */
-    UCHAR       fchStatus;                  /* NET work status */
-    USHORT      fchSatStatus;              /* Satellite Status */
+    UCHAR          fchStatus;                  /* NET work status, see PIFNET_NET_OPEN and other status bits */
+    USHORT         fchSatStatus;               /* Satellite Status, see PIFNET_SAT_DISCONNECTED and other status bits */
+} PIFNETSTATUS;
+
+typedef struct {
+    union {         // anonymous union to allow assignment of header when formating response to a request
+        struct {    // same layout for the anonymous struct as for struct XGHEADER
+            UCHAR          auchFaddr[PIF_LEN_IP];      /* IPv4 Address saved */
+            USHORT         usFport;                    // Far or sender/destination NHPOS network layer port or task identifier for UDP traffic or IP port for TCP traffic
+            USHORT         usLport;                    // Local or source NHPOS network layer port or task identifier for UDP traffic
+        };
+        XGHEADER           xgHeader;                   // IPv4 address with far and local PIF network port numbers.
+    };
+    PifNetHandle   usHandle;                   /* NET work handle saved */
+    UCHAR          fchStatus;                  /* NET work status, see PIFNET_NET_OPEN and other status bits */
+    USHORT         fchSatStatus;               /* Satellite Status, see PIFNET_SAT_DISCONNECTED and other status bits */
 } PIFNETCONFIG;
 
 /*--------------------------------------
@@ -1695,7 +1796,7 @@ VOID PIFENTRY *PifGetWindowHandle (void **ppHwnd);
 VOID PIFENTRY PifSnapShotTables (VOID);
 
 ULONG PIFENTRY PifBeginThread(VOID (THREADENTRY *pStart)(VOID),
-                               VOID  *pStack, USHORT usStackSize,
+                               VOID  * pStackNotUsed, USHORT usStackSizeNotUsed,
                                USHORT usPriority,
                                CONST CHAR  *pszThreadName, ...);
 VOID   PIFENTRY PifEndThread(VOID);
@@ -1731,7 +1832,7 @@ VOID * PIFENTRY PifReadQueue(USHORT usQueue);
 /* --- Time --- */
 VOID   PIFENTRY PifSleep(USHORT usMsec);
 VOID   PIFENTRY PifGetDateTime(DATE_TIME *pDateTime);
-VOID   PIFENTRY PifGetDateTimeTimer(DATE_TIME* pDateTime);
+VOID   PIFENTRY PifGetDateTimeTimer(PIFTIMER * pDateTime);
 VOID   PIFENTRY PifSetDateTime(CONST DATE_TIME *pDateTime);
 
 /* --- Get elapsed time since system was started (DollarTree SCER 2000-11-17) ---*/

@@ -39,7 +39,6 @@
 */
 
 /*----- FDT Thread Definition -----*/
-#define     FDT_STACK                   ((3072*2)/2)    /* Stack Size, Saratoga */
 
 /*----- For FDTLocal.fsFDTStatus;         FDT Status -----*/
 
@@ -67,14 +66,14 @@ typedef struct {
 	GCNUM            uchOrderNo1;						/* Order No for File #1 */
 	DCURRENCY        lMI1;								/* MI #1 */
 	PifFileHandle    husTranHandle1;					/* Transaction File Handle#1 */
-	USHORT           usTranSize1;						/* Transaction File Size#1 */
-	USHORT           usTranVli1;						/* Transaction Size#1 */
+	TrnFileSize      usTranSize1;						/* Transaction File maximum Size #1 */
+	USHORT           usTranVli1;						/* Guest Check Transaction Size #1 */
 	ULONG            fsGCFStatus1;						/* GCF Status #1 */
 	GCNUM            uchOrderNo2;						/* Order No for File #2 */
 	DCURRENCY        lMI2;								/* MI #2 */
 	PifFileHandle    husTranHandle2;					/* Transaction File Handle#2 */
-	USHORT           usTranSize2;						/* Transaction File Size#2 */
-	USHORT			 usTranVli2;						/* Transaction Size#2 */
+	TrnFileSize      usTranSize2;						/* Transaction File maximum Size #2 */
+	USHORT			 usTranVli2;						/* Guest Check Transaction Size #2 */
 	ULONG            fsGCFStatus2;						/* GCF Status #2 */
 	GCNUM            auchWaitOrder[FDT_QUEUE_SIZE];     /* Waiting Order Number GCNUM */
 	GCNUM            auchStorePayQueue[FDT_QUEUE_SIZE]; /* Store/Payment Transaction(Order#) Queue GCNUM */
@@ -101,11 +100,6 @@ SHORT   FDTRefresh(USHORT usQueue, USHORT usType);
 SHORT   FDTRefreshOrder(VOID);
 SHORT   FDTRefreshDelivery(GCNUM usQueue, USHORT usType);
 
-SHORT   FDTExpandFile(SHORT hsFileHandle, USHORT usInquirySize);
-SHORT   FDTReadFile(ULONG ulOffset, VOID *pData, ULONG ulSize, SHORT hsFileHandle, ULONG *pulActualBytesRead);
-SHORT   FDTWriteFile(ULONG ulOffset, VOID *pData, ULONG ulSize, SHORT hsFileHandle);
-USHORT  FDTCalStoSize(USHORT usNoOfItem);
-
 VOID    FDTDecideQueuePara(USHORT *pusQueue, USHORT *pusType);
 VOID    FDTRemoveWaitOrder(GCNUM uchOrder);
 VOID    FDTRemoveStoreQueue(GCNUM uchOrder);
@@ -125,11 +119,11 @@ VOID    FDTDispTotal(USHORT usScroll, SHORT sType);
    MEMORY
 -------------------------------------
 */
-extern  USHORT  husFDTSyncSem;                      /* FDT Event Semaphore */
-extern  USHORT  husFDTFileSem;                      /* FDT File Semaphore */
+extern  PifSemHandle  husFDTSyncSem;            /* FDT Event Semaphore */
+extern  PifSemHandle  husFDTFileSem;            /* FDT File Semaphore */
 extern  FDTLOCAL    FDTLocal;
 
-extern  TCHAR   FARCONST  aszFDTFile1[];            /* File Name #1 */
-extern  TCHAR   FARCONST  aszFDTFile2[];            /* File Name #2 */
+extern  TCHAR   const  aszFDTFile1[];            /* File Name #1 */
+extern  TCHAR   const  aszFDTFile2[];            /* File Name #2 */
 
 /*======= End of Define ============*/

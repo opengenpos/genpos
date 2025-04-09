@@ -13,11 +13,22 @@
 * Category    : SERVER module, US Hospitality Model
 * Program Name: SERVCAS.C                                            
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Midium Model                                               
-* Options     : /c /AM /W4 /Gs /Os /Za /Zp                                 
+*    Georgia Southern University Research Services Foundation
+*    donated by NCR to the research foundation in 2002 and maintained here
+*    since.
+*       2002  -> NHPOS Rel 1.4  (Windows CE for NCR 7448, Visual Studio Embedded)
+*       2003  -> NHPOS Rel 2.0.0  (Windows XP for NCR touch screen, Datacap for EPT)
+*       2006  -> NHPOS Rel 2.0.4  (Windows XP, Rel 2.0.4.51)
+*       2006  -> NHPOS Rel 2.0.5  (Windows XP, US Customs, Store and Forward, Mobile Terminal, Rel 2.0.5.76)
+*       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
+*       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
+*       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
+*
+*    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
 * --------------------------------------------------------------------------
-* Abstruct: The provided function names are as follows:  
+* Abstruct: The provided function names are as follows:
 *
 *           SerRecvCas();       Cashier function handling
 *
@@ -65,17 +76,14 @@
 */
 VOID    SerRecvCas(VOID)
 {
-    CLIREQCASHIER   *pReqMsgH;
-    CLIRESCASHIER   ResMsgH;
-    CASIF           Casif;
-    CLITTLCASWAI    TtlCas;
+    CLIREQCASHIER   * const pReqMsgH = (CLIREQCASHIER *)SerRcvBuf.auchData;
+    CLIRESCASHIER   ResMsgH = { 0 };
+    CASIF           Casif = { 0 };
 	USHORT          usTermNo;
 	SHORT           sSerSendStatus;
 
 	usTermNo = PIF_CLUSTER_MASK_TERMINAL_NO(PifSysConfig()->usTerminalPositionFromName);
 
-    pReqMsgH = (CLIREQCASHIER *)SerRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESCASHIER));
     ResMsgH.usFunCode     = pReqMsgH->usFunCode;
     ResMsgH.sResCode      = STUB_SUCCESS;
     ResMsgH.usSeqNo       = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -93,7 +101,6 @@ VOID    SerRecvCas(VOID)
     memcpy(ResMsgH.fbStatus, pReqMsgH->fbStatus, CLI_CASHIERSTATUS);    /* V3.3 */
     _tcsncpy(ResMsgH.auchCasName, pReqMsgH->auchCasName, CLI_CASHIERNAME);
 
-    memset(&Casif, 0, sizeof(CASIF));
     Casif.ulCashierNo     = pReqMsgH->ulCashierNo;
     Casif.ulCashierSecret = pReqMsgH->ulSecretNo;
     Casif.usUniqueAddress = pReqMsgH->usTerminalNo;
@@ -141,6 +148,7 @@ VOID    SerRecvCas(VOID)
 
     case CLI_FCCASALLIDREAD : /* Cashier All Id Read */
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESCASHIER)];
+        SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESCASHIER);
         ResMsgH.sReturn = SerCasAllIdRead(sizeof(ULONG)*CAS_NUMBER_OF_MAX_CASHIER, (ULONG *)SerResp.pSavBuff->auchData );
         if (0 <= ResMsgH.sReturn) {
             SerResp.pSavBuff->usDataLen = sizeof(ULONG)*ResMsgH.sReturn;
@@ -195,7 +203,9 @@ VOID    SerRecvCas(VOID)
     case CLI_FCCASDELETE:
         ResMsgH.sReturn = CasDelete(Casif.ulCashierNo);
         if (0 <= ResMsgH.sReturn) {
-			TtlCas.uchMajorClass = CLASS_TTLCASHIER;
+            CLITTLCASWAI    TtlCas = { 0 };
+
+            TtlCas.uchMajorClass = CLASS_TTLCASHIER;
 			TtlCas.ulCashierNo   = Casif.ulCashierNo;
 			TtlCas.uchMinorClass = CLASS_TTLSAVDAY;
 			TtlTotalDelete(&TtlCas);

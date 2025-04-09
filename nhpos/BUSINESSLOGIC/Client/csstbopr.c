@@ -586,10 +586,10 @@ SHORT   CliOpUnjoinCluster(TCHAR *pwszHostName, UCHAR *pauchHostIpAddress, UCHAR
     if (STUB_SELF != (sError = CstSendMaster())) {     /* --- Send Master Terminal --- */
 		sRetCode = CliMsg.sRetCode = OP_PERFORM;
 		CliNetConfig.auchFaddr[CLI_POS_UA] = 1; 
-		CliNetConfig.fchSatStatus &= ~CLI_SAT_JOINED;
+		CliNetConfig.fchSatStatus &= ~PIFNET_SAT_JOINED;
 		IspNetConfig.auchFaddr[CLI_POS_UA] = 1; 
 		SerNetConfig.auchFaddr[CLI_POS_UA] = 1;
-		SerNetConfig.fchSatStatus &= ~SER_SAT_JOINED;
+		SerNetConfig.fchSatStatus &= ~PIFNET_SAT_JOINED;
 		pSysConfig->auchLaddr[CLI_POS_UA] = 1;
 		usBMOption = 0;    // doing CliOpUnjoinCluster() so force Backup Master indicator to be off.
 
@@ -691,10 +691,10 @@ SHORT   CliOpJoinCluster(TCHAR *pwszHostName, UCHAR *pauchHostIpAddress, UCHAR *
 
 			*pauchTerminalNo = ResMsgH.auchTerminalNo;
 			CliNetConfig.auchFaddr[CLI_POS_UA] = *pauchTerminalNo;
-			CliNetConfig.fchSatStatus |= CLI_SAT_JOINED;
+			CliNetConfig.fchSatStatus |= PIFNET_SAT_JOINED;
 			IspNetConfig.auchFaddr[CLI_POS_UA] = *pauchTerminalNo; 
 			SerNetConfig.auchFaddr[CLI_POS_UA] = *pauchTerminalNo;
-			SerNetConfig.fchSatStatus |= SER_SAT_JOINED;
+			SerNetConfig.fchSatStatus |= PIFNET_SAT_JOINED;
 			pSysConfig->auchLaddr[CLI_POS_UA] = *pauchTerminalNo;
 			PifNetUpdateMasterBackup (ResMsgH.wszMasName, ResMsgH.auchMasIpAddress, ResMsgH.wszBMasName, ResMsgH.auchBMasIpAddress);
 
@@ -855,7 +855,7 @@ SHORT   CliOpUpdateTotalsMsg(TTLMESSAGEUNION  *pTtlMessage)
     CliMsg.usResMsgHLen = sizeof(ResMsgH);
     CliMsg.sRetCode     = OP_PERFORM;
 
-	memcpy (&(ReqMsgH.TtlMessage), pTtlMessage, sizeof(TTLMESSAGEUNION));
+	ReqMsgH.TtlMessage = * pTtlMessage;
 
     if (STUB_SELF == (sError = CstSendMaster())) {     /* --- Send Master Terminal --- */
         CliMsg.sRetCode = SerOpUpdateTotalsMsg(pTtlMessage);
@@ -1048,7 +1048,7 @@ SHORT   CliOpPluAssign(PLUIF *pPlu, USHORT usLockHnd)
 	}
 	if (sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
 		char xBuff[128];
-		sprintf (xBuff, "==NOTE: CliOpPluOepRead() sRetCode %d, sErrorM %d, sErrorBM %d", sRetCode, sErrorM, sErrorBM);
+		sprintf (xBuff, "==NOTE: CliOpPluOepRead() sRetCode %d sErrorM %d sErrorBM %d", sRetCode, sErrorM, sErrorBM);
 		NHPOS_NONASSERT_TEXT(xBuff);
 	}
     return sRetCode;
@@ -1349,8 +1349,8 @@ SHORT   CliOpCstrIndRead(CSTRIF *pCstr, USHORT usLockHnd)
 */
 SHORT    SerChangeOpPara(USHORT usType, CLIOPBCAS *pBcasRegNo)
 {
-    UCHAR       uchWriteFlag;
-    USHORT      usFunCode;
+    NBMESSAGE_T    uchWriteFlag = 0;
+    USHORT         usFunCode;
 
     switch(usType) {
     case    CLI_LOAD_ALL:                    /* All Para changed */
@@ -2703,7 +2703,7 @@ SHORT   CliOpPluOepRead(OPPLUOEPIF *pPlu, USHORT usLockHnd)
 			// We depend on the CstSendBMasterFH () function to handle the
 			// error condition indication to the operator and the caller
 			// to display an error dialog if the Master Terminal is down.
-			if (0 == (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+			if (0 == (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 				// If there is not a Backup Master then return the
 				// status of the Master Terminal regardless.
 				CliMsg.sRetCode = sCliRetCode;
@@ -2725,7 +2725,7 @@ SHORT   CliOpPluOepRead(OPPLUOEPIF *pPlu, USHORT usLockHnd)
 	}
 	if (sErrorM || (sErrorBM && sErrorBM != STUB_DISCOVERY)) {
 		char xBuff[128];
-		sprintf (xBuff, "==NOTE: CliOpPluOepRead() ComReadStatus 0x%x, sRetCode %d, sErrorM %d, sErrorBM %d", usComReadStatus, sRetCode, sErrorM, sErrorBM);
+		sprintf (xBuff, "==NOTE: CliOpPluOepRead() ComReadStatus 0x%4.4x sRetCode %d sErrorM %d sErrorBM %d", usComReadStatus, sRetCode, sErrorM, sErrorBM);
 		NHPOS_NONASSERT_TEXT(xBuff);
 	}
     return sRetCode;

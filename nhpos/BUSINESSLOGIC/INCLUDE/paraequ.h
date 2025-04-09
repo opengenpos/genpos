@@ -3939,6 +3939,10 @@ UCHAR   CliParaMDCCheckField(USHORT address, UCHAR field);
 *      - may recall an order by depressing the Recall Order key.
 *      - may be used instead of counter terminals.
 *
+*     The total key settings and tender key settings are used along with the FDT settings to choose the
+*     behavior of the FDT subsystem and how Guest Checks are routed between terminals in a drive thru.
+*     See also function ItemTotalSEStoRecGCFSave() which drives the FDT subsystem for the routing of Guest Checks.
+*
 *   Counter Terminals
 *      - may not split the three functionalities: order, payment, and delivery between different terminals within the cluster
 *      - require entry of order # to recall a stored order.
@@ -4025,6 +4029,7 @@ UCHAR   CliParaMDCCheckField(USHORT address, UCHAR field);
 #define FX_DRIVE_TERMTYPE_16            36   /* Terminal Type of Terminal #16     */
 
 // following defines are used with struct FDTPARA, member uchTypeTerm to indicate terminal role
+// see explanation of settings in comments above.  see function ItemTotalSEStoRecGCFSave() which drives the FDT subsystem for the routing of Guest Checks.
 #define FX_DRIVE_ORDER_TERM_1           0    /* Order Terminal #1 */
 #define FX_DRIVE_ORDER_PAYMENT_TERM_1   1    /* Order/Payment Terminal #1 */
 #define FX_DRIVE_PAYMENT_TERM_1         2    /* Payment Terminal #1 */
@@ -4040,8 +4045,10 @@ UCHAR   CliParaMDCCheckField(USHORT address, UCHAR field);
 #define FX_DRIVE_COUNTER_FUL_STORE     12    /* Counter Full Screen Terminal (Store) */
 #define FX_DRIVE_COUNTER_FUL_STORE_PAY 13    /* Counter Full Screen Terminal (Store/Payment) */
 
+// following defines are used with struct FDTPARA, member uchSysTypeTerm to indicate terminal role.
+// see explanation of settings in comments above.  see function ItemTotalSEStoRecGCFSave() which drives the FDT subsystem for the routing of Guest Checks.
 #define FX_DRIVE_SYSTYPE_1T_OP          0    /* Ordering/Payment System (counter or single drive thru) */
-#define FX_DRIVE_SYSTYPE_2T_OP          1    /* Ordering & Payment System (two terminal drive thru) */
+#define FX_DRIVE_SYSTYPE_2T_OP          1    /* Ordering & Payment/Delivery System (two terminal drive thru) */
 #define FX_DRIVE_SYSTYPE_2T_OP_D        2    /* Ordering/Payment & Delivery System (two terminal drive thru) */
 
 /*------------------------------------------------------------------------*\

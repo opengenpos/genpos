@@ -88,8 +88,6 @@
     MAX Definition
 ------------------------------------------
 */
-                                                /* size of SerTmpBuf[?] */
-#define     SER_MAX_TMPBUF      SERISP_MAX_TMPBUF
 #define     SER_MAX_TIMEOUT     0               /* time out co. inquiry */
 #define     SER_MAX_TIMER       30              /* timer value, multi sending */
 #define     SER_SLEEP_TIMER     3000            /* sleep timer value (ms) */
@@ -97,6 +95,7 @@
 
 #define     SER_MAX_KP          8               /* maximum kp # */ /* V1.0.0.4 */
 
+#if defined(POSSIBLE_DEAD_CODE)
 /*
 ------------------------------------------
     NET Status  (SerNetConfig.fchStatus)
@@ -104,19 +103,20 @@
 	network layer status
 ------------------------------------------
 */
-#define     SER_NET_OPEN        0x01        /* NET opened */
-#define     SER_NET_SEND        0x02        /* NET sending */
-#define     SER_NET_RECEIVE     0x04        /* NET receiving */
-#define     SER_NET_BACKUP      0x10        /* NET back up system */
+#define     SER_NET_OPEN        PIFNET_NET_OPEN          /* NET opened */
+#define     SER_NET_SEND        PIFNET_NET_SEND          /* NET sending */
+#define     SER_NET_RECEIVE     PIFNET_NET_RECEIVE       /* NET receiving */
+#define     SER_NET_BACKUP      PIFNET_NET_BACKUP        /* NET back up system */
 
 //------------------------------------------------
 //     SAT Status Definition
 //     used with SerNetConfig.fchSatStatus to indicate
 //     Satellite Terminal status.
 //-------------------------------------------------
-#define     SER_SAT_DISCONNECTED    0x0001     // Terminal is a Disconnected Satellite, see also PIF_CLUSTER_DISCONNECTED_SAT
-#define     SER_SAT_UPTODATE        0x0002     // Terminal is up to date with parameters.
-#define     SER_SAT_JOINED          0x0004     // Terminal has been joined to a cluster.  see also PIF_CLUSTER_JOINED_SAT
+#define     SER_SAT_DISCONNECTED    PIFNET_SAT_DISCONNECTED    // Terminal is a Disconnected Satellite, see also PIF_CLUSTER_DISCONNECTED_SAT
+#define     SER_SAT_UPTODATE        PIFNET_SAT_UPTODATE        // Terminal is up to date with parameters.
+#define     SER_SAT_JOINED          PIFNET_SAT_JOINED          // Terminal has been joined to a cluster.  see also PIF_CLUSTER_JOINED_SAT
+#endif
 
 /*
 ------------------------------------------
@@ -150,32 +150,6 @@
 #else
 #pragma pack(1)
 #endif
-
-
-/*--------------------------------------
-    Response Message Keep
-    Changes to this struct should be synchronized
-    with changes to the struct ISPPREVIOUS use in
-    Isp subsystem that handles communications
-    between terminal and remote device (PC).
----------------------------------------*/
-typedef struct {
-    SHORT       sError;                     /* Receive Error Code */
-    USHORT      usSize;                     /* Receive Size */
-    USHORT      usTimeOutCo;                /* Time Out Counter */
-    UCHAR       uchPrevUA;                  /* Previous Unique Address */    
-    USHORT      usPrevMsgHLen;              /* Previous Response Mes. Len */
-    USHORT      usPrevDataOff;              /* Previous Data Offset */
-    /* USHORT      usPrevDataOffSav;              / Previous Data Offset */
-    CLIREQDATA  *pSavBuff;                  /* Saved data pointer */
-} SERPREVIOUS;
-
-
-/*--------------------------------------
-    TIMER control structure
----------------------------------------*/
-typedef PIFTIMER  SERTIMER;
-
 
 #if     (defined(_WIN32_WCE) || defined(WIN32)) && _MSC_VER >= 800
 #pragma pack(pop)
@@ -368,8 +342,8 @@ VOID    SerBcasTimerStart(VOID);
 VOID    SerBcasTimerStop(VOID);
 SHORT   SerBcasTimerRead(VOID);
 
-VOID    Ser_Timer_Start(SERTIMER *pTim, UCHAR uchAddr);
-SHORT   Ser_Timer_Read(SERTIMER *pTim, ULONG ulMax);
+VOID    Ser_Timer_Start(PIFTIMER *pTim, UCHAR uchAddr);
+SHORT   Ser_Timer_Read(PIFTIMER *pTim, ULONG ulMax);
 
 VOID    SerSpsTimerStart(UCHAR uchAddr);
 UCHAR   SerSpsTimerTermNo(VOID);
@@ -445,19 +419,18 @@ extern XGRAM           SerSndBuf;              /* Send Buffer */
 extern XGRAM           SerRcvBuf;              /* Receive Buffer */
 extern PIFNETCONFIG    SerNetConfig;           /* NET work configration */
 extern USHORT          usSerStatus;            /* SERVER Status */
-extern USHORT          fsSerExeSpe;            /* Special Request from STUB */
-extern UCHAR           auchSerTmpBuf[SER_MAX_TMPBUF];  /* Data Save Buffer */ 
-extern SERPREVIOUS     SerResp;                /* Response Structure */
-extern SERTIMER        SerTimer;               /* Timer Keep */
-extern SERTIMER        SerKpsTimer[SER_MAX_KP];/* Timer Control for KPS */
-extern SERTIMER        SerBcasTimer;           /* Timer Control for B-cast */
-extern USHORT          husSerIFSerCli;         /* Semapho, SERVER - STUB */
-extern PifSemHandle    usSerCliSem;            /* STUB Semapho */
-extern USHORT          husSerCreFileSem;       /* Samapho, create temp. file - used temp. file */
 extern SHORT           sSerExeError;           /* Error Code of ESR */
-extern SERTIMER        SerSpsTimer;            /* Timer Control for SPS */
 extern USHORT          fsSerShrStatus;         /* Shred printer status  */
-extern SHORT           hsSerTmpFile;           /* save area for file handle of temporary buffer file */
+extern UCHAR           auchSerTmpBuf[SERISP_MAX_TMPBUF];  /* Data Save Buffer */
+extern SERISPPREVIOUS  SerResp;                /* Response Structure */
+extern PIFTIMER        SerTimer;               /* Timer Keep */
+extern PIFTIMER        SerKpsTimer[SER_MAX_KP];/* Timer Control for KPS */
+extern PIFTIMER        SerBcasTimer;           /* Timer Control for B-cast */
+extern PIFTIMER        SerSpsTimer;            /* Timer Control for SPS */
+extern PifSemHandle    husSerIFSerCli;         /* Semapho, SERVER - STUB */
+extern PifSemHandle    usSerCliSem;            /* STUB Semapho */
+extern PifSemHandle    husSerCreFileSem;       /* Samapho, create temp. file - used temp. file */
+extern PifFileHandle   hsSerTmpFile;           /* save area for file handle of temporary buffer file */
 
 
 /*===== END OF DEFINITION =====*/        

@@ -3058,7 +3058,7 @@ void CFrameworkWndText::DisplayPopupControlsBack (BOOL bShouldExist)
 			pChildWndButton->btnAttributes.m_myPattern = textAttributes.oepBtnPattern;
 			pChildWndButton->controlAttributes.m_colorText = textAttributes.oepBtnFontColor;
 			pChildWndButton->controlAttributes.lfControlFont = textAttributes.oepBtnFont;
-			pChildWndButton->btnAttributes.capAlignment = CWindowButton::CaptionAlignmentVMiddle;
+			pChildWndButton->btnAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
 			//adding icon support for OEP window buttons
 			pChildWndButton->btnAttributes.horIconAlignment = textAttributes.oepBtnIconHorizAlign;
 			pChildWndButton->btnAttributes.vertIconAlignment = textAttributes.oepBtnIconVertAlign;
@@ -3109,7 +3109,7 @@ void CFrameworkWndText::DisplayPopupControlsDone (BOOL bShouldExist)
 			pChildWndButton->btnAttributes.m_myPattern = textAttributes.oepBtnPattern;
 			pChildWndButton->controlAttributes.m_colorText = textAttributes.oepBtnFontColor;
 			pChildWndButton->controlAttributes.lfControlFont = textAttributes.oepBtnFont;
-			pChildWndButton->btnAttributes.capAlignment = CWindowButton::CaptionAlignmentVMiddle;
+			pChildWndButton->btnAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
 			//adding icon support for OEP window buttons
 			pChildWndButton->btnAttributes.horIconAlignment = textAttributes.oepBtnIconHorizAlign;
 			pChildWndButton->btnAttributes.vertIconAlignment = textAttributes.oepBtnIconVertAlign;
@@ -3160,7 +3160,7 @@ void CFrameworkWndText::DisplayPopupControlsMore (BOOL bShouldExist)
 			pChildWndButton->btnAttributes.m_myPattern = textAttributes.oepBtnPattern;
 			pChildWndButton->controlAttributes.m_colorText = textAttributes.oepBtnFontColor;
 			pChildWndButton->controlAttributes.lfControlFont = textAttributes.oepBtnFont;
-			pChildWndButton->btnAttributes.capAlignment = CWindowButton::CaptionAlignmentVMiddle;
+			pChildWndButton->btnAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
 			//adding icon support for OEP window buttons
 			pChildWndButton->btnAttributes.horIconAlignment = textAttributes.oepBtnIconHorizAlign;
 			pChildWndButton->btnAttributes.vertIconAlignment = textAttributes.oepBtnIconVertAlign;
@@ -3326,7 +3326,7 @@ void CFrameworkWndText::DisplayPopup(int nRow, TCHAR *tempText)
 	button->btnAttributes.m_myPattern = textAttributes.oepBtnPattern;
 	button->controlAttributes.m_colorText = textAttributes.oepBtnFontColor;
 	button->controlAttributes.lfControlFont = textAttributes.oepBtnFont;
-	button->btnAttributes.capAlignment = CWindowButton::CaptionAlignmentVMiddle;
+	button->btnAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle;
 	button->m_DialogId = (CFrameworkWndButton::SPL_BTN_START + iButtonCount);
 	//adding icon support for OEP window buttons
 	button->btnAttributes.horIconAlignment = textAttributes.oepBtnIconHorizAlign;

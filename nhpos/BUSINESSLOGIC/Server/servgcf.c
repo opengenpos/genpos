@@ -13,11 +13,22 @@
 * Category    : SERVER module, US Hospitality Model
 * Program Name: SERVGCF.C                                            
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Midium Model                                               
-* Options     : /c /AM /W4 /Gs /Os /Za /Zp                                 
+*    Georgia Southern University Research Services Foundation
+*    donated by NCR to the research foundation in 2002 and maintained here
+*    since.
+*       2002  -> NHPOS Rel 1.4  (Windows CE for NCR 7448, Visual Studio Embedded)
+*       2003  -> NHPOS Rel 2.0.0  (Windows XP for NCR touch screen, Datacap for EPT)
+*       2006  -> NHPOS Rel 2.0.4  (Windows XP, Rel 2.0.4.51)
+*       2006  -> NHPOS Rel 2.0.5  (Windows XP, US Customs, Store and Forward, Mobile Terminal, Rel 2.0.5.76)
+*       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
+*       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
+*       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
+*
+*    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
 * --------------------------------------------------------------------------
-* Abstruct: The provided function names are as follows:  
+* Abstruct: The provided function names are as follows:
 *
 *           SerRecvGCF();       Guest check function handling
 *           SerChekGCFUnLock(); Guest check file unlock function
@@ -64,16 +75,14 @@
 */
 VOID    SerRecvGCF(VOID)
 {
-    USHORT          usMaxTmpBuff;
-    CLIREQGCF       *pReqMsgH;  // pointer to the GCF request part of the received message
-    CLIRESGCF       ResMsgH;    // struct for the Server's response to the GCF request
+    TrnFileSize     usMaxTmpBuff;
+    CLIREQGCF       * const pReqMsgH = (CLIREQGCF *)SerRcvBuf.auchData;  // pointer to the GCF request part of the received message
+    CLIRESGCF       ResMsgH = { 0 };    // struct for the Server's response to the GCF request
 	ULONG			ulActualBytesRead;//RPH SR# 201
 	SHORT           sSerSendStatus;
 
 	// Fill in the header of the Server's response message using the header info
 	// from the Client's request.
-    pReqMsgH = (CLIREQGCF *)SerRcvBuf.auchData;
-    memset(&ResMsgH, 0, sizeof(CLIRESGCF));
     ResMsgH.usFunCode = pReqMsgH->usFunCode;
     ResMsgH.sResCode  = STUB_SUCCESS;
     ResMsgH.usSeqNo   = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
@@ -94,12 +103,13 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCFREADLOCK:
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)]; 
+        SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESGCF);
         SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);
-        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - sizeof(CLIRESGCF) - 2; 
+        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - (SERTMPFILE_DATASTART + sizeof(CLIRESGCF));
         ResMsgH.sReturn = GusReadLockFH(pReqMsgH->usGCN, hsSerTmpFile, SERTMPFILE_DATASTART + sizeof(CLIRESGCF), SerResp.pSavBuff->usDataLen, pReqMsgH->usGCType, &ulActualBytesRead );
 		
         if (0 <= ResMsgH.sReturn) {
-            SerResp.pSavBuff->usDataLen = (USHORT) ulActualBytesRead;
+            SerResp.pSavBuff->usDataLen = ulActualBytesRead;
         } else {
             SerResp.pSavBuff->usDataLen = 0;
         }
@@ -131,8 +141,9 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCFREADAGCNO:
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)];
+        SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESGCF);
         SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);/* ### ADD (2171 for Win32) V1.0 */
-        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - sizeof(CLIRESGCF) - 2;
+        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - (SERTMPFILE_DATASTART + sizeof(CLIRESGCF));
         ResMsgH.sReturn = GusAllIdRead(pReqMsgH->usGCType, (USHORT *)SerResp.pSavBuff->auchData, SerResp.pSavBuff->usDataLen);
         if (0 <= ResMsgH.sReturn) {
             SerResp.pSavBuff->usDataLen = ResMsgH.sReturn;
@@ -151,8 +162,9 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCFINDREAD:
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)]; 
+        SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESGCF);
         SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);
-        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - sizeof(CLIRESGCF) - 2; 
+        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - (SERTMPFILE_DATASTART + sizeof(CLIRESGCF));
         
 		//RPH SR# 201
 		ResMsgH.sReturn = GusIndReadFH(pReqMsgH->usGCN, hsSerTmpFile, SERTMPFILE_DATASTART + sizeof(CLIRESGCF), SerResp.pSavBuff->usDataLen, &ulActualBytesRead);
@@ -181,6 +193,7 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCFINDREADRAM:
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)];
+        SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESGCF);
         SerResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
         ResMsgH.sReturn = GusIndRead(pReqMsgH->usGCN, SerResp.pSavBuff->auchData, SerResp.pSavBuff->usDataLen);
         if (0 <= ResMsgH.sReturn) {
@@ -197,8 +210,9 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCFCHECKREAD:
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)]; 
+        SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESGCF);
         SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);
-        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - sizeof(CLIRESGCF) - 2; 
+        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - (SERTMPFILE_DATASTART + sizeof(CLIRESGCF));
         
 		//RPH SR# 201
 		ResMsgH.sReturn = GusCheckAndReadFH(pReqMsgH->usGCN, pReqMsgH->usGCType, hsSerTmpFile, SERTMPFILE_DATASTART + sizeof(CLIRESGCF), SerResp.pSavBuff->usDataLen, &ulActualBytesRead);
@@ -217,6 +231,7 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCFDVINDREAD:
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)];
+        SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESGCF);
         SerResp.pSavBuff->usDataLen = SERISP_MAX_LEN(sizeof(CLIRESGCF));
         ResMsgH.sReturn = GusDeliveryIndRead(pReqMsgH->usGCType, SerResp.pSavBuff->auchData, SerResp.pSavBuff->usDataLen, &ResMsgH.usGCN);
         if (0 <= ResMsgH.sReturn) {
@@ -237,8 +252,9 @@ VOID    SerRecvGCF(VOID)
     /*********************** Add R3.0 *************************/
     case    CLI_FCGCFALLIDBW:           /* V3.3 */
         SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)];
+        SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESGCF);
         SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);/* ### ADD (2171 for Win32) V1.0 */
-        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - sizeof(CLIRESGCF) - 2;
+        SerResp.pSavBuff->usDataLen = usMaxTmpBuff - (SERTMPFILE_DATASTART + sizeof(CLIRESGCF));
         ResMsgH.sReturn = GusAllIdReadBW(pReqMsgH->usGCType, pReqMsgH->ulWaiterNo, (USHORT *)SerResp.pSavBuff->auchData, SerResp.pSavBuff->usDataLen);
         if (0 <= ResMsgH.sReturn) {
             SerResp.pSavBuff->usDataLen = ResMsgH.sReturn;
@@ -250,11 +266,12 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCREADFILTERED:           /* V3.3 */
 		{
-			CLIREQGCFFILTERED *pReqMsgH = (CLIREQGCFFILTERED *)SerRcvBuf.auchData;
+			CLIREQGCFFILTERED * const pReqMsgH = (CLIREQGCFFILTERED *)SerRcvBuf.auchData;
 
 			SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)];
-			SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);/* ### ADD (2171 for Win32) V1.0 */
-			SerResp.pSavBuff->usDataLen = (usMaxTmpBuff - sizeof(CLIRESGCF) - 2)/sizeof(GCF_STATUS_STATE);
+            SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESGCF);
+            SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);/* ### ADD (2171 for Win32) V1.0 */
+			SerResp.pSavBuff->usDataLen = (usMaxTmpBuff - (SERTMPFILE_DATASTART + sizeof(CLIRESGCF)))/sizeof(GCF_STATUS_STATE);
 			ResMsgH.sReturn = GusAllIdReadFiltered(pReqMsgH->usGCType, pReqMsgH->ulWaiterNo, pReqMsgH->usTableNo, (GCF_STATUS_STATE *)SerResp.pSavBuff->auchData, SerResp.pSavBuff->usDataLen);
 			if (0 <= ResMsgH.sReturn) {
 				SerResp.pSavBuff->usDataLen = ResMsgH.sReturn * sizeof(GCF_STATUS_STATE);
@@ -267,11 +284,12 @@ VOID    SerRecvGCF(VOID)
 
     case    CLI_FCGCREADUNIQUEID:           /* V3.3 */
 		{
-			CLIREQGCFFILTERED *pReqMsgH = (CLIREQGCFFILTERED *)SerRcvBuf.auchData;
+			CLIREQGCFFILTERED * const pReqMsgH = (CLIREQGCFFILTERED *)SerRcvBuf.auchData;
 
 			SerResp.pSavBuff = (CLIREQDATA *)&auchSerTmpBuf[sizeof(CLIRESGCF)];
-			SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);/* ### ADD (2171 for Win32) V1.0 */
-			SerResp.pSavBuff->usDataLen = (usMaxTmpBuff - sizeof(CLIRESGCF) - 2)/sizeof(GCF_STATUS_STATE);
+            SerResp.ulSavBuffSize = sizeof(auchSerTmpBuf) - sizeof(CLIRESGCF);
+            SstReadFileFH(0, &usMaxTmpBuff, sizeof(usMaxTmpBuff), hsSerTmpFile);/* ### ADD (2171 for Win32) V1.0 */
+			SerResp.pSavBuff->usDataLen = (usMaxTmpBuff - (SERTMPFILE_DATASTART + sizeof(CLIRESGCF)))/sizeof(GCF_STATUS_STATE);
 			ResMsgH.sReturn = GusSearchForBarCode(pReqMsgH->usGCType, pReqMsgH->uchUniqueIdentifier, (GCF_STATUS_STATE *)SerResp.pSavBuff->auchData, SerResp.pSavBuff->usDataLen);
 			if (0 <= ResMsgH.sReturn) {
 				SerResp.pSavBuff->usDataLen = ResMsgH.sReturn * sizeof(GCF_STATUS_STATE);
@@ -321,9 +339,7 @@ VOID    SerRecvGCF(VOID)
 */
 VOID    SerChekGCFUnLock(VOID)
 {
-    CLIRESGCF   *pResMsgH;
-
-    pResMsgH = (CLIRESGCF *)auchSerTmpBuf;
+    CLIRESGCF   * const pResMsgH = (CLIRESGCF *)auchSerTmpBuf;
 
     if (CLI_FCGCFREADLOCK == (pResMsgH->usFunCode & CLI_RSTCONTCODE)) {
         GusResetReadFlag(pResMsgH->usGCN, GCF_NO_APPEND);

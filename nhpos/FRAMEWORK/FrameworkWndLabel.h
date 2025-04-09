@@ -24,7 +24,7 @@ public:
 	CFont*	m_labelFont;
 
 	static CFrameworkWndLabel * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == LabelControl)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::LabelControl)
 			return (static_cast <CFrameworkWndLabel *> (pwc));
 		else
 			return NULL;

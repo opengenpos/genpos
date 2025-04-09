@@ -444,7 +444,7 @@ BOOL CDWindowGroup::ValidateGroupDelete(CWindowItemExt *wi, UINT index)
 	while (currentPos) {
 		CWindowControl *pwc = wi->ButtonItemList.GetNext (currentPos);
 		ASSERT(pwc);
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			CWindowItemExt *subWin = CWindowItemExt::TranslateCWindowControl(pwc);
 			if(!ValidateGroupDelete(subWin, index)){
 				return FALSE;

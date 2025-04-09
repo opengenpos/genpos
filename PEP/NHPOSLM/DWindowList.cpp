@@ -179,7 +179,7 @@ void CDWindowList::SetTreeItem(CWindowItem *wi, HTREEITEM ti)
 	POSITION  currentPosLast = currentPos;
 	while (currentPos) {
 		CWindowControl* wc = wi->ButtonItemList.GetNext (currentPos);
-		if(wc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(wc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			temp.LoadString(IDS_SUBWINITEM);
 			caption.Format(_T("%s %s"),temp,wc->myName);
 			HTREEITEM WinControl = m_DocControlTree.InsertItem(TVIF_TEXT | TVIF_PARAM,
@@ -205,7 +205,7 @@ CWindowItemExt* CDWindowList::GetSelectedWin(UINT id)
 		CWindowControl *pwc = pDoc->listControls.GetNext (currentPos);
 		CWindowItemExt *wi = CWindowItemExt::TranslateCWindowControl(pwc);
 
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			if(wi->controlAttributes.m_myId == id){
 				return wi;
 			}
@@ -225,7 +225,7 @@ CWindowItemExt* CDWindowList::GetSelectedSubWin(CWindowItemExt *wi, UINT id)
 	POSITION  currentPos = wi->ButtonItemList.GetHeadPosition ();
 	while (currentPos) {
 		CWindowControl *pwc = wi->ButtonItemList.GetNext(currentPos);
-		if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer){
+		if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer){
 			CWindowItemExt *ww = CWindowItemExt::TranslateCWindowControl(pwc);
 			if(pwc->controlAttributes.m_myId == id){
 				return CWindowItemExt::TranslateCWindowControl(pwc);

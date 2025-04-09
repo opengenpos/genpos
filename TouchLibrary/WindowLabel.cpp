@@ -41,14 +41,14 @@ CWindowLabel::CWindowLabel(CWindowControl *wc) :
 		controlAttributes.m_nType = wc->controlAttributes.m_nType;
 	}*/
 	if(!wc){
-		labelAttributes.capAlignment = CaptionAlignmentHCenter;
-		labelAttributes.horIconAlignment = IconAlignmentHCenter;
-		labelAttributes.vertIconAlignment = IconAlignmentVMiddle;
+		labelAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHCenter;
+		labelAttributes.horIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+		labelAttributes.vertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		labelAttributes.HorizontalOriented = TRUE;
 		labelAttributes.signatureStart = 0xABCDEF87;
 		m_IconName = _T("");
 		labelAttributes.Show = TRUE;
-		controlAttributes.m_nType = LabelControl;
+		controlAttributes.m_nType = CWindowControl::CWindowControlType::LabelControl;
 	}
 
 }
@@ -57,10 +57,10 @@ CWindowLabel::CWindowLabel(CWindowControl *wc) :
 CWindowLabel::CWindowLabel (int id, int row, int column, int width, int height) :
 	CWindowControl(id, row, column, width, height)
 {
-		controlAttributes.m_nType = LabelControl;
-		labelAttributes.capAlignment = CaptionAlignmentHCenter;
-		labelAttributes.horIconAlignment = IconAlignmentHCenter;
-		labelAttributes.vertIconAlignment = IconAlignmentVMiddle;
+		controlAttributes.m_nType = CWindowControl::CWindowControlType::LabelControl;
+		labelAttributes.capAlignment = CWindowControl::CaptionAlignment::CaptionAlignmentHCenter;
+		labelAttributes.horIconAlignment = CWindowControl::HorizontalIconAlignment::IconAlignmentHCenter;
+		labelAttributes.vertIconAlignment = CWindowControl::VerticalIconAlignment::IconAlignmentVMiddle;
 		labelAttributes.HorizontalOriented = TRUE;
 		labelAttributes.signatureStart = 0xABCDEF87;
 		m_IconName = _T("");

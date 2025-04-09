@@ -297,12 +297,12 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 
 	myBrush.CreateSolidBrush(controlAttributes.m_colorFace);
 
-	if(btnAttributes.m_myPattern == ButtonPatternHoriz){
+	if(btnAttributes.m_myPattern == ButtonPattern::ButtonPatternHoriz){
 		hatchBrush.CreateHatchBrush(HS_HORIZONTAL, 
 			RGB(DARKEN(RED(controlAttributes.m_colorFace)),
 				DARKEN(GREEN(controlAttributes.m_colorFace)), 
 				DARKEN(BLUE(controlAttributes.m_colorFace))));
-	}else if(btnAttributes.m_myPattern == ButtonPatternVert){
+	}else if(btnAttributes.m_myPattern == ButtonPattern::ButtonPatternVert){
 		hatchBrush.CreateHatchBrush(HS_VERTICAL, 
 			RGB(DARKEN(RED(controlAttributes.m_colorFace)),
 				DARKEN(GREEN(controlAttributes.m_colorFace)),
@@ -334,7 +334,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 		bottomEdge.CreateSolidBrush(RGB(0xF0, 0xF0, 0xF0));
 	}
 
-	if(btnAttributes.m_myShape == ButtonShapeRect){
+	if(btnAttributes.m_myShape == ButtonShape::ButtonShapeRect){
 		pDC->SelectObject(bottomEdge);
 		pDC->Rectangle(myRect.left, myRect.top, myRect.right, myRect.bottom);
 		pDC->SelectObject(topEdge);
@@ -343,11 +343,11 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 		pDC->Rectangle(myRect.left + 2, myRect.top + 2, myRect.right - 2, myRect.bottom - 2);
 		pDC->SelectObject(myBrush);
 		pDC->Rectangle(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2);
-		if(btnAttributes.m_myPattern != ButtonPatternNone){
+		if(btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 			pDC->SelectObject(hatchBrush);
 			pDC->Rectangle(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2);
 		}
-	}else if(btnAttributes.m_myShape == ButtonShapeElipse){
+	}else if(btnAttributes.m_myShape == ButtonShape::ButtonShapeElipse){
 		pDC->SelectObject(bottomEdge);
 		pDC->Ellipse(myRect.left, myRect.top, myRect.right, myRect.bottom);
 		pDC->SelectObject(topEdge);
@@ -356,11 +356,11 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 		pDC->Ellipse(myRect.left + 2, myRect.top + 2, myRect.right - 2, myRect.bottom - 2);
 		pDC->SelectObject(myBrush);
 		pDC->Ellipse(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2);
-		if(btnAttributes.m_myPattern != ButtonPatternNone){
+		if(btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 			pDC->SelectObject(hatchBrush);
 			pDC->Ellipse(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2);
 		}
-	}else if(btnAttributes.m_myShape == ButtonShapeRoundedRect){
+	}else if(btnAttributes.m_myShape == ButtonShape::ButtonShapeRoundedRect){
 		pDC->SelectObject(bottomEdge);
 		pDC->RoundRect(myRect.left, myRect.top, myRect.right, myRect.bottom, 17, 17);
 		pDC->SelectObject(topEdge);
@@ -369,7 +369,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 		pDC->RoundRect(myRect.left + 2, myRect.top + 2, myRect.right - 2, myRect.bottom - 2, 17, 17);
 		pDC->SelectObject(myBrush);
 		pDC->RoundRect(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2, 17, 17);
-		if(btnAttributes.m_myPattern != ButtonPatternNone){
+		if(btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 			pDC->SelectObject(hatchBrush);
 			pDC->RoundRect(myRect.left + 4, myRect.top + 4, myRect.right - 2, myRect.bottom - 2, 17, 17);
 		}
@@ -428,18 +428,18 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 			//for now the Image is centered on the button
 
 			//Horizontal Alignment
-			if(btnAttributes.horIconAlignment == IconAlignmentHLeft){//Image to left
+			if(btnAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHLeft){//Image to left
 				xPos = 2 + 2;
-			}else if(btnAttributes.horIconAlignment == IconAlignmentHRight){//Image to right
+			}else if(btnAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHRight){//Image to right
 				xPos = (myRect.right - cxSource - 3);
 			}else {//Horizontal center
 				xPos = ((myRect.right - cxSource) / 2) + 1;
 			}
 			
 			//Vertical Alignment
-			if(btnAttributes.vertIconAlignment == IconAlignmentVTop){//Image to top
+			if(btnAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVTop){//Image to top
 				yPos = 2 + 2;
-			}else if(btnAttributes.vertIconAlignment == IconAlignmentVBottom){//Image to bottom
+			}else if(btnAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVBottom){//Image to bottom
 				yPos = (myRect.bottom - cySource - 3);
 			}else{//Vertical Center
 				yPos = ((myRect.bottom - cySource) / 2) + 1;
@@ -477,7 +477,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 
 	switch(btnAttributes.capAlignment)
 	{
-	case CaptionAlignmentVBottom:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVBottom:
 		pDC->DrawText(tempCaption, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);//calculate text area size on button
 		if(textRect.bottom <= tempRect.bottom){
 			//top of bottom aligned text is the height/size of the button(myRect.bottom) minus
@@ -494,7 +494,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 		pDC->DrawText(tempCaption, textRect, DT_CENTER | DT_WORDBREAK);// | DT_BOTTOM | DT_SINGLELINE);
 		break;
 
-	case CaptionAlignmentVTop:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVTop:
 		pDC->DrawText(tempCaption, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);//calculate text area size on button
 		textRect.top = tempRect.top + 2;
 		textRect.bottom = tempRect.bottom;
@@ -505,9 +505,9 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 		pDC->DrawText(tempCaption, textRect, DT_CENTER | DT_WORDBREAK);// | DT_BOTTOM | DT_SINGLELINE);
 		break;
 
-	case CaptionAlignmentHLeft:
-	case CaptionAlignmentHRight:
-	case CaptionAlignmentHCenter:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHLeft:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHRight:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHCenter:
 		{
 			int textWidth = 0;//width of single character
 			int textHeight = 0;//height of single character
@@ -539,11 +539,11 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 			if(textRect.top < 2){
 				textRect.top = 2;
 			}
-			if(btnAttributes.capAlignment == CaptionAlignmentHLeft){//LEFT JUSTIFY
+			if(btnAttributes.capAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHLeft){//LEFT JUSTIFY
 				//move the left start point one character width from left side
 				textRect.left += textWidth * 5/3;
 				textRect.right = textRect.left + textWidth * 5/3;
-			}else if(btnAttributes.capAlignment == CaptionAlignmentHRight){//RIGHT JUSTIFY
+			}else if(btnAttributes.capAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHRight){//RIGHT JUSTIFY
 				//move the left start point one character width from right side
 				//multiply by two because the text is printed to the right of the
 				//start point so leave one character width from side and account
@@ -569,7 +569,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 		}
 		break;
 
-	case CaptionAlignmentVMiddle://vertically center and horizontally center text
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle://vertically center and horizontally center text
 		//same as default no break
 	default:
 		pDC->DrawText(tempCaption, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);
@@ -615,12 +615,12 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 
 	myBrush.CreateSolidBrush(controlAttributes.m_colorFace);
 
-	if(btnAttributes.m_myPattern == ButtonPatternHoriz){
+	if(btnAttributes.m_myPattern == ButtonPattern::ButtonPatternHoriz){
 		hatchBrush.CreateHatchBrush(HS_HORIZONTAL, 
 			RGB(DARKEN(RED(controlAttributes.m_colorFace)),
 				DARKEN(GREEN(controlAttributes.m_colorFace)), 
 				DARKEN(BLUE(controlAttributes.m_colorFace))));
-	}else if(btnAttributes.m_myPattern == ButtonPatternVert){
+	}else if(btnAttributes.m_myPattern == ButtonPattern::ButtonPatternVert){
 		hatchBrush.CreateHatchBrush(HS_VERTICAL, 
 			RGB(DARKEN(RED(controlAttributes.m_colorFace)),
 				DARKEN(GREEN(controlAttributes.m_colorFace)),
@@ -652,7 +652,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 	}
 	bottomEdge.CreateSolidBrush(RGB(0x00, 0x00, 0x00));
 
-	if(btnAttributes.m_myShape == ButtonShapeRect){
+	if(btnAttributes.m_myShape == ButtonShape::ButtonShapeRect){
 		pDC->SelectObject(bottomEdge);
 		pDC->Rectangle(myRect.left, myRect.top, myRect.right, myRect.bottom);
 		pDC->SelectObject(topEdge);
@@ -661,11 +661,11 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 		pDC->Rectangle(myRect.left + 2, myRect.top + 2, myRect.right - 2, myRect.bottom - 2);
 		pDC->SelectObject(myBrush);
 		pDC->Rectangle(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4);
-		if(btnAttributes.m_myPattern != ButtonPatternNone){
+		if(btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 			pDC->SelectObject(hatchBrush);
 			pDC->Rectangle(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4);
 		}
-	}else if(btnAttributes.m_myShape == ButtonShapeElipse){
+	}else if(btnAttributes.m_myShape == ButtonShape::ButtonShapeElipse){
 		pDC->SelectObject(bottomEdge);
 		pDC->Ellipse(myRect.left, myRect.top, myRect.right, myRect.bottom);
 		pDC->SelectObject(topEdge);
@@ -674,11 +674,11 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 		pDC->Ellipse(myRect.left + 2, myRect.top + 2, myRect.right - 2, myRect.bottom - 2);
 		pDC->SelectObject(myBrush);
 		pDC->Ellipse(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4);
-		if(btnAttributes.m_myPattern != ButtonPatternNone){
+		if(btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 			pDC->SelectObject(hatchBrush);
 			pDC->Ellipse(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4);
 		}
-	}else if(btnAttributes.m_myShape == ButtonShapeRoundedRect){
+	}else if(btnAttributes.m_myShape == ButtonShape::ButtonShapeRoundedRect){
 		pDC->SelectObject(bottomEdge);
 		pDC->RoundRect(myRect.left, myRect.top, myRect.right, myRect.bottom, 17, 17);
 		pDC->SelectObject(topEdge);
@@ -687,7 +687,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 		pDC->RoundRect(myRect.left + 2, myRect.top + 2, myRect.right - 2, myRect.bottom - 2, 17, 17);
 		pDC->SelectObject(myBrush);
 		pDC->RoundRect(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4, 17, 17);
-		if(btnAttributes.m_myPattern != ButtonPatternNone){
+		if(btnAttributes.m_myPattern != ButtonPattern::ButtonPatternNone){
 			pDC->SelectObject(hatchBrush);
 			pDC->RoundRect(myRect.left + 2, myRect.top + 2, myRect.right - 4, myRect.bottom - 4, 17, 17);
 		}
@@ -748,18 +748,18 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 			//for now the Image is centered on the button
 
 			//Horizontal Alignment
-			if(btnAttributes.horIconAlignment == IconAlignmentHLeft){//Image to left
+			if(btnAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHLeft){//Image to left
 				xPos = 2;
-			}else if(btnAttributes.horIconAlignment == IconAlignmentHRight){//Image to right
+			}else if(btnAttributes.horIconAlignment == CWindowControl::HorizontalIconAlignment::IconAlignmentHRight){//Image to right
 				xPos = myRect.right - cxSource - 5;
 			}else {//Horizontal center
 				xPos = ((myRect.right - cxSource) / 2) - 1;
 			}
 			
 			//Vertical Alignment
-			if(btnAttributes.vertIconAlignment == IconAlignmentVTop){//Image to top
+			if(btnAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVTop){//Image to top
 				yPos = 2;
-			}else if(btnAttributes.vertIconAlignment == IconAlignmentVBottom){//Image to bottom
+			}else if(btnAttributes.vertIconAlignment == CWindowControl::VerticalIconAlignment::IconAlignmentVBottom){//Image to bottom
 				yPos = myRect.bottom - cySource - 5;
 			}else{//Vertical Center
 				yPos = ((myRect.bottom - cySource) / 2) - 1;
@@ -797,7 +797,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 
 	switch(btnAttributes.capAlignment)
 	{
-	case CaptionAlignmentVBottom:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVBottom:
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);//calculate text area size on button
 		if(textRect.bottom <= tempRect.bottom){
 			//top of bottom aligned text is the height/size of the button(myRect.bottom) minus
@@ -812,7 +812,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK);// | DT_BOTTOM | DT_SINGLELINE);
 		break;
 
-	case CaptionAlignmentVTop:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVTop:
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);//calculate text area size on button
 		textRect.top = tempRect.top + 2;
 		textRect.bottom = tempRect.bottom;
@@ -821,9 +821,9 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK);// | DT_BOTTOM | DT_SINGLELINE);
 		break;
 
-	case CaptionAlignmentHLeft:
-	case CaptionAlignmentHRight:
-	case CaptionAlignmentHCenter:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHLeft:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHRight:
+	case CWindowControl::CaptionAlignment::CaptionAlignmentHCenter:
 		{
 			int textWidth = 0;//width of single character
 			int textHeight = 0;//height of single character
@@ -855,11 +855,11 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 			if(textRect.top < 2){
 				textRect.top = 2;
 			}
-			if(btnAttributes.capAlignment == CaptionAlignmentHLeft){//LEFT JUSTIFY
+			if(btnAttributes.capAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHLeft){//LEFT JUSTIFY
 				//move the left start point one character width from left side
 				textRect.left += textWidth * 5/3;
 				textRect.right = textRect.left + textWidth * 5/3;
-			}else if(btnAttributes.capAlignment == CaptionAlignmentHRight){//RIGHT JUSTIFY
+			}else if(btnAttributes.capAlignment == CWindowControl::CaptionAlignment::CaptionAlignmentHRight){//RIGHT JUSTIFY
 				//move the left start point one character width from right side
 				//multiply by two because the text is printed to the right of the
 				//start point so leave one character width from side and account
@@ -881,7 +881,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 		}
 		break;
 
-	case CaptionAlignmentVMiddle://vertically center and horizontally center text
+	case CWindowControl::CaptionAlignment::CaptionAlignmentVMiddle://vertically center and horizontally center text
 		//same as default no break
 	default:
 		pDC->DrawText(csButtonText, textRect, DT_CENTER | DT_WORDBREAK | DT_CALCRECT);
@@ -2304,7 +2304,7 @@ void CFrameworkWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 					if(!pWndItem->controlAttributes.isVirtualWindow){
 						CWindowControl *pwc = CWindowDocument::pDoc->GetDataFirst ();
 						while (pwc) {
-							if(pwc->controlAttributes.m_nType == CWindowControl::WindowContainer && pwc != pWndItem){
+							if(pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer && pwc != pWndItem){
 								if(pwc->m_hWnd)
 									pwc->EnableWindow(TRUE);
 							}

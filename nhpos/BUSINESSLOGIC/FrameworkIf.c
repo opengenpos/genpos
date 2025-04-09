@@ -781,7 +781,7 @@ USHORT BlIntrnlGetNoticeBoardStatus (int iTestComs)
 	// System Configuration data to see if we are terminal 1 or terminal 2.
 	//     CLI_TGT_MASTER == 1
 	//     CLI_TGT_BMASTER == 2
-	if (pSysConfig->auchLaddr[3] == 1 || pSysConfig->auchLaddr[3] == 2) {
+	if (pSysConfig->auchLaddr[PIFNET_POS_UA] == PIFNET_TGT_MASTER || pSysConfig->auchLaddr[PIFNET_POS_UA] == PIFNET_TGT_BMASTER) {
 		SstReadFlag(&fsServerFlag);
 		if (fsServerFlag & SER_SPESTS_INQUIRY) {
 			fsComStatus |= BLI_STS_INQUIRY;

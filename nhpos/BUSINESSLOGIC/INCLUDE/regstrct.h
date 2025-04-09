@@ -1395,7 +1395,7 @@
 *       modifier data
 --------------------------------------------------------------------------*/
    typedef  struct {
-        UCHAR       uchMajorClass;          /* 1:major class */
+        UCHAR       uchMajorClass;          /* 1:major class, usually CLASS_UIFREGMODIFIER */
         UCHAR       uchMinorClass;          /* 2:minor class */
         USHORT      usTableNo;              /* 3:table No */
         USHORT      usNoPerson;             /* 4:No of person */
@@ -1413,9 +1413,9 @@
 *       other data
 --------------------------------------------------------------------------*/
     typedef struct {
-        UCHAR       uchMajorClass;          /* 1:major class */
+        UCHAR       uchMajorClass;          /* 1:major class, usually CLASS_UIFREGOTHER */
         UCHAR       uchMinorClass;          /* 2:minor class */
-        DCURRENCY   lAmount;                /* 4:amount */
+        DCURRENCY   lAmount;                /* 4:amount or quantity. general purpose and not just currency amount */
         UCHAR       uchFsc;                 /*  FSC (Ask)    2172 */
         TCHAR       aszLabelNo[NUM_PLU_SCAN_LEN];   /* Label No, before analysis 2172        */
         TCHAR       aszNumber[NUM_NUMBER];  /* after analaysis */
@@ -1428,7 +1428,7 @@
 *       operator close data
 --------------------------------------------------------------------------*/
     typedef struct {
-        UCHAR       uchMajorClass;          /* 1:major class */
+        UCHAR       uchMajorClass;          /* 1:major class, usually CLASS_UIFREGOPECLOSE */
         UCHAR       uchMinorClass;          /* 2:minor class */
         ULONG       ulID;                   /* 3:cashier/waiter ID */
         UCHAR       fbInputStatus;          /* 4:input status, R3.3 */

@@ -26,8 +26,8 @@ DefaultData::DefaultData()
 	defaultAttributes.ButtonDefault = 0x00c0c0c0;	//grey
 	defaultAttributes.WindowDefault = 0x00c0c0c0;   //grey
 	defaultAttributes.TextWinDefault = 0x00ffffff;  //white
-	defaultAttributes.ShapeDefault = CWindowButton::ButtonShapeRect;
-	defaultAttributes.PatternDefault = CWindowButton::ButtonPatternNone;
+	defaultAttributes.ShapeDefault = CWindowButton::ButtonShape::ButtonShapeRect;
+	defaultAttributes.PatternDefault = CWindowButton::ButtonPattern::ButtonPatternNone;
 	memset(&defaultAttributes.FontDefault, 0, sizeof(LOGFONT)); 
 	defaultAttributes.FontColorDefault = NULL;
 

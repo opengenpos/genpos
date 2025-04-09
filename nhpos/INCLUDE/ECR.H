@@ -199,11 +199,6 @@ extern "C"{
 #define GCNUM		USHORT
 #endif
 
-// if the constant for the biometrics file is not defined then define it.
-#ifndef DFPR_FNAME
-#define DFPR_FNAME L"DFPR_DB"
-#endif
-
 /*
 *===========================================================================
 *   Support Pheripheral Device
@@ -218,6 +213,30 @@ extern "C"{
 #define PERIPHERAL_DEVICE_VIRTUALKEY          /* See also SCF_TYPE_SCANNER. */
 #define PERIPHERAL_DEVICE_WAITER_LOCK         /* See also SCF_TYPE_SCANNER. */
 #define PERIPHERAL_DEVICE_OTHER     7
+
+// Defines for standard ASCII character codes used with communication messages for older or legacy devices.
+// Some of these codes are used in various subsystems when sending and receiving messages to devices such
+// as printers, scanners, drink portion dispensers, electronic payment, etc. which are using a COM type
+// of connection such as through RS-232 or USB. This list is to replace the device specific lists
+// such as DIF_STX, UIE_SCANNER_STX, DFL_STX, EEPT_STX, KDS_STX, EPT_STX, 
+// See the Wikipedia topic, https://en.wikipedia.org/wiki/Control_character
+// See also RFC20 (1969), https://tools.ietf.org/rfc/rfc20.txt
+#define STD_ASCII_COMM_SOH              0x01    /* start of heading indicator */
+#define STD_ASCII_COMM_STX              0x02    /* start of text indicator */
+#define STD_ASCII_COMM_ETX              0x03    /* end of text indicator */
+#define STD_ASCII_COMM_EOT              0x04    /* end of transmission indicator */
+#define STD_ASCII_COMM_ENQ              0x05    /* enquiry indicator */
+#define STD_ASCII_COMM_ACK              0x06    /* acknowledge indicator */
+#define STD_ASCII_COMM_BEL              0x06    /* bell sound indicator */
+#define STD_ASCII_COMM_DLE              0x10    /* data link escape indicator */
+#define STD_ASCII_COMM_DC1              0x11    /* device control 1 indicator, XON character */
+#define STD_ASCII_COMM_DC2              0x12    /* device control 2 indicator */
+#define STD_ASCII_COMM_DC3              0x13    /* device control 3 indicator, XOFF character */
+#define STD_ASCII_COMM_DC4              0x14    /* device control 4 indicator */
+#define STD_ASCII_COMM_NAK              0x15    /* not acknowledge indicator */
+#define STD_ASCII_COMM_ESC              0x1b    /* Escape character */
+
+#define	ITM_MSR_SEPA2                    0x3d    /* separator of ISO-II MSR  */
 
 //--------------------------------------------
 //		General system wide database constants that are defined here.
@@ -243,58 +262,96 @@ extern "C"{
 // WARNING: There are a number of places where tax calculation loops are for non-International (VAT)
 //          and those loops use a limit of STD_TAX_ITEMIZERS_CAN though they are used for
 //          both Canadian and US tax calculations.
-#define  STD_TAX_ITEMIZERS_MAX   5		// Number of Tax Itemizers 3(US), 4(CAN) ->5 JHHJ 3-30-04
-#define  STD_TAX_ITEMIZERS_CAN   4		// Number of Canadian Tax Itemizers that are actually used (GST, PST1, PST2, PST3). See also PLU_AFFECT_TAX1, etc.
+#define  STD_TAX_ITEMIZERS_MAX   5		// Number of Tax Itemizers 3(VAT), 3(US), 4(CAN) ->5 JHHJ 3-30-04, includes nontaxable tax (CAN)
+#define  STD_TAX_ITEMIZERS_CAN   4		// Number of Canadian Tax Itemizers that are actually used (GST, PST1, PST2, PST3) but not NONTX. See also PLU_AFFECT_TAX1, etc.
 #define  STD_TAX_ITEMIZERS_US    3		// Number of US Tax Itemizers that are actually used. See also PLU_AFFECT_TAX1, etc.
 #define  STD_TAX_ITEMIZERS_VAT   3		// Number of VAT Int'l Tax Itemizers that are actually used. See also PLU_AFFECT_TAX1, etc.
 
-#define	 STD_PLU_ITEMIZERS		10		// Number of PLU tax Itemizers for CANTAX. See list of Canadian tax itemizers below.
+// following defines for the five kinds of transaction Canadian tax itemizers, STD_TAX_ITEMIZERS_MAX
+#define STD_TAX_ITEMIZER_CAN_GST     0      // Itemizer array offset for Canadian GST tax, TRN_TXBL1_ADR, GCFQUAL_GSTEXEMPT
+#define STD_TAX_ITEMIZER_CAN_PST1    1      // Itemizer array offset for Canadian PST1 tax, TRN_TXBL1_ADR, GCFQUAL_PSTEXEMPT
+#define STD_TAX_ITEMIZER_CAN_PST2    2      // Itemizer array offset for Canadian PST2 tax, TRN_TXBL1_ADR, GCFQUAL_PSTEXEMPT
+#define STD_TAX_ITEMIZER_CAN_PST3    3      // Itemizer array offset for Canadian PST3 tax, TRN_TXBL1_ADR, GCFQUAL_PSTEXEMPT
+#define STD_TAX_ITEMIZER_CAN_NONTX   4      // Itemizer array offset for Canadian nontaxable tax, see also NonTaxable member, TRN_NONTX_ADR
+
+#define	 STD_PLU_ITEMIZERS		10		// Number of PLU Canadian tax Itemizers for CANTAX. See list of Canadian tax itemizers below.
 #define	 STD_PLU_ITEMIZERS_MOD	 (STD_PLU_ITEMIZERS - 1)    // zero based count of STD_PLU_ITEMIZERS, range of PLU data - see PLU_AFFECT_TAX1, used in several places for max PLU itemizer for Canada tax.
 #define  STD_PLU_ITEMIZERS_PLUS  (STD_PLU_ITEMIZERS+2+3)    // Number of PLU Itemizers plus limitable/Tax-On-Tax and GST/PST. see TRANCANADA_LIMITABLE and TRANCANADA_PST1TOT
 
-// Defines for standard ASCII character codes used with communication messages for older or legacy devices.
-// Some of these codes are used in various subsystems when sending and receiving messages to devices such
-// as printers, scanners, drink portion dispensers, electronic payment, etc. which are using a COM type
-// of connection such as through RS-232 or USB. This list is to replace the device specific lists
-// such as DIF_STX, UIE_SCANNER_STX, DFL_STX, EEPT_STX, KDS_STX, EPT_STX, 
-// See the Wikipedia topic, https://en.wikipedia.org/wiki/Control_character
-// See also RFC20 (1969), https://tools.ietf.org/rfc/rfc20.txt
-#define STD_ASCII_COMM_SOH              0x01    /* start of heading indicator */
-#define STD_ASCII_COMM_STX              0x02    /* start of text indicator */
-#define STD_ASCII_COMM_ETX              0x03    /* end of text indicator */
-#define STD_ASCII_COMM_EOT              0x04    /* end of transmission indicator */
-#define STD_ASCII_COMM_ENQ              0x05    /* enquiry indicator */
-#define STD_ASCII_COMM_ACK              0x06    /* acknowledge indicator */
-#define STD_ASCII_COMM_BEL              0x06    /* bell sound indicator */
-#define STD_ASCII_COMM_DLE              0x10    /* data link escape indicator */
-#define STD_ASCII_COMM_DC1              0x11    /* device control 1 indicator, XON character */
-#define STD_ASCII_COMM_DC2              0x12    /* device control 2 indicator */
-#define STD_ASCII_COMM_DC3              0x13    /* device control 3 indicator, XOFF character */
-#define STD_ASCII_COMM_DC4              0x14    /* device control 4 indicator */
-#define STD_ASCII_COMM_NAK              0x15    /* not acknowledge indicator */
-#define STD_ASCII_COMM_ESC              0x1b    /* Escape character */
-
-
 /*
- *    Canadian tax calculations use a series of tax buckets such as the following.
+ * Notes on Canadian retail taxes.
+ * 
+ *    Some provinces collect the GST (federal Goods and Services Tax) and the PST (Provincial Sales Tax) separately,
+ *    while others combine these into one tax, HST (Harmonized Sales Tax), since 1997 to simplify the process.
+ *
+ *    Each tax has its specifics:
+ *     - GST, set at 5%, is a value-added tax imposed by the federal government.
+ *     - PST is a province-specific retail sales tax with varying rates. Not all provinces charge it.
+ *     - HST combines PST and GST, which are collected by the CRA and disbursed to provinces. Some provices do this.
+ *     - QST is a province-specific sales tax in the province of Quebec.
+ * 
+ *    Some items such as grocery items are not taxable. And some items such as baked goods
+ *    which are taxable in some circumstances, e.g. as single servings, are not taxable in
+ *    others such as when purchased as a group of six or more.
+ * 
+ *    Canadian tax calculations use a series of tax buckets such as the following. As items
+ *    are rung up, the type of item and the type of tax that is to be collected on the item
+ *    are accumulated in the various tax buckets.
+ * 
+ *    These defines are in include file regstrct.h and others are in transact.h.
  *    See also CANTAX_MEAL, etc. and how they are used as well as TAX_MOD_MASK bits in pItemSales->fbModifier
  *    See also MOD_TAXABLE1, etc. and how they are used with ItemModLocal.fsTaxable.
- *        CanTaxWork->lTaxable[0]           // meal, indicated by CANTAX_MEAL
- *        CanTaxWork->lTaxable[1]           // carbonated beverage, indicated by CANTAX_CARBON
- *        CanTaxWork->lTaxable[2]           // snack, indicated by CANTAX_SNACK
- *        CanTaxWork->lTaxable[3]           // beer/wine, indicated by CANTAX_BEER
- *        CanTaxWork->lTaxable[4]           // liquor, indicated by CANTAX_LIQUOR
- *        CanTaxWork->lTaxable[5]           // grocery (non-taxable), indicated by CANTAX_GROCERY
- *        CanTaxWork->lTaxable[6]           // tip, indicated by CANTAX_TIP
- *        CanTaxWork->lTaxable[7]           // PST1 only, indicated by CANTAX_PST1
- *        CanTaxWork->lTaxable[8]           // baked goods, indicated by CANTAX_BAKED
- *        CanTaxWork->lTaxable[9]           // special baked goods, indicated by CANTAX_SPEC_BAKED (added for Rel 2.0 by JHHJ) - due to Tim Horton's tax calc error, perhaps defects of implementation?
+ * 
+ *    See the tax affection calculations in functions such as ItemTotalSEPostAffectTax().
+ * 
+ *    See as well the tax calculation in the following functions:
+ *      - ItemCanTax() in file ittax.c (this file seems to contain most of the tax computation)
+ *      - ItemTotalFTAmount() in file ittotal4.c
+ * 
+ *    -------------------------------------------------------------------------------------------------------------------
+ *    **  WARNING and NOTE about Canadian Tax Calculations  **
+ * 
+ *    Special baked goods was added for Tim Hortons - Tim Horton's tax calc error, perhaps defects of implementation?
+ * 
+ *    It appears that hard coded array indices have resulted in errors from tax affectation. In particular it looks like
+ *    by inserting Special baked goods tax bucket as index nine, there is a conflict with the tax buckets that
+ *    are after the list of tax buckets that come after because all the places where the hard coded indices for
+ *    PLU Itemizers for Canada are [9], [10], [11], [12], and [13] need to be updated by incrementing the array index.
+ * 
+ *    Some of this work has been done using the new defines for those special tax calculation buckets however it has not
+ *    been tested. I have attempted to identify places where this change needs to be made by inserting a comment with the
+ *    suggested PLU Itemizer defined constant. However I don't know enough to be able to test these suggested changes or
+ *    to replicate the tax calculation problem Tim Horton's was experiencing.
+ * 
+ *     Look for places where CANTAX_SPEC_BAKED or TRANCANADA_LIMITABLE or TRANCANADA_TAXONTAX and after defines are in comments.
+ *         Richard Chambers, Apr-02-2025
+ *    -------------------------------------------------------------------------------------------------------------------
  *
- *        CanTaxWork->lTaxable[10]          // limitable
- *        CanTaxWork->lTaxable[11]          // tax on tax
- *        CanTaxWork->lTaxable[12]          // GST
- *        CanTaxWork->lTaxable[13]          // PST1 limitable
- *        CanTaxWork->lTaxable[14]          // PST1 tax on tax
+ *    List of tax itemizer buckets, STD_PLU_ITEMIZERS_PLUS or STD_PLU_ITEMIZERS+2+3 (formerly hard coded as 9+2+3).
+ *    See as well struct TRANCANADAITEMIZERS.
+ * 
+ *        CanTaxWork->lTaxable[0]           // meal, indicated by CANTAX_MEAL or TRANCANADA_MEAL
+ *        CanTaxWork->lTaxable[1]           // carbonated beverage, indicated by CANTAX_CARBON or TRANCANADA_CARB_BEV
+ *        CanTaxWork->lTaxable[2]           // snack, indicated by CANTAX_SNACK or TRANCANADA_SNACK
+ *        CanTaxWork->lTaxable[3]           // beer/wine, indicated by CANTAX_BEER or TRANCANADA_BEER_WINE
+ *        CanTaxWork->lTaxable[4]           // liquor, indicated by CANTAX_LIQUOR or TRANCANADA_LIQUOR
+ *        CanTaxWork->lTaxable[5]           // grocery (non-taxable), indicated by CANTAX_GROCERY or TRANCANADA_GROCERY
+ *        CanTaxWork->lTaxable[6]           // tip, indicated by CANTAX_TIP or TRANCANADA_TIP
+ *        CanTaxWork->lTaxable[7]           // PST1 only, indicated by CANTAX_PST1 or TRANCANADA_PST1_ONLY
+ *        CanTaxWork->lTaxable[8]           // baked goods, indicated by CANTAX_BAKED or TRANCANADA_BAKED
+ *        CanTaxWork->lTaxable[9]           // special baked goods, indicated by CANTAX_SPEC_BAKED (added for Rel 2.0 by JHHJ) or TRANCANADA_SPECL_BAKED
+ *
+ *        CanTaxWork->lTaxable[10]          // limitable or TRANCANADA_LIMITABLE
+ *        CanTaxWork->lTaxable[11]          // tax on tax or TRANCANADA_TAXONTAX
+ *        CanTaxWork->lTaxable[12]          // GST or TRANCANADA_GST
+ *        CanTaxWork->lTaxable[13]          // PST1 limitable or TRANCANADA_PST1LIMIT
+ *        CanTaxWork->lTaxable[14]          // PST1 tax on tax or TRANCANADA_PST1TOT
+ *
+ *  NOTE: It appears the Tim Horton Canadian tax miscalculation was due to the way that the
+ *        the tax itemizers for the new tax for Special Baked Goods were added into the middle of
+ *        the tax itemizer arrays and since all the tax itemizer calculations use hard coded
+ *        constants for array indexes, ax itemizer data was intermixed.
+ *            Richard Chambers, Mar-20-2025
 */
 
 
@@ -433,8 +490,6 @@ extern "C"{
 
 #define		STD_NUM_OF_TERMINALS	16            // maximum number of terminals in a cluster. used for per terminal buffer allocations.
 
-#define		ITM_MSR_SEPA2                    0x3d    /* separator of ISO-II MSR  */
-
 #define     STD_FOLDER_FLASHROOT       _T("C:\\FlashDisk\\NCR\\Saratoga")
 #define     STD_FOLDER_TEMPROOT        _T("C:\\TempDisk\\NCR\\Saratoga")
 #define		STD_FOLDER_PROGRAMFILES    _T("C:\\FlashDisk\\NCR\\Saratoga\\Program")
@@ -448,6 +503,11 @@ extern "C"{
 #define     STD_FOLDER_IMAGESFILES     _T("C:\\FlashDisk\\NCR\\Saratoga\\Database\\Images")
 #define     STD_FOLDER_LOGFOLDER       _T("C:\\FlashDisk\\NCR\\Saratoga\\Log")
 #define     STD_FOLDER_AMTRAK_CONFIG   _T("C:\\POSNAME")
+
+// if the constant for the biometrics file is not defined then define it.
+#ifndef DFPR_FNAME
+#define DFPR_FNAME L"DFPR_DB"
+#endif
 
 //  ----     Standard symbols used with printing and displaying 
 

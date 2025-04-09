@@ -46,7 +46,7 @@ public:
 	void RemovePopupButton(CFrameworkWndButton * pButton = 0);
 
 	static CFrameworkWndItem * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == WindowContainer)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainer)
 			return (static_cast <CFrameworkWndItem *> (pwc));
 		else
 			return NULL;
@@ -99,7 +99,7 @@ public:
 	virtual ~CFrameworkWndItemAdHoc();
 
 	static CFrameworkWndItemAdHoc * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == WindowContainerAdHoc)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::WindowContainerAdHoc)
 			return (static_cast <CFrameworkWndItemAdHoc *> (pwc));
 		else
 			return NULL;

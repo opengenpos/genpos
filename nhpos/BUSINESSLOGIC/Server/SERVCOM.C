@@ -13,7 +13,22 @@
 * Category    : SERVER module, US Hospitality Model
 * Program Name: SERVCOM.C                                            
 * --------------------------------------------------------------------------
-* Abstruct: The provided function names are as follows:  
+*    Georgia Southern University Research Services Foundation
+*    donated by NCR to the research foundation in 2002 and maintained here
+*    since.
+*       2002  -> NHPOS Rel 1.4  (Windows CE for NCR 7448, Visual Studio Embedded)
+*       2003  -> NHPOS Rel 2.0.0  (Windows XP for NCR touch screen, Datacap for EPT)
+*       2006  -> NHPOS Rel 2.0.4  (Windows XP, Rel 2.0.4.51)
+*       2006  -> NHPOS Rel 2.0.5  (Windows XP, US Customs, Store and Forward, Mobile Terminal, Rel 2.0.5.76)
+*       2007  -> NHPOS Rel 2.1.0  (Windows XP, Condiment Edit and Tim Horton without Rel 2.0.5 changes, Rel 2.1.0.141)
+*       2012  -> GenPOS Rel 2.2.0 (Windows 7, Amtrak and VCS, merge Rel 2.0.5 into Rel 2.1.0)
+*       2014  -> GenPOS Rel 2.2.1 (Windows 7, Datacap Out of Scope, US Customs, Amtrak, VCS)
+*       2020  -> OpenGenPOS Rel 2.4.0 (Windows 10, Datacap removed) Open source
+*
+*    moved from Visual Studio 6.0 to Visual Studio 2005 with Rel 2.2.0
+*    moved from Visual Studio 2005 to Visual Studio 2019 with Rel 2.4.0
+* --------------------------------------------------------------------------
+* Abstruct: The provided function names are as follows:
 *
 *           SerIamMaster()          Check am I Master Terminal ?
 *           SerIamBMaster()         Check am I Backup Master terminal ?
@@ -105,12 +120,13 @@
 ** Return:      SERV_SUCCESS:   I am Master Terminal
 *               SERV_ILLEGAL:   I am not Mater Terminal
 *
-** Description: This function checks that am I a Mater or not.
+** Description: This function checks that am I a Master or not.
+*               See also CstIamMaster();
 *===========================================================================
 */
 SHORT   SerIamMaster(VOID)
 {
-    if (SerNetConfig.auchFaddr[CLI_POS_UA] == CLI_TGT_MASTER) {
+    if (SerNetConfig.auchFaddr[PIFNET_POS_UA] == PIFNET_TGT_MASTER) {
         return SERV_SUCCESS;
     } 
     return SERV_ILLEGAL;
@@ -124,12 +140,12 @@ SHORT   SerIamMaster(VOID)
 *               SERV_ILLEGAL:   I am not Back Up Mater Terminal
 *
 ** Description:  This function checks that am I a Backup Mater or not.
+*                See also CstIamMBaster();
 *===========================================================================
 */
 SHORT   SerIamBMaster(VOID)
 {
-    if ((SerNetConfig.auchFaddr[CLI_POS_UA] == CLI_TGT_BMASTER) &&
-        (SerNetConfig.fchStatus & SER_NET_BACKUP)) {
+    if ((SerNetConfig.auchFaddr[PIFNET_POS_UA] == PIFNET_TGT_BMASTER) && (SerNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return SERV_SUCCESS;
     }
     return SERV_ILLEGAL;
@@ -144,11 +160,12 @@ SHORT   SerIamBMaster(VOID)
 *               STUB_ILLEGAL:   I am not Satellite Terminal
 *
 ** Description:  This function check "Am I satellite"
+*                See also CstIamDisconnectedSatellite();
 *===========================================================================
 */
 SHORT   SerIamDisconnectedSatellite(VOID)
 {
-    if (SerNetConfig.fchSatStatus & SER_SAT_DISCONNECTED) {
+    if (SerNetConfig.fchSatStatus & PIFNET_SAT_DISCONNECTED) {
         return STUB_SUCCESS;
     }
 	return STUB_ILLEGAL;
@@ -164,13 +181,14 @@ SHORT   SerIamDisconnectedSatellite(VOID)
 *               STUB_ILLEGAL:   I am not Satellite Terminal
 *
 ** Description:  This function check "Am I satellite"
+*                See also CstIamDisconnectedUnjoinedSatellite();
 *===========================================================================
 */
 SHORT   SerIamDisconnectedUnjoinedSatellite(VOID)
 {
 	// If we are a disconnected Satellite and we are not joined to a cluster
 	// then indicate success.
-    if ((SerNetConfig.fchSatStatus & (SER_SAT_DISCONNECTED | SER_SAT_JOINED)) == SER_SAT_DISCONNECTED) {
+    if ((SerNetConfig.fchSatStatus & (PIFNET_SAT_DISCONNECTED | PIFNET_SAT_JOINED)) == PIFNET_SAT_DISCONNECTED) {
         return STUB_SUCCESS;
     }
 	return STUB_ILLEGAL;
@@ -188,11 +206,11 @@ SHORT   SerIamDisconnectedUnjoinedSatellite(VOID)
 */
 SHORT   SerIamSatellite(VOID)
 {
-    if (SerNetConfig.auchFaddr[CLI_POS_UA] == CLI_TGT_MASTER) {
+    if (SerNetConfig.auchFaddr[PIFNET_POS_UA] == PIFNET_TGT_MASTER) {
         return SERV_ILLEGAL;
     } 
 
-    if ((SerNetConfig.auchFaddr[CLI_POS_UA] == CLI_TGT_BMASTER) && (SerNetConfig.fchStatus & SER_NET_BACKUP)) {
+    if ((SerNetConfig.auchFaddr[PIFNET_POS_UA] == PIFNET_TGT_BMASTER) && (SerNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return SERV_ILLEGAL;
     }
 
@@ -210,14 +228,14 @@ SHORT SerResponseTargetTerminal (VOID)
 	// this check removed but kept for future usage if problems develop with this functionality.
 	{
 		char  xBuff[128];
-		sprintf (xBuff, "SerResponseTargetTerminal(): %d, %d", SerRcvBuf.auchFaddr[0], SerRcvBuf.auchFaddr[3]);
+		sprintf (xBuff, "SerResponseTargetTerminal(): %d %d", SerRcvBuf.auchFaddr[0], SerRcvBuf.auchFaddr[PIFNET_POS_UA]);
 		NHPOS_ASSERT_TEXT(0, xBuff);
 	}
 #endif
 
 	if (SerRcvBuf.auchFaddr[0] == 192 && SerRcvBuf.auchFaddr[1] == 0) {
 		if (SerRcvBuf.auchFaddr[3] > 0 && SerRcvBuf.auchFaddr[3] <= PIF_NET_MAX_IP) {
-			sRetStatus = SerRcvBuf.auchFaddr[3];
+			sRetStatus = SerRcvBuf.auchFaddr[PIFNET_POS_UA];
 		}
 	}
 
@@ -249,26 +267,25 @@ SHORT   SerSendResponse(CLIRESCOM *pResMsgH,
     USHORT  usSendLen;
 	SHORT   sError;
                                                 /*=== EDIT HEADER ===*/       
-//    memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, PIF_LEN_IP);
-//    SerSndBuf.auchFaddr[CLI_POS_UA] = SerRcvBuf.auchFaddr[CLI_POS_UA];
-	memcpy (SerSndBuf.auchFaddr, SerRcvBuf.auchFaddr, sizeof(SerSndBuf.auchFaddr));
-    SerSndBuf.usFport = SerRcvBuf.usFport;
-    SerSndBuf.usLport = CLI_PORT_SERVER;
+    // fill in the XGRAM header indicating receiver of the message we are building.
+    SerSndBuf.xgHeader = SerRcvBuf.xgHeader;
+    SerSndBuf.usLport = PIFNET_PORT_SERVER;          // ensure local port is set correctly
     usSendLen = sizeof(XGHEADER);
                                                 /*=== EDIT MESSAGE ===*/
     memcpy(SerSndBuf.auchData, pResMsgH, usResMsgHLen);
     usSendLen += usResMsgHLen;
 
     if (NULL != puchReqData) {                  /*=== EDIT DATA ===*/
-        memcpy(&SerSndBuf.auchData[usResMsgHLen], &usReqLen, 2);
-        memcpy(&SerSndBuf.auchData[usResMsgHLen + 2], puchReqData, usReqLen);
-        usSendLen += usReqLen + 2;
+        CLIREQDATA * const pResData = (CLIREQDATA * )&SerSndBuf.auchData[usResMsgHLen];
+        pResData->usDataLen = usReqLen;
+        memcpy(pResData->auchData, puchReqData, usReqLen);
+        usSendLen += usReqLen + sizeof(pResData->usDataLen);
     }
                                                 /*=== SEND RESPONSE ===*/
     sError = SerNetSend(usSendLen);
 	if (sError < 0) {
 		char xBuff[128];
-		sprintf(xBuff, "SerNetSend(): sError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
+		sprintf(xBuff, "SerNetSend(): sError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
 	}
 
@@ -283,24 +300,25 @@ SHORT   SerSendResponseToIpAddress(UCHAR *auchFaddr, CLIRESCOM *pResMsgH,
     USHORT  usSendLen;
 	SHORT   sError;
                                                 /*=== EDIT HEADER ===*/       
-    memcpy(SerSndBuf.auchFaddr, auchFaddr, sizeof(SerSndBuf.auchFaddr));
+    SerSndBuf.xgHeader.auchAddr = *(AUCHADDR *)auchFaddr;
     SerSndBuf.usFport = SerRcvBuf.usFport;
-    SerSndBuf.usLport = CLI_PORT_SERVER;
+    SerSndBuf.usLport = PIFNET_PORT_SERVER;
     usSendLen = sizeof(XGHEADER);
                                                 /*=== EDIT MESSAGE ===*/
     memcpy(SerSndBuf.auchData, pResMsgH, usResMsgHLen);
     usSendLen += usResMsgHLen;
 
     if (NULL != puchReqData) {                  /*=== EDIT DATA ===*/
-        memcpy(&SerSndBuf.auchData[usResMsgHLen], &usReqLen, 2);
-        memcpy(&SerSndBuf.auchData[usResMsgHLen + 2], puchReqData, usReqLen);
-        usSendLen += usReqLen + 2;
+        CLIREQDATA * const pResData = (CLIREQDATA *)&SerSndBuf.auchData[usResMsgHLen];
+        pResData->usDataLen = usReqLen;
+        memcpy(pResData->auchData, puchReqData, usReqLen);
+        usSendLen += usReqLen + sizeof(pResData->usDataLen);
     }
                                                 /*=== SEND RESPONSE ===*/
     sError = SerNetSend(usSendLen);
 	if (sError < 0) {
 		char xBuff[128];
-		sprintf(xBuff, "SerNetSend(): sError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
+		sprintf(xBuff, "SerNetSend(): sError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
 	}
 
@@ -335,26 +353,29 @@ SHORT    SerSendRequest( UCHAR uchServer,
     USHORT  usSendLen;
 	SHORT   sError;
                                                 /*=== EDIT HEADER ===*/       
-    memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, sizeof(SerSndBuf.auchFaddr));
-    SerSndBuf.auchFaddr[CLI_POS_UA] = uchServer;
-    SerSndBuf.usFport = CLI_PORT_SERVER;
-    SerSndBuf.usLport = CLI_PORT_SERVER;
+    SerSndBuf.xgHeader = SerNetConfig.xgHeader;     // get the standard NHPOS IPv4 address
+    SerSndBuf.auchFaddr[PIFNET_POS_UA] = uchServer;    // set the terminal unique address to the target terminal
+    SerSndBuf.usFport = PIFNET_PORT_SERVER;
+    SerSndBuf.usLport = PIFNET_PORT_SERVER;
     usSendLen = sizeof(XGHEADER);
                                                 /*=== EDIT MESSAGE ===*/
     memcpy(SerSndBuf.auchData, pReqMsgH, usReqMsgHLen);
     usSendLen += usReqMsgHLen;
 
     if (NULL != puchReqData) {                  /*=== EDIT DATA ===*/
-        memcpy(&SerSndBuf.auchData[usReqMsgHLen], &usReqLen, 2);
-        memcpy(&SerSndBuf.auchData[usReqMsgHLen + 2], puchReqData, usReqLen);
-        usSendLen += usReqLen + 2;
+        CLIREQDATA* const pResData = (CLIREQDATA*)&SerSndBuf.auchData[usReqMsgHLen];
+        pResData->usDataLen = usReqLen;
+        memcpy(pResData->auchData, puchReqData, usReqLen);
+        usSendLen += usReqLen + sizeof(pResData->usDataLen);
     }
                                                 /*=== SEND REQUEST ===*/
 	sError = SerNetSend(usSendLen);
 	if (sError < 0) {
-		char xBuff[128];
-		sprintf(xBuff, "SerSendRequest(): sError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
-		NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
+        if (sError != STUB_BUSY) {
+		    char xBuff[128];
+		    sprintf(xBuff, "SerSendRequest(): sError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
+		    NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
+        }
 	}
 	return sError;
 }
@@ -388,14 +409,13 @@ SHORT    SerSendRequest( UCHAR uchServer,
 */
 SHORT   SerSendError(SHORT sError)
 {
-    CLIREQCOM   *pReqMsgH = (CLIREQCOM *)SerRcvBuf.auchData;
-    CLIRESCOM   *pResMsgH = (CLIRESCOM *)SerSndBuf.auchData;
+    CLIREQCOM   * const pReqMsgH = (CLIREQCOM *)SerRcvBuf.auchData;
+    CLIRESCOM   * const pResMsgH = (CLIRESCOM *)SerSndBuf.auchData;
 	SHORT        sMyError;
                                                 /*=== EDIT HEADER ===*/       
-    memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, sizeof(SerSndBuf.auchFaddr));
-    SerSndBuf.auchFaddr[CLI_POS_UA] = SerRcvBuf.auchFaddr[CLI_POS_UA];
-    SerSndBuf.usFport = SerRcvBuf.usFport;
-    SerSndBuf.usLport = CLI_PORT_SERVER;
+    // fill in the XGRAM header indicating receiver of the message we are building.
+    SerSndBuf.xgHeader = SerRcvBuf.xgHeader;
+    SerSndBuf.usLport = PIFNET_PORT_SERVER;          // ensure local port is set correctly
                                                 /*=== EDIT MESSAGE ===*/
     pResMsgH->usFunCode = pReqMsgH->usFunCode;
     pResMsgH->sResCode  = sError;
@@ -406,7 +426,7 @@ SHORT   SerSendError(SHORT sError)
     sMyError = SerNetSend(sizeof(XGHEADER) + sizeof(CLIRESCOM));
 	if (sMyError < 0) {
 		char xBuff[128];
-		sprintf(xBuff, "SerSendError(): sMyError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sMyError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
+		sprintf(xBuff, "SerSendError(): sMyError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sMyError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pReqMsgH->usFunCode, pReqMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((sMyError >= 0), xBuff);
 	}
 
@@ -621,41 +641,48 @@ USHORT   SerReadMDCPara(UCHAR address)
 SHORT  SerNetOpen(VOID)
 {
     SYSCONFIG CONST *SysCon = PifSysConfig();
-	XGHEADER        IPdata = {0};
-    SHORT           sHandle;
-	SHORT           sRetStatus = 0;
 
     memset(&SerNetConfig, 0, sizeof(SerNetConfig));
-
-	if (SysCon->usTerminalPosition & PIF_CLUSTER_DISCONNECTED_SAT)
-		SerNetConfig.fchSatStatus |= SER_SAT_DISCONNECTED;
-
-	if (SysCon->usTerminalPosition & PIF_CLUSTER_JOINED_SAT)
-		SerNetConfig.fchSatStatus |= SER_SAT_JOINED;
-
-    memcpy(SerNetConfig.auchFaddr, SysCon->auchLaddr, PIF_LEN_IP);
+    SerNetConfig.usHandle = PIF_NET_INVALID_HANDLE;
 
     if (((0 == SysCon->auchLaddr[0]) &&
          (0 == SysCon->auchLaddr[1]) &&
          (0 == SysCon->auchLaddr[2])) ||    /* comm. board not provide */
         (0 == SysCon->auchLaddr[3])) {
 
+        NHPOS_ASSERT_TEXT(0, "**WARNING: SerNetOpen() communications board not provided.");
         PifEndThread();                     /* end of thread */
     }
+
+    SerNetConfig.xgHeader.auchAddr = *(AUCHADDR *)SysCon->auchLaddr;
+    SerNetConfig.xgHeader.usLport = PIFNET_PORT_SERVER;
+    SerNetConfig.xgHeader.usFport = PIFNET_PORT_ANYPORT;
+
     if (1== usBMOption) {    /* saratoga */
-        SerNetConfig.fchStatus |= SER_NET_BACKUP;
+        SerNetConfig.fchStatus |= PIFNET_NET_BACKUP;
     }
 
-    IPdata.usLport = CLI_PORT_SERVER;
-    IPdata.usFport = ANYPORT;
-    sRetStatus = sHandle = PifNetOpen(&IPdata);
-    if (0 <= sHandle) {
-        SerNetConfig.usHandle = (USHORT)sHandle;
-        SerNetConfig.fchStatus |= SER_NET_OPEN;
-        PifNetControl(SerNetConfig.usHandle, PIF_NET_SET_MODE, PIF_NET_NMODE | PIF_NET_TMODE);
-	}
+	if (SysCon->usTerminalPosition & PIF_CLUSTER_DISCONNECTED_SAT)
+		SerNetConfig.fchSatStatus |= PIFNET_SAT_DISCONNECTED;
 
-	return sRetStatus;
+	if (SysCon->usTerminalPosition & PIF_CLUSTER_JOINED_SAT)
+		SerNetConfig.fchSatStatus |= PIFNET_SAT_JOINED;
+
+    SerNetConfig.usHandle = PifNetOpen(&SerNetConfig.xgHeader);      // if there is an error the handle will be an invalid value
+    if (0 <= SerNetConfig.usHandle) {
+        SerNetConfig.fchStatus |= PIFNET_NET_OPEN;
+        PifNetControl(SerNetConfig.usHandle, PIF_NET_SET_MODE, PIF_NET_NMODE | PIF_NET_TMODE);
+    }
+    else {
+        char  xBuff[128];
+        sprintf(xBuff, "**ERROR: SerNetOpen() PifNetOpen failed error %d", SerNetConfig.usHandle);
+        NHPOS_ASSERT_TEXT((0 <= SerNetConfig.usHandle), xBuff);
+
+        PifLog(MODULE_SER_ABORT, FAULT_BAD_ENVIRONMENT);
+        PifLog(MODULE_ERROR_NO(MODULE_SER_ABORT), (USHORT)abs(SerNetConfig.usHandle));
+    }
+
+	return SerNetConfig.usHandle;
 }
 
 /*
@@ -670,7 +697,8 @@ SHORT  SerNetOpen(VOID)
 VOID    SerNetClose(VOID)
 {
     PifNetClose(SerNetConfig.usHandle);
-    SerNetConfig.fchStatus &= ~SER_NET_OPEN;
+    SerNetConfig.fchStatus &= ~PIFNET_NET_OPEN;
+    SerNetConfig.usHandle = PIF_NET_INVALID_HANDLE;
 }
 
 /*
@@ -691,7 +719,7 @@ SHORT    SerNetSend(USHORT usSendData)
     SHORT   sError = PIF_OK;
 	SHORT   sRetry=3;
 
-    SerNetConfig.fchStatus |= SER_NET_SEND;
+    SerNetConfig.fchStatus |= PIFNET_NET_SEND;
 	// Set a timeout for the send so that if the server is
 	// busy, we will get notified immediately.  Look at
 	// SerRecvNextFrame () in servrmh.c in the Server subsystem
@@ -700,8 +728,13 @@ SHORT    SerNetSend(USHORT usSendData)
 	// accomodate use with MWS polling over the Internet with its
 	// latency and delays.
 	PifNetControl(SerNetConfig.usHandle, PIF_NET_SET_STIME, 3000);
-    sError = PifNetSend(SerNetConfig.usHandle, &SerSndBuf, usSendData);
-    SerNetConfig.fchStatus &= ~SER_NET_SEND;
+    
+    do {
+        sError = PifNetSend(SerNetConfig.usHandle, &SerSndBuf, usSendData);
+        sRetry--;
+    } while ((sError == PIF_ERROR_NET_TIMEOUT || sError == PIF_ERROR_NET_BUSY ) && sRetry > 0);
+
+    SerNetConfig.fchStatus &= ~PIFNET_NET_SEND;
 
 	return sError;
 }
@@ -720,15 +753,14 @@ SHORT   SerNetReceive(VOID)
     SHORT       sError;
     USHORT      usTimer, usPrevErrorCo;
 
+    SerNetConfig.fchStatus |= PIFNET_NET_RECEIVE;
     usTimer = SerReadMDCPara(CLI_MDC_SERVER);
     usTimer *= 1000;
     PifNetControl(SerNetConfig.usHandle, PIF_NET_SET_TIME, usTimer);
 
     usPrevErrorCo = 0;
     do {
-        SerNetConfig.fchStatus |= SER_NET_RECEIVE;
         sError = PifNetReceive(SerNetConfig.usHandle, &SerRcvBuf, sizeof(XGRAM));
-        SerNetConfig.fchStatus &= ~SER_NET_RECEIVE;
 
         if (0 > sError) {
             if (PIF_ERROR_NET_POWER_FAILURE == sError) {
@@ -746,10 +778,12 @@ SHORT   SerNetReceive(VOID)
                 }
             }
         } else {
-            SerResp.usSize = (USHORT)sError;
+            SerResp.usRcvdLen = (USHORT)sError;
             SerResp.sError = SERV_SUCCESS;
         }
     } while (SERV_ILLEGAL == SerResp.sError);
+
+    SerNetConfig.fchStatus &= ~PIFNET_NET_RECEIVE;
 
 	if (0 > sError && PIF_ERROR_NET_TIMEOUT != sError && PIF_ERROR_NET_DISCOVERY != sError) {
 		char  xBuff[128];
@@ -1007,7 +1041,7 @@ SHORT    SerBcasTimerRead(VOID)
     
 /*
 *===========================================================================
-** Synopsis:    VOID    Ser_Timer_Start(SERTIMER *pTim);
+** Synopsis:    VOID    Ser_Timer_Start(PIFTIMER *pTim);
 *
 *     InPut:    pTim    - pointer to Timer structure
 *
@@ -1016,27 +1050,20 @@ SHORT    SerBcasTimerRead(VOID)
 ** Description: This function starts Kitchin Printer Timer.
 *===========================================================================
 */
-VOID    Ser_Timer_Start(SERTIMER *pTim, UCHAR uchTermNo)
+VOID    Ser_Timer_Start(PIFTIMER *pTim, UCHAR uchTermNo)
 {
-    DATE_TIME   Timer;
+    PifGetDateTimeTimer(pTim);
 
-    PifGetDateTime(&Timer);
-
-    pTim->uchHour = (UCHAR)Timer.usHour;
-    pTim->uchMin  = (UCHAR)Timer.usMin;
-    pTim->uchSec  = (UCHAR)Timer.usSec;
-	pTim->uchTermNo = uchTermNo;
-
-    if ((0 == Timer.usHour) &&              /* 00:00:00 ? */
-        (0 == Timer.usMin) &&
-        (0 == Timer.usSec)) {
+    if ((0 == pTim->uchHour) &&              /* 00:00:00 ? */
+        (0 == pTim->uchMin) &&
+        (0 == pTim->uchSec)) {
         pTim->uchSec = 1;                   /* -> 00:00:01 */
     }
 }
 
 /*
 *===========================================================================
-** Synopsis:    SHORT    Ser_Timer_Read(SERTIMER *pTim, ULONG ulMAX);
+** Synopsis:    SHORT    Ser_Timer_Read(PIFTIMER  *pTim, ULONG ulMAX);
 *
 *     InPut:    pTim    - pointer to Timer structure
 *               ulMAX   - timer value expired
@@ -1047,18 +1074,13 @@ VOID    Ser_Timer_Start(SERTIMER *pTim, UCHAR uchTermNo)
 ** Description: This function reads and checks Timer.
 *===========================================================================
 */
-SHORT   Ser_Timer_Read(SERTIMER *pTim, ULONG ulMAX)
+SHORT   Ser_Timer_Read(PIFTIMER *pTim, ULONG ulMAX)
 {
-    DATE_TIME   Timer;
-    SERTIMER    CurTime;
+    PIFTIMER    CurTime;
     ULONG       ulOLD, ulNEW;
     
-    PifGetDateTime(&Timer);
+    PifGetDateTimeTimer(&CurTime);
                     
-    CurTime.uchHour = (UCHAR)Timer.usHour;
-    CurTime.uchMin  = (UCHAR)Timer.usMin;
-    CurTime.uchSec  = (UCHAR)Timer.usSec;
-
     ulOLD = (pTim->uchHour * 3600L) + (pTim->uchMin * 60L) + pTim->uchSec;
     ulNEW = (CurTime.uchHour * 3600L) + (CurTime.uchMin * 60L) + CurTime.uchSec;
     
@@ -1163,35 +1185,28 @@ SHORT    SerSendResponseFH(CLIRESCOM *pResMsgH,
                           ULONG  ulOffsetPoint,
                           USHORT usReqLen)
 {
+    CLIREQDATA * const pSendData = (CLIREQDATA*)&SerSndBuf.auchData[usResMsgHLen];
     USHORT  usSendLen;
 	SHORT   sError;
 
 	/*=== BUILD/EDIT MESSAGE ===*/
-    usSendLen = 0;
-    memcpy(&SerSndBuf.auchData[usSendLen], pResMsgH, usResMsgHLen);
-    usSendLen += usResMsgHLen;
-
-    memcpy(&SerSndBuf.auchData[usSendLen], &usReqLen, sizeof(USHORT));
-    usSendLen += sizeof(USHORT);
-
-    SstReadFileFH((SERTMPFILE_DATASTART + ulOffsetPoint + usResMsgHLen), (VOID *)&SerSndBuf.auchData[usSendLen], usReqLen, hsSerTmpFile);
-    usSendLen += usReqLen;
+    memcpy(&SerSndBuf.auchData, pResMsgH, usResMsgHLen);
+    pSendData->usDataLen = usReqLen;
+    SstReadFileFH((SERTMPFILE_DATASTART + ulOffsetPoint + usResMsgHLen), pSendData->auchData, usReqLen, hsSerTmpFile);
+    usSendLen = usResMsgHLen + sizeof(pSendData->usDataLen) + usReqLen;
 
 	/*=== EDIT HEADER ===*/       
 	// fill in the XGRAM header indicating receiver of the message we are building.
-    memcpy(SerSndBuf.auchFaddr, SerNetConfig.auchFaddr, PIF_LEN_IP);
-    SerSndBuf.auchFaddr[CLI_POS_UA] = SerRcvBuf.auchFaddr[CLI_POS_UA];
-    usSendLen += sizeof(SerSndBuf.auchFaddr);
-    SerSndBuf.usFport = SerRcvBuf.usFport;
-    usSendLen += sizeof(SerSndBuf.usFport);
-    SerSndBuf.usLport = CLI_PORT_SERVER;
-    usSendLen += sizeof(SerSndBuf.usLport);
+    // replace using SerNetConfig with just using the address we received from instead.  RJC Mar-28-2025
+    SerSndBuf.xgHeader = SerRcvBuf.xgHeader;
+    SerSndBuf.usLport = PIFNET_PORT_SERVER;
+    usSendLen += sizeof(SerSndBuf.xgHeader);
 
 	/*=== SEND RESPONSE ===*/
     sError = SerNetSend(usSendLen);
 	if (sError < 0) {
 		char xBuff[128];
-		sprintf(xBuff, "SerNetSend(): sError = %d, 0x%x, usFunCode 0x%x, usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
+		sprintf(xBuff, "SerNetSend(): sError = %d  0x%8.8x  usFunCode 0x%x  usSeqNo 0x%x", sError, *((ULONG *)&SerSndBuf.auchFaddr[0]), pResMsgH->usFunCode, pResMsgH->usSeqNo);
 		NHPOS_ASSERT_TEXT((sError >= 0), xBuff);
 	}
 

@@ -38,8 +38,8 @@ public:
 	CStaticColorPatch m_staticOEPWinColor;
 	int		m_nOEPHeight;
 	int		m_nOEPWidth;
-	int		m_nOEPIconHorizRadioSelection;
-	int		m_nOEPIconVertRadioSelection;
+	CWindowControl::HorizontalIconAlignment		m_nOEPIconHorizRadioSelection;
+	CWindowControl::VerticalIconAlignment		m_nOEPIconVertRadioSelection;
 	CString m_csOEPIconFilePath;
 	CString	m_csOEPIconFileName;
 

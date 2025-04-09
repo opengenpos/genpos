@@ -112,7 +112,7 @@ public:
 	virtual	ULONG	GetRec(VARIANT vGetFields,LPVARIANT lpvValues);
 	virtual	ULONG	PutRec(VARIANT vPutFields,VARIANT vValues);
 	virtual	ULONG	AddRec(VARIANT vPutFields,VARIANT vValues);
-	virtual	ULONG	DelRec(const LONG lRecNum = 1);
+	virtual	ULONG	DelRec(void);
 
 	// cursor type
 	virtual	ULONG	OpenRecoredset(const LPCTSTR szSqlCode,CursorTypeEnum CursorType = adOpenKeyset,

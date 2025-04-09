@@ -120,6 +120,11 @@
 //   WARNING:  See function CstCheckMasterRoleAssummed() which may be called from
 //             both Satellite and Master.  You may need to help that function with
 //             a break point.
+//
+//   WARNING: If FORCE_SATELLITE_TERMINAL is set on, not all of the Database folder
+//            data files will be created and initialized properly since the Master
+//            is functioning as a Satellite. You will need to run as Master once
+//            if Database folder files have been deleted.
 //#define FORCE_SATELLITE_TERMINAL 1
 //#define FORCE_BACKUP_TERMINAL    1
 
@@ -134,7 +139,7 @@ static USHORT  usCstfsSystemInf = 0;      /* Client side special Notice Board st
 
 /* Function prototypes for static functions located in this file. */
 static SHORT   CstComChekInquiry(VOID);
-static VOID    CstComMakeMessage(USHORT usServer, USHORT usPort, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
+static VOID    CstComMakeMessage(USHORT usServer, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
 static VOID    CstComSendReceive(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf);
 static USHORT  CstComMakeMultiData(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
 static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf);
@@ -271,7 +276,7 @@ SHORT    CstLogLine (char *aszPrintLine)
 */
 SHORT   CstIamMaster(VOID)
 {
-    if (CLI_TGT_MASTER == CliNetConfig.auchFaddr[CLI_POS_UA]) {
+    if (PIFNET_TGT_MASTER == CliNetConfig.auchFaddr[CLI_POS_UA]) {
         return STUB_SUCCESS;
     } 
     return STUB_ILLEGAL;
@@ -289,10 +294,30 @@ SHORT   CstIamMaster(VOID)
 */
 SHORT   CstIamBMaster(VOID)
 {
-    if ((CLI_TGT_BMASTER == CliNetConfig.auchFaddr[CLI_POS_UA]) && (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+    if ((PIFNET_TGT_BMASTER == CliNetConfig.auchFaddr[CLI_POS_UA]) && (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return STUB_SUCCESS;
     }
     return STUB_ILLEGAL;
+}
+
+/*
+*===========================================================================
+** Synopsis:    PIFNETSTATUS    CstPifNetStatus(VOID);
+*
+** Return:      PIFNETSTAUS with the Client Stub PIFNET status
+*
+** Description:  This function provides a copy of the current Client Stub
+*                PIFNET status from the CliNetConfig 
+*===========================================================================
+*/
+PIFNETSTATUS CstPifNetStatus(VOID)
+{
+	PIFNETSTATUS  sStatus = { 0 };
+
+	sStatus.fchStatus = CliNetConfig.fchStatus;
+	sStatus.fchSatStatus = CliNetConfig.fchSatStatus;
+
+	return sStatus;
 }
 
 /*
@@ -307,7 +332,7 @@ SHORT   CstIamBMaster(VOID)
 */
 SHORT   CstIamDisconnectedSatellite(VOID)
 {
-    if (CliNetConfig.fchSatStatus & CLI_SAT_DISCONNECTED) {
+    if (CliNetConfig.fchSatStatus & PIFNET_SAT_DISCONNECTED) {
         return STUB_SUCCESS;
     }
 	return STUB_ILLEGAL;
@@ -329,7 +354,7 @@ SHORT   CstIamDisconnectedUnjoinedSatellite(VOID)
 {
 	// If we are a disconnected Satellite and we are not joined to a cluster
 	// then indicate success.
-    if ((CliNetConfig.fchSatStatus & (CLI_SAT_DISCONNECTED | CLI_SAT_JOINED)) == CLI_SAT_DISCONNECTED) {
+    if ((CliNetConfig.fchSatStatus & (PIFNET_SAT_DISCONNECTED | PIFNET_SAT_JOINED)) == PIFNET_SAT_DISCONNECTED) {
         return STUB_SUCCESS;
     }
 	return STUB_ILLEGAL;
@@ -371,7 +396,7 @@ USHORT CstSetMasterBackupStatus (SHORT  sErrorM, SHORT  sErrorBM)
 		// the Backup Master and we have a Backup Master provisioned then mark
 		// the Master Terminal as Out Of Date.  CstSendBMaster() will return
 		// STUB_DISCOVERY if there is not a Backup provisioned.
-		if (0 != (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+		if (0 != (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 			CstMTOutOfDate();
 			usOutOfDateIndic |= 0x01;
 		}
@@ -562,7 +587,7 @@ SHORT   CstSendMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
 				pResp->sReturn = pCliMsg->sRetCode;
 				if (sMasterErrorSave != sRetStatus) {
 					char xBuff[128];
-					sprintf(xBuff, "Master inquiry: CstComChekInquiry() %d, usCstComReadStatus = 0x%x", sRetStatus, usCstComReadStatus);
+					sprintf(xBuff, "Master inquiry: CstComChekInquiry() %d usCstComReadStatus = 0x%x", sRetStatus, usCstComReadStatus);
 					NHPOS_ASSERT_TEXT((sMasterErrorSave == sRetStatus), xBuff);
 				}
 				sMasterErrorSave = sRetStatus;
@@ -631,7 +656,7 @@ SHORT   CstSendMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
     }
 #endif
 
-    CstComMakeMessage(CLI_TGT_MASTER, CLI_PORT_STUB, pCliMsg, pCliSndBuf); //create\fill data structure for sending message to master
+    CstComMakeMessage(PIFNET_TGT_MASTER, pCliMsg, pCliSndBuf); //create\fill data structure for sending message to master
     CstComSendReceive(pCliMsg, pCliSndBuf, pCliRcvBuf); //sends request to terget server and receives response (loops until replied to)
 
 	// We are implementing a new communications status indicator of CLI_STS_M_REACHABLE
@@ -687,7 +712,7 @@ SHORT   CstSendBMaster(VOID)
 	I_Will_Create_An_Error++;
 #endif
 #pragma message("  ****   ")
-    CstComMakeMessage(CLI_TGT_MASTER, CLI_PORT_STUB, pCliMsg, &CliSndBuf);
+    CstComMakeMessage(PIFNET_TGT_MASTER, pCliMsg, &CliSndBuf);
     CstComSendReceive(pCliMsg, &CliSndBuf, &CliRcvBuf);
 
 	if ((pCliMsg->sError == STUB_M_DOWN) || (CstComReadStatus() & CLI_STS_M_OFFLINE)) {
@@ -735,7 +760,7 @@ SHORT   CstSendBMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCl
        return STUB_DISCOVERY; // do not send to Backup Master, simply return the SUCCESS message
 	}
 
-	if (0 == (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+	if (0 == (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return STUB_DISCOVERY;
     }
 
@@ -743,7 +768,7 @@ SHORT   CstSendBMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCl
 
 	// check to see if the Backup Master Terminal option was
 	// detected by function CstNetOpen().  If not, then just return.
-    if (0 == (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+    if (0 == (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 		if ((usCstComReadStatus & CLI_STS_BACKUP_FOUND) == 0) {
 			return STUB_DISCOVERY;
 		}
@@ -782,7 +807,7 @@ SHORT   CstSendBMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCl
 			pCliMsg->sRetCode = (sRetStatus + STUB_RETCODE);
 			if (sBackMasterErrorSave != sRetStatus) {
 				char xBuff[128];
-				sprintf(xBuff, "Backup inquiry: CstComChekInquiry() %d, usCstComReadStatus = 0x%x", sRetStatus, usCstComReadStatus);
+				sprintf(xBuff, "Backup inquiry: CstComChekInquiry() %d usCstComReadStatus = 0x%x", sRetStatus, usCstComReadStatus);
 				NHPOS_ASSERT_TEXT((sBackMasterErrorSave == sRetStatus), xBuff);
 			}
 			sBackMasterErrorSave = sRetStatus;
@@ -815,7 +840,7 @@ SHORT   CstSendBMasterWithArgs (CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCl
         return STUB_SELF;
     }
 
-    CstComMakeMessage(CLI_TGT_BMASTER, CLI_PORT_STUB, pCliMsg, pCliSndBuf);
+    CstComMakeMessage(PIFNET_TGT_BMASTER, pCliMsg, pCliSndBuf);
     CstComSendReceive(pCliMsg, pCliSndBuf, pCliRcvBuf);
 
     return pCliMsg->sError;
@@ -840,7 +865,7 @@ SHORT   CstSendTerminal(USHORT usTerminalPosition)
 	CLICOMIF *pCliMsg = &CliMsg;
 	SHORT  sRetStatus = STUB_SUCCESS;
 
-    CstComMakeMessage(usTerminalPosition, CLI_PORT_STUB, pCliMsg, &CliSndBuf); //create\fill data structure for sending message to terminal
+    CstComMakeMessage(usTerminalPosition, pCliMsg, &CliSndBuf); //create\fill data structure for sending message to terminal
     CstComSendReceive(pCliMsg, &CliSndBuf, &CliRcvBuf); //sends request to terget server and receives response (loops until replied to)
 
     return CliMsg.sError;  //message successfully sent to master (failures return above)
@@ -865,7 +890,7 @@ SHORT   CstSendBroadcast(CLICOMIF *pCliMsg)
 	extern XGRAM       CliRcvBuf;          /* Receive Buffer */
 	SHORT  sRetStatus = STUB_SUCCESS;
 
-    CstComMakeMessage(CLI_TGT_BROADCAST, CLI_PORT_STUB, pCliMsg, &CliSndBuf);
+    CstComMakeMessage(PIFNET_TGT_BROADCAST, pCliMsg, &CliSndBuf);
     CstComSendReceive(pCliMsg, &CliSndBuf, &CliRcvBuf);
 
     return STUB_SUCCESS;
@@ -883,11 +908,8 @@ SHORT   CstSendBroadcast(CLICOMIF *pCliMsg)
 */
 SHORT   SstUpdateAsMaster(VOID)
 {
-    USHORT  fsComStatus;
-    SHORT   sError;
-
-    sError = STUB_NOT_MASTER;
-    fsComStatus = CstComReadStatus();
+    USHORT  fsComStatus = CstComReadStatus();
+    SHORT   sError = STUB_NOT_MASTER;
 
     if ((CLI_IAM_MASTER) && ((fsComStatus & CLI_STS_M_UPDATE) || (fsComStatus & CLI_STS_BACKUP_FOUND) == 0)) {
         sError = STUB_SELF;
@@ -973,7 +995,7 @@ SHORT   SstReadFAsMaster(VOID)
 
     sError = sErrorM = CstSendMaster();                         /* Send to Master */
     if (STUB_M_DOWN == sError || STUB_TIME_OUT == sError) {   /* master down */
-		if (0 != (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+		if (0 != (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 			sError = CstSendBMaster();                        /* Send to B Master */
 			if (STUB_BM_DOWN == sError || STUB_TIME_OUT == sError) {                     /* Backup Master down */
 				sError = sErrorM;
@@ -985,10 +1007,9 @@ SHORT   SstReadFAsMaster(VOID)
 
 /*
 *===========================================================================
-** Synopsis:    VOID    CstComMakeMessage(UCHAR uchServer, USHORT usPort, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
+** Synopsis:    VOID    CstComMakeMessage(UCHAR uchServer, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf);
 *
-*     Input:    uchServer   - uniuqe address of target server
-*               usPort      - port on target host such as CLI_PORT_STUB
+*     Input:    uchServer   - uniuqe address of target server terminal, Master or Backup Master
 *               pCliMsg     - pointer to CliMsg struct for this message
 *               pCliSndBuf  - pointer to the CliSndBuf struct containing the data to send
 *
@@ -997,20 +1018,18 @@ SHORT   SstReadFAsMaster(VOID)
 ** Description: This function makes send message.
 *===========================================================================
 */
-static VOID    CstComMakeMessage(USHORT usServer, USHORT usPort, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
+static VOID    CstComMakeMessage(USHORT usServer, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
 {
-    memcpy(pCliSndBuf->auchFaddr, CliNetConfig.auchFaddr, PIF_LEN_IP);
-    pCliSndBuf->auchFaddr[CLI_POS_UA] = (UCHAR)usServer;
-	if (usServer == CLI_TGT_BROADCAST) {
+	pCliSndBuf->xgHeader = CliNetConfig.xgHeader;
+    pCliSndBuf->xgHeader.auchFaddr[CLI_POS_UA] = (UCHAR)usServer;
+	if (usServer == PIFNET_TGT_BROADCAST) {
 		// Set the send address to be a broadcast on the LAN
 		// if the target server is broadcast.
 		pCliSndBuf->auchFaddr[0] = 192;
 		pCliSndBuf->auchFaddr[1] = 0;
 		pCliSndBuf->auchFaddr[2] = 0;
-		pCliSndBuf->auchFaddr[3] = 0;
+		pCliSndBuf->auchFaddr[CLI_POS_UA] = 0;    // indicates PIFNET_TGT_BROADCAST
 	}
-    pCliSndBuf->usFport = CLI_PORT_SERVER;
-    pCliSndBuf->usLport = usPort;             // typically CLI_PORT_STUB
 
     pCliMsg->pReqMsgH->usFunCode = (pCliMsg->usFunCode & CLI_RSTBACKUPFG);
     pCliMsg->pReqMsgH->usSeqNo = 0;
@@ -1091,7 +1110,7 @@ static VOID    CstComSendReceive(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pC
 				{
 					CLIREQCOM    *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
 					char xBuff[256];
-					sprintf(xBuff, "CstComSendReceive: Unknown CstNetSend() error %d, usFunCode 0x%x, usRetryCo = %d, usSeqNo = 0x%x", sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
+					sprintf(xBuff, "CstComSendReceive: Unknown CstNetSend() error %d usFunCode 0x%x usRetryCo = %d usSeqNo = 0x%x", sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
 					NHPOS_ASSERT_TEXT(0, xBuff);
 				}
 				break;
@@ -1121,7 +1140,7 @@ static VOID    CstComSendReceive(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pC
 		CLIRESCOM   *pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
 		char         xBuff[256];
 
-		sprintf (xBuff, "##CstComSendReceive(): usUA %d, sError = %d, usFunCode 0x%x, usRetryCo = %d, usSeqNo = 0x%x", pCliSndBuf->auchFaddr[CLI_POS_UA], pCliMsg->sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
+		sprintf (xBuff, "##CstComSendReceive(): usUA %d sError = %d usFunCode 0x%x usRetryCo = %d usSeqNo = 0x%x", pCliSndBuf->auchFaddr[CLI_POS_UA], pCliMsg->sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
 		NHPOS_ASSERT_TEXT((STUB_SUCCESS == pCliMsg->sError), xBuff);
 
 		pResp->sResCode = (pCliMsg->sError + STUB_RETCODE);
@@ -1210,19 +1229,21 @@ static SHORT    CstComChekInquiry(VOID)
 */
 static USHORT  CstComMakeMultiData(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
 {
-    CLIREQCOM   *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
-    USHORT      usDataSiz = 0, usDataMax;
+    CLIREQCOM   * const pSend = (CLIREQCOM *)pCliSndBuf->auchData;
+	CLIREQDATA  * const pSendData = (CLIREQDATA*)(pCliSndBuf->auchData + pCliMsg->usReqMsgHLen);
+	TrnVliOffset  usDataSiz = 0;
 
 	// the function CstComMakeMessage() has already placed the request message into
 	// the first part of pCliSndBuf->auchData.
 	if ((0 != pCliMsg->usReqLen) && ((0 == pSend->usSeqNo) || (pCliMsg->sError == STUB_MULTI_RECV))) {
-        pSend->usSeqNo ++;
+		TrnVliOffset   usDataMax = PIF_LEN_UDATA_MAX(pCliMsg->usReqMsgHLen);
+
+		pSend->usSeqNo ++;
         pSend->usSeqNo |= CLI_SEQ_SENDDATA;
         if (pCliMsg->usAuxLen > pCliMsg->usReqLen) {
             pCliMsg->usAuxLen = pCliMsg->usReqLen;
         }
         usDataSiz = pCliMsg->usReqLen - pCliMsg->usAuxLen;
-        usDataMax = PIF_LEN_UDATA_MAX(pCliMsg->usReqMsgHLen);
         if (usDataSiz > usDataMax) {
 			// amount of data remaining to send is too large for a single packet
 			usDataSiz = usDataMax;    // send only as much as will fit in this packet.
@@ -1233,23 +1254,23 @@ static USHORT  CstComMakeMultiData(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
         }
 		// cast address to UCHAR and figure offset for data based on size of request header in number of bytes.
 		// add into message the size of data (USHORT) and the data itself after the data size.
-        memcpy((UCHAR *)pSend + pCliMsg->usReqMsgHLen, &usDataSiz, 2);
-        memcpy((UCHAR *)pSend + pCliMsg->usReqMsgHLen + 2, pCliMsg->pauchReqData + pCliMsg->usAuxLen, usDataSiz);
+        pSendData->usDataLen = usDataSiz;
+        memcpy(pSendData->auchData, pCliMsg->pauchReqData + pCliMsg->usAuxLen, usDataSiz);
         pCliMsg->usAuxLen += usDataSiz;
-        usDataSiz += 2;    // add in number of bytes of a USHORT for the length we inserted
+        usDataSiz += sizeof(pSendData->usDataLen);    // add in number of bytes of a USHORT for the length we inserted
     } else if ((0 != pCliMsg->usResLen) && (pCliMsg->usResLen != sizeof(CLIRESETK))) {
 		//SR 140 cwunn 7/9/2003 BK Etk allow CliMsg Response Length to be the size of a CLIRESETK, for CliETKIndJobRead()
 		pSend->usSeqNo &= CLI_SEQ_CONT;
 		++ pSend->usSeqNo;
 	}
 
-    if (CLI_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+    if (PIFNET_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
         if (0 == (CstComReadStatus() & CLI_STS_BM_UPDATE)) {
             pSend->usFunCode |= CLI_SETBMDOWN;
         } else {
             pSend->usFunCode &= ~CLI_SETBMDOWN;
         }
-    } else if (CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+    } else if (PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
         if (0 == (CstComReadStatus() & CLI_STS_M_UPDATE)) {
             pSend->usFunCode &= ~CLI_FCWBACKUP;
         }
@@ -1304,9 +1325,9 @@ VOID    CstComCheckError(CLICOMIF *pCliMsg, XGRAM *pCliRcvBuf)
 */
 VOID    CstComRespHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf)
 {
-    CLIREQCOM   *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
-    CLIRESCOM   *pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
-    USHORT      usDataSiz;
+    CLIREQCOM   * const pSend = (CLIREQCOM *)pCliSndBuf->auchData;
+    CLIRESCOM   * const pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
+	CLIREQDATA  * const pResData = (CLIREQDATA*)(pCliRcvBuf->auchData + pCliMsg->usResMsgHLen);
 
     if ((STUB_SUCCESS != pCliMsg->sError) && (STUB_MULTI_SEND != pCliMsg->sError)) {
         return;
@@ -1318,7 +1339,7 @@ VOID    CstComRespHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf
 	}
 
     pCliMsg->sRetCode = pResp->sReturn;
-    if ((CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) && (pSend->usFunCode & CLI_FCWBACKUP))
+    if ((PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) && (pSend->usFunCode & CLI_FCWBACKUP))
 	{
 		// Check to see if we still have connectivity to the Backup Master
 		// terminal.  We will check a particular message which is used fairly
@@ -1348,29 +1369,37 @@ VOID    CstComRespHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf
         return;
     }
     if (pResp->usSeqNo & CLI_SEQ_RECVDATA) {	
-        if (pSend->usSeqNo & CLI_SEQ_SENDEND) {
+		UCHAR *pRcvBufferPoint;    // pointer into pCliMsg->pauchResData for this data block.
+		TrnVliOffset    usDataSiz;
+
+		if (pSend->usSeqNo & CLI_SEQ_SENDEND) {
             pCliMsg->usAuxLen = 0;
         }
+
 		// get the number of bytes in the data by looking at the USHORT after the request header.
 		// we have to take into consideration the size of a USHORT containing the number of bytes
 		// of data in the message in our offset calculations below.
-        memcpy(&usDataSiz, (UCHAR *)pResp + pCliMsg->usResMsgHLen, 2);
+        usDataSiz = pResData->usDataLen;
+		// calculate receiving buffer current possition for data.
+		pRcvBufferPoint = pCliMsg->pauchResData + pCliMsg->usAuxLen;
 		//if returned data + previously returned data has smaller size than the response data length
 		//then copy the data to CliMsg local storage area
         if ((usDataSiz + pCliMsg->usAuxLen) <= pCliMsg->usResLen) {
-            memcpy(pCliMsg->pauchResData + pCliMsg->usAuxLen, (UCHAR *)pResp + pCliMsg->usResMsgHLen + 2, usDataSiz);
+            memcpy(pRcvBufferPoint, pResData->auchData, usDataSiz);
             pCliMsg->usAuxLen += usDataSiz;
-        } else {
-            if (pCliMsg->usAuxLen < pCliMsg->usResLen) {
-                usDataSiz = pCliMsg->usResLen - pCliMsg->usAuxLen;
-                memcpy(pCliMsg->pauchResData + pCliMsg->usAuxLen, (UCHAR *)pResp + pCliMsg->usResMsgHLen + 2, usDataSiz);
-                pCliMsg->usAuxLen += usDataSiz;
-            }
+        } else if (pCliMsg->usAuxLen < pCliMsg->usResLen) {
+            usDataSiz = pCliMsg->usResLen - pCliMsg->usAuxLen;
+            memcpy(pRcvBufferPoint, pResData->auchData, usDataSiz);
+            pCliMsg->usAuxLen += usDataSiz;
+		} else {
+			CHAR  buffer[128] = { 0 };
+			sprintf(buffer, "**ERROR: pCliMsg->usAuxLen %d < pCliMsg->usResLen %d ", pCliMsg->usAuxLen, pCliMsg->usResLen);
+			NHPOS_NONASSERT_NOTE("**ERROR", buffer);
         }            
     }
 	//SR 140 cwunn BK Etk code added 6/30/03
 	//If the Response packet does not indicate recieved data, it may still contain
-	//   data for use by CliETKIndJobRead().  Check if Response packet's sequence #
+	//   data for use by CliEtkIndJobRead().  Check if Response packet's sequence #
 	//   is 0 and check that the CliMsg packet has a valid Response Data pointer.
 	//   If so, copy the data, which represents the Employee Name Mnemonic for the
 	//   employee who just performed an Etk action.
@@ -1384,7 +1413,7 @@ VOID    CstComRespHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf
 	else { //pResp->usSeqNo does not indicate recieve data
 		if(pResp->usSeqNo == 0){
 			if(pCliMsg->pauchResData){
-				memcpy(pCliMsg->pauchResData, (UCHAR *)pResp + pCliMsg->usResMsgHLen, ETK_MAX_NAME_SIZE * sizeof(TCHAR));
+				memcpy(pCliMsg->pauchResData, pResData->auchData, ETK_MAX_NAME_SIZE * sizeof(TCHAR));
 			}
 		}
 	}
@@ -1407,9 +1436,9 @@ VOID    CstComRespHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf
 */
 static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf)
 {
-	SYSCONFIG CONST  *SysCon = PifSysConfig();
-    CLIREQCOM   *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
-    CLIRESCOM   *pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
+	SYSCONFIG CONST  * const SysCon = PifSysConfig();
+    CLIREQCOM   * const pSend = (CLIREQCOM *)pCliSndBuf->auchData;
+    CLIRESCOM   * const pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
     USHORT      usRetry;
     USHORT      usPrevious;
 
@@ -1421,17 +1450,16 @@ static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
     }
 
 	{
-		char                xBuff[256];
-		DATE_TIME           dtCurrentDateTime;
+		PIFTIMER            dtCurrentDateTime = { 0 };
 		BOOL                bPrintAssert = 0;
-		static DATE_TIME    dtSaveDateTime = {0};
+		static PIFTIMER     dtSaveDateTime = {0};
 		static USHORT       usSaveSeqNo = 0;
 		static USHORT       usSaveRetryCo = 0;
 		static USHORT       usSaveFunCode = 0;
 		static SHORT        sSaveError = 0;
 
-		PifGetDateTime(&dtCurrentDateTime);
-		bPrintAssert = ((usSaveRetryCo != pCliMsg->usRetryCo) || (usSaveSeqNo != pSend->usSeqNo) || (usSaveFunCode != pCliMsg->usFunCode) || (sSaveError != pCliMsg->sError) || (memcmp (&dtSaveDateTime, &dtCurrentDateTime, sizeof(DATE_TIME)) != 0));
+		PifGetDateTimeTimer(&dtCurrentDateTime);
+		bPrintAssert = ((usSaveRetryCo != pCliMsg->usRetryCo) || (usSaveSeqNo != pSend->usSeqNo) || (usSaveFunCode != pCliMsg->usFunCode) || (sSaveError != pCliMsg->sError) || (memcmp (&dtSaveDateTime, &dtCurrentDateTime, sizeof(dtSaveDateTime)) != 0));
 		dtSaveDateTime = dtCurrentDateTime;
 		usSaveSeqNo = pSend->usSeqNo;
 		usSaveFunCode = pCliMsg->usFunCode;
@@ -1439,7 +1467,8 @@ static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
 		usSaveRetryCo = pCliMsg->usRetryCo;
 
 		if (bPrintAssert) {
-			sprintf (xBuff, "**CstComErrHandle(): usUA %d, sError = %d, usFunCode 0x%x, usRetryCo = %d, usSeqNo = 0x%x", pCliSndBuf->auchFaddr[CLI_POS_UA], pCliMsg->sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
+			char                xBuff[256];
+			sprintf (xBuff, "**CstComErrHandle(): usUA %d sError = %d usFunCode 0x%x usRetryCo = %d usSeqNo = 0x%x", pCliSndBuf->auchFaddr[CLI_POS_UA], pCliMsg->sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
 			NHPOS_ASSERT_TEXT((STUB_SUCCESS == pCliMsg->sError), xBuff);
 		}
 	}
@@ -1575,10 +1604,10 @@ static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
         }
 #else
         pCliMsg->sError = STUB_UNMATCH_TRNO;
-        if (CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+        if (PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
             pCliMsg->sError = STUB_BM_DOWN;
         }
-        if (CLI_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+        if (PIFNET_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
             pCliMsg->sError = STUB_M_DOWN;
         }
 
@@ -1627,7 +1656,7 @@ static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
         } 
  
         /*----  Skip if Shared function --------*/
-        if (CLI_IAM_MASTER && CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+        if (CLI_IAM_MASTER && PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
             pCliMsg->sError = STUB_BM_DOWN;
             pCliMsg->sRetCode = STUB_RETCODE_BM_DOWN_ERROR;
         }
@@ -1647,7 +1676,7 @@ static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
     }  
 
     /*----  Skip if Shared function --------*/
-    if (CLI_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+    if (PIFNET_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
         if (0 == (CstComReadStatus() & CLI_STS_M_UPDATE)) {
             pCliMsg->sError = STUB_SUCCESS;
         }
@@ -1669,7 +1698,7 @@ static VOID    CstComErrHandle(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCli
 */
 static VOID    CstComSendConfirm(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
 {
-    CLIREQCOM   *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
+    CLIREQCOM   * const pSend = (CLIREQCOM *)pCliSndBuf->auchData;
 
     if ((STUB_SUCCESS == pCliMsg->sError) && (pSend->usFunCode & CLI_FCWCONFIRM)) {
         pSend->usFunCode |= CLI_SETCONFIRM;
@@ -1843,7 +1872,7 @@ SHORT   CstDisplayError(SHORT sError, USHORT usTarget)
 		break;
 
     default:
-        if (CLI_TGT_MASTER == usTarget) {
+        if (PIFNET_TGT_MASTER == usTarget) {
             usErrCode = LDT_LNKDWN_ADR;
         } else {
             usErrCode = LDT_SYSBSY_ADR;
@@ -1853,7 +1882,7 @@ SHORT   CstDisplayError(SHORT sError, USHORT usTarget)
 
 	{
 		char  xBuff[128];
-		sprintf (xBuff, "==NOTE: CstDisplayError() sError %d, usErrCode %d, fsComStatus 0x%x", sError, usErrCode, fsComStatus);
+		sprintf (xBuff, "==NOTE: CstDisplayError() sError %d usErrCode %d fsComStatus 0x%x", sError, usErrCode, fsComStatus);
 		NHPOS_NONASSERT_TEXT(xBuff);
 	}
 
@@ -1867,11 +1896,11 @@ SHORT   CstDisplayError(SHORT sError, USHORT usTarget)
     if (FSC_CLEAR == uchFSC) {              /* CLEAR key depressed ? */
         return 1;
     }
-    if (CLI_IAM_MASTER && (1 == usBMOption) && CLI_TGT_BMASTER == usTarget) {
+    if (CLI_IAM_MASTER && (1 == usBMOption) && PIFNET_TGT_BMASTER == usTarget) {
 		PifLog(MODULE_STB_LOG, LOG_ERROR_STB_COM_BM_DWN_02);
 //        CstBMOutOfDate();
     }
-    if (CLI_IAM_BMASTER && CLI_TGT_MASTER == usTarget) {
+    if (CLI_IAM_BMASTER && PIFNET_TGT_MASTER == usTarget) {
 		PifLog(MODULE_STB_LOG, LOG_ERROR_STB_COM_MA_DWN_01);
 //        CstMTOutOfDate();
     }
@@ -1967,7 +1996,7 @@ SHORT   CstBMOutOfDate(VOID)
 			char  xBuffer[128];
 			SHORT  sSstSetFlag = SstSetFlagWaitDone(SER_SPESTS_BMOD, husCliWaitDone);
 
-			sprintf(xBuffer, "CstBMOutOfDate(): usCstComReadStatus = 0x%x, sSstSetFlag %d", usCstComReadStatus, sSstSetFlag);
+			sprintf(xBuffer, "CstBMOutOfDate(): usCstComReadStatus = 0x%x sSstSetFlag %d", usCstComReadStatus, sSstSetFlag);
 			NHPOS_ASSERT_TEXT(!CLI_STS_BM_UPDATE, xBuffer);
 			return sSstSetFlag;
 		}
@@ -2022,7 +2051,7 @@ SHORT   CstBMOffLine(VOID)
 			char  xBuffer[128];
 			SHORT  sSstSetFlag = SstSetFlagWaitDone(SER_SPESTS_INQUIRY, husCliWaitDone);
 
-			sprintf(xBuffer, "CstBMOffLine(): usCstComReadStatus = 0x%x, sSstSetFlag %d", usCstComReadStatus, sSstSetFlag);
+			sprintf(xBuffer, "CstBMOffLine(): usCstComReadStatus = 0x%x sSstSetFlag %d", usCstComReadStatus, sSstSetFlag);
 			NHPOS_ASSERT_TEXT(!CLI_STS_BM_OFFLINE, xBuffer);
 			return sSstSetFlag;
 		}
@@ -2065,7 +2094,7 @@ SHORT   CstMTOutOfDate(VOID)
 		char  xBuffer[256];
 		SHORT  sSstSetFlag = SstSetFlagWaitDone(SER_SPESTS_MTOD, husCliWaitDone);
 
-		sprintf(xBuffer, "CstMTOutOfDate(): usCstComReadStatus = 0x%x, sSstSetFlag %d", usCstComReadStatus, sSstSetFlag);
+		sprintf(xBuffer, "CstMTOutOfDate(): usCstComReadStatus = 0x%x sSstSetFlag %d", usCstComReadStatus, sSstSetFlag);
 		NHPOS_ASSERT_TEXT(!CLI_STS_M_UPDATE, xBuffer);
 		return sSstSetFlag;
 	}
@@ -2119,7 +2148,7 @@ SHORT   CstMTOffLine(VOID)
 			char  xBuffer[256];
 			SHORT  sSstSetFlag = SstSetFlagWaitDone(SER_SPESTS_INQUIRY, husCliWaitDone);
 
-			sprintf(xBuffer, "CstMTOffLine(): usCstComReadStatus = 0x%x, sSstSetFlag %d", usCstComReadStatus, sSstSetFlag);
+			sprintf(xBuffer, "CstMTOffLine(): usCstComReadStatus = 0x%x sSstSetFlag %d", usCstComReadStatus, sSstSetFlag);
 			NHPOS_ASSERT_TEXT(!CLI_STS_M_UPDATE, xBuffer);
 			return sSstSetFlag;
 		}
@@ -2228,20 +2257,10 @@ VOID    CstSleep(VOID)
 */
 VOID    CstNetOpen(VOID)
 {
-    SYSCONFIG CONST *SysCon = PifSysConfig();
-    XGHEADER        IPdata = {0};
-    SHORT           sHandle;
+    SYSCONFIG CONST * const SysCon = PifSysConfig();
 
-    CliNetConfig.fchStatus = 0;
-    CliNetConfig.fchSatStatus = 0;
-
-	if (SysCon->usTerminalPosition & PIF_CLUSTER_DISCONNECTED_SAT)
-		CliNetConfig.fchSatStatus |= CLI_SAT_DISCONNECTED;
-
-	if (SysCon->usTerminalPosition & PIF_CLUSTER_JOINED_SAT)
-		CliNetConfig.fchSatStatus |= CLI_SAT_JOINED;
-
-    memcpy (CliNetConfig.auchFaddr, SysCon->auchLaddr, PIF_LEN_IP);
+	memset(&CliNetConfig, 0, sizeof(CliNetConfig));
+	CliNetConfig.usHandle = PIF_NET_INVALID_HANDLE;
 
     if (((0 == SysCon->auchLaddr[0]) &&
          (0 == SysCon->auchLaddr[1]) &&
@@ -2250,39 +2269,45 @@ VOID    CstNetOpen(VOID)
         CliNetConfig.auchFaddr[0] = 0;        
         CliNetConfig.auchFaddr[1] = 0;        
         CliNetConfig.auchFaddr[2] = 0;        
-        CliNetConfig.auchFaddr[3] = 1;      /* stand alone system */
+        CliNetConfig.auchFaddr[CLI_POS_UA] = 1;      /* stand alone system */
 		NHPOS_ASSERT_TEXT(0, "**WARNING: CstNetOpen() communications board not provided.");
         return;
     }
 
-    if (CLI_ALLTRANSNO < SysCon->auchLaddr[3]) {
-//        PifAbort(MODULE_STB_ABORT, FAULT_BAD_ENVIRONMENT);
-    }    
+	CliNetConfig.xgHeader.auchAddr = *(AUCHADDR*)SysCon->auchLaddr;
+	CliNetConfig.xgHeader.usLport = PIFNET_PORT_STUB;
+	CliNetConfig.xgHeader.usFport = PIFNET_PORT_SERVER;
+
     if ( 1 == usBMOption ) {    /* saratoga - indicate that we are a Backup System */
-        CliNetConfig.fchStatus |= CLI_NET_BACKUP;
-    }
-    if (DISP_2X20 == SysCon->uchOperType) {
-        CliNetConfig.fchStatus |= CLI_NET_DISP20;
+        CliNetConfig.fchStatus |= PIFNET_NET_BACKUP;
     }
 
-    IPdata.usLport = CLI_PORT_STUB;
-    IPdata.usFport = ANYPORT;
-    sHandle = PifNetOpen(&IPdata);
+	if (SysCon->usTerminalPosition & PIF_CLUSTER_DISCONNECTED_SAT)
+		CliNetConfig.fchSatStatus |= PIFNET_SAT_DISCONNECTED;
 
-    if (0 <= sHandle) {
+	if (SysCon->usTerminalPosition & PIF_CLUSTER_JOINED_SAT)
+		CliNetConfig.fchSatStatus |= PIFNET_SAT_JOINED;
+
+//    Old 2x20 (2 lines, 20 columns) operator display for NCR 2170 is obsolete but
+// 	  still used for customer display though it's mostly LCD screens now.
+//    if (DISP_2X20 == SysCon->uchOperType) {
+//        CliNetConfig.fchStatus |= CLI_NET_DISP20;
+//    }
+
+	CliNetConfig.usHandle = PifNetOpen(&CliNetConfig.xgHeader);      // if there is an error the handle will be an invalid value
+    if (0 <= CliNetConfig.usHandle) {
 		char  xBuff[128];
-        CliNetConfig.usHandle = (USHORT)sHandle;
-        CliNetConfig.fchStatus |= CLI_NET_OPEN;
+        CliNetConfig.fchStatus |= PIFNET_NET_OPEN;
         PifNetControl(CliNetConfig.usHandle, PIF_NET_SET_MODE, PIF_NET_NMODE | PIF_NET_TMODE);
 		sprintf (xBuff, "==NOTE: CstNetOpen() PifNetOpen fchStatus 0x%x", CliNetConfig.fchStatus);
 		NHPOS_NONASSERT_TEXT(xBuff);
     } else {
 		char  xBuff[128];
-		sprintf (xBuff, "**ERROR: CstNetOpen() PifNetOpen failed error %d", sHandle);
-		NHPOS_ASSERT_TEXT((0 <= sHandle), xBuff);
+		sprintf (xBuff, "**ERROR: CstNetOpen() PifNetOpen failed error %d", CliNetConfig.usHandle);
+		NHPOS_ASSERT_TEXT((0 <= CliNetConfig.usHandle), xBuff);
 
         PifLog(MODULE_STB_ABORT, FAULT_BAD_ENVIRONMENT);
-        PifLog(MODULE_ERROR_NO(MODULE_STB_ABORT), (USHORT)abs(sHandle));
+        PifLog(MODULE_ERROR_NO(MODULE_STB_ABORT), (USHORT)abs(CliNetConfig.usHandle));
         PifAbort(MODULE_STB_ABORT, FAULT_BAD_ENVIRONMENT);
     }
 }
@@ -2299,7 +2324,8 @@ VOID    CstNetOpen(VOID)
 VOID    CstNetClose(VOID)
 {
     PifNetClose(CliNetConfig.usHandle);
-    CliNetConfig.fchStatus &= ~CLI_NET_OPEN;
+    CliNetConfig.fchStatus &= ~PIFNET_NET_OPEN;
+	CliNetConfig.usHandle = PIF_NET_INVALID_HANDLE;
 }
 
 /*
@@ -2313,7 +2339,7 @@ VOID    CstNetClose(VOID)
 */
 VOID    CstNetClear(VOID)
 {
-    if (CliNetConfig.fchStatus & CLI_NET_OPEN) {
+    if (CliNetConfig.fchStatus & PIFNET_NET_OPEN) {
         PifNetControl(CliNetConfig.usHandle, PIF_NET_CLEAR);
     }
 }
@@ -2334,9 +2360,9 @@ SHORT    CstNetSend(USHORT usSize, XGRAM *pCliSndBuf)
     SHORT   sError = PIF_ERROR_NET_ACCESS_DENIED;
 	SHORT   sRetry=3;
 
-    if (CliNetConfig.fchStatus & CLI_NET_OPEN) {
+    if (CliNetConfig.fchStatus & PIFNET_NET_OPEN) {
 
-        CliNetConfig.fchStatus |= CLI_NET_SEND;
+        CliNetConfig.fchStatus |= PIFNET_NET_SEND;
 
 		// Set a timeout for the send so that if the server is
 		// busy, we will get notified immediately.  Look at
@@ -2363,7 +2389,7 @@ SHORT    CstNetSend(USHORT usSize, XGRAM *pCliSndBuf)
 			((PIF_ERROR_NET_TIMEOUT == sError) && (sRetry > 0)) ||
 			((PIF_ERROR_NET_BUSY == sError) && (sRetry > 0)) );
         
-        CliNetConfig.fchStatus &= ~CLI_NET_SEND;
+        CliNetConfig.fchStatus &= ~PIFNET_NET_SEND;
     }
 
 	return sError;
@@ -2382,12 +2408,12 @@ SHORT    CstNetSend(USHORT usSize, XGRAM *pCliSndBuf)
 SHORT  CstNetReceive(USHORT usMDC, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf)
 {
 	SHORT       sPifCountDown = PIF_LOG_COUNT_DOWN_START;
-    CLIREQCOM   *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
-    CLIRESCOM   *pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
+    CLIREQCOM   * const pSend = (CLIREQCOM *)pCliSndBuf->auchData;
+    CLIRESCOM   * const pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
     SHORT       sError;
     USHORT      usTimer, usPrevErrorCo;
 
-    if (0 == (CliNetConfig.fchStatus & CLI_NET_OPEN)) {
+    if (0 == (CliNetConfig.fchStatus & PIFNET_NET_OPEN)) {
         pCliMsg->sError = STUB_TIME_OUT;
         pCliMsg->sRetCode = STUB_RETCODE_TIME_OUT_ERROR;
         return STUB_TIME_OUT;
@@ -2456,10 +2482,9 @@ SHORT  CstNetReceive(USHORT usMDC, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *
 		We go ahead and do it explicitly here.  See CstComSendReceive () for how the steps
 		for a Client send message, receive response, process response is handled.
 	 */
+    CliNetConfig.fchStatus |= PIFNET_NET_RECEIVE;
     do {
-        CliNetConfig.fchStatus |= CLI_NET_RECEIVE;
         sError = PifNetReceive(CliNetConfig.usHandle, pCliRcvBuf, sizeof(XGRAM));
-        CliNetConfig.fchStatus &= ~CLI_NET_RECEIVE;
 
         if (0 > sError) {
             if (PIF_ERROR_NET_POWER_FAILURE == sError) {
@@ -2501,6 +2526,8 @@ SHORT  CstNetReceive(USHORT usMDC, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *
 		}
     } while (STUB_ILLEGAL == sError);
 
+    CliNetConfig.fchStatus &= ~PIFNET_NET_RECEIVE;
+
     CliDispDescriptor(CLI_MODULE_STUB, CLI_DESC_STOP_BLINK);
     pCliMsg->sError = sError;
 
@@ -2536,7 +2563,7 @@ SHORT   CstSendTarget(UCHAR uchUaddr, CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRA
         return STUB_ILLEGAL;
     }
 
-    CstComMakeMessage(uchUaddr, CLI_PORT_STUB, pCliMsg, pCliSndBuf);
+    CstComMakeMessage(uchUaddr, pCliMsg, pCliSndBuf);
     CstComSendReceive(pCliMsg, pCliSndBuf, pCliRcvBuf);
 
 	// Transform a Backup down or Master down message into
@@ -2568,9 +2595,8 @@ VOID    CstCpmRecMessage(VOID)
 	extern XGRAM       CliRcvBuf;          /* Receive Buffer */
 	extern  CLICOMIF   CliMsg;
 	SHORT       sRetCode;
-    CLIREQCOM   *pSend;
+    CLIREQCOM   * const pSend = (CLIREQCOM *)CliSndBuf.auchData;
  
-    pSend = (CLIREQCOM *)CliSndBuf.auchData;
     pSend->usFunCode = CLI_FCCPMRECVMESS;
 
     sRetCode = CstComChekInquiry();             /* check inquiry condition */
@@ -2682,7 +2708,7 @@ SHORT   CstSendMasterFH( USHORT usType )
 				pResp->sReturn = CliMsg.sRetCode;
 				if (sMasterErrorSave != sRetCode) {
 					char xBuff[128];
-					sprintf(xBuff, "CstSendMasterFH: CstComChekInquiry() %d, usCstComReadStatus = 0x%x", sRetCode, usCstComReadStatus);
+					sprintf(xBuff, "CstSendMasterFH: CstComChekInquiry() %d usCstComReadStatus = 0x%x", sRetCode, usCstComReadStatus);
 					NHPOS_ASSERT_TEXT((sMasterErrorSave == sRetCode), xBuff);
 				}
 				sMasterErrorSave = sRetCode;
@@ -2758,7 +2784,7 @@ SHORT   CstSendMasterFH( USHORT usType )
 		}
 	}
 
-	CstComMakeMessage(CLI_TGT_MASTER, CLI_PORT_STUB, &CliMsg, &CliSndBuf);
+	CstComMakeMessage(PIFNET_TGT_MASTER, &CliMsg, &CliSndBuf);
     CstComSendReceiveFH(usType, &CliMsg, &CliSndBuf, &CliRcvBuf);
 
 	// We are implementing a new communications status indicator of CLI_STS_M_REACHABLE
@@ -2822,7 +2848,7 @@ SHORT   CstSendBMasterFH( USHORT usType )
        return STUB_DISCOVERY; // do not send to Backup Master, simply return the STUB_DISCOVERY message
 	}
 
-	if (0 == (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+	if (0 == (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
         return STUB_DISCOVERY;
     }
 
@@ -2885,7 +2911,7 @@ SHORT   CstSendBMasterFH( USHORT usType )
 			CliMsg.sRetCode = (sRetCode + STUB_RETCODE);
 			if (sBackMasterErrorSave != sRetCode) {
 				char xBuff[128];
-				sprintf(xBuff, "CstSendBMasterFH: CstComChekInquiry() %d, usCstComReadStatus = 0x%x", sRetCode, usCstComReadStatus);
+				sprintf(xBuff, "CstSendBMasterFH: CstComChekInquiry() %d usCstComReadStatus = 0x%x", sRetCode, usCstComReadStatus);
 				NHPOS_ASSERT_TEXT((sBackMasterErrorSave == STUB_DUR_INQUIRY), xBuff);
 			}
 			sBackMasterErrorSave = sRetCode;
@@ -2899,7 +2925,7 @@ SHORT   CstSendBMasterFH( USHORT usType )
 	}
 	sBackMasterErrorSave = 0;
 
-    CstComMakeMessage(CLI_TGT_BMASTER, CLI_PORT_STUB, &CliMsg, &CliSndBuf);
+    CstComMakeMessage(PIFNET_TGT_BMASTER, &CliMsg, &CliSndBuf);
     CstComSendReceiveFH(usType, &CliMsg, &CliSndBuf, &CliRcvBuf);
 
     return CliMsg.sError;
@@ -2925,7 +2951,7 @@ SHORT   CstSendTerminalFH(USHORT usType, USHORT usTerminalPosition)
 	extern  CLICOMIF   CliMsg;
 	SHORT  sRetStatus = STUB_SUCCESS;
 
-    CstComMakeMessage(usTerminalPosition, CLI_PORT_STUB, &CliMsg, &CliSndBuf);
+    CstComMakeMessage(usTerminalPosition, &CliMsg, &CliSndBuf);
     CstComSendReceiveFH(usType, &CliMsg, &CliSndBuf, &CliRcvBuf);
 
     return CliMsg.sError;  //message successfully sent to master (failures return above)
@@ -2999,7 +3025,7 @@ static VOID    CstComSendReceiveFH( USHORT usType, CLICOMIF *pCliMsg, XGRAM *pCl
 				{
 					CLIREQCOM    *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
 					char xBuff[256];
-					sprintf(xBuff, "CstComSendReceiveFH: Unknown CstNetSend() error %d, usFunCode 0x%x, usRetryCo = %d, usSeqNo = 0x%x", sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
+					sprintf(xBuff, "CstComSendReceiveFH: Unknown CstNetSend() error %d usFunCode 0x%x usRetryCo = %d usSeqNo = 0x%x", sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
 					NHPOS_ASSERT_TEXT(0, xBuff);
 				}
 				break;
@@ -3028,7 +3054,7 @@ static VOID    CstComSendReceiveFH( USHORT usType, CLICOMIF *pCliMsg, XGRAM *pCl
 	if (pCliMsg->usRetryCo >= usRetryCount || (STUB_BM_DOWN == pCliMsg->sError) || (STUB_M_DOWN == pCliMsg->sError)) {
 		CLIREQCOM    *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
 		char         xBuff[256];
-		sprintf (xBuff, "##CstComSendReceiveFH(): usUA %d, sError = %d, usFunCode 0x%x, usRetryCo = %d, usSeqNo = 0x%x", pCliSndBuf->auchFaddr[CLI_POS_UA], pCliMsg->sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
+		sprintf (xBuff, "##CstComSendReceiveFH(): usUA %d sError = %d usFunCode 0x%x usRetryCo = %d usSeqNo = 0x%x", pCliSndBuf->auchFaddr[CLI_POS_UA], pCliMsg->sError, pCliMsg->usFunCode, pCliMsg->usRetryCo, pSend->usSeqNo);
 		NHPOS_ASSERT_TEXT((STUB_SUCCESS == pCliMsg->sError), xBuff);
 
 		if (pCliMsg->usRetryCo >= usRetryCount)
@@ -3058,15 +3084,17 @@ static VOID    CstComSendReceiveFH( USHORT usType, CLICOMIF *pCliMsg, XGRAM *pCl
 */
 static USHORT  CstComMakeMultiDataFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
 {
-    CLIREQCOM   *pSend;
-    USHORT      usDataSiz=0;
-    USHORT      usStartPoint=0;
-
-    pSend = (CLIREQCOM *)pCliSndBuf->auchData;
+    CLIREQCOM   * const pSend = (CLIREQCOM *)pCliSndBuf->auchData;
+	CLIREQDATA  * const pSendData = (CLIREQDATA*)(pCliSndBuf->auchData + pCliMsg->usReqMsgHLen);
+	TrnVliOffset   usDataSiz=0;
 
     if ((0 != pCliMsg->usReqLen) &&
         ((0 == pSend->usSeqNo) || (pCliMsg->sError == STUB_MULTI_RECV))) {
-		USHORT      usDataMax;
+		// calculate pointer to beginning of request data to read from the file, the size of the data,
+		// and the PIF file handle for the file that contains the data.
+		SHORT          hFile = (SHORT) * (pCliMsg->pauchReqData);
+		TrnVliOffset   usStartPoint=0;
+		TrnVliOffset   usDataMax = PIF_LEN_UDATA_MAX(pCliMsg->usReqMsgHLen);
 
         pSend->usSeqNo ++;
         pSend->usSeqNo |= CLI_SEQ_SENDDATA;
@@ -3074,13 +3102,12 @@ static USHORT  CstComMakeMultiDataFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
             pCliMsg->usAuxLen = pCliMsg->usReqLen;
         }
         usDataSiz = pCliMsg->usReqLen - pCliMsg->usAuxLen;
-        usDataMax = PIF_LEN_UDATA_MAX(pCliMsg->usReqMsgHLen);
         if (usDataSiz > usDataMax) {
             usDataSiz = usDataMax;
         } else {
             pSend->usSeqNo |= CLI_SEQ_SENDEND;
         }
-        memcpy((UCHAR *)pSend + pCliMsg->usReqMsgHLen, &usDataSiz, 2);
+		pSendData->usDataLen = usDataSiz;
         if ((pCliMsg->usFunCode & CLI_RSTCONTCODE) == CLI_FCTTLUPDATE) {
             usStartPoint = SERTMPFILE_DATASTART;
 		} else if ((pCliMsg->usFunCode & CLI_RSTCONTCODE) == CLI_FCCOPONNENGINEMSGFH) {
@@ -3089,16 +3116,17 @@ static USHORT  CstComMakeMultiDataFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf)
             usStartPoint = CLIGCFFILE_DATASTART;
         }
 
-        SstReadFileFH((pCliMsg->usAuxLen + usStartPoint), (UCHAR *)pSend + pCliMsg->usReqMsgHLen + 2, usDataSiz, (SHORT)*(pCliMsg->pauchReqData));
+        SstReadFileFH((pCliMsg->usAuxLen + usStartPoint), pSendData->auchData, usDataSiz, hFile);
 
+		// update our current length into the file being transferred
+		// include the size of the data length in the amount of data being sent.
         pCliMsg->usAuxLen += usDataSiz;
-        usDataSiz += 2;
-
+        usDataSiz += sizeof(pSendData->usDataLen);
     } else if (0 != pCliMsg->usResLen) {
         pSend->usSeqNo &= CLI_SEQ_CONT;
         ++ pSend->usSeqNo;
     }
-    if (CLI_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
+    if (PIFNET_TGT_MASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) {
         if (0 == (CstComReadStatus() & CLI_STS_BM_UPDATE)) {
             pSend->usFunCode |= CLI_SETBMDOWN;
         } else {
@@ -3133,11 +3161,11 @@ SHORT   SstReadFAsMasterFH(USHORT usType)
 
     sError = sErrorM = CstSendMasterFH(usType);                   /* Send to Master */
     if (STUB_M_DOWN == sErrorM || STUB_TIME_OUT == sErrorM) {     /* master down */
-		if (0 != (CliNetConfig.fchStatus & CLI_NET_BACKUP)) {
+		if (0 != (CliNetConfig.fchStatus & PIFNET_NET_BACKUP)) {
 			sError = CstSendBMasterFH(usType);                    /* Send to B Master */
 			if (STUB_SUCCESS != sError) {                         /* Backup Master down */
 				char xBuff[128];
-				sprintf (xBuff, "==NOTE: SstReadFAsMasterFH() sErrorM %d, sError %d", sErrorM, sError);
+				sprintf (xBuff, "==NOTE: SstReadFAsMasterFH() sErrorM %d sError %d", sErrorM, sError);
 				NHPOS_NONASSERT_TEXT(xBuff);
 				sError = sErrorM;
 			}
@@ -3160,8 +3188,9 @@ SHORT   SstReadFAsMasterFH(USHORT usType)
 SHORT    CstComRespHandleFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcvBuf)
 {
 
-    CLIREQCOM   *pSend = (CLIREQCOM *)pCliSndBuf->auchData;
-    CLIRESCOM   *pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
+    CLIREQCOM   * const pSend = (CLIREQCOM *)pCliSndBuf->auchData;
+    CLIRESCOM   * const pResp = (CLIRESCOM *)pCliRcvBuf->auchData;
+	CLIREQDATA  * const pRespData = (CLIREQDATA*)(pCliRcvBuf->auchData + pCliMsg->usResMsgHLen);
 
     if ((STUB_SUCCESS != pCliMsg->sError) && (STUB_MULTI_SEND != pCliMsg->sError)) {
 //		char  xBuff[128];
@@ -3169,7 +3198,7 @@ SHORT    CstComRespHandleFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcv
         return pCliMsg->sError;
     }
 
-    if ((CLI_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) && (pSend->usFunCode & CLI_FCWBACKUP)) {
+    if ((PIFNET_TGT_BMASTER == pCliSndBuf->auchFaddr[CLI_POS_UA]) && (pSend->usFunCode & CLI_FCWBACKUP)) {
         if (0 > pResp->sReturn) {
             if (((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCEJREAD) && (pResp->sReturn == EJ_NOTHING_DATA)) {
                 pCliMsg->sError = STUB_SUCCESS;
@@ -3188,18 +3217,19 @@ SHORT    CstComRespHandleFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcv
     memcpy(pCliMsg->pResMsgH, pResp, pCliMsg->usResMsgHLen);
     pCliMsg->sRetCode = pResp->sReturn;
     if (pResp->usSeqNo & CLI_SEQ_RECVDATA) {
-		USHORT      usDataSiz;
 
         if (pSend->usSeqNo & CLI_SEQ_SENDEND) {
             pCliMsg->usAuxLen = 0;
         }
 
-        memcpy(&usDataSiz, (UCHAR *)pResp + pCliMsg->usResMsgHLen, 2);
         if (((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCGCFREADLOCK) ||
             ((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCGCFINDREAD)  ||
             ((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCBAKGCF) ||
             ((pSend->usFunCode & CLI_RSTCONTCODE) == CLI_FCGCFCHECKREAD)) {
-			USHORT      usOffset = CLIGCFFILE_DATASTART;
+			// the PIF file handle for the file to receive the data.
+			SHORT       hFile = (SHORT) * (pCliMsg->pauchResData);
+			TrnVliOffset   usDataSiz = pRespData->usDataLen;
+			TrnVliOffset   usOffset = CLIGCFFILE_DATASTART;
 
 			// adjust data start position in file for Guest Check File start.
 			// see also function SerRecvBak() and use of GusResBackUpFH().
@@ -3208,14 +3238,12 @@ SHORT    CstComRespHandleFH(CLICOMIF *pCliMsg, XGRAM *pCliSndBuf, XGRAM *pCliRcv
             }
 
             if ((usDataSiz + pCliMsg->usAuxLen) <= pCliMsg->usResLen) {
-                SstWriteFileFH((pCliMsg->usAuxLen + usOffset), (UCHAR *)pResp + pCliMsg->usResMsgHLen + 2,
-                               usDataSiz, ( SHORT)*(pCliMsg->pauchResData));
+                SstWriteFileFH((pCliMsg->usAuxLen + usOffset), pRespData->auchData, usDataSiz, hFile);
                 pCliMsg->usAuxLen += usDataSiz;
             } else {
                 if (pCliMsg->usAuxLen < pCliMsg->usResLen) {
                     usDataSiz = pCliMsg->usResLen - pCliMsg->usAuxLen;
-                    SstWriteFileFH((pCliMsg->usAuxLen + usOffset), (UCHAR *)pResp + pCliMsg->usResMsgHLen + 2,
-                                   usDataSiz, ( SHORT)*(pCliMsg->pauchResData));
+                    SstWriteFileFH((pCliMsg->usAuxLen + usOffset), pRespData->auchData, usDataSiz, hFile);
                     pCliMsg->usAuxLen += usDataSiz;
                 }
             }

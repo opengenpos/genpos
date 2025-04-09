@@ -30,7 +30,7 @@ public:
 	friend CDListBoxEdit;
 
 	static CWindowListBoxExt * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc->controlAttributes.m_nType == ListBoxControl)
+		if (pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ListBoxControl)
 			return (static_cast <CWindowListBoxExt *> (pwc));
 		else
 			return NULL;

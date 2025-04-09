@@ -57,7 +57,7 @@ public:
 	static CRect getRectangleSized (int column, int row, USHORT usWidthMult, USHORT usHeightMult);
 
 	static CWindowListBox * TranslateCWindowControl (CWindowControl *pwc) {
-		if (pwc && pwc->controlAttributes.m_nType == ListBoxControl)
+		if (pwc && pwc->controlAttributes.m_nType == CWindowControl::CWindowControlType::ListBoxControl)
 			return (static_cast <CWindowListBox *> (pwc));
 		else
 			return NULL;
