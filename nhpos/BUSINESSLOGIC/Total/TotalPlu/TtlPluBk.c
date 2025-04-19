@@ -234,12 +234,7 @@ USHORT  TtlResBackEachPlu(TTLBACKUP_RES *pSend,const USHORT usMaxLen){
 			//g_hdDBFile = PLUTOTAL_HANDLE_NULL;
 		}else
 		{
-#ifdef XP_PORT
 			PluTotalOpenFile(&g_hdDBFile,pSend->F.sFileSubType,PLUTOTAL_DBFILE_CREATEREAD);
-#else
-			PluTotalOpenFile(&g_hdDBFile,pSend->F.sFileSubType,PLUTOTAL_DBFILE_CREATEREAD);
-#endif
-
 		}
 	}
 

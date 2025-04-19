@@ -16,53 +16,60 @@
 //#include	"atlbase.h"
 
 #define		DBFILE_NUM	(5)
-//#define		DBFILE_NUM	(4)
 #define		STSTBL_NUM	DBFILE_NUM			/* number of status */// ### ADD
 #define		TBL_NUM		(10)
 
 // *** Database define table ***
 class	CnPluTotalDb;
 
-typedef struct{
+struct __CnDbFormat {
 	SHORT	nId;								// reserved
 	CString	strPath;							// db file path	// ### ADD Saratoga (061600)
 	CString	strName;							// db file name
 	__CnTblFormat	lstTbl[TBL_NUM];			// table list in db file
 	CnPluTotalDb	* pDb;						// database class(ADOCE)
-}__CnDbFormat;
+};
 
 // *** Status table chash ***
-typedef struct{
+struct __StatusBuf {
 	SHORT			nStsTblIdx;
 	PLUTOTAL_STATUS	Status;
 	SHORT			nStsUpdate;	// 08/30/01
-}__StatusBuf;
+};
 
-
-typedef	CnPluTotalDb *	PDBObject;
 
 class CnPluTotal
 {
 private:
 	static	int		s_nObjCnt;
 	__CnDbFormat	s_lstDb[DBFILE_NUM+1] ;
+
+	void	CreateObject();
+	void	DestroyObject();
+	LPCTSTR			_TableName(const SHORT nTblID) ;
+	CString			_DbPathName(const SHORT nTblID);
+	CString			_DbFileName(const SHORT nTblID); //SR 725 JHHJ AC42 Plu Database Synchronization
+	CnPluTotalDb*	_DataBaseObject(const SHORT nTblID) ;
+	__CnTblFormat&	_TableInfo(const SHORT nTblID) ;
+	int				_StsBufIdx(const SHORT sStsTblID = -1)const;	// ### ADD (032400)
+	// *** DEBUG & TESTS (041500)
+	void			__GenPluNo(const LONG lNo,LPTSTR pPluNo);
+
 protected:
 	SHORT			m_nCurrentDbFile;				// (table id)
 	CFile			m_fDbFile;						// database file object
 	CFileException	m_feErrorInfo;					// file exception object
 
 	CnPluTtlReg		m_Regs;
-//	CString			m_strDbPath;
 
 	CnPluTotalBackUp m_BackUp;						// TBC object
 
 	// status buffer
 	__StatusBuf		m_StatusBuf[STSTBL_NUM];
 
-protected:
-	virtual BOOL	MakeParmsPluTotals(COleSafeArray& saFields);
-	virtual BOOL	MakeParmsPluStatus(COleSafeArray& saFields);
-	virtual	BOOL	MakeParams(const SHORT nTblID,COleSafeArray &vFields);
+	BOOL	MakeParmsPluTotals(COleSafeArray& saFields);
+	BOOL	MakeParmsPluStatus(COleSafeArray& saFields);
+	BOOL	MakeParams(const SHORT nTblID,COleSafeArray &vFields);
 
 	BOOL			Var2PluTtlRec(const CnVariant vRecData,PLUTOTAL_REC * pRecData);
 	BOOL			Var2PluTtlRec(const CnVariant vRecData,PLUTOTAL_STATUS * pStsData);
@@ -74,7 +81,14 @@ protected:
 	ULONG			SaveStatus(const SHORT nStsTblID,const PLUTOTAL_STATUS &StatusRec);
 	BOOL			DelStatusBuf(const SHORT nStsTblID);
 
+	int				SearchTbl(const SHORT sTblID,int *nTblIdx);
+	SHORT			GetStatusTblID(const SHORT sTblID)const;
+	void            SetPluTotalStatusVal (ULONG ulResetSts,DATE_TIME *dtFrom,DATE_TIME *dtTo, DCURRENCY lAllTotal, DCURRENCY lAmount, PLUTOTAL_STATUS *ppsRec);
+
 public:
+	HRESULT				m_pDB_hr;						// status (ADOCE)
+	HRESULT				m_pStsDB_hr;					// status (ADOCE)
+
 					CnPluTotal();
 	virtual 		~CnPluTotal();
 
@@ -105,9 +119,7 @@ public:
 
 	virtual	ULONG	SelectRec(const SHORT nTblID,const ULONG SearchCond);
 	virtual	ULONG	FirstRec(const SHORT nTblID);
-	virtual	ULONG	LastRec(const SHORT nTblID);
 	virtual	ULONG	NextRec(const SHORT nTblID);
-	virtual	ULONG	PrevRec(const SHORT nTblID);
 	virtual	ULONG	GetRec(const SHORT nTblID,PLUTOTAL_REC * pRecData);
 	virtual	ULONG	GetNumRec(const SHORT nTblID,ULONG * pulRecNum);
 	virtual	ULONG	ReleaseRec(const SHORT nTblID);
@@ -139,46 +151,6 @@ public:
 	// *** DEBUG & TESTS (041500)
 	ULONG			__DbgMakeTestData(const SHORT nTblID,const LONG lFrom,const LONG lTo,const LONG lStep = 1);
 
-	HRESULT				m_pDB_hr;						// status (ADOCE)
-	HRESULT				m_pStsDB_hr;					// status (ADOCE)
-
-protected:
-	virtual void	CreateObject();
-	virtual void	DestroyObject();
-	BOOL			GetTblFormat();
-	int				SearchTbl(const SHORT sTblID,int *nTblIdx);
-	SHORT			GetStatusTblID(const SHORT sTblID)const;
-	void            SetPluTotalStatusVal (ULONG ulResetSts,DATE_TIME *dtFrom,DATE_TIME *dtTo, DCURRENCY lAllTotal, DCURRENCY lAmount, PLUTOTAL_STATUS *ppsRec);
-private:
-	LPCTSTR			_TableName(const SHORT nTblID) ;
-	CString			_DbPathName(const SHORT nTblID);
-	CString			_DbFileName(const SHORT nTblID); //SR 725 JHHJ AC42 Plu Database Synchronization
-//	### DEL LPCTSTR			_FileName(const SHORT nTblID) ;
-	CnPluTotalDb*	_DataBaseObject(const SHORT nTblID) ;
-	__CnTblFormat&	_TableInfo(const SHORT nTblID) ;
-	int				_StsBufIdx(const SHORT sStsTblID = -1)const;	// ### ADD (032400)
-	// *** DEBUG & TESTS (041500)
-	void			__GenPluNo(const LONG lNo,LPTSTR pPluNo);
 };
 
 #endif // !defined(AFX_PLUTTLM_H__3D31ECC5_B1CB_11D3_BE4A_00A0C961E76F__INCLUDED_)
-
-
-
-
-
-#ifdef	__GOMI
-	/* ### Old
-	virtual	BOOL	MakeSearchParams(CnVariant &vFields,CnVariant &vValues);
-	virtual	BOOL	MakeParams(const PLUTOTAL_REC &RecData,COleSafeArray &vFields,COleSafeArray &vData);
-	virtual	BOOL	MakeParams(const PLUTOTAL_STATUS &RecData,COleSafeArray &vFields,COleSafeArray &vData);
-
-	virtual	BOOL	MakeParams(const TCHAR pPluNo[],const BYTE byAdjIdx,COleSafeArray &vFields,COleSafeArray &vData);
-	virtual	ULONG	MoveTable(const SHORT nFromTblID,const SHORT nToTblID);
-	virtual	ULONG	Insert(const SHORT nTblID,const PLUTOTAL_REC &RecData);
-	virtual	ULONG	Delete(const SHORT nTblID,const UCHAR pPluNo[],const BYTE byAdjIdx);
-	virtual	ULONG	Update(const SHORT nTblID,const PLUTOTAL_REC &RecData);
-	virtual	ULONG	Find(const SHORT nTblID,const UCHAR pPluNo[],const BYTE byAdjIdx,PLUTOTAL_REC * pRecData);
-	*/
-
-#endif

@@ -3,13 +3,6 @@
 
 #include	"stdafx.h"
 
-//  files included through other file includes
-//#include	"PluTtlD.h"
-//#include	"CnAdoCe.h"
-//#include	"PluTtlDB.h"
-//#include	"PluTtlM.h"
-//#include	"PluTtlAp.h"
-
 #include	"PluTotal.h"
 
 #include	"NDbgTrc.h"	// TRACER object

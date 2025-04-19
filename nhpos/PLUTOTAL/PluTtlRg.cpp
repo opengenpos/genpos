@@ -53,40 +53,6 @@ BOOL CnPluTtlReg::GetBackupPath(LPTSTR szPath,const BOOL bRefresh)
 	return	bRet;
 }
 
-BOOL CnPluTtlReg::GetTotalDbPath(LPTSTR szPath)
-{
-	TCHAR	szDbPath[255];
-	TCHAR	szTotalDir[100];
-	DWORD	dwSize1 = 255,dwSize2 = 100;
-	BOOL	bRet = FALSE;
-	LONG    lResult;
-
-	lResult = Open(HKEY_LOCAL_MACHINE, m_strKeyDbPath, KEY_READ);
-	if (lResult == ERROR_SUCCESS) {
-		if((QueryStringValue(PATH, szDbPath, &dwSize1) == ERROR_SUCCESS) &&		//VS2k5 compat
-			(QueryStringValue(TOTALDATA, szTotalDir, &dwSize2) == ERROR_SUCCESS)){
-//		if((QueryValue(szDbPath,PATH,&dwSize1) == ERROR_SUCCESS) &&
-//			(QueryValue(szTotalDir,TOTALDATA,&dwSize2) == ERROR_SUCCESS)){
-#ifdef	_PLUTOTAL_TEST_1	// plu total tests
-	/*#pragma message("### WARNING  PLU TOTAL TEST version!!!")*/
-			CString	strTmp(szTotalDir);
-			if(strTmp.Right(1) != TEXT("\\")){
-				strTmp += TEXT("\\");
-			}
-			wsprintf(szPath,TEXT("%s"),(LPCTSTR)strTmp);
-#else	// release
-			AddPath(szDbPath,szTotalDir);
-			wsprintf(szPath,TEXT("%s"),szDbPath);
-#endif
-			bRet = TRUE;
-
-		}
-		Close();
-	}
-
-	return	bRet;
-}
-
 void	CnPluTtlReg::AddPath(LPTSTR szPath,LPCTSTR szDir){
 	CString	strPath(szPath);
 	CString	strDir;
@@ -109,9 +75,10 @@ void	CnPluTtlReg::AddPath(LPTSTR szPath,LPCTSTR szDir){
 
 BOOL	CnPluTtlReg::GetReg(LPCTSTR szPathKey,LPCTSTR szDirKey,CString * strPath)
 {
-	TCHAR	szPath[255];
-	TCHAR	szDir[100];
-	DWORD	dwSize1 = sizeof(szPath),dwSize2 = sizeof(szDir);
+	TCHAR	szPath[255] = { 0 };
+	TCHAR	szDir[100] = { 0 };
+	DWORD	dwSize1 = sizeof(szPath) / sizeof(szPath[0]);
+	DWORD	dwSize2 = sizeof(szDir) / sizeof(szDir[0]);
 	BOOL	bRet = FALSE;
 	LONG    lResult;
 
@@ -121,8 +88,6 @@ BOOL	CnPluTtlReg::GetReg(LPCTSTR szPathKey,LPCTSTR szDirKey,CString * strPath)
 	if (lResult == ERROR_SUCCESS) {
 		if((QueryStringValue(szPathKey, szPath, &dwSize1) == ERROR_SUCCESS) &&		//VS2k5 compat
 			(QueryStringValue(szDirKey, szDir, &dwSize2) == ERROR_SUCCESS)){
-//		if((QueryValue(szPath,szPathKey,&dwSize1) == ERROR_SUCCESS) &&
-//			(QueryValue(szDir,szDirKey,&dwSize2) == ERROR_SUCCESS)){
 			*strPath = szPath;
 			if(strPath->Right(1) != TEXT("\\"))
 				*strPath += TEXT("\\");

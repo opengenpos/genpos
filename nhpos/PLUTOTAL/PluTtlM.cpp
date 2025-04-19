@@ -78,7 +78,7 @@ VOID CnPluTotal::SetPluTotalStatusVal (ULONG ulResetSts,DATE_TIME *dtFrom,DATE_T
 
 void    CnPluTotal::CreateObject(){
     CString strDbPathWrk(_T(""));
-    // ### DEL m_strDbPath.Empty();
+
     m_Regs.GetTotalPath(NULL,TRUE);
     m_Regs.GetBackupPath(NULL,TRUE);
 
@@ -88,8 +88,6 @@ void    CnPluTotal::CreateObject(){
     m_BackUp.SetWorkPath(m_Regs.m_strTotalPath);
     m_BackUp.SetFileName(PLUTOTAL_DBNM_DAILY_CUR);
     m_BackUp.SetFileName(PLUTOTAL_DBNM_PTD_CUR);
-//    m_BackUp.SetFileName(TEXT("PLUTTLDC.cdb"));
-//    m_BackUp.SetFileName(TEXT("PLUTTLPC.cdb"));
 
     if(s_nObjCnt == 0){
         s_lstDb[0].nId      = PLUTOTAL_ID_DAILY_CUR ;
@@ -218,13 +216,6 @@ void    CnPluTotal::DestroyObject(){
     s_nObjCnt--;
 }
 
-
-BOOL    CnPluTotal::GetTblFormat(){
-
-    // getting table format from ressources
-
-    return TRUE;
-}
 
 #define  MAKEPARMS  1
 BOOL CnPluTotal::MakeParmsPluTotals(COleSafeArray& saFields) {
@@ -1342,7 +1333,7 @@ ULONG   CnPluTotal::DeleteN(const SHORT nTblID,const TCHAR pPluNo[],const BYTE b
 ULONG   CnPluTotal::SelectRec(const SHORT nTblID,const ULONG SearchCond){
     CString strSqlCode;
 
-    PDBObject   pDB = _DataBaseObject(nTblID);
+    CnPluTotalDb* pDB = _DataBaseObject(nTblID);
     if(pDB == NULL)
         return  PLUTOTAL_E_ILLEAGAL;
 
@@ -1365,7 +1356,7 @@ ULONG   CnPluTotal::SelectRec(const SHORT nTblID,const ULONG SearchCond){
 
 
 ULONG   CnPluTotal::FirstRec(const SHORT nTblID){
-    PDBObject   pDB = _DataBaseObject(nTblID);
+    CnPluTotalDb* pDB = _DataBaseObject(nTblID);
 
     if(pDB == NULL)
         return PLUTOTAL_E_ILLEAGAL;
@@ -1374,18 +1365,8 @@ ULONG   CnPluTotal::FirstRec(const SHORT nTblID){
 }
 
 
-ULONG   CnPluTotal::LastRec(const SHORT nTblID){
-    PDBObject   pDB = _DataBaseObject(nTblID);
-
-    if(pDB == NULL)
-        return PLUTOTAL_E_ILLEAGAL;
-
-    return  pDB->MoveLast();
-}
-
-
 ULONG   CnPluTotal::NextRec(const SHORT nTblID){
-    PDBObject   pDB = _DataBaseObject(nTblID);
+    CnPluTotalDb* pDB = _DataBaseObject(nTblID);
 
     if(pDB == NULL)
         return PLUTOTAL_E_ILLEAGAL;
@@ -1394,18 +1375,8 @@ ULONG   CnPluTotal::NextRec(const SHORT nTblID){
 }
 
 
-ULONG   CnPluTotal::PrevRec(const SHORT nTblID){
-    PDBObject   pDB = _DataBaseObject(nTblID);
-
-    if(pDB == NULL)
-        return PLUTOTAL_E_ILLEAGAL;
-
-    return  pDB->MovePrev();
-}
-
-
 ULONG   CnPluTotal::GetRec(const SHORT nTblID,PLUTOTAL_REC * pRecData){
-    PDBObject   pDB = _DataBaseObject(nTblID);
+    CnPluTotalDb* pDB = _DataBaseObject(nTblID);
     if(pDB == NULL)
         return PLUTOTAL_E_ILLEAGAL;
 
@@ -1432,7 +1403,7 @@ ULONG   CnPluTotal::GetRec(const SHORT nTblID,PLUTOTAL_REC * pRecData){
 
 
 ULONG   CnPluTotal::GetNumRec(const SHORT nTblID,ULONG * pulRecNum){
-    PDBObject   pDB = _DataBaseObject(nTblID);
+    CnPluTotalDb* pDB = _DataBaseObject(nTblID);
 
     if(pDB == NULL)
         return PLUTOTAL_E_ILLEAGAL;
@@ -1442,7 +1413,7 @@ ULONG   CnPluTotal::GetNumRec(const SHORT nTblID,ULONG * pulRecNum){
 
 
 ULONG   CnPluTotal::ReleaseRec(const SHORT nTblID){
-    PDBObject   pDB = _DataBaseObject(nTblID);
+    CnPluTotalDb* pDB = _DataBaseObject(nTblID);
 
     if(pDB == NULL)
         return PLUTOTAL_E_ILLEAGAL;
@@ -1517,7 +1488,7 @@ ULONG   CnPluTotal::GetStsInfo(const SHORT nTblID,PLUTOTAL_STATUS * pStatusRec){
 
 
 ULONG   CnPluTotal::LoadStatus(const SHORT nStsTblID,PLUTOTAL_STATUS * pStatusRec){
-    PDBObject   pDB = _DataBaseObject(nStsTblID);
+    CnPluTotalDb* pDB = _DataBaseObject(nStsTblID);
     if(pDB == NULL)
         return PLUTOTAL_E_ILLEAGAL;
 
@@ -1608,7 +1579,7 @@ ULONG   CnPluTotal::SetStsInfo(const SHORT nTblID,const PLUTOTAL_STATUS StatusRe
 
 
 ULONG   CnPluTotal::SaveStatus(const SHORT nStsTblID,const PLUTOTAL_STATUS &StatusRec){
-    PDBObject   pDB = _DataBaseObject(nStsTblID);
+    CnPluTotalDb* pDB = _DataBaseObject(nStsTblID);
     if(pDB == NULL)
         return PLUTOTAL_E_ILLEAGAL;
 
@@ -1702,17 +1673,8 @@ ULONG   CnPluTotal::OpenDBFile(const SHORT nTblID,const ULONG ulOption){
 	CnPluTotalDb*   pDB    = _DataBaseObject(nTblID);
 
     // database file name
-/* ### DEL
-    LPCTSTR lpFname = _FileName(nTblID);
-    if(lpFname == NULL)
-        return PLUTOTAL_E_ILLEAGAL;
-    CString strDbFileName(m_strDbPath);
-    strDbFileName += lpFname;
-### */
     CString strDbFileName = _DbPathName(nTblID);
-#ifdef XP_PORT
 	strDbFileName += _T("_BAK.dat");
-#endif
 
 	// 12/10/01
 	/* clear status table buffer for AC42 backup copy */
@@ -1729,9 +1691,7 @@ ULONG   CnPluTotal::OpenDBFile(const SHORT nTblID,const ULONG ulOption){
         uMode |= CFile::modeWrite;
 	}
     if(ulOption & PLUTOTAL_DBFILE_CREATEREAD){
-#ifdef XP_PORT
 		ulStatus = pDB->CreateDbBackUpFile();
-#endif
 		uMode |= CFile::modeRead;
     }
     uMode |= CFile::typeBinary;
@@ -1764,8 +1724,10 @@ ULONG   CnPluTotal::CloseDBFile(){
 
 
 ULONG   CnPluTotal::ReadDbFile(const ULONG ulOffset, const ULONG ulBytes,VOID *pBuf,ULONG *pulReadBytes){
+    ULONG     ulStatus = PLUTOTAL_SUCCESS;
+    ULONGLONG dwLength = 0;
 
-    ULONGLONG dwLength;
+    *pulReadBytes = 0;
 
 	// set seek function for recovery, 02/15/01
     PutLog(TEXT("$$$ CnPluTotalDb::ReadDbFile Seek0"),ulOffset,PLUTOTAL_SUCCESS,NULL);
@@ -1777,11 +1739,14 @@ ULONG   CnPluTotal::ReadDbFile(const ULONG ulOffset, const ULONG ulBytes,VOID *p
         TCHAR   msg[200];
         e->GetErrorMessage(msg,199,NULL);
         ::OutputDebugString(msg);
+        ulStatus = PLUTOTAL_E_FAILURE;
     }END_CATCH
+
     if (ulOffset > dwLength) {
         PutLog(TEXT("$$$ CnPluTotalDb::ReadDbFile"),(ULONG)0,(ULONG)PLUTOTAL_EOF);
         return  PLUTOTAL_EOF;
 	}
+
     TRY{
         dwLength = m_fDbFile.Seek(ulOffset,CFile::begin);
         PutLog(TEXT("$$$ CnPluTotalDb::ReadDbFile Seek"),dwLength,(ULONG)PLUTOTAL_SUCCESS,NULL);
@@ -1790,12 +1755,12 @@ ULONG   CnPluTotal::ReadDbFile(const ULONG ulOffset, const ULONG ulBytes,VOID *p
         TCHAR   msg[200];
         e->GetErrorMessage(msg,199,NULL);
         ::OutputDebugString(msg);
+        ulStatus = PLUTOTAL_E_FAILURE;
     }END_CATCH
 
-		
     TRY{
         // read
-        *pulReadBytes = m_fDbFile.Read(pBuf,(UINT)ulBytes);
+        *pulReadBytes = m_fDbFile.Read(pBuf,ulBytes);
         /* ### DBUEG (20000407)
         { 
             TCHAR   tcBuf[500],tcBuf2[500];
@@ -1810,6 +1775,7 @@ ULONG   CnPluTotal::ReadDbFile(const ULONG ulOffset, const ULONG ulBytes,VOID *p
         TCHAR   msg[200];
         ex->GetErrorMessage(msg,199,NULL);
         ::OutputDebugString(msg);
+        ulStatus = PLUTOTAL_E_FAILURE;
     }END_CATCH
 
     // EOF?
@@ -1817,50 +1783,54 @@ ULONG   CnPluTotal::ReadDbFile(const ULONG ulOffset, const ULONG ulBytes,VOID *p
         PutLog(TEXT("$$$ CnPluTotalDb::ReadDbFile"),*pulReadBytes,(ULONG)PLUTOTAL_EOF,NULL);
         return  PLUTOTAL_EOF;
     }
-    PutLog(TEXT("$$$ CnPluTotalDb::ReadDbFile"),*pulReadBytes,(ULONG)PLUTOTAL_SUCCESS,NULL);
-    return  PLUTOTAL_SUCCESS;
+    PutLog(TEXT("$$$ CnPluTotalDb::ReadDbFile"),*pulReadBytes,ulStatus,NULL);
+    return  ulStatus;
 }
 
 
 ULONG   CnPluTotal::WriteDbFile(const ULONG ulOffset, const ULONG ulBytes,const VOID *pBuf){
-
-    ULONGLONG dwLength;
+    ULONG     ulStatus = PLUTOTAL_SUCCESS;
+    ULONGLONG dwLength = 0;
 
 	// set seek function for recovery, 02/15/01
     PutLog(TEXT("$$$ CnPluTotalDb::WriteDbFile Seek0"),ulOffset,(ULONG)PLUTOTAL_SUCCESS,NULL);
     TRY{
-        dwLength = m_fDbFile.Seek((UINT)0L,CFile::end);
+        dwLength = m_fDbFile.Seek(0L,CFile::end);
         PutLog(TEXT("$$$ CnPluTotalDb::WriteDbFile Seek1"),dwLength,(ULONG)PLUTOTAL_SUCCESS,NULL);
     }
     CATCH( CFileException, e ){
         TCHAR   msg[200];
         e->GetErrorMessage(msg,199,NULL);
         ::OutputDebugString(msg);
+        ulStatus = PLUTOTAL_E_FAILURE;
     }END_CATCH
+
     if (dwLength > ulOffset) {
 		TRY{
 			m_fDbFile.SetLength(ulOffset);
-		PutLog(TEXT("$$$ CnPluTotalDb::WriteDbFile SetLength"),ulOffset,(ULONG)PLUTOTAL_SUCCESS,NULL);
+		    PutLog(TEXT("$$$ CnPluTotalDb::WriteDbFile SetLength"),ulOffset,(ULONG)PLUTOTAL_SUCCESS,NULL);
 		}
 		CATCH( CFileException, e ){
 			TCHAR   msg[200];
 			e->GetErrorMessage(msg,199,NULL);
 			::OutputDebugString(msg);
-		}END_CATCH
+            ulStatus = PLUTOTAL_E_FAILURE;
+        }END_CATCH
 	}
+
     TRY{
-        dwLength = m_fDbFile.Seek((UINT)ulOffset,CFile::begin);
+        dwLength = m_fDbFile.Seek(ulOffset,CFile::begin);
     }
     CATCH( CFileException, e ){
         TCHAR   msg[200];
         e->GetErrorMessage(msg,199,NULL);
         ::OutputDebugString(msg);
+        ulStatus = PLUTOTAL_E_FAILURE;
     }END_CATCH
-
 
     TRY{
         // write
-        m_fDbFile.Write(pBuf,(UINT)ulBytes);
+        m_fDbFile.Write(pBuf,ulBytes);
         /* ### DBUEG (20000407)
         {
             TCHAR   tcBuf[500],tcBuf2[500];
@@ -1875,32 +1845,25 @@ ULONG   CnPluTotal::WriteDbFile(const ULONG ulOffset, const ULONG ulBytes,const 
         TCHAR   msg[200];
         ex->GetErrorMessage(msg,200,NULL);
         ::OutputDebugString(msg);
+        ulStatus = PLUTOTAL_E_FAILURE;
     }END_CATCH
 
-    PutLog(TEXT("$$$ CnPluTotalDb::WriteDbFile"),ulBytes,(ULONG)PLUTOTAL_SUCCESS,NULL);
-    return  PLUTOTAL_SUCCESS;
+    PutLog(TEXT("$$$ CnPluTotalDb::WriteDbFile"),ulBytes,ulStatus,NULL);
+    return  ulStatus;
 }
 
 
 ULONG   CnPluTotal::DeleteDbFile(const SHORT nTblID){
-#ifndef _WIN32_WCE_EMULATION
     // close file
     CnPluTotal::CloseDBFile();
 
     // database file name
-/* ### DEL
-    LPCTSTR lpFname = _FileName(nTblID);
-    if(lpFname == NULL)
-        return PLUTOTAL_E_ILLEAGAL;
-    CString strDbFileName(m_strDbPath);
-    strDbFileName += lpFname;
-### */
     CString strDbFileName = _DbPathName(nTblID);
 
     if(!::DeleteFile(strDbFileName))
         return  PLUTOTAL_E_FAILURE;
-#endif
-	// 08/30/01
+
+    // 08/30/01
     SHORT   nStsTblID = GetStatusTblID(nTblID);
     DelStatusBuf(nStsTblID);    // ### ADD (032400)
         
@@ -1909,7 +1872,7 @@ ULONG   CnPluTotal::DeleteDbFile(const SHORT nTblID){
 
 
 ULONG   CnPluTotal::MoveDbFile(const SHORT nFromTblID,const SHORT nToTblID){
-#ifndef _WIN32_WCE_EMULATION
+
     // close file
     CnPluTotal::CloseDBFile();
 
@@ -1918,13 +1881,12 @@ ULONG   CnPluTotal::MoveDbFile(const SHORT nFromTblID,const SHORT nToTblID){
 
     if(!::MoveFile(strFromDbFileName, strToDbFileName))
         return  PLUTOTAL_E_FAILURE;
-#endif
+
     return  PLUTOTAL_SUCCESS;
 }
 
 
 ULONG   CnPluTotal::CopyDbFile(const SHORT nFromTblID,const SHORT nToTblID){
-#ifndef _WIN32_WCE_EMULATION
     // close file
     CnPluTotal::CloseDBFile();
 
@@ -1933,7 +1895,7 @@ ULONG   CnPluTotal::CopyDbFile(const SHORT nFromTblID,const SHORT nToTblID){
 
     if(!::CopyFile(strFromDbFileName, strToDbFileName, FALSE))
         return  PLUTOTAL_E_FAILURE;
-#endif
+
     // ### MAKING (04112000)
     // ::CopyFile(src,dst,FALSE);
     return  PLUTOTAL_SUCCESS;
@@ -2073,17 +2035,11 @@ LPCTSTR CnPluTotal::_TableName(const SHORT nTblID){
 
 
 CString CnPluTotal::_DbPathName(const SHORT nTblID){
-    CString strDbName;
-#ifdef XP_PORT
-	strDbName += PLUTOTAL_DB_BACKUP_PATH;
-#endif
+    CString strDbName(PLUTOTAL_DB_BACKUP_PATH);
 
     int     nDbCnt,nTblCnt;
     nDbCnt = CnPluTotal::SearchTbl(nTblID,&nTblCnt);
     if(nDbCnt >= 0){
-#ifndef XP_PORT
-        strDbName = (LPCTSTR)s_lstDb[nDbCnt].strPath;
-#endif
         strDbName += s_lstDb[nDbCnt].strName;
     }
     else{
@@ -2097,7 +2053,6 @@ CString CnPluTotal::_DbFileName(const SHORT nTblID){
     int     nDbCnt,nTblCnt;
     nDbCnt = CnPluTotal::SearchTbl(nTblID,&nTblCnt);
     if(nDbCnt >= 0){
-        //strDbName = (LPCTSTR)s_lstDb[nDbCnt].strPath;
         strDbName += s_lstDb[nDbCnt].strName;
     }
     else{
@@ -2106,17 +2061,6 @@ CString CnPluTotal::_DbFileName(const SHORT nTblID){
     return  strDbName;
 }
 
-
-/* ### DEL
-LPCTSTR CnPluTotal::_FileName(const SHORT nTblID){
-    int     nDbCnt,nTblCnt;
-    nDbCnt = CnPluTotal::SearchTbl(nTblID,&nTblCnt);
-    if(nDbCnt >= 0)
-        return  (LPCTSTR)s_lstDb[nDbCnt].strName;
-    else
-        return  (LPCTSTR)NULL;
-}
-### */
 
 CnPluTotalDb*   CnPluTotal::_DataBaseObject(const SHORT nTblID) {
     int     nDbCnt,nTblCnt;
@@ -2227,9 +2171,6 @@ ULONG   CnPluTotal::__DbgMakeTestData(const SHORT nTblID,const LONG lFrom,const 
 
         TCHAR   szPluNo[20];
         szPluNo[13] = 0;
-#ifdef DEBUG_PLUTOTAL_OUTPUT
-        TCHAR   szDMsg[256];
-#endif
         LONG    lRecCnt = 0;
         for(long cnt = lFrom ; cnt <= lTo ; cnt += lStep){
             //wsprintf(szPluNo, TEXT("0000000%06ld"),cnt );
@@ -2241,12 +2182,6 @@ ULONG   CnPluTotal::__DbgMakeTestData(const SHORT nTblID,const LONG lFrom,const 
             ulSts = pDB->AddRec(saFields,saValues);
             if(ulSts != PLUTOTAL_SUCCESS)
                 break;
-#ifdef DEBUG_PLUTOTAL_OUTPUT
-            if((cnt % (lStep * 100)) == 0){
-                wsprintf(szDMsg,TEXT("*** %s [%ld]\n"),_TableName(nTblID),cnt);
-                ::OutputDebugString(szDMsg);
-            }
-#endif
             lRecCnt++;
         }
         vWrk.Clear();                           // V1.0.0.4
@@ -2280,5 +2215,3 @@ ULONG   CnPluTotal::__DbgMakeTestData(const SHORT nTblID,const LONG lFrom,const 
 
 
 /****************************************************************************/
-//#ifdef  __DEL_061600
-// ******* OLD Functions ***********

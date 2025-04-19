@@ -1,12 +1,6 @@
 
 #include    "stdAfx.h"
 
-//  files included through other file includes
-//#include  "PluTtlD.h"
-//#include  "CnAdoCe.h"
-//#include  "PluTtlDB.h"
-//#include  "PluTtlM.h"
-
 #include    "PluTtlAp.h"
 
 int     CnPluTotalAPI::s_nObjCnt;               // object counter
@@ -73,7 +67,6 @@ ULONG   CnPluTotalAPI::Open(PLUTOTAL_DB_HANDLE * phdDB, SHORT fPTD, SHORT fTmp){
 *============================================================================
 */
 ULONG   CnPluTotalAPI::Close(const PLUTOTAL_DB_HANDLE hdDB){
-//  if(hdDB == m_hdDb){
     if(CheckDBHandle(hdDB) == TRUE){
 
         // Delete PluTotal Object
@@ -265,7 +258,6 @@ ULONG   CnPluTotalAPI::Insert(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nId,cons
     if(CheckDBHandle(hdDB) == FALSE)
         return  PLUTOTAL_E_ILLEAGAL;    // Illeagal DB handle
 
-//  return  m_pPluTotal.CnPluTotal::Insert(nId,recData);
     return  m_pPluTotal.CnPluTotal::InsertN(nId,recData);
 }
 
@@ -327,7 +319,6 @@ ULONG   CnPluTotalAPI::Update(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nId,cons
     if(CheckDBHandle(hdDB) == FALSE)
         return  PLUTOTAL_E_ILLEAGAL;    // Illeagal DB handle
 
-//  return  m_pPluTotal.CnPluTotal::Update(nId,recData);
     return  m_pPluTotal.CnPluTotal::UpdateN(nId,recData);
 }
 
@@ -360,7 +351,6 @@ ULONG   CnPluTotalAPI::Find(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nId,const 
     if(CheckDBHandle(hdDB) == FALSE)
         return  PLUTOTAL_E_ILLEAGAL;    // Illeagal DB handle
 
-//  return  m_pPluTotal.CnPluTotal::Find(nId,pPluNo,byAdjIdx,pRecData);
     return  m_pPluTotal.CnPluTotal::FindN(nId,pPluNo,byAdjIdx,pRecData);
 }
 

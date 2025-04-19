@@ -12,13 +12,7 @@
 
 #include "PluTtlD.h"
 #include "PluTtlRg.h"
-
-#ifdef XP_PORT  //building for Win2000/XP
 #include "CnAdoXP.h"
-#else  //building for CE
-#include "CnAdoCe.h"
-#endif
-
 #include "PluTtlDb.h"
 #include "tbc\\tbc.h"
 
@@ -26,7 +20,7 @@
 
 class CnPluTotalBackUp
 {
-protected:
+private:
     CString     m_strWorkPath;
     CString     m_strBkupPath;
 
@@ -35,6 +29,14 @@ protected:
     int         m_nFileCnt;
     TCHAR   *   m_pBackupFileTbl[PLUTOTAL_BK_MAX_FILE_NUM + 1];
     TCHAR   *   m_pRestoreFileTbl[PLUTOTAL_BK_MAX_FILE_NUM + 1];
+
+    int         CreateParams(void);
+    VOID        ClearParams(void);
+    VOID        ClearFileList(void) {
+                    m_strlstBackupFileList.RemoveAll();
+                    m_strlstRestoreFileList.RemoveAll();
+                    m_nFileCnt = 0;
+                };
 
 public:
     CnPluTotalBackUp();
@@ -47,15 +49,6 @@ public:
     ULONG   Initialize();
     ULONG   StartCopy(const BOOL nBackupMode = TRUE);
     ULONG   GetStatus();
-
-protected:
-    int         CreateParams(void);
-    VOID        ClearParams(void);
-    VOID        ClearFileList(void) {
-                    m_strlstBackupFileList.RemoveAll();
-                    m_strlstRestoreFileList.RemoveAll();
-                    m_nFileCnt = 0;
-                };
 
 };
 
