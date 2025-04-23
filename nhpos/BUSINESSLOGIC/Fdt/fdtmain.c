@@ -231,7 +231,7 @@ VOID    THREADENTRY FDTMain(VOID)
 ** Description: Receive Message from Notice Board Thread
 *===========================================================================
 */
-VOID    FDTNoticeMessage(UCHAR uchMessage)
+VOID    FDTNoticeMessage(NBMESSAGE_T uchMessage)
 {
     PifRequestSem(husFDTFileSem);
     FDTLocal.fchNBMessage |= uchMessage;

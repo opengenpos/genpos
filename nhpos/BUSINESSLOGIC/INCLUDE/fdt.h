@@ -42,6 +42,7 @@
 #define FDT_H_INCLUDED
 
 #include "ecr.h"
+#include "nb.h"
 
 // Flexible Drive Thru error codes.
 //  WARNING: Some functions within FDT also check GCF type error
@@ -104,7 +105,7 @@ typedef struct {
 */
 VOID    FDTInit(USHORT usMode);
 /*VOID    THREADENTRY FDTMain(VOID);*/
-VOID    FDTNoticeMessage(UCHAR uchMessage);
+VOID    FDTNoticeMessage(NBMESSAGE_T uchMessage);
 SHORT   FDTOpen(VOID);
 VOID    FDTClose(VOID);
 

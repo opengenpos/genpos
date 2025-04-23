@@ -61,7 +61,7 @@
 
 typedef struct {
 	USHORT           fsFDTStatus;						/* FDT Status */
-	UCHAR            fchNBMessage;						/* Message from Notice Borad */
+	NBMESSAGE_T      fchNBMessage;						/* Message from Notice Borad */
 	GCNUM            auchOrder[2];						/* Order# for Display */
 	GCNUM            uchOrderNo1;						/* Order No for File #1 */
 	DCURRENCY        lMI1;								/* MI #1 */

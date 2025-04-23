@@ -90,7 +90,7 @@ VOID   THREADENTRY UicMain(VOID);             /* Creates UIC Task  */
 VOID   UicInitialize(VOID);                   /* Initialize UIC Task  */
 SHORT  UicChkRequestJob(NBMESSAGE *pMes);     /* Checks request Job   */
 SHORT  UicRBCHand(USHORT usMBack);            /* Executes Bcakup copy  */
-SHORT  UicRPHand(UCHAR uchReq,USHORT usSys);  /* Executes Parameter request */
+SHORT  UicRPHand(NBMESSAGE_T uchReq,USHORT usSys);  /* Executes Parameter request */
 VOID   UicResetExecuteFG(VOID);               /* Reset fsUicExecuteFG */
 
 // The following #if is used to enable or disable

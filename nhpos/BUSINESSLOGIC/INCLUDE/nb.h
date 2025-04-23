@@ -41,6 +41,10 @@
 *===========================================================================
 */
 
+#if !defined(NB_H_INCLUDED)
+
+#define NB_H_INCLUDED
+
 /*
 *===========================================================================
 *   Define Declarations 
@@ -224,4 +228,5 @@ USHORT NbResetBMUpToDate(VOID);             /* Reset B-Master up to date */
 #endif
 USHORT  NbSetMTBM_Online (UCHAR uchFadr);
 
+#endif
 /*========== END OF DEFINITION ============*/

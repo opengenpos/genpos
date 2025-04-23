@@ -129,7 +129,7 @@ VOID  THREADENTRY UicMain(VOID)
 	static  UCHAR ucReqOperatorMessage = 0;
 
     USHORT      usSys;
-    UCHAR       uchReq;
+    NBMESSAGE_T uchReq;
     NBMESSAGE   pMes;
     SHORT       sRet;
 
@@ -307,7 +307,7 @@ SHORT  UicRBCHand(USHORT usMBack)
 ** Description: Check Request parameter , then execute if necessary
 *===========================================================================
 */
-SHORT  UicRPHand(UCHAR uchReq, USHORT usSys)
+SHORT  UicRPHand(NBMESSAGE_T uchReq, USHORT usSys)
 {
     UCHAR     uchAdd;
     SHORT     sRet, husKeyBoardHand;
