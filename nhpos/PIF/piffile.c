@@ -395,6 +395,9 @@ SHORT PIFENTRY PifReadFileNew(USHORT usFile, VOID *pBuffer, ULONG ulBytes, ULONG
 {
     SHORT   sReturn = PIF_ERROR_SYSTEM, sStatus = 0;
 
+    *pulBytesRead = 0;
+    if (ulBytes == 0) return PIF_OK;
+
     EnterCriticalSection(&g_FileCriticalSection);
 
     sStatus = PifSubSearchId(usFile, aPifFileTable, PIF_MAX_FILE);
@@ -456,6 +459,8 @@ VOID   PIFENTRY PifWriteFileNew(USHORT usFile, CONST VOID *pBuffer,
                              ULONG ulBytes, CHAR *pcFilePath, int iLineNo)
 {
     SHORT   sReturn, sStatus = 0;
+
+    if (ulBytes == 0) return PIF_OK;
 
     EnterCriticalSection(&g_FileCriticalSection);
 
