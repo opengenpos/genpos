@@ -17,6 +17,7 @@ enum {
     TBC_RSLT_ACCEPTED,
     TBC_RSLT_BUSY,
     TBC_RSLT_ERROR,
+    TBC_RSLT_NOT_INIT,
 
     /* result values for TBC_CMDID_STARTCOPY */
     TBC_RSLT_ACC_CLEAR,

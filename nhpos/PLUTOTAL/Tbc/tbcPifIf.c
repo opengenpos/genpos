@@ -255,11 +255,6 @@ TbcCloseFile( SHORT sPifHandle )
 VOID
 TbcDeleteFile( CONST TCHAR* lpFileName, BOOL fTempDisk )
 {
-    //CHAR    szSrcFile[ MAX_PATH ];
-
-	//memset(szSrcFile, 0, sizeof(szSrcFile));
-    //wcstombs( szSrcFile, lpFileName, MAX_PATH );
-
     PifDeleteFileEx( lpFileName, fTempDisk );
 }
 

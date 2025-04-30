@@ -151,7 +151,7 @@ TbcCommand(TBC_CMD *tbcCmd)
         lRet = 0;
 
         if (bInitializedYet != TRUE) {  /* not initialized */
-            tbcCmd->dwResult = TBC_RSLT_ERROR;
+            tbcCmd->dwResult = TBC_RSLT_NOT_INIT;
             break;
         }
 

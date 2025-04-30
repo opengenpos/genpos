@@ -16,9 +16,13 @@ static char THIS_FILE[]=__FILE__;
 
 int         CnPluTotalDb::s_nObjCnt;                // object counter
 
-#if defined(SQLITE_TEST)
+// following define is used to enable ASSRTLOG file logs.
+#define CNPLUTOTALDB_LOG  0
+
+#if defined(SQLITE_TEST) && SQLITE_TEST
 // replace the real objects with fake objects to eliminate
 // compiler errors when stubbing out database interface.
+// used for testing with Linux using WINE.
 int * CnPluTotalDb::__pRecS;	// recordset (ADOCE)
 int * CnPluTotalDb::__pRecO;	// recordset (ADOCE)
 #else
@@ -33,6 +37,10 @@ const int   CnPluTotalDb::s_IdxNum         = 3;
 //////////////////////////////////////////////////////////////////////
 
 CnPluTotalDb::CnPluTotalDb(const LPCTSTR szDbFileName){
+//
+// See also the Microsoft article Driver history for Microsoft SQL Server
+//    https://learn.microsoft.com/en-us/sql/connect/connect-history?view=sql-server-ver15
+//
 #if defined(USE_PLU_TOTALS_SQLSERVER)
 	// We are using shared memory protocol for our connection string.  Change made for
 	// Amtrak because the tablet with its wireless cell card was causing GenPOS to be unable
@@ -41,13 +49,15 @@ CnPluTotalDb::CnPluTotalDb(const LPCTSTR szDbFileName){
 	ConnectionStringNoDB = L"Provider=MSDASQL;DRIVER={SQL Server};SERVER=lpc:(local);DATABASE=;UID=; Password=;";
 #elif defined(USE_PLU_TOTALS_SQLITE)
     // we've added ConnectionStringDbPath because SQLite uses a file for a database
-    // and does not support the CREATE DATABASE SQL command.
+    // and does not support the CREATE DATABASE SQL command. to create a database
+    // for SQLite we use the CFILE class to check with an open in read mode if the
+    // file exists and if that fails then we create the file. See CnPluTotalDb::CreateDbFile().
     ConnectionStringDbPath = L"\\FlashDisk\\NCR\\Saratoga\\Database\\%s.db";
 	ConnectionStringTemp = L"DRIVER=SQLite3 ODBC Driver;Database=\\FlashDisk\\NCR\\Saratoga\\Database\\%s.db;LongNames=0;Timeout=1000;NoTXN=0;SyncPragma=NORMAL;StepAPI=0;";
 	ConnectionStringNoDB = L"DRIVER=SQLite3 ODBC Driver;LongNames=0;Timeout=1000;NoTXN=0;SyncPragma=NORMAL;StepAPI=0;";
 #elif defined(USE_PLU_TOTALS_LOCALDB)
-    ConnectionStringTemp = L"Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;DataTypeCompatibility=80;AttachDbFileName=C:\\FlashDisk\\NCR\\Saratoga\\Database\\TOTALPLU.mdf;";
-    ConnectionStringNoDB = L"Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;DataTypeCompatibility=80;AttachDbFileName=C:\\FlashDisk\\NCR\\Saratoga\\Database\\TOTALPLU.mdf";
+    ConnectionStringTemp = L"Provider=MSOLEDBSQL; Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;DataTypeCompatibility=80;AttachDbFileName=C:\\FlashDisk\\NCR\\Saratoga\\Database\\TOTALPLU.mdf;";
+    ConnectionStringNoDB = L"Provider=MSOLEDBSQL; Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;DataTypeCompatibility=80;AttachDbFileName=C:\\FlashDisk\\NCR\\Saratoga\\Database\\TOTALPLU.mdf";
 #elif defined(USE_PLU_TOTALS_JET)
 	// See https://stackoverflow.com/questions/6174724/problem-with-oledbconnection-excel-and-connection-pooling
 	// OLE DB Services = -4;Persist Security Info=True;User Id=admin;Password=;
@@ -73,7 +83,7 @@ void    CnPluTotalDb::CreateObject(LPCTSTR szDbFileName){
     m_strDbFileName = szDbFileName;
     ConnectionString.Format(ConnectionStringTemp,m_strDbFileName);
 
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     if (__pRecS == NULL)
         __pRecS = new int;
@@ -105,24 +115,42 @@ void    CnPluTotalDb::DestroyObject(){
 
 
 ULONG   CnPluTotalDb::CreateDbFile(){
-#if defined(SQLITE_TEST)
+
+#if defined(CNPLUTOTALDB_LOG) && CNPLUTOTALDB_LOG
+    {
+        char xBuff[128];
+        sprintf(xBuff, "==NOTE: CnPluTotalDb::CreateDbFile() %S", (LPCWSTR)m_strDbFileName);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+    }
+#endif
+
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
 
 #if defined(USE_PLU_TOTALS_SQLITE)
-
-    // SQLite does not support the SQL statement CREATE DATABASE.
-    // A database is a separate file so we need to create an empty file
-    // and then let SQLite initialize it properly.
+    // for SQLite which does not support the CREATE DATABASE SQL directive
+    // we have to create a file with the name of the database to allow
+    // SQLite to then create the various tables in it.
 
     CString dbPath;
-
     dbPath.Format(ConnectionStringDbPath, m_strDbFileName);
 
     CFile f;
-    bool bSts = f.Open(dbPath, CFile::modeCreate | CFile::modeWrite);
 
-    f.Close();
+    bool bSts = f.Open(dbPath, CFile::modeRead);
+    if (bSts) {
+        // if we are able to open the file in read mode then the file already
+        // exists. it may have PLU data in it so just close it and we are done.
+        f.Close();
+    }
+    else {
+        // SQLite does not support the SQL statement CREATE DATABASE.
+        // A database is a separate file so we need to create an empty file
+        // and then let SQLite initialize it properly.
+        bSts = f.Open(dbPath, CFile::modeCreate | CFile::modeWrite);
+        if (bSts) f.Close();
+    }
 
 #else
 	ULONG ulStatus = 0;
@@ -160,7 +188,7 @@ ULONG   CnPluTotalDb::CreateDbFile(){
 }
 
 ULONG   CnPluTotalDb::CreateDbBackUpFile(){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
     CString     szSqlCode;
@@ -199,16 +227,23 @@ ULONG   CnPluTotalDb::CreateDbBackUpFile(){
 
 
 ULONG   CnPluTotalDb::CreateTable(const __CnTblFormat &TblFormat){
-
+#if defined(CNPLUTOTALDB_LOG) && CNPLUTOTALDB_LOG
+    {
+        char xBuff[128];
+        sprintf(xBuff, "==NOTE: CnPluTotalDb::CreateTable() %S -> %S", (LPCWSTR)m_strDbFileName, (LPCWSTR)TblFormat.strName);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+    }
+#endif
+#if defined(SQLITE_TEST) && SQLITE_TEST
+    m_hr = 0;    // pretned that the command worked.
+#else
     CString     strSqlCode;         // SQL statement
     strSqlCode.Format(_T("CREATE TABLE %s (%s)"), (LPCWSTR)TblFormat.strName, (LPCWSTR)TblFormat.strFldFormat);
 	_bstr_t strConnect = ConnectionString;
-#if defined(SQLITE_TEST)
-    m_hr = 0;    // pretned that the command worked.
-#else
-    m_hr = __pRecO->OpenRec(CnVariant(strSqlCode),strConnect,adOpenKeyset,adLockOptimistic,adCmdText);
 
+    m_hr = __pRecO->OpenRec(CnVariant(strSqlCode),strConnect,adOpenKeyset,adLockOptimistic,adCmdText);
     __pRecO->Close();   // one shot!!!
+
 	if(FAILED(m_hr)) {
 		char  xBuff[256];
 		sprintf (xBuff, "CnPluTotalDb::CreateTable() FAILED: HRESULT m_hr = 0x%8.8x", m_hr);
@@ -246,32 +281,33 @@ ULONG   CnPluTotalDb::CreateTable(const __CnTblFormat &TblFormat){
 
 
 ULONG   CnPluTotalDb::DropTable(LPCTSTR strTblName){
-#if defined(SQLITE_TEST)
+#if defined(CNPLUTOTALDB_LOG) && CNPLUTOTALDB_LOG
+    {
+        char xBuff[128];
+        sprintf(xBuff, "==NOTE: CnPluTotalDb::DropTable() %S -> %S", (LPCWSTR)m_strDbFileName, strTblName);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+    }
+#endif
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
-    CString     strSqlCode;
+    if (CheckTable(strTblName) == PLUTOTAL_SUCCESS) {
+        CString     strSqlCode;
 
-    strSqlCode.Format(_T("DROP TABLE %s "),strTblName);
-	_bstr_t strConnect = ConnectionString;
-    m_hr = __pRecO->OpenRec(COleVariant(strSqlCode),strConnect,adOpenKeyset,adLockOptimistic,adCmdText);
-    __pRecO->Close();   // one shot!!!
+        strSqlCode.Format(_T("DROP TABLE %s "),strTblName);
+	    _bstr_t strConnect = ConnectionString;
+        m_hr = __pRecO->OpenRec(COleVariant(strSqlCode),strConnect,adOpenKeyset,adLockOptimistic,adCmdText);
+        __pRecO->Close();   // one shot!!!
 
-	if(FAILED(m_hr)) {
-		char  xBuff[256];
-		sprintf (xBuff, "CnPluTotalDb::DropTable() FAILED: HRESULT m_hr = 0x%8.8x", m_hr);
-		NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
-		sprintf(xBuff, "%S", (LPCTSTR)__pRecO->m_errorMessage);
-		NHPOS_NONASSERT_TEXT(xBuff);
-		int iLen = wcslen(__pRecO->m_errorMessage);
-		sprintf(xBuff, "%S", (LPCTSTR)__pRecO->m_errorMessage);
-		NHPOS_NONASSERT_TEXT(xBuff);
-		if (iLen > 110) {
-			iLen -= 110;
-			sprintf(xBuff, "%S", ((LPCTSTR)__pRecO->m_errorMessage) + iLen);
-			NHPOS_NONASSERT_TEXT(xBuff);
-		}
-		return  PLUTOTAL_E_FAILURE;
-	}
+        // m_hr failing with a value of 0x80040e21 probably means the table
+        // does not exist so it can't be dropped.
+	    if(FAILED(m_hr)) {
+		    char  xBuff[256];
+		    sprintf (xBuff, "CnPluTotalDb::DropTable() %S::%S FAILED: m_hr = 0x%8.8x", (LPCWSTR)m_strDbFileName, strTblName, m_hr);
+		    NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+		    return  PLUTOTAL_E_FAILURE;
+	    }
+    }
 #endif
 
     return PLUTOTAL_SUCCESS;
@@ -279,7 +315,7 @@ ULONG   CnPluTotalDb::DropTable(LPCTSTR strTblName){
 
 
 ULONG   CnPluTotalDb::CreateIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName,LPCTSTR lpszFldNames){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
     CString strSqlCode;
@@ -300,7 +336,7 @@ ULONG   CnPluTotalDb::CreateIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName,LPCTST
 }
 
 ULONG   CnPluTotalDb::DropIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
     CString strSqlCode;
@@ -322,7 +358,7 @@ ULONG   CnPluTotalDb::DropIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName){
 
 ULONG   CnPluTotalDb::CreateIndexEx(const __CnTblFormat &TblFormat)
 {
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
     ULONG   ulSts;
@@ -347,7 +383,7 @@ ULONG   CnPluTotalDb::CreateIndexEx(const __CnTblFormat &TblFormat)
 
 ULONG   CnPluTotalDb::DropIndexEx(const __CnTblFormat &TblFormat)
 {
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
     ULONG   ulSts;
@@ -374,10 +410,64 @@ ULONG   CnPluTotalDb::DropIndexEx(const __CnTblFormat &TblFormat)
 // ### ADD (041500)
 ULONG   CnPluTotalDb::CheckTable(LPCTSTR lpcTblName){
     ULONG   ulSts = PLUTOTAL_SUCCESS;
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
 	_bstr_t strConnect = ConnectionString;
+
+#if defined(USE_PLU_TOTALS_SQLITE)
+    //
+    // what this code does is to look up in the SQLite database management
+    // data to ask if a specific table is in the list of tables and to provide
+    // us the name for the table. if this query fails then the requested table
+    // does not exist. if the query succeeds then fetch the SELECT result and
+    // then clean up.
+
+    CString   strSqlCode;         // SQL statement
+
+    strSqlCode.Format(_T("SELECT name FROM sqlite_master WHERE type='table' AND name='%s'"), lpcTblName);
+
+    m_hr = __pRecO->OpenRec(CnVariant(strSqlCode), strConnect, adOpenKeyset, adLockOptimistic, adCmdText);
+    if (FAILED(m_hr)) {
+        char  xBuff[128];
+        sprintf(xBuff, "CnPluTotalDb::CheckTable() '%S'::'%S' OpenRec() FAILED: m_hr = 0x%8.8x", m_strDbFileName, lpcTblName, m_hr);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+        ulSts = PLUTOTAL_NOT_FOUND;
+    }
+    else {
+        // retrieve the result rows for out SELECT. There should only
+        // be one that contains the name of the table we searched for.
+
+        COleVariant vStart;
+        vStart.Clear();	/* 09/03/01 */
+
+        COleSafeArray   saFields;
+        long    lIdx[1] = { 0 };    // bound
+
+        saFields.CreateOneDim(VT_VARIANT, 1, NULL, 0);
+        lIdx[0] = 0;
+        saFields.PutElement(lIdx, COleVariant(_T("name"), VT_BSTR));
+
+        COleVariant vValues;
+        m_hr = __pRecO->GetRows(1, vStart, saFields, vValues);
+        vStart.Clear();	/* 09/03/01 */
+
+        // m_hr will probably be equal to a value of 0x800a0bcd or adErrNoCurrentRecord
+        // if the SELECT doesn't return any rows because the table does not exist.
+        // 0x800a0bcd indicates "Either BOF or EOF is True, or the current record
+        // has been deleted. Requested operation requires a current record."
+        if (FAILED(m_hr)) {
+            if (m_hr != 0x800a0bcd) {
+                char  xBuff[128];
+                sprintf(xBuff, "CnPluTotalDb::CheckTable() GetRows() FAILED: m_hr = 0x%8.8x", m_hr);
+                NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+            }
+            ulSts = PLUTOTAL_NOT_FOUND;
+        }
+    }
+
+    __pRecO->Close();
+#else
     m_hr = __pRecO->OpenRec(COleVariant(lpcTblName), strConnect,adOpenForwardOnly,adLockReadOnly,adCmdTable);
 
     if(FAILED(m_hr)) {
@@ -388,13 +478,14 @@ ULONG   CnPluTotalDb::CheckTable(LPCTSTR lpcTblName){
     }
     __pRecO->Close();
 #endif
+#endif
 
     return  ulSts;
 }
 
 
 ULONG   CnPluTotalDb::get_RecordCnt(LPCTSTR szTblName,LONG * plRecCnt){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     * plRecCnt = 1;   // always indicate 1
 #else
@@ -426,7 +517,7 @@ GETRECCNT_ERR:
 
 
 ULONG   CnPluTotalDb::ExecSQL(LPCTSTR szSqlCode){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
 	_bstr_t strConnect = ConnectionString;
@@ -468,7 +559,7 @@ ULONG   CnPluTotalDb::RestoreDB(LPCTSTR szSQlCode){
 	activeConn.Format(ConnectionStringTemp,L"master");
 	_bstr_t strConnect = activeConn;
 
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
     //We set the database to be in single user mode while we do this database reset
@@ -587,7 +678,7 @@ MULTI_USER_DB:
 
 // New Functions
 ULONG   CnPluTotalDb::OpenRec(LPCTSTR lpcTableName){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
 	_bstr_t strConnect = ConnectionString;
@@ -622,7 +713,7 @@ ULONG   CnPluTotalDb::OpenRec(LPCTSTR szSqlCode,const BOOL bClose,LONG * plRecCn
     *plRecCnt = 0;
 
     ULONG   ulStatus, ulSts = PLUTOTAL_SUCCESS;
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     *plRecCnt = 1;
 #else
@@ -655,7 +746,7 @@ ULONG   CnPluTotalDb::OpenRec(LPCTSTR szSqlCode,const BOOL bClose,LONG * plRecCn
 
 
 VOID    CnPluTotalDb::CloseRec(void){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
     if(__pRecO->IsOpened())
@@ -665,7 +756,7 @@ VOID    CnPluTotalDb::CloseRec(void){
 
 
 ULONG   CnPluTotalDb::GetRec(VARIANT vGetFields,LPVARIANT lpvValues){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     return  PLUTOTAL_SQLITE_TEST;
 #else
@@ -684,7 +775,7 @@ ULONG   CnPluTotalDb::GetRec(VARIANT vGetFields,LPVARIANT lpvValues){
 }
 
 ULONG   CnPluTotalDb::PutRec(VARIANT vPutFields,VARIANT vValues){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     return  PLUTOTAL_SQLITE_TEST;
 #else
@@ -701,7 +792,7 @@ ULONG   CnPluTotalDb::PutRec(VARIANT vPutFields,VARIANT vValues){
 
 
 ULONG   CnPluTotalDb::AddRec(VARIANT vPutFields,VARIANT vValues){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     return  PLUTOTAL_SQLITE_TEST;
 #else
@@ -719,7 +810,7 @@ ULONG   CnPluTotalDb::AddRec(VARIANT vPutFields,VARIANT vValues){
 
 
 ULONG   CnPluTotalDb::DelRec(void){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     return  PLUTOTAL_SQLITE_TEST;
 #else
@@ -740,7 +831,7 @@ ULONG   CnPluTotalDb::DelRec(void){
 
 // *** record set series
 ULONG   CnPluTotalDb::OpenRecoredset(const LPCTSTR szSqlCode,CursorTypeEnum CursorType,LockTypeEnum LockType,long lOption){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     return  PLUTOTAL_SQLITE_TEST;
 #else
@@ -765,7 +856,7 @@ ULONG   CnPluTotalDb::OpenRecoredset(const LPCTSTR szSqlCode,CursorTypeEnum Curs
 
 
 ULONG   CnPluTotalDb::CloseRecoredset(void){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
 #else
     if(__pRecS->IsOpened() == FALSE)
@@ -776,7 +867,7 @@ ULONG   CnPluTotalDb::CloseRecoredset(void){
 }
 
 ULONG   CnPluTotalDb::MoveFirst(void){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     return  PLUTOTAL_SQLITE_TEST;
 #else
@@ -791,7 +882,7 @@ ULONG   CnPluTotalDb::MoveFirst(void){
 }
 
 ULONG   CnPluTotalDb::MoveNext(void){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     return  PLUTOTAL_SQLITE_TEST;
 #else
@@ -807,7 +898,7 @@ ULONG   CnPluTotalDb::MoveNext(void){
 
 
 ULONG   CnPluTotalDb::GetRow(const CnVariant vFldNames,CnVariant * pvValues){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     return  PLUTOTAL_SQLITE_TEST;
 #else
@@ -832,7 +923,7 @@ ULONG   CnPluTotalDb::GetRow(const CnVariant vFldNames,CnVariant * pvValues){
 
 
 ULONG   CnPluTotalDb::get_RecordCnt(LONG * plRecCnt){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
     *plRecCnt = 1;
     return  PLUTOTAL_SQLITE_TEST;

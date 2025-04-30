@@ -50,6 +50,18 @@ static DWORD TbcWriteFile(CONST TCHAR *, BOOL, UCHAR *, DWORD);
  * OUTPUT   : NONE
  * RETURNS  : NONE
  * DESC.    : copy thread (main article of tbc.lib)
+ * 
+ *            It appears from testing that this functionality is
+ *            designed to be triggered only at start up of the terminal
+ *            to make a copy of the PLU database files.
+ * 
+ *            The Dollar Tree Scer is a reference to development work
+ *            done for the Dollar Tree chain of small grocery stores
+ *            for the NCR 7448 running Windows CE by NCR Corporation.
+ *            The work was done before NHPOS was donated in 2002 to
+ *            Georgia Southern and before NHPOS was ported to Windows XP
+ *            and standard Windows hardware by Georgia Southern.
+ * 
  *************************************************************************************************/
 static VOID THREADENTRY TbcThread(VOID)
 {
@@ -78,7 +90,10 @@ static VOID THREADENTRY TbcThread(VOID)
 #endif
 
 		if (!tbcCopySpec) {
-			TbcCopyFail();
+            char xBuff[128];
+            sprintf(xBuff, "==NOTE: TbcThread() copy fail. tbcCopySpec NULL");
+            NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+            TbcCopyFail();
 		} else {
             DWORD         dwRet = TBC_RSLT_ERROR;
             TBC_PATHSPEC *tbcPathSpec = tbcCopySpec->tbcPathSpec;
@@ -141,7 +156,10 @@ static VOID THREADENTRY TbcThread(VOID)
 	            
 			/* notify to api */
 			if (dwRet == TBC_RSLT_ERROR) {
-				TbcCopyFail();
+                char xBuff[128];
+                sprintf(xBuff, "==NOTE: TbcThread() copy fail. tbcCopySpec->dwCount %d", tbcCopySpec->dwCount);
+                NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+                TbcCopyFail();
 			}
 			else {
 				TbcCopyComplete();

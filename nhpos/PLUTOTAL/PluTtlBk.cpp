@@ -175,10 +175,14 @@ ULONG   CnPluTotalBackUp::StartCopy(const BOOL nBackupMode)
     if (cmd.dwLen <= 0)
         return  PLUTOTAL_E_FAILURE;
 
-    if(nBackupMode)
+    if (nBackupMode) {
+        NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: CnPluTotalBackUp::StartCopy() nBackupMode true - m_pBackupFileTbl.");
         cmd.pvData = (VOID *)m_pBackupFileTbl;
-    else
+    }
+    else {
+        NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: CnPluTotalBackUp::StartCopy() nBackupMode false - m_pRestoreFileTbl.");
         cmd.pvData = (VOID *)m_pRestoreFileTbl;
+    }
 
     TbcCommand(&cmd);
 
@@ -224,16 +228,11 @@ ULONG   CnPluTotalBackUp::GetStatus()
 
 	case TBC_RSLT_DNY_BUSY:
     case TBC_RSLT_BUSY:
+    case TBC_RSLT_NOT_INIT:
         dwRet = PLUTOTAL_BK_STATUS_BUSY;
         break;
 
     default:
-		{
-			char  xBuff[128];
-
-			sprintf (xBuff, "==NOTE: CnPluTotalBackUp::GetStatus() TbcCommand %d, 0x%x", cmd.dwResult, cmd.dwResult);
-			NHPOS_ASSERT_TEXT((cmd.dwResult == TBC_RSLT_COMPLETE), xBuff);
-		}
         dwRet = PLUTOTAL_E_FAILURE;
         break;
     }

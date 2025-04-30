@@ -99,18 +99,20 @@ public:
 
 	virtual HRESULT Close(void){ 
 		m_errorMessage.Empty();
+		if (m_bOpened) {
+			try {
+				m_hr = m_pRecordSet->Close();
+				m_errorMessage.Format(_T("ERROR CnAdoXPRec::Close hr 0x%x "), m_hr);
+			}
+			catch (_com_error& e) {
+				_bstr_t bstrSource(e.Description());
+				TCHAR* description;
+				description = bstrSource;
+				m_errorMessage.Format(_T("ERROR CnAdoXPRec::Close hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
+				m_hr = e.Error();
+			}
+		}
 		m_bOpened = FALSE;
-		try {
-			m_hr = m_pRecordSet->Close();
-			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Close hr 0x%x "), m_hr);
-		}
-		catch( _com_error &e) {
-			_bstr_t bstrSource(e.Description());
-			TCHAR *description;
-			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR CnAdoXPRec::Close hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
-			m_hr = e.Error();
-		}
 		if (m_pConnection) {
 			if (m_pConnection->State == adStateOpen)
 			{
@@ -172,17 +174,17 @@ public:
 			_bstr_t bstrSource(e.Description());
 			TCHAR *description;
 			description = bstrSource;
-			m_errorMessage.Format(_T("ERROR CnAdoXPRec::GetRows hr 0x%x %s  %s"), e.Error(), e.ErrorMessage(), description);
+			m_errorMessage.Format(_T("ERROR CnAdoXPRec::GetRows hr 0x%x %s"), e.Error(), e.ErrorMessage());
 			m_hr = e.Error();
 		}
 		if (FAILED(m_hr)) {
 			TRACE3("%S(%d): %s\n", __FILE__, __LINE__, m_errorMessage);
 			PifLog(MODULE_PLU_TOTAL, LOG_ERROR_TOTALUM_GETROWS);
-			{
-				char xBuff[256];
-				sprintf (xBuff, "%S", (LPCTSTR)m_errorMessage);
-				NHPOS_NONASSERT_TEXT(xBuff);
-			}
+//			{
+//				char xBuff[256];
+//				sprintf (xBuff, "%S", (LPCTSTR)m_errorMessage);
+//				NHPOS_NONASSERT_TEXT(xBuff);
+//			}
 		}
 		return m_hr;
 	}

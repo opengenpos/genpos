@@ -433,7 +433,7 @@ BOOL    CnPluTotal::Var2PluTtlRec(const COleVariant vRecData,PLUTOTAL_REC * pRec
 
 
 BOOL    CnPluTotal::Var2PluTtlRec(const COleVariant vRecData,PLUTOTAL_STATUS * pStsData){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     PLUTOTAL_DATE     testFrom = { 2025,1,1,6,0,0 };
     PLUTOTAL_DATE     testTo= { 0 };
     pStsData->ulResetStatus = 0;
@@ -451,7 +451,7 @@ BOOL    CnPluTotal::Var2PluTtlRec(const COleVariant vRecData,PLUTOTAL_STATUS * p
     pStsData->lAmount = 0;      // DCURRENCY
 
     // Version
-    pStsData->lVersion = 0;
+    pStsData->lVersion = PLUTOTAL_DB_VERSION;
 #else
     if(vRecData.vt == VT_EMPTY)
         return  FALSE;
@@ -1067,7 +1067,7 @@ ULONG   CnPluTotal::InsertN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
 
 
 ULONG   CnPluTotal::InsertN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     ULONG ulSts = PLUTOTAL_SUCCESS;
 #else
     CnPluTotalDb*   pDB = _DataBaseObject(nTblID);
@@ -1143,7 +1143,7 @@ ULONG   CnPluTotal::InsertN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
 
 
 ULONG   CnPluTotal::UpdateN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
     ULONG ulSts = PLUTOTAL_SUCCESS;
 #else
     CnPluTotalDb*   pDB = _DataBaseObject(nTblID);
@@ -2205,7 +2205,7 @@ ULONG   CnPluTotal::__DbgMakeTestData(const SHORT nTblID,const LONG lFrom,const 
             psSts.dateTo.usMin = 0;
             psSts.dateTo.usSec = 0;
             psSts.lAllTotal = lRecCnt;
-            psSts.lVersion = 100;
+            psSts.lVersion = PLUTOTAL_DB_VERSION;
             SetStsInfo(nTblID,psSts, TRUE);
         }
         pDB->CloseRec();

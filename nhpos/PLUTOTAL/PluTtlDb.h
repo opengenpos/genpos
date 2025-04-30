@@ -40,7 +40,7 @@ class CnPluTotalDb
 private:
 	static	int			s_nObjCnt;					// object counter
 //	static	CnAdoXPRec* s_pRec[RECORDSET_NUM];	// recordset (ADOCE)
-#if defined(SQLITE_TEST)
+#if defined(SQLITE_TEST) && SQLITE_TEST
 // replace the real objects with fake objects to eliminate
 // compiler errors when stubbing out database interface.
 	static int * __pRecS;	// recordset (ADOCE)

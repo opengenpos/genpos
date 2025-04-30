@@ -149,7 +149,7 @@
 // crash. See the following Stack Overflow post which contains details.
 //   https://stackoverflow.com/questions/78639279/cant-open-lib-usr-lib-x86-64-linux-gnu-odbc-libsqlite3odbc-0-9998-so-file
 // 
-//#define SQLITE_TEST   1
+#define SQLITE_TEST   0
 
 /*** dbfile option ***/
 #define PLUTOTAL_DBFILE_READ          (0x0001)    /* read                     */
