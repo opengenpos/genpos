@@ -98,8 +98,8 @@ static SHORT TtlcmpIndFing(VOID  *p1, VOID *p2); /* ### Mod (2171 for Win32) V1.
 *============================================================================
 */
 #if defined(TtlWriteFile)
-SHORT   TtlWriteFile_Special(USHORT hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize);
-SHORT   TtlWriteFile_Debug(USHORT hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize, char *aszFilePath, int nLineNo)
+SHORT   TtlWriteFile_Special(PifFileHandle hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize);
+SHORT   TtlWriteFile_Debug(PifFileHandle hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize, char *aszFilePath, int nLineNo)
 {
 	int    iLen = 0;
 	char   xBuffer[256];
@@ -123,9 +123,9 @@ SHORT   TtlWriteFile_Debug(USHORT hsHandle, ULONG ulPosition, VOID *pTmpBuff, UL
 	return sResult;
 }
 
-SHORT   TtlWriteFile_Special(USHORT hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize)
+SHORT   TtlWriteFile_Special(PifFileHandle hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize)
 #else
-SHORT TtlWriteFile(USHORT hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize)
+SHORT TtlWriteFile(PifFileHandle hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize)
 #endif
 {
     ULONG   ulActualPosition;   /* Actual Seek Pointer */
@@ -160,7 +160,7 @@ SHORT TtlWriteFile(USHORT hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSi
 *
 *============================================================================
 */
-VOID TtlNullWrite(SHORT hsHandle, ULONG ulLength, VOID *pTmpBuff,
+VOID TtlNullWrite(PifFileHandle hsHandle, ULONG ulLength, VOID *pTmpBuff,
                   USHORT usSize)
 {
     ULONG   ulNullwTmp;         /* Number of Temporary buffer Null data Counter */
@@ -174,7 +174,7 @@ VOID TtlNullWrite(SHORT hsHandle, ULONG ulLength, VOID *pTmpBuff,
         PifWriteFile(hsHandle, pTmpBuff, usSize);  /* Write Null Data(Temporary Buffer Size) */
     }
     if (ulNullwrest) {
-        PifWriteFile(hsHandle, pTmpBuff, (USHORT)ulNullwrest);  /* Write Null Data(Rest) */
+        PifWriteFile(hsHandle, pTmpBuff, ulNullwrest);  /* Write Null Data(Rest) */
     }
 }
                                            
@@ -436,7 +436,7 @@ SHORT TtlDeptIAssin(ULONG ulPosition, USHORT usDeptNo, TTLCSDEPTINDX *pDeptInd,
     }
     if (usMoveDeptNo) {
 		//Change made in PifReadFile, see piffile.c for new usage
-        PifReadFile((USHORT)hsTtlDeptHandle, (pDeptMove+1), (sizeof(TTLCSDEPTINDX) * usMoveDeptNo), &ulActualBytesRead); /* ### Mod (2171 for Win32) V1.0 */
+        PifReadFile(hsTtlDeptHandle, (pDeptMove+1), (sizeof(TTLCSDEPTINDX) * usMoveDeptNo), &ulActualBytesRead); /* ### Mod (2171 for Win32) V1.0 */
         if (ulActualBytesRead != sizeof(TTLCSDEPTINDX) * usMoveDeptNo) {
             return (TTL_FILE_READ_ERR); /* Return File Read Error */
         }

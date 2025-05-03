@@ -473,9 +473,9 @@ SHORT KpsPrint(UCHAR *auchRcvBuffer, USHORT usRcvBufLen, UCHAR uchUniqueAddress,
     if (PifSeekFile(pSpoolQue->pFirstQue->hsKpsBuffFH, pSpoolQue->pFirstQue->ulWritePoint, &ulActPos) != PIF_OK) {
         PifAbort(MODULE_KPS, FAULT_ERROR_FILE_SEEK);
     }
-    PifWriteFile(pSpoolQue->pFirstQue->hsKpsBuffFH, &(pKps_1_Frame->uchOperatorName), (USHORT)(usRcvBufLen - KPS_DATA_HEAD));
+    PifWriteFile(pSpoolQue->pFirstQue->hsKpsBuffFH, &(pKps_1_Frame->uchOperatorName), (usRcvBufLen - KPS_DATA_HEAD));
 
-    pSpoolQue->pFirstQue->ulWritePoint += usRcvBufLen - (KPS_DATA_HEAD);
+    pSpoolQue->pFirstQue->ulWritePoint += (usRcvBufLen - KPS_DATA_HEAD);
 
     /* if requested frame is NOT last frame, return to caller */
     if ((pKps_1_Frame->COM_ID/*auchRcvBuffer[KPS_COM_FRAME]*/ & KPS_LAST_FRAME) == 0x00) {

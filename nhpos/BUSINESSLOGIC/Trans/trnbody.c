@@ -3206,10 +3206,10 @@ SHORT TrnReadFile(ULONG ulOffset, VOID *pData,
 */
 #if defined(TrnWriteFile)
 #pragma message("TrnWriteFile defined")
-SHORT TrnWriteFile_Special(ULONG ulOffset, VOID *pData,
+SHORT TrnWriteFile_Special(ULONG ulOffset, const VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle);
 
-SHORT TrnWriteFile_Debug(ULONG ulOffset, VOID *pData,
+SHORT TrnWriteFile_Debug(ULONG ulOffset, const VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle,
 				   CONST char *aszFilePath, int nLineNo)
 {
@@ -3235,10 +3235,10 @@ SHORT TrnWriteFile_Debug(ULONG ulOffset, VOID *pData,
 	return sReturn;
 }
 
-SHORT TrnWriteFile_Special(ULONG ulOffset, VOID *pData,
+SHORT TrnWriteFile_Special(ULONG ulOffset, const VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle)
 #else
-SHORT TrnWriteFile(ULONG ulOffset, VOID *pData,
+SHORT TrnWriteFile(ULONG ulOffset, const VOID *pData,
                   ULONG ulSize, PifFileHandle hsFileHandle)
 #endif
 {

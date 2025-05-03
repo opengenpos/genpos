@@ -753,13 +753,13 @@ SHORT TtlTumUpdateDelayedBalance(VOID);
 #pragma message("  ====++++====   ----------------------------------    ====++++====")
 #pragma message("  ====++++====   TtlWriteFile_Debug() is ENABLED    ====++++====")
 #pragma message("  ====++++====   File: Include\\ttl.h                 ====++++====")
-SHORT TtlWriteFile_Debug(USHORT hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize, char *aszFileName, int LineNo);
+SHORT TtlWriteFile_Debug(PifFileHandle hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize, char *aszFileName, int LineNo);
 #define TtlWriteFile(han,ulp,pbuf,uls) TtlWriteFile_Debug(han,ulp,pbuf,uls,__FILE__,__LINE__)
 #else
-SHORT TtlWriteFile(USHORT hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize);
+SHORT TtlWriteFile(PifFileHandle hsHandle, ULONG ulPosition, VOID *pTmpBuff, ULONG ulSize);
 #endif
 
-VOID TtlNullWrite(SHORT hsHandle, ULONG ulLength, VOID *TempBuff, USHORT usSize);
+VOID TtlNullWrite(PifFileHandle hsHandle, ULONG ulLength, VOID *TempBuff, USHORT usSize);
 
 /* --- Financial Total File Write --- */
 SHORT TtlwriteFin(UCHAR uchMinorClass, TTLCSREGFIN *pTmpBuff);
