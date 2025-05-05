@@ -146,6 +146,8 @@ END_MESSAGE_MAP()
 #endif	// 0
 
 #if 0
+//  RARELY_NEEDED_LOGS - LogMessage() to log ConnectionEngine activity.
+//  Places where the log function is called are commented out in the code.
 static void LogMessage (char *aszMsg)
 {
 	FILE *hFile = fopen ("C:\\socklogfile.txt", "a+");
