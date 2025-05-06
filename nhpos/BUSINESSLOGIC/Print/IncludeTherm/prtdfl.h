@@ -119,7 +119,7 @@ extern UCHAR   uchPrtDflTypeSav;      /* save transaction type */
 VOID PrtDflInit(TRANINFORMATION  *pTran);
 VOID PrtDflCustHeader(TRANINFORMATION  *pTran);
 USHORT PrtDflHeader(TCHAR *pszWork, TRANINFORMATION  *pTran);
-USHORT PrtDflTrailer(TCHAR *pszWork, TRANINFORMATION *pTran, ULONG  ulStReg);
+USHORT PrtDflTrailer(TCHAR *pszWork, const TRANINFORMATION *pTran, ULONG  ulStReg);
 VOID PrtDflTrType(TRANINFORMATION *pTran);
 VOID PrtDflCheckVoid(USHORT fbMod);
 VOID PrtDflSetCRTNo(TRANINFORMATION *pTran, ITEMSALES *pItem);

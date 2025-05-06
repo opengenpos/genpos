@@ -317,17 +317,17 @@ USHORT   PrtDflHeader(TCHAR *pszWork, TRANINFORMATION *pTran)
 ** Synopsis: This function set trailer.
 *===========================================================================
 */
-USHORT   PrtDflTrailer(TCHAR *pszWork, TRANINFORMATION *pTran, ULONG  ulStReg)
+USHORT   PrtDflTrailer(TCHAR *pszWork, const TRANINFORMATION *pTran, ULONG  ulStReg)
 {
-    TCHAR  aszMnem[PARA_SPEMNEMO_LEN + 1];
     ULONG  ulID;
-    TCHAR  aszDate[PRT_DATETIME_LEN + 1];
-    TCHAR  aszWork[PRT_DFL_LINE * 2 + 1];
+    TCHAR  aszMnem[PARA_SPEMNEMO_LEN + 1] = { 0 };
+    TCHAR  aszDate[PRT_DATETIME_LEN + 1] = { 0 };
+    TCHAR  aszWork[PRT_DFL_LINE * 2 + 1] = { 0 };
 
     if ( PrtDflIf.Dfl.uchSeqNo != 0 ) {                 /* first frame ? */
         return(0);
     }
-	memset(aszMnem, 0x00, sizeof(aszMnem));
+
     /*  --  get cashier or waiter's name and mnemonics -- */
     if ( PRT_CASHIER == PrtChkCasWai(aszMnem, pTran->TranModeQual.ulCashierID, pTran->TranModeQual.ulWaiterID) ) {
         ulID = RflTruncateEmployeeNumber(pTran->TranModeQual.ulCashierID);
@@ -337,7 +337,6 @@ USHORT   PrtDflTrailer(TCHAR *pszWork, TRANINFORMATION *pTran, ULONG  ulStReg)
 
     PrtGetDate(aszDate, TCHARSIZEOF(aszDate), pTran);   /* get date time */
 
-    memset(aszWork, '\0', sizeof(aszWork));
     RflSPrintf(aszWork, PRT_DFL_LINE * 2 + 1, aszPrtKPTrailer,  pTran->TranCurQual.usConsNo, aszMnem, ulID, ulStReg / 1000L, ulStReg % 1000L, aszDate); 
                    
     /* -- fill space with kp column number -- */
@@ -347,8 +346,8 @@ USHORT   PrtDflTrailer(TCHAR *pszWork, TRANINFORMATION *pTran, ULONG  ulStReg)
     *( pszWork + PRT_DFL_LINE ) = PRT_SPACE;
     pszWork += PRT_DFL_LINE + 1;
     _tcsncpy(pszWork, aszWork + PRT_DFL_LINE, PRT_DFL_LINE);                   
-    return(2);
 
+    return(2);
 }
 
 /*

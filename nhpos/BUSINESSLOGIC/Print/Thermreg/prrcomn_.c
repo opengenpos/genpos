@@ -921,50 +921,50 @@ VOID  PrtGetScale(TCHAR *pszMnem, SHORT *psDecPoint, LONG  *plWeight,
 ;
 ;============================================================================
 fh**/
-VOID  PrtGetDate(TCHAR *pszDest, USHORT usDestLen, TRANINFORMATION *pTran)
+VOID  PrtGetDate(TCHAR *pszDest, USHORT usDestLen, const TRANINFORMATION *pTran)
 {
     TCHAR  aszDate[PRT_DATE_LEN + 1 ] = {0};                /* date mnemomics  */
     TCHAR  aszTime[PRT_TIME_LEN + 2 + 1] = {0};             /* time mnemomics "2" for spaces */
-    DATE_TIME   *DT = &(pTran->TranGCFQual.DateTimeStamp);  /* date & time */
+    DATE_TIME   dateTime = pTran->TranGCFQual.DateTimeStamp;  /* date & time */
     USHORT usWorkHour;
 
-	if (pTran->TranGCFQual.DateTimeStamp.usYear == 0) {
+	if (dateTime.usYear == 0) {
 		/* -- get date time if not already available -- */
 		// we are using the TRANINFORMATION *pTran here to make it easy to find
 		// this location for where the date is set.
-		PifGetDateTime(&(pTran->TranGCFQual.DateTimeStamp));
+		PifGetDateTime(&dateTime);
 	}
 
     /* -- Check date status and get -- */
     if (pTran->TranCurQual.flPrintStatus & CURQUAL_DDMMYY) {
-        RflSPrintf(aszDate, TCHARSIZEOF(aszDate), aszPrtDate, DT->usMDay, DT->usMonth,  DT->usYear % 100);
+        RflSPrintf(aszDate, TCHARSIZEOF(aszDate), aszPrtDate, dateTime.usMDay, dateTime.usMonth,  dateTime.usYear % 100);
     } else {
-        RflSPrintf(aszDate, TCHARSIZEOF(aszDate), aszPrtDate, DT->usMonth, DT->usMDay, DT->usYear % 100);
+        RflSPrintf(aszDate, TCHARSIZEOF(aszDate), aszPrtDate, dateTime.usMonth, dateTime.usMDay, dateTime.usYear % 100);
     }
 
 	if (pTran->ulCustomerSettingsFlags & SYSCONFIG_CUSTOMER_ENABLE_AMTRAK) {
 		/* -- Check time status -- */
 		if (pTran->TranCurQual.flPrintStatus & CURQUAL_MILITARY) {
-			RflSPrintf(aszTime, TCHARSIZEOF(aszTime), aszPrtTimeWithZone, DT->usHour, DT->usMin, aszPrtNull, DT->wszTimeZoneName );
+			RflSPrintf(aszTime, TCHARSIZEOF(aszTime), aszPrtTimeWithZone, dateTime.usHour, dateTime.usMin, aszPrtNull, dateTime.wszTimeZoneName );
 		} else {
-			if (DT->usHour == 12 || DT->usHour == 0) {
+			if (dateTime.usHour == 12 || dateTime.usHour == 0) {
 				usWorkHour = 12;
 			} else {
-				usWorkHour = (DT->usHour >= 12)?  DT->usHour - 12 : DT->usHour;
+				usWorkHour = (dateTime.usHour >= 12)? dateTime.usHour - 12 : dateTime.usHour;
 			}
-			RflSPrintf(aszTime, TCHARSIZEOF(aszTime), aszPrtTimeWithZone, usWorkHour, DT->usMin, (DT->usHour >= 12)?  aszPrtPM : aszPrtAM, DT->wszTimeZoneName );
+			RflSPrintf(aszTime, TCHARSIZEOF(aszTime), aszPrtTimeWithZone, usWorkHour, dateTime.usMin, (dateTime.usHour >= 12)?  aszPrtPM : aszPrtAM, dateTime.wszTimeZoneName );
 		}
 	} else {
 		/* -- Check time status -- */
 		if (pTran->TranCurQual.flPrintStatus & CURQUAL_MILITARY) {
-			RflSPrintf(aszTime, TCHARSIZEOF(aszTime), aszPrtTime, DT->usHour, DT->usMin, aszPrtNull );
+			RflSPrintf(aszTime, TCHARSIZEOF(aszTime), aszPrtTime, dateTime.usHour, dateTime.usMin, aszPrtNull );
 		} else {
-			if (DT->usHour == 12 || DT->usHour == 0) {
+			if (dateTime.usHour == 12 || dateTime.usHour == 0) {
 				usWorkHour = 12;
 			} else {
-				usWorkHour = (DT->usHour >= 12)?  DT->usHour - 12 : DT->usHour;
+				usWorkHour = (dateTime.usHour >= 12)? dateTime.usHour - 12 : dateTime.usHour;
 			}
-			RflSPrintf(aszTime, TCHARSIZEOF(aszTime), aszPrtTime, usWorkHour, DT->usMin, (DT->usHour >= 12)?  aszPrtPM : aszPrtAM );
+			RflSPrintf(aszTime, TCHARSIZEOF(aszTime), aszPrtTime, usWorkHour, dateTime.usMin, (dateTime.usHour >= 12)?  aszPrtPM : aszPrtAM );
 		}
 	}
 

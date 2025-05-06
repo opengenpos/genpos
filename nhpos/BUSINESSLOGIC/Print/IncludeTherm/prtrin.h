@@ -673,7 +673,7 @@ USHORT  PrtLogo(USHORT  usPrtType, USHORT usSize);
 USHORT  PrtCut(VOID);                                           
 SHORT PrtChkPort(VOID);                                       
 VOID  PrtGetScale(TCHAR *pszMnem, SHORT *psDecPoint, LONG *plWeight, TRANINFORMATION  *pTran, ITEMSALES  *pItem);
-VOID  PrtGetDate(TCHAR *pszDest, USHORT usDestLen, TRANINFORMATION *pTran);
+VOID  PrtGetDate(TCHAR *pszDest, USHORT usDestLen, const TRANINFORMATION *pTran);
 VOID  PrtGetJobInDate(TCHAR *pszDest, USHORT usDestLen, TRANINFORMATION *pTran, ITEMMISC  *pItem);
 VOID  PrtGetJobOutDate(TCHAR *pszDest, USHORT usDestLen, TRANINFORMATION *pTran, ITEMMISC  *pItem);
 SHORT PrtGetTaxMod(TCHAR *pszDest, USHORT usDestLen, SHORT fsTax, USHORT fbMod);
