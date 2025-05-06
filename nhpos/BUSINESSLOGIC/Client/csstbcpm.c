@@ -13,10 +13,6 @@
 * Category    : Client/Server STUB, US Hospitality Enhance Model
 * Program Name: CSSTBCPM.C                                            
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Midium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstruct: The provided function names are as follows:  
 *
 *           CliCpmSendMessage()         * Send request to Host
@@ -43,7 +39,6 @@
 *===========================================================================
 */
 #include	<tchar.h>
-
 #include    <memory.h>
 
 #include    <ecr.h>
@@ -58,11 +53,6 @@
 #include    <eept.h>
 #include    <csstbcpm.h>
 #include    "csstubin.h"
-
-extern XGRAM       CliSndBuf;          /* Send Buffer */    
-extern XGRAM       CliRcvBuf;          /* Receive Buffer */
-extern  CLICOMIF   CliMsg;
-
 
 /*
 *===========================================================================
