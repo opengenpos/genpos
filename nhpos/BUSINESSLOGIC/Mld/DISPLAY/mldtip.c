@@ -90,9 +90,8 @@ static ULONG  MldChrgTipID(ITEMDISC *pItem, USHORT usScroll)
     }
 
     if (usScroll == MLD_SCROLL_1) {
-		TRANINFORMATION    *WorkTranInf;
+		TRANINFORMATION    const * const WorkTranInf = TrnGetTranInformationPointer();
 
-        TrnGetTranInformation(&WorkTranInf);
         if (WorkTranInf->TranGCFQual.ulCashierID == WorkTranInf->TranModeQual.ulCashierID) {
             MldSetSpecialStatus(usScroll, MLD_NEWCHEK_CASHIER);
             return (0); /* not display server no */

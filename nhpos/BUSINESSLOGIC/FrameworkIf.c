@@ -933,7 +933,7 @@ BUSINESSLOGIC_API SHORT _cdecl BlProcessGuestCheck_Rtrv (GUESTCHECK_RTRV  *pGues
 		// If there was an error then just send back an empty list.
 		if (sRcvActualCount < 0)
 			sRcvActualCount = 0;
-		ConnEngineSendGuestCheckList (RcvBuffer, sRcvActualCount, &Gcf_FileHed, pGuestCheck_Rtrv->gcnum);
+		sStatus = ConnEngineSendGuestCheckList (RcvBuffer, sRcvActualCount, &Gcf_FileHed, pGuestCheck_Rtrv->gcnum);
 	}
 
 	return(sStatus);                                            /* success */
@@ -2737,14 +2737,13 @@ SHORT BlFwIfReadSignatureCaptureRead (PBLFSIGCAPIF pSigCapData, USHORT usFscMajo
 	BOOL					  bResult;
 	SHORT				      sResult = 1;
 	FRAMEWORK_IO_SIGCAP_DATA  Req = {0};
-	TRANINFORMATION          *WorkTran;
+	TRANINFORMATION          const * const WorkTran = TrnGetTranInformationPointer();
 
 	if (usFscMajor == FSC_TENDER && ItemTenderCheckTenderMdc(usFscMinor, 6, MDC_PARAM_BIT_D) == 0) {
 		return 0;
 	}
 
 	/* call framework */
-    TrnGetTranInformation(&WorkTran);
 	Req.usConsNo     = WorkTran->TranCurQual.usConsNo;
 	Req.ulStoreregNo = WorkTran->TranCurQual.ulStoreregNo;
 	Req.ulCashierID  = WorkTran->TranModeQual.ulCashierID;

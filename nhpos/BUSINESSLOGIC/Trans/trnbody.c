@@ -142,23 +142,22 @@
 #include	"ConnEngineObjectIf.h"
 #include	"item.h"
 
+// file names for files used in general transaction functionality.
+// for split transaction file names see aszTrnConsSplitFileA[] and others in trnbdspl.c
+static TCHAR CONST  aszTrnItemStorageFile[]    = _T("ITEMSTOR");    /* file Name of item storage */
+static TCHAR CONST  aszTrnConsStorageFile[]    = _T("CONSSTOR");    /* file Name of cons. storage */
+static TCHAR CONST  aszTrnPostRecStorageFile[] = _T("POSRSTOR");    /* file Name of post rec. storage */
+static TCHAR CONST  aszTrnItemStorageIndex[]   = _T("ITEMIDX");     /* item storage index */
+static TCHAR CONST  aszTrnNoItemStorageIndex[] = _T("NOITIDX");     /* no cons. storage index */
+static TCHAR CONST  aszTrnConsStorageIndex[]   = _T("CONSIDX");     /* cons. storage index */
+static TCHAR CONST  aszTrnNoConsStorageIndex[] = _T("NOCNIDX");     /* no cons. storage index */
+static TCHAR CONST aszTrnTempStorageFile[]	   = _T("TRNTMP");
+
 TRANINFORMATION TrnInformation;                             /* transaction information */
-TCHAR CONST  aszTrnItemStorageFile[]    = _T("ITEMSTOR");    /* file Name of item storage */
-TCHAR CONST  aszTrnConsStorageFile[]    = _T("CONSSTOR");    /* file Name of cons. storage */
-TCHAR CONST  aszTrnPostRecStorageFile[] = _T("POSRSTOR");    /* file Name of post rec. storage */
-TCHAR CONST  aszTrnItemStorageIndex[]   = _T("ITEMIDX");     /* item storage index */
-TCHAR CONST  aszTrnNoItemStorageIndex[] = _T("NOITIDX");     /* no cons. storage index */
-TCHAR CONST  aszTrnConsStorageIndex[]   = _T("CONSIDX");     /* cons. storage index */
-TCHAR CONST  aszTrnNoConsStorageIndex[] = _T("NOCNIDX");     /* no cons. storage index */
-TCHAR CONST aszTrnTempStorageFile[]	   = _T("TRNTMP");
 
 /*----- Split Check File,  R3.1 -----*/
 TRANINFSPLIT    TrnSplitA;
-TCHAR CONST  aszTrnConsSplitFileA[]     = _T("SPLITA");      /* file Name of split A */
-TCHAR CONST  aszTrnConsSplitIndexA[]    = _T("IDXSPLA");     /* split A index */
 TRANINFSPLIT    TrnSplitB;
-TCHAR CONST  aszTrnConsSplitFileB[]     = _T("SPLITB");      /* file Name of split B */
-TCHAR CONST  aszTrnConsSplitIndexB[]    = _T("IDXSPLB");     /* split B index */
 
 /* 05/20/01 */
 /* 12/05/01 */
@@ -1655,6 +1654,12 @@ SHORT   TrnLoanPickup(VOID *pData)
 *                   of system then the actual transaction file index is also available.
 *                   So we also read that information and reconstruct the index
 *                   file for this transaction as well.
+* 
+*                   WARNING: TrnGetGC() reads a Guest Check into memory modifying
+*                            the memory resident Guest Check data in TrnInformation
+*                            which includes:
+*                             - TrnInformation.TranGCFQual
+*                             - TrnInformation.TranItemizers
 ==========================================================================*/
 
 SHORT TrnGetGC(USHORT usGCFNo, SHORT sType, USHORT usType)

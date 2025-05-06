@@ -59,7 +59,13 @@
 #include    <appllog.h>
 #include    <prtprty.h>
 
-                                                    
+// file names for files used in split functionality.
+// for general transaction file names see aszTrnItemStorageFile[] and others in trnbody.c
+static TCHAR CONST  aszTrnConsSplitFileA[] = _T("SPLITA");      /* file Name of split A */
+static TCHAR CONST  aszTrnConsSplitIndexA[] = _T("IDXSPLA");     /* split A index */
+static TCHAR CONST  aszTrnConsSplitFileB[] = _T("SPLITB");      /* file Name of split B */
+static TCHAR CONST  aszTrnConsSplitIndexB[] = _T("IDXSPLB");     /* split B index */
+
                                                              
 /*==========================================================================
 **  Synopsis:   VOID    TrnOpenSpl(VOID *ItemOpen, SHORT sType)
