@@ -467,17 +467,31 @@ USHORT _RflFormStr(CONST TCHAR *lpszFormat, VOID *pvArgs, TCHAR *pszUser, USHORT
 
         case _T('p'):                               /* pointer */
             if (usLong == 0) {                  /* far pointer  */
+#if defined(POSSIBLE_DEAD_CODE)
+                // Remove this old pointer address conversion into character string
+                // which appears to be a holdover from 16 bit Intel 8086 type processors
+                // with segmented addresses with near and far pointers.
+                // Make sure the parameter list addressing stays correct however.
+                //     Richard Chambers May-05-2025
                 tcharnset(pszBuf, _T('0'), 9);         /* fill '0'     */
                 _ultot((ULONG)FP_SEG(*plArgs), szWork, 16);
                 _tcsncpy(pszBuf + 4 - _tcslen(szWork), _tcsupr(szWork), _tcslen(szWork));
                 *(pszBuf + 4) = _T(':');
                 _ultot((ULONG)FP_OFF(*plArgs), szWork, 16);
                 _tcscpy(pszBuf + 5 + 4 - _tcslen(szWork), _tcsupr(szWork));
+#endif
                 plArgs++;
             } else {                            /* near pointer */
+#if defined(POSSIBLE_DEAD_CODE)
+                // Remove this old pointer address conversion into character string
+                // which appears to be a holdover from 16 bit Intel 8086 type processors
+                // with segmented addresses with near and far pointers.
+                // Make sure the parameter list addressing stays correct however.
+                //     Richard Chambers May-05-2025
                 tcharnset(pszBuf, _T('0'), 4);
                 _ultot((ULONG)FP_OFF(*plArgs), szWork, 16);
                 _tcscpy(pszBuf + 4 - _tcslen(szWork), _tcsupr(szWork));
+#endif
             }
             plArgs++;
             break;
