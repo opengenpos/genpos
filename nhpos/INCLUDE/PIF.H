@@ -1860,6 +1860,8 @@ VOID   PIFENTRY PifCloseFile(USHORT usFile);
 VOID   PIFENTRY PifDeleteFile(CONST TCHAR *pszFileName);
 VOID  PIFENTRY PifDeleteFileNew(CONST TCHAR *pszFileName, CONST CHAR *pszMode);
 
+void   PifDeleteFileByMode(const TCHAR* pszFileName, const CHAR* pszMode);
+
 /* --- BEGIN: Add for Dollar Tree SCER 12/05/2000 --- */
 VOID   PIFENTRY PifDeleteFileEx(CONST TCHAR *pszFileName, BOOL fTemporayDisk);
 ULONG  PIFENTRY PifMoveFile(CONST TCHAR *szSrcFileName, BOOL fSrcTempDisk, CONST TCHAR *szDstFileName, BOOL fDstTempDisk);

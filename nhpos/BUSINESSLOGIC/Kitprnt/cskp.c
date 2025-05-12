@@ -826,97 +826,97 @@ VOID KpsDeleteFile(VOID)
         PifCloseFile(KpsBuffer1.hsKpsBuffFH);
 		KpsBuffer1.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile1);
+    PifDeleteFileByMode(aszKPSBuffFile1, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer2.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer2.hsKpsBuffFH);
 		KpsBuffer2.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile2);
+    PifDeleteFileByMode(aszKPSBuffFile2, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer3.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer3.hsKpsBuffFH);
 		KpsBuffer3.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile3);
+    PifDeleteFileByMode(aszKPSBuffFile3, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer4.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer4.hsKpsBuffFH);
 		KpsBuffer4.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile4); /* corrected to prevent another file close, 01/10/01 */
+    PifDeleteFileByMode(aszKPSBuffFile4, auchTEMP_OLD_FILE_READ_WRITE); /* corrected to prevent another file close, 01/10/01 */
 
     if (KpsBuffer5.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer5.hsKpsBuffFH);
 		KpsBuffer5.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile5);
+    PifDeleteFileByMode(aszKPSBuffFile5, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer6.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer6.hsKpsBuffFH);
 		KpsBuffer6.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile6);
+    PifDeleteFileByMode(aszKPSBuffFile6, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer7.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer7.hsKpsBuffFH);
 		KpsBuffer7.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile7);
+    PifDeleteFileByMode(aszKPSBuffFile7, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer8.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer8.hsKpsBuffFH);
 		KpsBuffer8.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile8);
+    PifDeleteFileByMode(aszKPSBuffFile8, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer9.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer9.hsKpsBuffFH);
 		KpsBuffer9.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile9);
+    PifDeleteFileByMode(aszKPSBuffFile9, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer10.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer10.hsKpsBuffFH);
 		KpsBuffer10.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile10);
+    PifDeleteFileByMode(aszKPSBuffFile10, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer11.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer11.hsKpsBuffFH);
 		KpsBuffer11.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile11);
+    PifDeleteFileByMode(aszKPSBuffFile11, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer12.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer12.hsKpsBuffFH);
 		KpsBuffer12.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile12);
+    PifDeleteFileByMode(aszKPSBuffFile12, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer13.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer13.hsKpsBuffFH);
 		KpsBuffer13.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile13);
+    PifDeleteFileByMode(aszKPSBuffFile13, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer14.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer14.hsKpsBuffFH);
 		KpsBuffer14.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile14);
+    PifDeleteFileByMode(aszKPSBuffFile14, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer15.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer15.hsKpsBuffFH);
 		KpsBuffer15.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile15);
+    PifDeleteFileByMode(aszKPSBuffFile15, auchTEMP_OLD_FILE_READ_WRITE);
 
     if (KpsBuffer16.hsKpsBuffFH >= 0) {
         PifCloseFile(KpsBuffer16.hsKpsBuffFH);
 		KpsBuffer16.hsKpsBuffFH = -1;
     }
-    PifDeleteFile(aszKPSBuffFile16);
+    PifDeleteFileByMode(aszKPSBuffFile16, auchTEMP_OLD_FILE_READ_WRITE);
 }
 
                                                                            /* A START (V1.0.0.3) */

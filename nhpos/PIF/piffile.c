@@ -829,6 +829,51 @@ VOID   PIFENTRY PifDeleteFile(CONST TCHAR  *pszFileName)
     return;
 }
 
+/*fhfh
+**********************************************************************
+**                                                                  **
+**  Synopsis:   VOID PIFENTRY PifDeleteFileByMode(CONST CHAR FAR *pszFileName,
+**                                          const CHAR* pszMode)    **
+**              pszFileName:         file name to delete            **
+**              pszMode:             file open mode used with file  **
+**                                                                  **
+**  return:     none                                                **
+**                                                                  **
+**  Description:delete file                                         **     
+**                                                                  **
+**********************************************************************
+fhfh*/
+void   PifDeleteFileByMode(const TCHAR* pszFileName, const CHAR* pszMode)
+{
+    BOOL    fReturn;
+    DWORD   dwError;
+    FlMode  fsMode = dfckmd(pszMode);
+    TCHAR   wszFilePathName[MAX_PATH];
+    char aszErrorBuffer[128 + MAX_PATH];
+    char aszFilePathName[MAX_PATH];
+#ifdef DEBUG_PIF_OUTPUT
+    TCHAR  wszDisplay[128];
+#endif
+
+    PifGetFilePathLocal(pszFileName, fsMode, wszFilePathName);
+    fReturn = DeleteFile(wszFilePathName);
+    if (fReturn == 0) {
+        dwError = GetLastError();
+        if (dwError != ERROR_FILE_NOT_FOUND) {
+            wcstombs(aszFilePathName, wszFilePathName, sizeof(aszFilePathName));
+            sprintf(aszErrorBuffer, "PifDeleteFileEx (): Error Deleting File  File: %s,  Error: %d", aszFilePathName, dwError);
+            NHPOS_ASSERT_TEXT(0, aszErrorBuffer);
+            PifLog(MODULE_PIF_DELETEFILEEX, LOG_ERROR_CODE_FILE_01);
+            PifLog(MODULE_ERROR_NO(MODULE_PIF_DELETEFILEEX), (USHORT)dwError);
+            PifLog(MODULE_LINE_NO(MODULE_PIF_DELETEFILEEX), (USHORT)__LINE__);
+        }
+#ifdef DEBUG_PIF_OUTPUT
+        wsprintf(wszDisplay, TEXT("PifDeleteFile, %s\r\n"), pszFileName, dwError);
+        OutputDebugString(wszDisplay);
+#endif
+    }
+}
+
 /************* BEGIN: ADD FOR DOLLAR TREE SCER 12/05/2000 *******************/
 /*fhfh
 **********************************************************************
@@ -839,7 +884,7 @@ VOID   PIFENTRY PifDeleteFile(CONST TCHAR  *pszFileName)
 **                                                                  **
 **  return:     none                                                **
 **                                                                  **
-**  Description:delete file                                         **     
+**  Description:delete file                                         **
 **                                                                  **
 **********************************************************************
 fhfh*/
