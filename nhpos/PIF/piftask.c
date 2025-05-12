@@ -23,11 +23,6 @@
 #include "appllog.h"
 #include "BlFWif.h"
 #include "evs.h"
-/* manipulation for segment and offset */
-//#define FP_SEG(fp) (*((ULONG *)&(fp) + 1))
-//#define FP_OFF(fp) (*((ULONG *)&(fp)))
-//#define FP_SEG(fp) (*((USHORT *)&(fp) + 1))
-//#define FP_OFF(fp) (*((USHORT *)&(fp)))
 
 static int nShutdownStarted = 0;
 
@@ -275,7 +270,7 @@ static VOID   PifAbortBase (USHORT usFaultModule, USHORT usFaultCode)
     }
 
 
-#if 0
+#if defined(POSSIBLE_DEAD_CODE)
     /* log the current base stack pointer */
     _asm {
        mov     WORD PTR pStack+4,ss
