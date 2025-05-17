@@ -320,8 +320,8 @@ SHORT   ItemTransACNorCheck( UIFREGTRANSOPEN    *UifRegTransOpen )
 
 SHORT   ItemTransACNorKey( ITEMTRANSOPEN   *ItemTransOpen )   
 {
-    TRANGCFQUAL     *pWorkGCF = TrnGetGCFQualPtr();
-    TRANCURQUAL     *pWorkCur = TrnGetCurQualPtr();
+    TRANGCFQUAL     * const pWorkGCF = TrnGetGCFQualPtr();
+    TRANCURQUAL     * const pWorkCur = TrnGetCurQualPtr();
     SHORT           sStatus, sType;
     USHORT          usStatus;
     ULONG           ulGuestNo;
@@ -460,8 +460,8 @@ SHORT   ItemTransACNorKey( ITEMTRANSOPEN   *ItemTransOpen )
 
 SHORT   ItemTransACNewKey(UIFREGTRANSOPEN *UifRegTransOpen, ITEMTRANSOPEN *pTransOpen)
 {
-    TRANGCFQUAL     *WorkGCF = TrnGetGCFQualPtr();
-    TRANCURQUAL     *pWorkCur = TrnGetCurQualPtr();
+    TRANGCFQUAL     * const WorkGCF = TrnGetGCFQualPtr();
+    TRANCURQUAL     * const pWorkCur = TrnGetCurQualPtr();
     SHORT           sStatus, sType;
     USHORT          usStatus, usGuestNo;
 

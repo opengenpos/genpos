@@ -1806,8 +1806,8 @@ SHORT   ItemTendState( UIFREGTENDER *pUifRegTender, ITEMTENDER *pItemTender )
 
 VOID    ItemTendDelGCF( VOID )
 {
-    TRANGCFQUAL      *WorkGCF = TrnGetGCFQualPtr();     /* get GCF qualifier */
-    TRANINFORMATION  *WorkTranInf = TrnGetTranInformationPointer();
+    TRANGCFQUAL      * const WorkGCF = TrnGetGCFQualPtr();     /* get GCF qualifier */
+    TRANINFORMATION  const * const WorkTranInf = TrnGetTranInformationPointer();
     SHORT   sStatus;
 
     /* cashier interrupt, at no recall case, R3.3 */
@@ -1883,11 +1883,10 @@ VOID    ItemTendDelGCF( VOID )
     }
 
 	{
-		ITEMTRANSLOCAL   WorkTrans;
+		ITEMTRANSLOCAL   const * const WorkTrans = ItemTransGetLocalPointer();     /* get transaction open local data */
 
-		ItemTransGetLocal( &WorkTrans );                                /* get transaction open local data */
-		for ( ; WorkTrans.uchCheckCounter != 0; WorkTrans.uchCheckCounter-- ) {
-			while ( ( sStatus = CliGusDelete( WorkTrans.ausGuestNo[ WorkTrans.uchCheckCounter - 1 ] ) ) !=  GCF_SUCCESS ) {
+        for (USHORT us = WorkTrans->uchCheckCounter; us != 0; us-- ) {
+			while ( ( sStatus = CliGusDelete( WorkTrans->ausGuestNo[ us - 1 ] ) ) !=  GCF_SUCCESS ) {
 				USHORT  usStatus = GusConvertError( sStatus );
 				UieErrorMsg( usStatus, UIE_WITHOUT );
 			}

@@ -80,8 +80,8 @@
 ==========================================================================*/
 static SHORT   ItemTransACCIRecallGC( ITEMTRANSOPEN   *ItemTransOpen )   
 {
-    TRANGCFQUAL     *WorkGCF = TrnGetGCFQualPtr();
-    TRANCURQUAL     *pWorkCur = TrnGetCurQualPtr();
+    TRANGCFQUAL     * const WorkGCF = TrnGetGCFQualPtr();
+    TRANCURQUAL     * const pWorkCur = TrnGetCurQualPtr();
     SHORT           sStatus, sType;
     USHORT          usGuestNo;
 

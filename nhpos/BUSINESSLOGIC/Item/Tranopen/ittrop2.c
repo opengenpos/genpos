@@ -152,7 +152,7 @@ static SHORT   ItemTransROCheck( UIFREGTRANSOPEN   *UifRegTransOpen )
 
 static SHORT   ItemTransROKey( ITEMTRANSOPEN   *ItemTransOpen )   
 {
-    TRANGCFQUAL     *WorkGCF = TrnGetGCFQualPtr();
+    TRANGCFQUAL     * const WorkGCF = TrnGetGCFQualPtr();
     ULONG           ulGuestNo;
     SHORT           sStatus, sType;
     USHORT          usStatus;

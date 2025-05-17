@@ -260,7 +260,7 @@ SHORT   ItemTransACMulCheck( VOID )
 SHORT   ItemTransACMulPreFin(UIFREGTRANSOPEN *pOpen, ITEMTRANSOPEN *ItemTransOpen)
 {
 //    USHORT          usReadLen;
-    TRANINFORMATION *TrnInfo = TrnGetTranInformationPointer();
+    TRANINFORMATION * const TrnInfo = TrnGetTranInformationPointer();
 	ULONG			ulActualBytesRead;
     ULONG           ulRWOffset, ulSize;
 	ULONG			ulIndexFSize;
@@ -366,8 +366,6 @@ SHORT   ItemTransACMulPreFin(UIFREGTRANSOPEN *pOpen, ITEMTRANSOPEN *ItemTransOpe
     TrnReadFile(ulRWOffset, &(gcfti.usVli), sizeof(gcfti.usVli), TrnInfo->hsTranPostRecStorage, &ulActualBytesRead);
     TrnWriteFile(ulRWOffset, &(gcfti.usVli), ulActualBytesRead, TrnInfo->hsTranConsStorage);
 
-
-    TrnInfo = TrnGetTranInformationPointer();
     TrnInfo->usTranConsStoVli = gcfti.usVli;
 
     ulRWOffset += ulActualBytesRead;
@@ -1019,7 +1017,7 @@ SHORT   ItemTransACSto( UIFREGTRANSOPEN *UifRegTransOpen )
 
 SHORT   ItemTransACStoGet( UIFREGTRANSOPEN *UifRegTransOpen )   
 {
-    TRANGCFQUAL     *pWorkGCF = TrnGetGCFQualPtr();
+    TRANGCFQUAL     * const pWorkGCF = TrnGetGCFQualPtr();
 	FDTPARA         WorkFDT = { 0 };
     USHORT          uchOrder;
     SHORT           sStatus;

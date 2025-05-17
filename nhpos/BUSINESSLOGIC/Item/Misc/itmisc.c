@@ -2364,10 +2364,10 @@ static VOID    ItemMiscCheckTransfer(UIFREGMISC *UifMisc, ITEMMISC *pMiscFrom, I
 */
 SHORT   ItemMiscCheckTrans(UIFREGMISC *UifMisc)
 {
-    TRANGCFQUAL     *pGCF = TrnGetGCFQualPtr();
-    TRANINFORMATION *pTrnInfo = TrnGetTranInformationPointer();
-    TRANITEMIZERS   *pItem = TrnGetTIPtr();
-    TRANMODEQUAL    *pWorkMode = TrnGetModeQualPtr();
+    TRANGCFQUAL     * const pGCF = TrnGetGCFQualPtr();
+    TRANINFORMATION * const pTrnInfo = TrnGetTranInformationPointer();
+    TRANITEMIZERS   * const pItem = TrnGetTIPtr();
+    TRANMODEQUAL    * const pWorkMode = TrnGetModeQualPtr();
 	ITEMMISC        MiscFrom = {0}, MiscTo = {0};
 	TRANCONSSTORAGEHEADER    uchGCFData = {0};
     SHORT           sStatus = ITM_SUCCESS, sType = 0, sGive = 0;
@@ -2379,7 +2379,7 @@ SHORT   ItemMiscCheckTrans(UIFREGMISC *UifMisc)
 	}
 
     /* check if tax modifier key was used ? */
-    if (ItemModGetLocalPtr()->fsTaxable != 0) {
+    if (ItemModLocalPtr->fsTaxable != 0) {
 		/* sequence error if tax modifier key has been used */
         return(LDT_SEQERR_ADR); 
     }
@@ -2544,8 +2544,8 @@ SHORT   ItemMiscCheckTrans(UIFREGMISC *UifMisc)
 SHORT   ItemMiscCheckTransGC2GC(ITEMMISC *pMiscTo)
 {
     ULONG            ulGuestNo;
-    TRANINFORMATION  *TrnInfo = TrnGetTranInformationPointer();
-    TRANGCFQUAL      *WorkGCF = TrnGetGCFQualPtr();
+    TRANINFORMATION  * const TrnInfo = TrnGetTranInformationPointer();
+    TRANGCFQUAL      * const WorkGCF = TrnGetGCFQualPtr();
 	ULONG			 ulActualBytesRead;
     SHORT            sStatus, sDel = 0;
     USHORT           usStatus;
@@ -3162,8 +3162,8 @@ fhfh*/
 
 VOID    ItemMiscCancelGCF( VOID)
 {
-    TRANGCFQUAL     *TranGCFQualL = TrnGetGCFQualPtr();
-    TRANINFORMATION *pTrnInfo = TrnGetTranInformationPointer();
+    TRANGCFQUAL     * const TranGCFQualL = TrnGetGCFQualPtr();
+    TRANINFORMATION * const pTrnInfo = TrnGetTranInformationPointer();
 	ULONG			ulActualBytesRead;//RPH SR# 201
     SHORT           sErrStatus, sType, sSize, sQueue;
     USHORT          usRtnLead;
@@ -3237,8 +3237,7 @@ VOID    ItemMiscCancelGCF( VOID)
                 } else {
                     sQueue = GCF_NO_APPEND;
                 }
-                while ( ( sErrStatus = CliGusResetReadFlag( TranGCFQualL->usGuestNo,
-                    sQueue) ) !=  GCF_SUCCESS ) {
+                while ( ( sErrStatus = CliGusResetReadFlag( TranGCFQualL->usGuestNo, sQueue) ) !=  GCF_SUCCESS ) {
                     usRtnLead = GusConvertError( sErrStatus );
                     UieErrorMsg( usRtnLead, UIE_WITHOUT );
                 }
@@ -3306,7 +3305,7 @@ SHORT   ItemMiscCancel(UIFREGMISC *ItemMisc)
                 return(LDT_PROHBT_ADR);
 
             } else {
-				TRANINFORMATION *WorkTran = TrnGetTranInformationPointer();
+//				TRANINFORMATION *WorkTran = TrnGetTranInformationPointer();
 				MLDTRANSDATA    WorkMLD = {0};
                 /*----- Return to LCD 1 Display -----*/
                 MldSetMode(MLD_DRIVE_THROUGH_1SCROLL);

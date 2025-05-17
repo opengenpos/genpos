@@ -3936,8 +3936,8 @@ SHORT   ItemOtherValidation(VOID)
 {
     ITEMDATASIZEUNION  WorkSales;
 	PARASLIPFEEDCTL    FeedCtl = {0};
-	TRANINFORMATION    *pTran = TrnGetTranInformationPointer();
-	ITEMCOMMONLOCAL    *WorkCommon = ItemCommonGetLocalPointer();
+	TRANINFORMATION    const * const pTran = TrnGetTranInformationPointer();
+	ITEMCOMMONLOCAL    const * const WorkCommon = ItemCommonGetLocalPointer();
 	static int		   uchValCo = -2, itemNumber = 0;
 	static USHORT	   usGuestNo = 0;
 

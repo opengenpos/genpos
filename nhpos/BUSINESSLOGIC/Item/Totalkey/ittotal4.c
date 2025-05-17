@@ -823,9 +823,9 @@ SHORT    ItemTotalFTSplitTender(ITEMTOTAL *pItem)
     DCURRENCY           lTax = 0L;
 	ITEMTOTAL           ItemTotal = {0};
     ITEMAFFECTION       Tax = {0}, IndTax = {0};
-    TRANGCFQUAL         *WorkGCF = TrnGetGCFQualPtr();
-    TRANINFORMATION     *WorkTran = TrnGetTranInformationPointer();
-    ITEMCOMMONLOCAL     *pItemCommonL = ItemCommonGetLocalPointer();
+    TRANGCFQUAL         const * const WorkGCF = TrnGetGCFQualPtr();
+    TRANINFORMATION     const * const WorkTran = TrnGetTranInformationPointer();
+    ITEMCOMMONLOCAL     * const pItemCommonL = ItemCommonGetLocalPointer();
 
     /*----- Check Seat Transaction Exist or Not 6/7/96 -----*/
     for (i = 0; i < NUM_SEAT && WorkGCF->auchUseSeat[i] != 0; i++, sFlag++) { //SR206
