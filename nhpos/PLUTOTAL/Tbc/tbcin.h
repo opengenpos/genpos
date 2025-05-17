@@ -59,8 +59,6 @@ extern VOID  TbcCreateThread(VOID (*)(VOID), int);
 /* --- BEGIN: Add for Dollar Tree SCER 12/05/2000 ---*/
 extern VOID  TbcLogElapsedTime(USHORT, ULONG);
 extern SHORT TbcCreateFile( CONST TCHAR* lpFileName, DWORD dwAccess, DWORD dwAttribute, BOOL fTemporary );
-extern VOID  TbcCloseFile( SHORT sPifHandle );
-extern VOID  TbcDeleteFile( CONST TCHAR* lpFileName, BOOL fTempDisk );
 extern ULONG TbcMoveFile( CONST TCHAR* lpExistFile, BOOL fSrcTempDisk,
                           CONST TCHAR* lpNewFile, BOOL fDstTempDisk );
 extern ULONG TbcGetFileSize( SHORT sPifHandle );

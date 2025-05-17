@@ -359,7 +359,7 @@ TbcReadFile(TBC_PATHSPEC *tbcPathSpec)
         /* deleted...
         CloseHandle(hSrc);
         */
-        TbcCloseFile(sPifHandle);
+        PifCloseFile(sPifHandle);
         /* --- END: change for doller tree scer 12/05/00 ---*/
         return 0;
     }
@@ -370,7 +370,7 @@ TbcReadFile(TBC_PATHSPEC *tbcPathSpec)
         /* deleted...
         CloseHandle(hSrc);
         */
-        TbcCloseFile(sPifHandle);
+        PifCloseFile(sPifHandle);
         /* --- END: change for doller tree scer 12/05/00 ---*/
         return 0;
     }
@@ -396,7 +396,7 @@ TbcReadFile(TBC_PATHSPEC *tbcPathSpec)
             /* deleted...
             CloseHandle(hSrc);
             */
-            TbcCloseFile(sPifHandle);
+            PifCloseFile(sPifHandle);
             /* --- END: change for doller tree scer 12/05/00 ---*/
             return 0;
         }
@@ -412,7 +412,7 @@ TbcReadFile(TBC_PATHSPEC *tbcPathSpec)
     /* deleted...
     CloseHandle(hSrc);
     */
-    TbcCloseFile(sPifHandle);
+    PifCloseFile(sPifHandle);
     /* --- END: change for doller tree scer 12/05/00 ---*/
 
     return 1;

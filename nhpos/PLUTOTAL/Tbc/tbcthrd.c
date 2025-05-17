@@ -141,7 +141,7 @@ static VOID THREADENTRY TbcThread(VOID)
 
 				fSrcTempDisk = ( TbcStrstr(tbcCopySpec->szDstPath, g_szTbcRAMDiskPath ) != NULL ) ? TRUE : FALSE;
 
-				TbcDeleteFile(tbcPathSpec->szDstName, fSrcTempDisk);
+                PifDeleteFileEx(tbcPathSpec->szDstName, fSrcTempDisk);
 
 				dwRet = TbcMoveFile(tbcPathSpec->szTmpName, fDstTempDisk, tbcPathSpec->szDstName, fSrcTempDisk);
 
@@ -278,7 +278,7 @@ TbcWriteFile(CONST TCHAR *lpDstName, BOOL fTempDisk, UCHAR *lpBuf, DWORD dwLen)
     /* dropped...
     CloseHandle(hDst);
     */
-    TbcCloseFile(sPifHandle);
+    PifCloseFile(sPifHandle);
     /* --- END: Add for Dollar Tree SCER 12/05/2000 --- */
 
     return dwRet;

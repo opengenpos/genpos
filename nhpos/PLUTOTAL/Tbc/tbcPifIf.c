@@ -171,8 +171,7 @@ TbcLogElapsedTime(USHORT usSectionId, ULONG ulElapsedTime)
 SHORT
 TbcCreateFile( CONST TCHAR* lpFileName, DWORD dwAccess, DWORD dwAttribute, BOOL fTemporary)
 {
-    //CHAR    szSrcFile[ MAX_PATH ];
-    CHAR    szMode[ MAX_PATH ];
+    CHAR    szMode[16] = { 0 };
     SHORT   sPifHandle;
 
     /* --- determine desired access --- */
@@ -220,42 +219,9 @@ TbcCreateFile( CONST TCHAR* lpFileName, DWORD dwAccess, DWORD dwAttribute, BOOL 
 
     strcat( szMode, "-" );
 
-    /* --- convert wide char (UNICODE) to muli-byte char (MBCS) --- */
-
-	//memset(szSrcFile, 0, sizeof(szSrcFile));
-    //wcstombs( szSrcFile, lpFileName, MAX_PATH );
-
-    /* --- call Pifxxx function --- */
-
     sPifHandle = PifOpenFile( lpFileName, szMode );
 
     return sPifHandle;
-}
-
-/*************************************************************************************************
- * FUNCTION : TbcCloseFile
- * INPUT    : 
- * OUTPUT   : 
- * RETURNS  : 
- * DESC.    : 
- *************************************************************************************************/
-VOID
-TbcCloseFile( SHORT sPifHandle )
-{
-    PifCloseFile( sPifHandle );
-}
-
-/*************************************************************************************************
- * FUNCTION : TbcDeleteFile
- * INPUT    : 
- * OUTPUT   : 
- * RETURNS  : 
- * DESC.    : 
- *************************************************************************************************/
-VOID
-TbcDeleteFile( CONST TCHAR* lpFileName, BOOL fTempDisk )
-{
-    PifDeleteFileEx( lpFileName, fTempDisk );
 }
 
 /*************************************************************************************************
