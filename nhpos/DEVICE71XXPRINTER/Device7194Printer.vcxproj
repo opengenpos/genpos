@@ -50,6 +50,7 @@
     <CodeAnalysisRules />
     <CodeAnalysisRuleAssemblies />
     <IncludePath>$(SolutionDir)Include;$(SolutionDir)BusinessLogic\Include;$(IncludePath)</IncludePath>
+    <TargetName>NCR7194</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\..\bin\Debug\</OutDir>
@@ -59,6 +60,7 @@
     <CodeAnalysisRules />
     <CodeAnalysisRuleAssemblies />
     <IncludePath>$(SolutionDir)Include;$(SolutionDir)BusinessLogic\Include;$(IncludePath)</IncludePath>
+    <TargetName>NCR7194</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -69,7 +71,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>.\Device7194Printer;..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEVICEIO_EXPORTS;DEVICE_7194;UNICODE;_WINDOWS;_USRDLL;NDEBUG;XP_PORT;TOUCHSCREEN;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEVICEIO_EXPORTS;DEVICE_7194;UNICODE;_WINDOWS;_USRDLL;NDEBUG;XP_PORT;TOUCHSCREEN;WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Device7194Printer\Release\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Device7194Printer\Release\Device7194Printer.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\Device7194Printer\Release\</ObjectFileName>

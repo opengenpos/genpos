@@ -46,11 +46,13 @@
     <OutDir>.\..\bin\Release\</OutDir>
     <IntDir>.\Device7158Printer\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>NCR7158</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\..\bin\Debug\</OutDir>
     <IntDir>.\Device7158Printer\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>NCR7158</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -61,7 +63,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>.\Device7158Printer;..\BUSINESSLOGIC\INCLUDE;..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEVICEIO_EXPORTS;DEVICE_7158;UNICODE;_WINDOWS;_USRDLL;NDEBUG;XP_PORT;TOUCHSCREEN;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEVICEIO_EXPORTS;DEVICE_7158;UNICODE;_WINDOWS;_USRDLL;NDEBUG;XP_PORT;TOUCHSCREEN;WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Device7158Printer\Release\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Device7158Printer\Release\Device7158Printer.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
