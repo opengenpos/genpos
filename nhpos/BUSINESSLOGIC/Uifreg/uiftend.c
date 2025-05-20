@@ -264,7 +264,7 @@ SHORT UifTender(KEYMSG *pData)
 
 				UifTotal.uchMajorClass = CLASS_UIFREGTOTAL;
                 UifTotal.uchMinorClass = CLASS_UITOTAL2_FS;
-                sRetStatus = ItemTotal(&UifTotal);
+                sRetStatus = ItemTotalMain(&UifTotal);
             }
 			UifRegCheckDrawerLimit(1);						//SR 155 Cash Drawer Limit
             UifRegWorkClear();

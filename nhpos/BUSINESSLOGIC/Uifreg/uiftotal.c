@@ -122,7 +122,7 @@ SHORT UifTotal(KEYMSG *pData)
                 UifRegData.regtotal.uchSeatNo = (UCHAR)pData->SEL.INPUT.lData;
                 UifRegData.regtotal.fbInputStatus |= INPUT_0_ONLY;
             }
-            sRetStatus = ItemTotal(&UifRegData.regtotal);   /* Total Modele */
+            sRetStatus = ItemTotalMain(&UifRegData.regtotal);   /* Total Modele */
             UifRegWorkClear();                              /* clear work area */
             switch (sRetStatus) {
             case UIF_CANCEL:                            /* cancel */
@@ -209,7 +209,7 @@ SHORT UifTotal(KEYMSG *pData)
             /* memcpy(UifRegData.regtotal.aszNumber, aszUifRegNumber, NUM_NUMBER); */
             UifRegData.regtotal.uchMajorClass = CLASS_UIFREGTOTAL;
             UifRegData.regtotal.uchMinorClass = CLASS_UISPLIT;
-            sRetStatus = ItemTotal(&UifRegData.regtotal);
+            sRetStatus = ItemTotalMain(&UifRegData.regtotal);
             UifRegWorkClear();                              /* clear work area */
             switch (sRetStatus) {
             case UIF_CANCEL:                            /* cancel */

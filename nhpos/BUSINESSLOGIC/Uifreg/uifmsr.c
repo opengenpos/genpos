@@ -1186,7 +1186,7 @@ SHORT   UifCasIntSignInOutMSR(KEYMSG *pData)
                 _tcsncpy(UifRegData.regtotal.aszNumber, aszUifRegNumber, NUM_NUMBER);
                 UifRegData.regtotal.uchMajorClass = CLASS_UIFREGTOTAL;  /* set total class */
                 UifRegData.regtotal.uchMinorClass = CLASS_UICASINT;
-                sRetStatus = ItemTotal(&UifRegData.regtotal);   /* Total Modele */
+                sRetStatus = ItemTotalMain(&UifRegData.regtotal);   /* Total Modele */
                 UifRegWorkClear();                              /* clear work area */
                 if (sRetStatus == UIF_SUCCESS) {
                     ;   /* successed */
@@ -1291,7 +1291,7 @@ SHORT   UifCasIntSignInOutMSR(KEYMSG *pData)
                 _tcsncpy(UifRegData.regtotal.aszNumber, aszUifRegNumber, NUM_NUMBER);
                 UifRegData.regtotal.uchMajorClass = CLASS_UIFREGTOTAL;  /* set total class */
                 UifRegData.regtotal.uchMinorClass = CLASS_UICASINT;
-                sRetStatus = ItemTotal(&UifRegData.regtotal);   /* Total Modele */
+                sRetStatus = ItemTotalMain(&UifRegData.regtotal);   /* Total Modele */
                 UifRegWorkClear();                              /* clear work area */
                 if (sRetStatus == UIF_SUCCESS) {
                     ;   /* successed */
@@ -1373,7 +1373,7 @@ SHORT   UifCasIntSignInOutMSR(KEYMSG *pData)
             _tcsncpy(UifRegData.regtotal.aszNumber, aszUifRegNumber, NUM_NUMBER);
             UifRegData.regtotal.uchMajorClass = CLASS_UIFREGTOTAL;  /* set total class */
             UifRegData.regtotal.uchMinorClass = CLASS_UICASINT;
-            sRetStatus = ItemTotal(&UifRegData.regtotal);   /* Total Modele */
+            sRetStatus = ItemTotalMain(&UifRegData.regtotal);   /* Total Modele */
             UifRegWorkClear();                              /* clear work area */
             if (sRetStatus == UIF_SUCCESS) {
                 ;   /* successed */

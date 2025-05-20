@@ -330,7 +330,7 @@ static SHORT ItemTotalGiftCard (VOID)
 *   Description:    total key module main
 ==========================================================================*/
 
-SHORT   ItemTotal(UIFREGTOTAL *UifRegTotal)
+SHORT   ItemTotalMain(UIFREGTOTAL *UifRegTotal)
 {
 	PARATTLKEYORDDEC	OrderDec = {0};
     SHORT           sTotalKeyType, sRetStatus;

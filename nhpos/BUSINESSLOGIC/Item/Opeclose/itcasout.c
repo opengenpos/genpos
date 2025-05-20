@@ -602,7 +602,7 @@ SHORT   ItemCasSignOutFinalize(SHORT *psFinalize)
 
         UifRegTotal.uchMajorClass = CLASS_UIFREGTOTAL;  /* set total class */
         UifRegTotal.uchMinorClass = CLASS_UIKEYOUT;
-        sRetStatus = ItemTotal(&UifRegTotal);   /* Total Modele */
+        sRetStatus = ItemTotalMain(&UifRegTotal);   /* Total Modele */
         switch (sRetStatus) {
         case UIF_SUCCESS:                               /* success */
         case UIF_FINALIZE:                              /* finalize */

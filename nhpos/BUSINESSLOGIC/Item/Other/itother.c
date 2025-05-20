@@ -1671,7 +1671,7 @@ VOID  ItemPreviousTotalRedo ()
 		myUifRegTotal.uchMajorClass = ItemCommonLocal.ItemSales.uchMajorClass;
 		myUifRegTotal.uchMinorClass = ItemCommonLocal.ItemSales.uchMinorClass;
 
-		ItemTotal(&myUifRegTotal);
+		ItemTotalMain(&myUifRegTotal);
 	}
 }
 

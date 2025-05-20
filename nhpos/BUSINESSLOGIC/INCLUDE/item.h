@@ -99,6 +99,11 @@ extern DCURRENCY       couponAmount;
 * --------------------------------------------------------------------------
 */
 
+// the main entry point for the total key processing.
+// this function looks at the total key data and dispatches
+// to the correct total key function to process the total key press.
+SHORT   ItemTotalMain(UIFREGTOTAL *pData);
+
 SHORT   ItemSignIn(UIFREGOPEOPEN *pData);
 SHORT   ItemTransOpen(UIFREGTRANSOPEN *pData);
 SHORT   ItemSalesEditCondiment(UCHAR uchType);
@@ -109,7 +114,6 @@ VOID    ItemCouponVoidDisp(ITEMSALES *pItemSales, ITEMCOUPON *pItemCoupon);
 UCHAR   ItemTotalTypeIndex (UCHAR uchMinorClass);
 SHORT   ItemTotalCashierCheckLoanTotalZero (ULONG  ulEmployeeId);
 SHORT   ItemTotalAuchTotalStatus (UCHAR auchTotalStatus[NUM_TOTAL_STATUS], CONST UCHAR uchMinorClass);
-SHORT   ItemTotal(UIFREGTOTAL *pData);
 SHORT   ItemTenderEntry(UIFREGTENDER *pData);
 SHORT   ItemModifier(UIFREGMODIFIER *pData);
 SHORT   ItemSignOutTest(VOID);
