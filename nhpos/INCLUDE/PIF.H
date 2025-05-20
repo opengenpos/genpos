@@ -1851,7 +1851,7 @@ SHORT  PIFENTRY PifGetFileAttribs(CONST TCHAR *pwszFileName, CONST CHAR *pszMode
 CONST TCHAR *  PIFENTRY PifGetFilePath(CONST TCHAR *pwszFileName, CONST CHAR *pszMode, TCHAR *pwszFilePath);
 SHORT  PIFENTRY PifOpenFileNew(CONST TCHAR  *pszFileName, CONST CHAR  *pszMode, CHAR *pPath, int iLineNo);
 SHORT  PIFENTRY PifReadFileNew(USHORT usFile, VOID *pBuffer, ULONG ulBytes, ULONG *pulBytesRead, CHAR *pcFilePath, int iLineNo);
-VOID   PIFENTRY PifWriteFileNew(USHORT usFile, CONST VOID *pBuffer, ULONG usBytes, CHAR *pcFilePath, int iLineNo);
+SHORT  PIFENTRY PifWriteFileNew(USHORT usFile, CONST VOID *pBuffer, ULONG usBytes, CHAR *pcFilePath, int iLineNo);
 USHORT  PIFENTRY PifFileToFile(SHORT sDestFileHandle, SHORT sSrcFileHandle, ULONG ulDestOffset, ULONG ulSrcOffset, ULONG ulSrcFileLen); //US CUSTOMS
 SHORT  PIFENTRY PifSeekFileNew(USHORT usFile, ULONG ulPosition, ULONG *pulActualPosition, CHAR *pcFilePath, int iLineNo);
 SHORT PIFENTRY PifSetEndOfFile(USHORT usFile);

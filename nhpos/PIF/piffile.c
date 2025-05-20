@@ -455,7 +455,7 @@ SHORT PIFENTRY PifReadFileNew(USHORT usFile, VOID *pBuffer, ULONG ulBytes, ULONG
 **                                                                  **
 **********************************************************************
 fhfh*/
-VOID   PIFENTRY PifWriteFileNew(USHORT usFile, CONST VOID *pBuffer,
+SHORT  PIFENTRY PifWriteFileNew(USHORT usFile, CONST VOID *pBuffer,
                              ULONG ulBytes, CHAR *pcFilePath, int iLineNo)
 {
     SHORT   sReturn, sStatus = 0;
@@ -468,6 +468,8 @@ VOID   PIFENTRY PifWriteFileNew(USHORT usFile, CONST VOID *pBuffer,
     if (sStatus != usFile) {
 		char aszErrorBuffer[128];
 		int  iLen = 0;
+
+        sReturn = FAULT_INVALID_HANDLE;
 
 		sprintf (aszErrorBuffer, "PifWriteFile (): Invalid open file search id  ID: %d, sStatus = %d", usFile, sStatus);
 		NHPOS_ASSERT_TEXT (0, aszErrorBuffer);
@@ -482,7 +484,6 @@ VOID   PIFENTRY PifWriteFileNew(USHORT usFile, CONST VOID *pBuffer,
         PifLog(MODULE_DATA_VALUE(FAULT_AT_PIFWRITEFILE), usFile);
         PifLog(MODULE_ERROR_NO(FAULT_AT_PIFWRITEFILE), (USHORT)abs(sStatus));
         PifAbort(FAULT_AT_PIFWRITEFILE, FAULT_INVALID_HANDLE);
-        return;
 	} else {
 		HANDLE  hFile;
 		ULONG   ulBytesWrite = 0;
@@ -496,6 +497,8 @@ VOID   PIFENTRY PifWriteFileNew(USHORT usFile, CONST VOID *pBuffer,
 
 		LeaveCriticalSection(&g_FileCriticalSection);
 	}
+
+    return sReturn;
 }
 
 /*fhfh
