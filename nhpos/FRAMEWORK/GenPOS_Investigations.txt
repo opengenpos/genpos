@@ -435,4 +435,13 @@ Notes on Rework and refactoring needed.
 45.  GenPOS Rel 2.2.2 was in parallel to GenPOS Rel 2.3.0 and the question is whether
      all changes made in Rel 2.2.2 were ported to the Rel 2.3.0 source in the repository.
 
-46.  
+46.  We have a couple of Rfl helper functions designed to access the memory resident database
+     through the ParaRead() and CliParaRead() functions. We need to finish doing the replacement
+     of those accesses to the memory resident database with the Rfl helper functions.
+       - RflGetStoreRegisterNo()
+       - RflGetFlexMemByType()
+       - RflGetSystemType()
+       - RflGetPtdFlagByType()
+       - RflGetMnemonicByClass() and the various specific types of mnemonics, see RflGetTranMnem(), etc.
+
+47.  

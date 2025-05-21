@@ -867,13 +867,11 @@ SHORT   ItemChargeTipsOpen();  //GSU SR 6 CRW 11/8/2002 Opens a transaction with
 * --------------------------------------------------------------------------
 */
 
-SHORT   ItemCoupon(UIFREGCOUPON  *pUifRegCoupon);
 SHORT   ItemCouponCursorVoid(ITEMCOUPON *pData);
 
 SHORT   ItemCouponUPCPrepare(UIFREGCOUPON *pUifRegCoupon, ITEMCOUPON *pItemCoupon, ITEMCOUPONSEARCH *pTrnSearch);
 SHORT   ItemCouponUPCSearch(ITEMCOUPON *pItemCoupon, ITEMCOUPONSEARCH *pTrnSearch);
 SHORT   ItemCouponUPCSetupStatus(ITEMCOUPON *pItemCoupon, ITEMCOUPONSEARCH *pTrnSearch);
-SHORT	ItemAutoCouponCheck(SHORT sTotalKeyType /* from ItemTotalType() */);
 
 /*
 * --------------------------------------------------------------------------

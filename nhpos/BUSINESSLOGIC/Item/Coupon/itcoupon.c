@@ -132,10 +132,10 @@ static SHORT  ItemFetchItemFromStorage (ITEMSALES *pItemSales, USHORT  usItemOff
 *   Output: None
 *    InOut: None
 ** Return:
-** Description:
+** Description:    main entry point for coupon key processing.
 *===========================================================================
 */
-SHORT   ItemCoupon(UIFREGCOUPON  *pUifRegCoupon)
+SHORT   ItemCouponEntry(UIFREGCOUPON  *pUifRegCoupon)
 {
     ITEMCOMMONLOCAL    *WorkCommon = ItemCommonGetLocalPointer();
     SHORT		       sStatus, sSign = -1;
@@ -1394,7 +1394,7 @@ SHORT ItemAutoCouponCheck(SHORT sTotalKeyType /* from ItemTotalType() */)
 						UifRegCoupon.uchMajorClass = CLASS_UIFREGCOUPON;
 						UifRegCoupon.uchMinorClass = CLASS_UICOMCOUPON;
 
-						sRetStatus = ItemCoupon(&UifRegCoupon);   /* Coupon Modele */
+						sRetStatus = ItemCouponEntry(&UifRegCoupon);   /* Coupon Modele */
 
 						if (sRetStatus == ITM_SUCCESS)
 						{
@@ -1664,7 +1664,7 @@ SHORT ItemAutoCouponCheck(SHORT sTotalKeyType /* from ItemTotalType() */)
 
 				UifRegCoupon.uchFSC = (USHORT)UI.ulData;
 
-				sRetStatus = ItemCoupon(&UifRegCoupon);   /* Coupon Modele */
+				sRetStatus = ItemCouponEntry(&UifRegCoupon);   /* Coupon Modele */
 				if (sRetStatus != ITM_SUCCESS)
 				{
 					// if applying the coupon selected fails then we will just bail out of this function

@@ -556,13 +556,18 @@ SHORT   ItemTotalMain(UIFREGTOTAL *UifRegTotal)
 *
 *   Return:
 *
-*   Description:    get total key type
+*   Description:    determine total key type. we look at the total key number first
+*                   to see if it's one of the original NHPOS 1.4 total keys with a
+*                   specific function or if it is a newer, Rel 2.x.x flexible total key
+*                   that has its function specified by provisioning the total key
+*                   parameters.
 ==========================================================================*/
 SHORT   ItemTotalType( UIFREGTOTAL *UifRegTotal )
 {
     UCHAR   uchType1, uchType2;
-    PARATTLKEYTYP   Work;
+	PARATTLKEYTYP   Work = { 0 };
 
+	// first check the historical, legacy rules about hard coded NHPOS total key.
     if ( UifRegTotal->uchMinorClass == CLASS_UITOTAL1 ) {       /* subtotal */
         return( ITM_TYPE_SUBTOTAL );
     }
@@ -587,6 +592,10 @@ SHORT   ItemTotalType( UIFREGTOTAL *UifRegTotal )
     if (UifRegTotal->uchMinorClass == CLASS_UIKEYOUT) {          /* server key out, V3.3 */
         return( ITM_TYPE_SERVICE_TOTAL );
     }
+
+	// Since none of the historical, legacy total key rules apply, we
+	// will now pull the provisioning data for the total key and
+	// determine the total key type from those settings.
 
     Work.uchMajorClass = CLASS_PARATTLKEYTYP;
 

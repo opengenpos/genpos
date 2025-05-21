@@ -234,7 +234,7 @@ BOOL CFrameworkApp::InitInstance()
 	this->ParseCommandLine(csCmd);
 	
 	m_bSmallWindow = FALSE;
-	if (csCmd.m_enRegisterState == CSecurityCommandLineParser::StateServerOnly) {
+	if (csCmd.m_enRegisterState == CSecurityCommandLineParser::ParseState::StateServerOnly) {
 		m_bSmallWindow = TRUE;
 	}
 
@@ -260,7 +260,7 @@ BOOL CFrameworkApp::InitInstance()
 	}
 	{
 		// If in registration mode-> shutdown nhpos
-		if (csCmd.m_enRegisterState == CSecurityCommandLineParser::StateShutdown) {
+		if (csCmd.m_enRegisterState == CSecurityCommandLineParser::ParseState::StateShutdown) {
 			if (hMutexNHPOS && !SetEvent (m_hEventShutdownNHPOS)) {
 				char xBuff[128];
 

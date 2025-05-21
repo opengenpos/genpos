@@ -38,6 +38,8 @@
 *   Include File Declarations
 *===========================================================================
 */
+#include "versioninfo.h"
+
 #include <windows.h>
 #include "pif.h"
 

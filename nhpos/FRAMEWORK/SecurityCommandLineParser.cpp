@@ -19,7 +19,7 @@ static char THIS_FILE[]=__FILE__;
 
 CSecurityCommandLineParser::CSecurityCommandLineParser()
 {
-	m_enRegisterState = StateStart;
+	m_enRegisterState = ParseState::StateStart;
 	memset (m_szUnlockCode, 0, sizeof(m_szUnlockCode));
 	memset (m_szUserName, 0, sizeof(m_szUserName));
 }
@@ -36,46 +36,46 @@ void CSecurityCommandLineParser::ParseParam(LPCTSTR pszParam, BOOL bFlag, BOOL b
 
 	if (bFlag && tmp == _T("register"))
 	{
-		m_enRegisterState = StateRegister;
+		m_enRegisterState = ParseState::StateRegister;
 	}
 
 	if (bFlag && tmp == _T("retrieve"))
 	{
-		m_enRegisterState = StateRetrieve;
+		m_enRegisterState = ParseState::StateRetrieve;
 	}
 
-	if (bFlag && tmp == _T("unlockcode") && m_enRegisterState == StateRegister)
+	if (bFlag && tmp == _T("unlockcode") && m_enRegisterState == ParseState::StateRegister)
 	{
-		m_enRegisterState = StateUnlockCode;
+		m_enRegisterState = ParseState::StateUnlockCode;
 	}
 
-	if (bFlag && tmp == _T("username") && m_enRegisterState == StateRegister)
+	if (bFlag && tmp == _T("username") && m_enRegisterState == ParseState::StateRegister)
 	{
-		m_enRegisterState = StateUserName;
+		m_enRegisterState = ParseState::StateUserName;
 	}
 
 	if (bFlag && tmp == _T("shutdown"))
 	{
-		m_enRegisterState = StateShutdown;
+		m_enRegisterState = ParseState::StateShutdown;
 	}
 
 	if (bFlag && tmp == _T("serveronly"))
 	{
-		m_enRegisterState = StateServerOnly;
+		m_enRegisterState = ParseState::StateServerOnly;
 	}
 
 	if (bFlag)
 		return;
 
-	if (m_enRegisterState == StateUnlockCode) {
+	if (m_enRegisterState == ParseState::StateUnlockCode) {
 		_tcsncpy (m_szUnlockCode, pszParam, sizeof(m_szUnlockCode)/sizeof(m_szUnlockCode[0]));
-		m_enRegisterState = StateRegister;
+		m_enRegisterState = ParseState::StateRegister;
 		return;
 	}
 
-	if (m_enRegisterState == StateUserName) {
+	if (m_enRegisterState == ParseState::StateUserName) {
 		_tcsncpy (m_szUserName, pszParam, sizeof(m_szUserName)/sizeof(m_szUserName[0]));
-		m_enRegisterState = StateRegister;
+		m_enRegisterState = ParseState::StateRegister;
 		return;
 	}
 

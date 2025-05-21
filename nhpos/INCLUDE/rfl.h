@@ -287,6 +287,11 @@ typedef struct {
 	USHORT  usSym;         // special mnemonic for this tender, total
 } RflMoneyMnem;
 
+typedef struct {
+    USHORT  usStoreNo;     // store number from CLASS_PARASTOREGNO address SREG_NO_ADR
+    USHORT  usRegNo;       // register number from CLASS_PARASTOREGNO address SREG_NO_ADR
+} RflStoreRegNo;
+
 #if     (defined(_WIN32_WCE) || defined(WIN32)) && _MSC_VER >= 800
 #pragma pack(pop)
 #else
@@ -391,6 +396,7 @@ USHORT RflGetPtdFlagByType (UCHAR uchAddress);
 USHORT RflGetScaleUnits(VOID);
 USHORT RflGetSetDecimalCommaType (VOID);
 USHORT RflGetNoTermsInCluster (VOID);
+RflStoreRegNo RflGetStoreRegisterNo(VOID);
 UCHAR  RflGetMdcData(USHORT usAddr);
 int    RflIsSpecialPlu (CONST TCHAR *auchPLUNo, CONST TCHAR *auchMldSpecialPlu);
 TCHAR *RflCopyPlu (TCHAR *auchPluNoDest, CONST TCHAR *auchPluNoSrc);
