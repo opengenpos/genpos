@@ -1271,13 +1271,12 @@ SHORT  CliGusLoadFromConnectionEngine (TCHAR  *uchUniqueIdentifier)
 		ULONG          ulActualBytesRead;
 		SHORT          sTempFileHandle;
 		GCNUM          usNewGCNumber;
-		static UCHAR   auchCP_TEMP_OLD_FILE_READ_WRITE[]  = "towr";
 
 		CliGusLoadTenderTableInit(0);
 
 		memset (&ItemTenderConsolidate, 0, sizeof(ItemTenderConsolidate));
 
-		sTempFileHandle = PifOpenFile (_T("OBJTEMP"), auchCP_TEMP_OLD_FILE_READ_WRITE);
+		sTempFileHandle = PifOpenFile (auchConnEngineTempFile, auchTEMP_OLD_FILE_READ_WRITE);
 		if (sTempFileHandle < 0) {
 			char  xBuff[128];
 			sprintf (xBuff, "CliGusLoadFromConnectionEngine(): Error opening OBJTEMP %d.", sTempFileHandle);
@@ -1292,8 +1291,8 @@ SHORT  CliGusLoadFromConnectionEngine (TCHAR  *uchUniqueIdentifier)
 		}
 
 		{
-			TRANGCFQUAL      *pWorkGCF = TrnGetGCFQualPtr();
-			TRANINFORMATION  *pWorkTran = TrnGetTranInformationPointer();
+			TRANGCFQUAL      * const pWorkGCF = TrnGetGCFQualPtr();
+			TRANINFORMATION  * const pWorkTran = TrnGetTranInformationPointer();
 
 			pWorkTran->TranCurQual.fsCurStatus |= CURQUAL_TRETURN;        // indicate TTL_TUP_TRETURN for totals functionality, CLASS_PRINT_TRETURN
 
@@ -1327,8 +1326,8 @@ SHORT  CliGusLoadFromConnectionEngine (TCHAR  *uchUniqueIdentifier)
 			CliGusLoadTenderTableInit(&DateTimeBatchClose);
 
 			{
-				TRANGCFQUAL   *pWorkGCF = TrnGetGCFQualPtr();
-				TRANMODEQUAL  *pWorkMode = TrnGetModeQualPtr();
+				TRANGCFQUAL   * const pWorkGCF = TrnGetGCFQualPtr();
+				TRANMODEQUAL  * const pWorkMode = TrnGetModeQualPtr();
 				int           i;
 
 				// init the reason code and return type data in ModeQual as this area
@@ -1496,7 +1495,7 @@ SHORT  CliGusLoadPaidTransaction (GCNUM  usGCNumber, GCNUM usNewGCNumber)
 
         /*----- Read Transaction -----*/
 		if ((sRetStatus = ItemTransGetReturnsGcf (usGCNumber, usNewGCNumber)) == TRN_SUCCESS) {
-			TRANINFORMATION  *pWorkTran = TrnGetTranInformationPointer();
+			TRANINFORMATION  * const pWorkTran = TrnGetTranInformationPointer();
 			ITEMTRANSOPEN    ItemTransOpen = {0};
 
 			ItemTransOpen.usGuestNo = pWorkTran->TranGCFQual.usGuestNo;                  /* save GCF No */
@@ -2548,7 +2547,10 @@ SHORT   CliGusIndReadFH(GCNUM usGCNumber,
 
     if (STUB_SELF == SstReadFAsMasterFH(!CLI_FCBAKGCF)) {
         CliMsg.sRetCode = GusIndReadFH(usGCNumber, hsFileHandle, ulStartPoint, ulSize, pulActualBytesRead);
-    }
+	}
+	else {
+		*pulActualBytesRead = CliMsg.usAuxLen;    // return the actual number of bytes received from Master.
+	}
     sError = CliMsg.sRetCode;
     PifReleaseSem(husCliExeNet);
     return sError;    
