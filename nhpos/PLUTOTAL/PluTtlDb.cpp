@@ -430,7 +430,7 @@ ULONG   CnPluTotalDb::CheckTable(LPCTSTR lpcTblName){
     m_hr = __pRecO->OpenRec(CnVariant(strSqlCode), strConnect, adOpenKeyset, adLockOptimistic, adCmdText);
     if (FAILED(m_hr)) {
         char  xBuff[128];
-        sprintf(xBuff, "CnPluTotalDb::CheckTable() '%S'::'%S' OpenRec() FAILED: m_hr = 0x%8.8x", m_strDbFileName, lpcTblName, m_hr);
+        sprintf(xBuff, "CnPluTotalDb::CheckTable() '%S'::'%S' OpenRec() FAILED: m_hr = 0x%8.8x", (LPCTSTR)m_strDbFileName, lpcTblName, m_hr);
         NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
         ulSts = PLUTOTAL_NOT_FOUND;
     }
