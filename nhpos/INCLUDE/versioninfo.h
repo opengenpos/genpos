@@ -40,7 +40,7 @@
 //    Windows 8.1      0x0603
 //    Windows 10       0x0A00
 
-#define WINVER_FOR_GENPOS  0x0502          // GenPOS targets Windows XP SP2 and Windows POS Ready 2009 and later.
+#define WINVER_FOR_GENPOS  0x0601          // GenPOS targets Windows 7 and Windows POS Ready 7 and later.
 
 //--------------------------------------------------------------------------------------------------
 
