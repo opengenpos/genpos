@@ -179,7 +179,7 @@ void COPOSControl::OnErrorEventPosprinter1(long ResultCode, long ResultCodeExten
 
 void COPOSControl::OnStatusUpdateEventPosprinter1(long Data) 
 {
-	static DWORD  dwTickCount = 0;
+	static ULONGLONG  ullTickCount = 0;
 	LONG  unusedExampleDataValue = OPOS_SUE_POWER_ONLINE;  // allows value constants to be found.
 
 	m_lPrinter1Status = Data;
@@ -205,11 +205,11 @@ void COPOSControl::OnStatusUpdateEventPosprinter1(long Data)
 
 		case PTR_SUE_REC_EMPTY:
 			m_ulPrinter1StatusMap |= PRINTERSTATUSMAP_PAPEROUT;
-			dwTickCount = GetTickCount();
+			ullTickCount = GetTickCount64();
 			break;
 
 		case PTR_SUE_REC_PAPEROK:
-			if (GetTickCount() - dwTickCount > 30)
+			if (GetTickCount64() - ullTickCount > 30)
 				m_ulPrinter1StatusMap &= ~PRINTERSTATUSMAP_PAPEROUT;
 			break;
 
