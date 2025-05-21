@@ -75,13 +75,13 @@ public:
 class CDeviceWinPrinter : public CDC
 {
 	public:
-		typedef enum {NCR_7197 = 1, NCR_7167} TargetPrinterType;
-		typedef enum {PrintClosed = 1, PrintOpen, PrintUnavailable} PrinterObjectStatus;
-		typedef enum {PrintCode_PaperCut = 1, PrintCode_PaperFeed, PrintCode_SingleHighWide,
-						PrintCode_DoubleHighWide, PrintCode_DoubleHigh, PrintCode_DoubleWide} PrinterCodes;
+		enum class TargetPrinterType {NCR_7197 = 1, NCR_7167};
+		enum class PrinterObjectStatus  {PrintClosed = 1, PrintOpen, PrintUnavailable};
+		enum class PrinterCodes {PrintCode_PaperCut = 1, PrintCode_PaperFeed, PrintCode_SingleHighWide,
+						PrintCode_DoubleHighWide, PrintCode_DoubleHigh, PrintCode_DoubleWide};
 
 
-		CDeviceWinPrinter(TargetPrinterType  tpType = NCR_7197);
+		CDeviceWinPrinter(TargetPrinterType  tpType = TargetPrinterType::NCR_7197);
 		virtual ~CDeviceWinPrinter();
 
 		int StartPage();
@@ -112,14 +112,14 @@ class CDeviceMultipleDeviceMap
 public:
 	// following enum is used to index into the m_usDeviceMapArray[] array which contains a bit map for the
 	// different types of devices that are managed by a CDeviceMultipleDeviceMap object.
-	typedef enum {NO_DEVICE=0, PRINTER_DEVICE=1, MSR_DEVICE=2} MultipleDeviceMapBits;
+	enum class MultipleDeviceMapBits {NO_DEVICE=0, PRINTER_DEVICE=1, MSR_DEVICE=2};
 
-	CDeviceMultipleDeviceMap (MultipleDeviceMapBits bit = NO_DEVICE);
+	CDeviceMultipleDeviceMap (MultipleDeviceMapBits bit = MultipleDeviceMapBits::NO_DEVICE);
 	~CDeviceMultipleDeviceMap();
 
-	void SetDevice (MultipleDeviceMapBits bit) { if (bit == NO_DEVICE) m_usDeviceMap = 0; else m_usDeviceMap |= m_usDeviceMapArray[bit]; }
-	void UnsetDevice (MultipleDeviceMapBits  bit) { m_usDeviceMap &= ~m_usDeviceMapArray[bit]; }
-	BOOL TestDevice (MultipleDeviceMapBits bit) {return (m_usDeviceMap & m_usDeviceMapArray[bit]);}
+	void SetDevice (MultipleDeviceMapBits bit) { if (bit == MultipleDeviceMapBits::NO_DEVICE) m_usDeviceMap = 0; else m_usDeviceMap |= m_usDeviceMapArray[static_cast<int>(bit)]; }
+	void UnsetDevice (MultipleDeviceMapBits  bit) { m_usDeviceMap &= ~m_usDeviceMapArray[static_cast<int>(bit)]; }
+	BOOL TestDevice (MultipleDeviceMapBits bit) {return (m_usDeviceMap & m_usDeviceMapArray[static_cast<int>(bit)]);}
 
 
 protected:

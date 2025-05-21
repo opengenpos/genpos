@@ -33,7 +33,7 @@ public:
 
 // Attributes
 public:
-	BOOL  m_bUnicodeSupport;
+	BOOL  m_bUnicodeSupport = FALSE;    // whether APA line customer display accepts UNICODE or only ANSI. See CDeviceEngine::Device_SCF_TYPE_CDISPLAY_Setup()
 
 // Operations
 public:

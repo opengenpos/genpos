@@ -89,7 +89,7 @@ USHORT CDeviceWinPrinter::usReceiptPrintCounter = 0;
 CDeviceWinPrinter::CDeviceWinPrinter (TargetPrinterType  tpType)
 {
 	tpPrinterType = tpType;
-	m_tpObjectStatus = PrintUnavailable;
+	m_tpObjectStatus = PrinterObjectStatus::PrintUnavailable;
 	m_oldFont = 0;
 	iYRow = 0;
 	iXColumn = 0;
@@ -105,7 +105,7 @@ CDeviceWinPrinter::CDeviceWinPrinter (TargetPrinterType  tpType)
 
 CDeviceWinPrinter::~CDeviceWinPrinter ()
 {
-	m_tpObjectStatus = PrintUnavailable;
+	m_tpObjectStatus = PrinterObjectStatus::PrintUnavailable;
 	if (m_oldFont != 0) {
 		SelectObject (m_oldFont);
 		m_fontText.DeleteObject ();
@@ -115,15 +115,15 @@ CDeviceWinPrinter::~CDeviceWinPrinter ()
 
 int CDeviceWinPrinter::StartPage()
 {
-	if (m_tpObjectStatus == PrintUnavailable)
+	if (m_tpObjectStatus == PrinterObjectStatus::PrintUnavailable)
 		return 0;
 
-	if (m_tpObjectStatus == PrintOpen) {
+	if (m_tpObjectStatus == PrinterObjectStatus::PrintOpen) {
 		EndPage();
 	}
 	//		return 1;
 
-	m_tpObjectStatus = PrintOpen;
+	m_tpObjectStatus = PrinterObjectStatus::PrintOpen;
 	iYRow = 0;
 	iXColumn = 0;
 
@@ -159,12 +159,12 @@ int CDeviceWinPrinter::StartPage()
 
 int CDeviceWinPrinter::EndPage()
 {
-	if (m_tpObjectStatus == PrintUnavailable)
+	if (m_tpObjectStatus == PrinterObjectStatus::PrintUnavailable)
 		return 0;
 
 	int iRet = 0;
 
-	m_tpObjectStatus = PrintClosed;
+	m_tpObjectStatus = PrinterObjectStatus::PrintClosed;
 	iYRow = 0;
 	iXColumn = 0;
 
@@ -189,7 +189,7 @@ int CDeviceWinPrinter::PrintLine (LPTSTR ptchBuffer, ULONG  ulLength)
 {
 	const LONG  lLineMax = 42;
 
-	if (m_tpObjectStatus == PrintUnavailable)
+	if (m_tpObjectStatus == PrinterObjectStatus::PrintUnavailable)
 		return 0;
 
 	TCHAR PrintBuffer[256] = { 0 };
@@ -202,7 +202,7 @@ int CDeviceWinPrinter::PrintLine (LPTSTR ptchBuffer, ULONG  ulLength)
 	_tcsncpy_s(PrintBuffer, 255, ptchBuffer, ulLength);
 	PrintBuffer[ulLength] = 0;
 
-	if (m_tpObjectStatus == PrintClosed)
+	if (m_tpObjectStatus == PrinterObjectStatus::PrintClosed)
 	{
 		StartPage();
 		iYRow = 0;
@@ -213,7 +213,6 @@ int CDeviceWinPrinter::PrintLine (LPTSTR ptchBuffer, ULONG  ulLength)
 	int horRez;
 	horRez = GetDeviceCaps(HORZRES);
 	GetOutputTextMetrics(&myTextMetric);
-	int i, j;
 
 	// Now lets check to see if we are near the end of a page for the output device.
 	// If we are at the end of a page, then we will start a new page.
@@ -226,10 +225,13 @@ int CDeviceWinPrinter::PrintLine (LPTSTR ptchBuffer, ULONG  ulLength)
 		iXColumn = 0;
 	}
 
-	tpPrinterCode = PrintCode_SingleHighWide;
+	tpPrinterCode = PrinterCodes::PrintCode_SingleHighWide;
 	iXColumn = 0;
 
-	for (i = 0, j = 0; i < ulLength; )
+	NHPOS_ASSERT(ulLength < sizeof(PrintBuffer) / sizeof(PrintBuffer[0]));
+
+	int i, j, iLength = ulLength;
+	for (i = 0, j = 0; i < iLength; )
 	{
 		if (PrintBuffer[i] == 255)
 			PrintBuffer[i] = _T(' ');
@@ -251,8 +253,8 @@ int CDeviceWinPrinter::PrintLine (LPTSTR ptchBuffer, ULONG  ulLength)
 			j = i;
 			iYRow += (myTextMetric.tmHeight + 5);
 			iXColumn = 0;
-			tpPrinterCode = PrintCode_SingleHighWide;
-			if (i >= ulLength)
+			tpPrinterCode = PrinterCodes::PrintCode_SingleHighWide;
+			if (i >= iLength)
 				break;
 		}
 		else if (bFilterEscSeq && PrintBuffer[i] == 0x1b)
@@ -306,13 +308,13 @@ int CDeviceWinPrinter::PrintLine (LPTSTR ptchBuffer, ULONG  ulLength)
 						int linecnt = _ttoi(PrintBuffer + j);
 						switch (linecnt) {
 						case 4:
-							tpPrinterCode = PrintCode_DoubleHighWide;
+							tpPrinterCode = PrinterCodes::PrintCode_DoubleHighWide;
 							break;
 						case 2:
-							tpPrinterCode = PrintCode_DoubleWide;
+							tpPrinterCode = PrinterCodes::PrintCode_DoubleWide;
 							break;
 						default:
-							tpPrinterCode = PrintCode_SingleHighWide;
+							tpPrinterCode = PrinterCodes::PrintCode_SingleHighWide;
 							break;
 						}
 						i++; j = i;    // step to after the font change command ends
@@ -338,7 +340,7 @@ int CDeviceWinPrinter::PrintLine (LPTSTR ptchBuffer, ULONG  ulLength)
 						EndPage();
 						iYRow = 0;
 						iXColumn = 0;
-						tpPrinterCode = PrintCode_SingleHighWide;
+						tpPrinterCode = PrinterCodes::PrintCode_SingleHighWide;
 						i += 2; j = i;  // step to after the line feed command ends
 					}
 				}
@@ -377,7 +379,7 @@ int CDeviceWinPrinter::PrintLine (LPTSTR ptchBuffer, ULONG  ulLength)
 						int  iLineSizeTempIndex = 0;
 						TCHAR  tchLineSizeTemp[64] = { 0 };
 
-						while (linelen < ulLength)
+						while (linelen < iLength)
 						{
 							if (PrintBuffer[linelen] == 0x0D || PrintBuffer[linelen] == 0x0A) {
 								break;
@@ -1866,7 +1868,7 @@ CDeviceEngine::CDeviceEngine()
 	m_pOPOSControl = new COPOSControl;
 	m_pZebraControl = new IZebraPrintCtl;  // Create the COleDispatchDriver control for the Zebra Printer interface
 	m_bZebraControlDispatch = FALSE;       // m_pZebraControl->CreateDispatch() not yet called
-	m_mZebraControlDevices.SetDevice(CDeviceMultipleDeviceMap::NO_DEVICE);           // indicate not devices provisioned on Zebra Printer Control yet.
+	m_mZebraControlDevices.SetDevice(CDeviceMultipleDeviceMap::MultipleDeviceMapBits::NO_DEVICE);           // indicate not devices provisioned on Zebra Printer Control yet.
 	memset(&m_flfLogoIndex, 0x00, sizeof(m_flfLogoIndex));
 
     // create a sync. object
@@ -1913,7 +1915,7 @@ CDeviceEngine::~CDeviceEngine()
 
 		m_pZebraControl = 0;
 		m_bZebraControlDispatch = FALSE;       // m_pZebraControl->CreateDispatch() not yet called
-		m_mZebraControlDevices.SetDevice(CDeviceMultipleDeviceMap::NO_DEVICE);    // indicate not devices provisioned on Zebra Printer Control yet.
+		m_mZebraControlDevices.SetDevice(CDeviceMultipleDeviceMap::MultipleDeviceMapBits::NO_DEVICE);    // indicate not devices provisioned on Zebra Printer Control yet.
 	}
 
 	if (m_pHttpServerProc)	{
@@ -2058,7 +2060,7 @@ int CDeviceEngine::Device_SCF_TYPE_PRINTER_Setup(PSCINFO pInfo, TCHAR * pchDevic
 		{
 			// Create a CDC and attach it to the default printer.
 			dcPrinter.Attach(hdcPrinter);
-			dcPrinter.m_tpObjectStatus = CDeviceWinPrinter::PrintClosed;
+			dcPrinter.m_tpObjectStatus = CDeviceWinPrinter::PrinterObjectStatus::PrintClosed;
 
 			// Font size may affect line length calculation in CDeviceWinPrinter::PrintLine().
 			dcPrinter.m_fontText.CreatePointFont(80, _T("Courier New"), CDC::FromHandle(hdcPrinter));
@@ -2164,7 +2166,7 @@ int CDeviceEngine::Device_SCF_TYPE_PRINTER_Setup(PSCINFO pInfo, TCHAR * pchDevic
 
 				m_pZebraControl->Print(tcZebraPrinterInitString);
 				uchPrintType = PMG_ZEBRA_PRINTER;
-				m_mZebraControlDevices.SetDevice(CDeviceMultipleDeviceMap::PRINTER_DEVICE);           // indicate PRINTER devices provisioned on Zebra Printer Control
+				m_mZebraControlDevices.SetDevice(CDeviceMultipleDeviceMap::MultipleDeviceMapBits::PRINTER_DEVICE);           // indicate PRINTER devices provisioned on Zebra Printer Control
 			}
 			else {
 				NHPOS_ASSERT_TEXT(0, "SCF_TYPE_PRINTER: m_pZebraControl->CreateDispatch(_T(\"ZebraPrint.ZebraPrintCtl\") failed.");
@@ -2172,7 +2174,7 @@ int CDeviceEngine::Device_SCF_TYPE_PRINTER_Setup(PSCINFO pInfo, TCHAR * pchDevic
 		}
 		else if (m_pZebraControl && m_bZebraControlDispatch) {
 			uchPrintType = PMG_ZEBRA_PRINTER;
-			m_mZebraControlDevices.SetDevice(CDeviceMultipleDeviceMap::PRINTER_DEVICE);           // indicate PRINTER devices provisioned on Zebra Printer Control
+			m_mZebraControlDevices.SetDevice(CDeviceMultipleDeviceMap::MultipleDeviceMapBits::PRINTER_DEVICE);           // indicate PRINTER devices provisioned on Zebra Printer Control
 		}
 	}
 	else if (m_pOPOSControl && m_pOPOSControl->m_hWnd)
@@ -2615,16 +2617,11 @@ BOOL CDeviceEngine::Open()
     }
 
 	{
-		TCHAR   atchDeviceName[SCF_USER_BUFFER];
-		TCHAR   atchDllName[SCF_USER_BUFFER];
-		TCHAR   *pDeviceName;
-		TCHAR   *pDllName;
+		TCHAR   atchDeviceName[SCF_USER_BUFFER] = { 0 };
+		TCHAR   atchDllName[SCF_USER_BUFFER] = { 0 };
 		DWORD   dwRet, dwCount;
 
-		pDeviceName = atchDeviceName;
-		pDllName    = atchDllName;
-
-		dwRet = ScfGetActiveDevice(SCF_TYPENAME_HTTPSERVER, &dwCount, pDeviceName, pDllName);
+		dwRet = ScfGetActiveDevice(SCF_TYPENAME_HTTPSERVER, &dwCount, atchDeviceName, atchDllName);
 
 		if ((dwRet == SCF_SUCCESS) && (dwCount)) {
 			// initialize the http server
@@ -2654,7 +2651,7 @@ BOOL CDeviceEngine::Open()
 			PifLog (MODULE_FRAMEWORK, LOG_EVENT_FW_HTTP_DLL_NOLOAD);
 		}
 
-		dwRet = ScfGetActiveDevice(SCF_TYPENAME_CONNENGINEMFC, &dwCount, pDeviceName, pDllName);
+		dwRet = ScfGetActiveDevice(SCF_TYPENAME_CONNENGINEMFC, &dwCount, atchDeviceName, atchDllName);
 		if ((dwRet == SCF_SUCCESS) && (dwCount)) {
 			// initialize the Connection Engine as a server
 			if (!m_pHttpServerProc)
@@ -5389,10 +5386,9 @@ BOOL CDeviceEngine::PrinterLoadLogoIndexInformation()
 //on which logo is to be used for a special logo, and which one will
 //be used as the standard logo.
 {
-	DWORD dwFileSize = 0;
+	ULONGLONG ullFileSize = 0;
 	TCHAR tcsCommandString[] = _T("C:/FlashDisk/NCR/Saratoga/Database/PARAMLO%d%s");
-	TCHAR myString[258];
-	memset(&myString, 0x00, sizeof(myString));
+	TCHAR myString[258] = { 0 };
 
 	CFile myLogoFileIndex;
 	CFileException e;
@@ -5411,7 +5407,7 @@ BOOL CDeviceEngine::PrinterLoadLogoIndexInformation()
 		return FALSE;
 	}
 	try {
-		dwFileSize = myLogoFileIndex.GetLength ();
+		ullFileSize = myLogoFileIndex.GetLength ();
 	}
 	catch (CFileException *e) {
 		char  xBuff[256];
@@ -5420,7 +5416,7 @@ BOOL CDeviceEngine::PrinterLoadLogoIndexInformation()
 		e->Delete();
 	}
 
-	if (dwFileSize < sizeof(this->m_flfLogoIndex)) {
+	if (ullFileSize < sizeof(this->m_flfLogoIndex)) {
 		myLogoFileIndex.Close();
 #if defined(_DEBUG)
 		NHPOS_ASSERT_TEXT(0,"CDeviceEngine::PrinterLoadLogoIndexInformation(): PARAMLID file size too small.");
@@ -5671,14 +5667,13 @@ VOID CDeviceEngine::PrinterCheckStatus (PFRAMEWORK_IO_PRINTER pData, LONG result
 LONG CDeviceEngine::LoadImageInformation(USHORT printingLogoType)
 {
 	LONG    lRetValue = 0;
-	TCHAR   myString[256];
+	TCHAR   myString[256] = { 0 };
 	TCHAR   tcsCommandString[] = _T("C:\\FlashDisk\\NCR\\Saratoga\\Database\\PARAMLO%d.BMP");
-	memset(&myString, 0x00, sizeof(myString));
 
 	USHORT	usLen = _tcslen(tcsCommandString);
 	CFile   myBmp;
-	BITMAPFILEHEADER bmfHeader;
-	BITMAPINFOHEADER bmiHeader;
+	BITMAPFILEHEADER bmfHeader = { 0 };
+	BITMAPINFOHEADER bmiHeader = { 0 };
 
 	if (printingLogoType == STANDARD_LOGO)
 		wsprintf(myString, tcsCommandString, this->m_flfLogoIndex.uchStandardLogo);
@@ -5952,7 +5947,7 @@ BOOL CDeviceEngine::DevicePrinterWrite (VOID *pvData, DWORD dwLength)
 		m_pDevicePrinter->Write(tempBuffer, pData->ulLength, &dwWritten);
 	}
 	else if(lPrintType == PMG_ZEBRA_PRINTER && m_pZebraControl && m_bZebraControlDispatch){
-		TCHAR prtBuff[5];
+		TCHAR prtBuff[8] = { 0 };
 		prtBuff[0] = _T('\x1B');
 		prtBuff[1] = _T('C');
 		prtBuff[2] = _T('U');
