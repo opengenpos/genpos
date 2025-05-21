@@ -179,7 +179,7 @@ static SHORT   ItemSalesCursorVoidReturnsVoid (ITEMSALES *pItemSales, SHORT sQTY
     
 	// Update the running total with the voided price
 	pItemSales->fbStorageStatus |= IS_CONDIMENT_EDIT;
-	ItemCommonSubTotalVoid (pItemSales);
+	TrnItemSales(pItemSales);
     ItemCommonDispSubTotal(pItemSales);
 	pItemSales->fbStorageStatus &= ~IS_CONDIMENT_EDIT;
 

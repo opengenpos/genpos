@@ -1448,10 +1448,9 @@ VOID    ItemCommonMldInit( VOID );
 VOID    ItemCommonShiftPage(UCHAR uchPage);
 //VOID    ItemCommonFDTPara(ITEMFDTPARA *pData);
 VOID    ItemCommonDispSubTotal(CONST VOID *pData);
-VOID    ItemCommonSubTotalVoid(VOID *pData);
 VOID    ItemCommonDispECSubTotal(CONST VOID *pData);  /* add R3.0 */
 SHORT   ItemCommonCheckSize(VOID *pData, USHORT usSize);
-VOID    ItemCommonCancelGC(TRANGCFQUAL *pData);
+VOID    ItemCommonCancelGC(const TRANGCFQUAL *pData);
 VOID    ItemCommonScrollPause( VOID );          /* add R3.1 */
 SHORT   ItemCommonCheckNonGCTrans( VOID );
 SHORT   ItemCommonCheckCashDrawerOpen (VOID);

@@ -2072,26 +2072,6 @@ VOID    ItemCommonDispSubTotal(CONST VOID *pData)
 }
 
 
-
-/*
-*===========================================================================
-** Synopsis:    VOID    ItemCommonSubTotalVoid(VOID *pData)
-*     Input:    nothing
-*     Output:   nothing
-*     InOut:    nothing
-*
-** Return:      nothing
-*
-** Description: Display Subtotal on LCD.
-*===========================================================================
-*/
-VOID    ItemCommonSubTotalVoid(VOID *pData)
-{
-	TrnItemSales ((ITEMSALES *)pData);
-	return;
-}
-
-
 /*
 *===========================================================================
 ** Synopsis:    VOID    ItemCommonDispECSubTotal(VOID *pData)
@@ -2148,13 +2128,13 @@ VOID    ItemCommonDispECSubTotal(CONST VOID *pData)
 SHORT   ItemCommonCheckSize(VOID *pData, USHORT usSize)
 {
     SHORT     sStatus;
-    ITEMDISC  *pItemDisc = pData;
+    ITEMGENERICHEADER * const pItem = pData;
 
     /* V3.3 */
-    if ((pItemDisc->uchMajorClass == CLASS_ITEMDISC) &&
-         ((pItemDisc->uchMinorClass == CLASS_AUTOCHARGETIP) ||
-          (pItemDisc->uchMinorClass == CLASS_AUTOCHARGETIP2) ||
-          (pItemDisc->uchMinorClass == CLASS_AUTOCHARGETIP3))) {
+    if ((pItem->uchMajorClass == CLASS_ITEMDISC) &&
+         ((pItem->uchMinorClass == CLASS_AUTOCHARGETIP) ||
+          (pItem->uchMinorClass == CLASS_AUTOCHARGETIP2) ||
+          (pItem->uchMinorClass == CLASS_AUTOCHARGETIP3))) {
 
           /* return always success, because of auto function */
           return(TRN_SUCCESS);
@@ -2200,7 +2180,7 @@ SHORT   ItemCommonCheckSize(VOID *pData, USHORT usSize)
 ** Description: Check Storage Size(Transaction and Display Storage).
 *===========================================================================
 */
-VOID    ItemCommonCancelGC(TRANGCFQUAL *pData)
+VOID    ItemCommonCancelGC(const TRANGCFQUAL *pData)
 {
     SHORT           sStatus;
     USHORT          usStatus, usType;
@@ -2478,7 +2458,7 @@ void ItemCommonResetLocalCounts (VOID)
 ==========================================================================*/
 SHORT   ItemCommonTransOpen(USHORT usGuestNo)
 {
-    TRANINFORMATION    *WorkTranInf = TrnGetTranInformationPointer();
+    TRANINFORMATION    const * const WorkTranInf = TrnGetTranInformationPointer();
 	ITEMTRANSOPEN      TransOpenData = {0};
     SHORT              sReturnStatus;
 
@@ -3076,8 +3056,8 @@ SHORT ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmoun
             d13Work = lQty;
 			d13Work *= lUnitPrice;
 			d13Remain = d13Work;
-            d13Work /= (LONG)usFor * 1000L;
-			d13Remain -= d13Work * (LONG)usFor * 1000L;
+            d13Work /= (D13DIGITS)usFor * 1000L;
+			d13Remain -= d13Work * (D13DIGITS)usFor * 1000L;
 
             if (d13Remain) {
 				LONG    lWork;
