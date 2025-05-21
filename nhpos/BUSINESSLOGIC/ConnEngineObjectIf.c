@@ -62,6 +62,10 @@ static CRITICAL_SECTION    g_ConnEngineCriticalSection;
 
 static USHORT   ConnEngineObjectEchoElectronicJournal = 0;
 
+TCHAR const auchConnEngineTempFile[] = _T("OBJTEMP");
+
+static TCHAR const auchConnEngineElectronicJournal[] = _T("TOTALEJG");
+static TCHAR const auchConnEngineSendTempFile[] = _T("CONSEND1");
 
 SHORT ConnEngineObjectEchoElectronicJournalSetting (USHORT usConnEngineObjectEchoElectronicJournalFlag)
 {
@@ -82,10 +86,9 @@ SHORT ConnEngineInitCriticalRegion (USHORT usConnEngineObjectEchoElectronicJourn
 
 	if (ConnEngineObjectEchoElectronicJournal == 1) {
 		SHORT      shFileHandle;
-		TCHAR      *szConnEngineElectronicJournal = _T("TOTALEJG");
 
 		NHPOS_NONASSERT_TEXT("-- TOTALEJG is turned on.");
-		shFileHandle = PifOpenFile (szConnEngineElectronicJournal, "nw");
+		shFileHandle = PifOpenFile (auchConnEngineElectronicJournal, "nw");
 		if (shFileHandle >= 0)
 			PifCloseFile (shFileHandle);
 	} else {
@@ -208,9 +211,9 @@ static int ConnEngineStateSnapShotWrite (ConnEngineStateSnapShot *pSnapShot)
 	if (pSnapShot->ulFlagsAndState & CONNENGINESTATESNAPSHOT_DATAREAD) {
 		pSnapShot->ulFlagsAndState &= ~CONNENGINESTATESNAPSHOT_DATAREAD;
 
-		shFileHandle = PifOpenFile (szConnEngineStateSnapShotFile, "towr");
+		shFileHandle = PifOpenFile (szConnEngineStateSnapShotFile, auchTEMP_OLD_FILE_READ_WRITE);
 		if (shFileHandle < 0) {
-			shFileHandle = PifOpenFile (szConnEngineStateSnapShotFile, "tnwr");
+			shFileHandle = PifOpenFile (szConnEngineStateSnapShotFile, auchTEMP_NEW_FILE_READ_WRITE);
 		}
 		if (shFileHandle >= 0) {
 			PifWriteFile (shFileHandle, pSnapShot, sizeof(ConnEngineStateSnapShot));
@@ -358,19 +361,18 @@ int ConnEngineSendMasterConnEngineInterface (USHORT hConnEngineSocket, LPCTSTR t
 		} else {
 			ULONG  ulActualPosition;
 			SHORT  sFileHandle;
-			TCHAR  szTempFile[] = _T("CONSEND1");
 
-			sFileHandle = PifOpenFile (szTempFile, "tnwr");
+			sFileHandle = PifOpenFile (auchConnEngineSendTempFile, auchTEMP_NEW_FILE_READ_WRITE);
 			if (sFileHandle < 0) {
-				PifDeleteFile (szTempFile);
-				sFileHandle = PifOpenFile (szTempFile, "tnwr");
+				PifDeleteFile (auchConnEngineSendTempFile);
+				sFileHandle = PifOpenFile (auchConnEngineSendTempFile, auchTEMP_NEW_FILE_READ_WRITE);
 			}
 			PifSeekFile (sFileHandle, 0, &ulActualPosition);
 			PifWriteFile (sFileHandle, tcBuffer, tcBufferSize * sizeof(TCHAR));
 			PifSeekFile (sFileHandle, 0, &ulActualPosition);
 			sRetStatus = CliOpConnEngineFH (sFileHandle, (USHORT)(tcBufferSize * sizeof(TCHAR)));
 			PifCloseFile (sFileHandle);
-			PifDeleteFile (szTempFile);
+			PifDeleteFile (auchConnEngineSendTempFile);
 		}
 	} else if (sMasterStatus == STUB_SELF) {
 		// this is a Master Terminal so we will 
@@ -399,7 +401,6 @@ int  ConnEngineObjectSendMessage (USHORT usCopyToEj, USHORT hConnEngineSocket, L
 {
 	ULONG      ulFileSizeLow = 0, ulFileSizeHigh = 0, ulActualPosition = 0;
 	ULONG      ConnEngineConsecutiveNumber;
-	TCHAR      *szConnEngineElectronicJournal = _T("TOTALEJG");
 	DATE_TIME  DateTime;          /* for TOD read */
 
 	// Set the Sign-out Date/Time information
@@ -413,7 +414,7 @@ int  ConnEngineObjectSendMessage (USHORT usCopyToEj, USHORT hConnEngineSocket, L
 		TCHAR      tcsDateBuff[24], tcsTimeBuff[24];
 		SHORT      shFileHandle;
 
-		shFileHandle = PifOpenFile (szConnEngineElectronicJournal, "w");
+		shFileHandle = PifOpenFile (auchConnEngineElectronicJournal, "w");
 
 		if (shFileHandle >= 0) {
 
@@ -1310,6 +1311,8 @@ static SHORT ConnEngineSendTransactionItem (TCHAR **ptcsBufferAdr, PRTIDX *pIdxF
 
 SHORT ConnEngineSendTransactionFH (BOOL bRecordEj, SHORT sGcfStatus, GCNUM usGCNumber, SHORT hsFileHandle, ULONG ulStartPoint, ULONG ulSizeIn)
 {
+    static UCHAR        auchTranStorageWork[ TRN_TEMPBUFF_SIZE ];
+	static TRANGCFQUAL  WorkGcfQual;
 	TCHAR          *ptcsBuffer;
 	int            nLength;
 	ULONG          ulSize = 0, ulItemsAreaOffset = 0;
@@ -1318,9 +1321,7 @@ SHORT ConnEngineSendTransactionFH (BOOL bRecordEj, SHORT sGcfStatus, GCNUM usGCN
 	USHORT         usItemNumber;
 	PRTIDXHDR      IdxFileInfo;
 	PRTIDX         IdxFile;
-    UCHAR                  auchTranStorageWork[ TRN_TEMPBUFF_SIZE ];
     UCHAR                 *puchWorkBuffer;
-	TRANGCFQUAL           WorkGcfQual;
     TRANSTORAGESALESNON   *pTranNon;
 	struct {
 		UCHAR  uchMinorClass;
@@ -2145,7 +2146,6 @@ SHORT ConnEngineSendResponseWithError (TCHAR *tcsCommandType, TCHAR *tcsActionTy
 
 SHORT ConnEngineEjEntryNext (ULONG ulFilePosHigh, ULONG ulFilePosLow)
 {
-	TCHAR      *szConnEngineElectronicJournal = _T("TOTALEJG");
 	TCHAR      *szEjEntryStart = _T("<ej_entry_start ");
 	TCHAR      *szEjEntryEnd = _T("</ej_entry_start>");
 	TCHAR      *ptcsBuffer;
@@ -2161,7 +2161,7 @@ SHORT ConnEngineEjEntryNext (ULONG ulFilePosHigh, ULONG ulFilePosLow)
 
 	ptcsBuffer = ConnEngineSendBuffer;
 
-	shFileHandle = PifOpenFile (szConnEngineElectronicJournal, "r");
+	shFileHandle = PifOpenFile (auchConnEngineElectronicJournal, "r");
 
 	if (shFileHandle >= 0) {
 		ULONG  ulActualPosition, ulBytesRead;
@@ -2234,7 +2234,6 @@ SHORT  ConnEngineEjEntryFirst (VOID)
 
 SHORT ConnEngineEjEntryClear (ULONG ulFilePosHigh, ULONG ulFilePosLow)
 {
-	TCHAR      *szConnEngineElectronicJournal = _T("TOTALEJG");
 	TCHAR      *szConnEngineTempFile = _T("TEMPEJG");
 	TCHAR      *szEjEntryStart = _T("<ej_entry_start ");
 	TCHAR      *szEjEntryEnd = _T("</ej_entry_start>");
@@ -2251,7 +2250,7 @@ SHORT ConnEngineEjEntryClear (ULONG ulFilePosHigh, ULONG ulFilePosLow)
 
 	ptcsBuffer = ConnEngineSendBuffer;
 
-	shFileHandle = PifOpenFile (szConnEngineElectronicJournal, "r");
+	shFileHandle = PifOpenFile (auchConnEngineElectronicJournal, "r");
 	shFileHandleTemp = PifOpenFile (szConnEngineTempFile, "nw");
 	if (shFileHandleTemp < 0) {
 		PifDeleteFile(szConnEngineTempFile);   /* Delete existing temp file and try again */
@@ -2298,8 +2297,8 @@ SHORT ConnEngineEjEntryClear (ULONG ulFilePosHigh, ULONG ulFilePosLow)
 				shFileHandleTemp = shFileHandle = -1;
 				// now delete the TOTALEJG Connection Engine Interface Electronic Journal file
 				// and move/rename the copied content to TOTALEJG.
-				PifDeleteFile (szConnEngineElectronicJournal);
-				PifMoveFile (szConnEngineTempFile, FALSE, szConnEngineElectronicJournal, FALSE);
+				PifDeleteFile (auchConnEngineElectronicJournal);
+				PifMoveFile (szConnEngineTempFile, FALSE, auchConnEngineElectronicJournal, FALSE);
 				ConnEngineSendResponseWithErrorLocal(_T("EJENTRYACTION"), 0, _T("clear"), 0, 0, _T("Clear successful."));
 				{
 					char  xBuff[128];
@@ -2312,7 +2311,7 @@ SHORT ConnEngineEjEntryClear (ULONG ulFilePosHigh, ULONG ulFilePosLow)
 				PifCloseFile (shFileHandleTemp);
 				shFileHandleTemp = shFileHandle = -1;
 				// now delete the TOTALEJG Connection Engine Interface Electronic Journal file
-				PifDeleteFile (szConnEngineElectronicJournal);
+				PifDeleteFile (auchConnEngineElectronicJournal);
 				NHPOS_NONASSERT_TEXT("ConnEngineEjEntryClear(): EJ Clear all, file position");
 				ConnEngineSendResponseWithErrorLocal(_T("EJENTRYACTION"), 0, _T("clear"), 0, 0, _T("Clear all, file position."));
 			}
@@ -2322,7 +2321,7 @@ SHORT ConnEngineEjEntryClear (ULONG ulFilePosHigh, ULONG ulFilePosLow)
 			PifCloseFile (shFileHandleTemp);
 			shFileHandleTemp = shFileHandle = -1;
 			// now delete the TOTALEJG Connection Engine Interface Electronic Journal file
-			PifDeleteFile (szConnEngineElectronicJournal);
+			PifDeleteFile (auchConnEngineElectronicJournal);
 			NHPOS_NONASSERT_TEXT("ConnEngineEjEntryClear(): EJ Clear all file size.");
 			ConnEngineSendResponseWithErrorLocal(_T("EJENTRYACTION"), 0, _T("clear"), 0, 0, _T("Clear all, file size."));
 		}
@@ -2523,11 +2522,15 @@ SHORT ConnEngineSendPreauthCaptureAction (TCHAR *tcsActionType, ITEMTENDER *pIte
 	}
 
 	{
-		LONG   lPurchaseAmount = pdata->lTenderAmount;
+		DCURRENCY   lPurchaseAmount = pdata->lTenderAmount;
 		TCHAR  tcsBuffer[48];
 
 		lPurchaseAmount -= pdata->lGratuity;    // separate out the gratuity from the tender amount to get the purchase amount
-		_stprintf (tcsBuffer, _T("%ld"), lPurchaseAmount);
+#if defined(DCURRENCY_LONGLONG)
+		_stprintf(tcsBuffer, _T("%lld"), lPurchaseAmount);
+#else
+		_stprintf(tcsBuffer, _T("%ld"), lPurchaseAmount);
+#endif
 		PUTSTRINGLABEL(ptcsBuffer,tcsBuffer,auchPurchase,pFormatString);
 #if defined(DCURRENCY_LONGLONG)
 		_stprintf(tcsBuffer, _T("%lld"), pdata->lGratuity);

@@ -21,11 +21,10 @@
 #include    <rfl.h>
 #define __BLNOTIFY_C__
 #include    <bl.h>
+#include	<ConnEngineObjectIf.h>
 
 #include "ObjectMaker.h"
 #include "..\..\ConnEngineMfc\ConnEngine.h"
-
-static UCHAR   auchCP_TEMP_NEW_FILE_READ_WRITE[]  = "tnwr";
 
 static TCHAR  *pTokenDelimitersTag = _T("<> =\t\n\r");
 static TCHAR  *pTokenDelimitersValue = _T("<>");
@@ -1690,12 +1689,12 @@ int ObjectMakerTRANSACTION (TCHAR **tcsTokenName, TCHAR **tcBuffer, TRANSACTION 
 
 		memset (pTransaction, 0, sizeof(TRANSACTION));  // Init the TRANSACTION to zeros to prepare for processing the XML message.
 
-		_tcscpy (pTransaction->aszTempFileName, _T("OBJTEMP"));
+		_tcscpy (pTransaction->aszTempFileName, auchConnEngineTempFile);
 
-		sTempFileHandle = PifOpenFile (pTransaction->aszTempFileName, auchCP_TEMP_NEW_FILE_READ_WRITE);
+		sTempFileHandle = PifOpenFile (pTransaction->aszTempFileName, auchTEMP_NEW_FILE_READ_WRITE);
 		if (sTempFileHandle < 0) {
 			PifDeleteFile (pTransaction->aszTempFileName);
-			sTempFileHandle = PifOpenFile (pTransaction->aszTempFileName, auchCP_TEMP_NEW_FILE_READ_WRITE);
+			sTempFileHandle = PifOpenFile (pTransaction->aszTempFileName, auchTEMP_NEW_FILE_READ_WRITE);
 		}
 
 		// Prepare the output file that will contain the transaction data.
@@ -2899,7 +2898,7 @@ int ObjectMakerCONNENGINE (TCHAR **tcsTokenName, TCHAR **tcBuffer, AllObjects *p
 			pAllObjects->ConnEngine.ulFlags |= BL_CONNENGINE_FLAGS_UNIQUE_ID;
 			_tcscpy (pAllObjects->ConnEngine.tcsTempFileName, GenerateTempFileName ());
 			PifDeleteFileEx (pAllObjects->ConnEngine.tcsTempFileName, TRUE);
-			PifMoveFile (_T("OBJTEMP"), TRUE, pAllObjects->ConnEngine.tcsTempFileName, TRUE);
+			PifMoveFile (auchConnEngineTempFile, TRUE, pAllObjects->ConnEngine.tcsTempFileName, TRUE);
 		}
 	}
 	return BL_CONNENGINE_MSG_CONNENGINE;
@@ -2969,8 +2968,8 @@ int BlProcessConnEngineMessageAndTag(TCHAR **ptcBuffer, VOID *pObject)
 				UCHAR uchTermAddr = CliReadUAddr();
 				if (myObject->ConnEngine.sTerminalNumber == uchTermAddr || myObject->ConnEngine.sTerminalNumber == (-1)) {
 					if (myObject->ConnEngine.tcsTempFileName[0]) {
-						PifDeleteFileEx (_T("OBJTEMP"), TRUE);
-						PifMoveFile (myObject->ConnEngine.tcsTempFileName, TRUE, _T("OBJTEMP"), TRUE);
+						PifDeleteFileEx (auchConnEngineTempFile, TRUE);
+						PifMoveFile (myObject->ConnEngine.tcsTempFileName, TRUE, auchConnEngineTempFile, TRUE);
 					}
 					return myObject->ConnEngine.iObjectType;
 				}
