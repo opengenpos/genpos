@@ -910,7 +910,7 @@ SHORT UifItem(KEYMSG *pData)
             _tcsncpy(UifRegData.regcoupon.aszNumber, aszUifRegNumber, NUM_NUMBER);
 
             UifRegData.regcoupon.uchFSC = pData->SEL.INPUT.uchMinor; /* set coupon extend FSC */
-            sRetStatus = ItemCoupon(&UifRegData.regcoupon);    /* Coupon Modele */
+            sRetStatus = ItemCouponEntry(&UifRegData.regcoupon);    /* Coupon Modele */
             break;
 
         case FSC_COUPON:
@@ -970,7 +970,7 @@ SHORT UifItem(KEYMSG *pData)
             }
 			// coupon number is between 1 and FLEX_CPN_MAX and range is checked above.
             UifRegData.regcoupon.uchFSC = (USHORT)(pData->SEL.INPUT.lData);  /* set coupon # */
-            sRetStatus = ItemCoupon(&UifRegData.regcoupon);   /* Coupon Modele */
+            sRetStatus = ItemCouponEntry(&UifRegData.regcoupon);   /* Coupon Modele */
             break;
 
         case FSC_REPEAT:                                      /* R3.1 */

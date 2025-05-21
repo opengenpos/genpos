@@ -104,17 +104,26 @@ extern DCURRENCY       couponAmount;
 // to the correct total key function to process the total key press.
 SHORT   ItemTotalMain(UIFREGTOTAL *pData);
 
+// the main entry point for the tender key processing.
+// this function looks at the tender key data and dispatches
+// to the correct tender key function to process the tender key press.
+SHORT   ItemTenderEntry(UIFREGTENDER *pData);
+
+// the main entry point for the coupon key processing.
+SHORT   ItemCouponEntry(UIFREGCOUPON *pData);
+
+// Auto Coupon processing main entry point.
+SHORT	ItemAutoCouponCheck(SHORT sTotalKeyType /* from ItemTotalType() */);
+
 SHORT   ItemSignIn(UIFREGOPEOPEN *pData);
 SHORT   ItemTransOpen(UIFREGTRANSOPEN *pData);
 SHORT   ItemSalesEditCondiment(UCHAR uchType);
 SHORT   ItemSales(UIFREGSALES *pData);
 SHORT   ItemDiscount(UIFREGDISC *pData);
-SHORT   ItemCoupon(UIFREGCOUPON *pData);
 VOID    ItemCouponVoidDisp(ITEMSALES *pItemSales, ITEMCOUPON *pItemCoupon);
 UCHAR   ItemTotalTypeIndex (UCHAR uchMinorClass);
 SHORT   ItemTotalCashierCheckLoanTotalZero (ULONG  ulEmployeeId);
 SHORT   ItemTotalAuchTotalStatus (UCHAR auchTotalStatus[NUM_TOTAL_STATUS], CONST UCHAR uchMinorClass);
-SHORT   ItemTenderEntry(UIFREGTENDER *pData);
 SHORT   ItemModifier(UIFREGMODIFIER *pData);
 SHORT   ItemSignOutTest(VOID);
 SHORT   ItemSignOutWithTest(UIFREGOPECLOSE *pData);

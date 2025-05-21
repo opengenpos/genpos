@@ -203,7 +203,7 @@ SHORT   ItemSalesLabelProc(UIFREGSALES *pRegSales, ITEMSALES *pItemSales)
 			UifRegCoupon.uchMinorClass = CLASS_UIUPCCOUPON;
 			_tcsncpy(UifRegCoupon.auchUPCCouponNo, PluLabel.aszLookPlu, NUM_PLU_LEN);
 			UifRegCoupon.fbModifier = pRegSales->fbModifier;
-			return(ItemCoupon(&UifRegCoupon));
+			return(ItemCouponEntry(&UifRegCoupon));
 		}
         break;
         
