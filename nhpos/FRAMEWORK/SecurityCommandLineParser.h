@@ -16,7 +16,7 @@ public:
 	virtual ~CSecurityCommandLineParser();
 	virtual void ParseParam(LPCTSTR pszParam, BOOL bFlag, BOOL bLast);
 
-	typedef  enum { StateStart = 0, StateRegister = 1, StateUnlockCode = 2, StateUserName = 3, StateRetrieve = 4, StateShutdown = 5, StateServerOnly = 6 } ParseState;
+	enum class ParseState { StateStart = 0, StateRegister = 1, StateUnlockCode = 2, StateUserName = 3, StateRetrieve = 4, StateShutdown = 5, StateServerOnly = 6 };
 
 	ParseState     m_enRegisterState;
 	TCHAR          m_szUnlockCode[128];
