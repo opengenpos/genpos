@@ -1029,11 +1029,7 @@ VOID TrnItemStoPLUMnemo(TCHAR  *pszPLUMnem, TCHAR  *pszPLUMnemAlt, TCHAR  *auchP
     extern  TRANINFORMATION     TrnInformation;         /* transaction information */
 
     extern  TRANINFSPLIT    TrnSplitA;
-    extern  TCHAR CONST  aszTrnConsSplitFileA[];
-    extern  TCHAR CONST  aszTrnConsSplitIndexA[];
     extern  TRANINFSPLIT    TrnSplitB;
-    extern  TCHAR CONST  aszTrnConsSplitFileB[];
-    extern  TCHAR CONST  aszTrnConsSplitIndexB[];
 
 
 /****** End of Definition ******/
