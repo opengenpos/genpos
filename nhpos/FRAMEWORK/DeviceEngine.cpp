@@ -2805,6 +2805,16 @@ BOOL CDeviceEngine::Close()
 //
 /////////////////////////////////////////////////////////////////////////////
 
+#if defined(POSSIBLE_DEAD_CODE)
+// Marked as possible dead code as it isn't used in the
+// current source code body. This function may have been
+// used when Signature Capture with Electronic Payment functionality
+// was part of the source to render a signature image.
+// Signature Capture was removed with OpenGenPOS Rel 2.4.0 as part
+// of eliminating possible proprietary source from Third Parties
+// such as Datacap Systems.
+//     Richard Chambers, May-20-2025
+
 // DDBToDIB		- Creates a DIB from a DDB
 // bitmap		- Device dependent bitmap
 // dwCompression	- Type of compression - see BITMAPINFOHEADER
@@ -2929,6 +2939,7 @@ HANDLE DDBToDIB( CBitmap& bitmap, DWORD dwCompression, CPalette* pPal )
 	ReleaseDC(NULL,hDC);
 	return hDIB;
 }
+#endif
 
 BOOL CDeviceEngine::BlInterface(DWORD dwCommand, VOID* pvData, DWORD dwLength)
 {
