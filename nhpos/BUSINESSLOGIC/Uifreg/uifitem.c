@@ -1519,7 +1519,7 @@ SHORT UifItem(KEYMSG *pData)
 					if (pData->SEL.INPUT.uchLen < 1) {
 						pData->SEL.INPUT.lData = TranModeQualPtr->ulCashierID;
 					}
-					sRetStatus = TrnDisplayFetchGuestCheck (_T("Open Checks"), pData->SEL.INPUT.lData);
+					sRetStatus = TrnDisplayFetchGuestCheck (_T("Open Checks"), (ULONG)pData->SEL.INPUT.lData);
 				} else if (pData->SEL.INPUT.uchMinor == ITM_ASK_OPENCHECKS_BY_GCN) {
 					if (pData->SEL.INPUT.lData < 1) {
 						ItemTransDispGCFNo(TRN_GCNO_RETURNS);
@@ -1750,7 +1750,7 @@ SHORT UifItem(KEYMSG *pData)
 			//Setup "FOR" Item Data Class
 			ForData.uchMajorClass = CLASS_UIFREGOTHER;
 			ForData.uchMinorClass = CLASS_UIFFOR;
-			ForData.lQTY = pData->SEL.INPUT.lData;
+			ForData.lQTY = (LONG)pData->SEL.INPUT.lData;
 			_tcsncpy(ForData.aszNumber, pData->SEL.INPUT.aszKey, pData->SEL.INPUT.uchLen);
 
 			// Execute @/For module
