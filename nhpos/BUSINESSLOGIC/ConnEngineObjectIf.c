@@ -1,3 +1,6 @@
+
+#include "versioninfo.h"
+
 #include	<windows.h>
 #include	<tchar.h>
 #include	<memory.h>
@@ -20,6 +23,7 @@
 #include    <trans.h>
 #include    <rfl.h>
 #include    <csetk.h>
+#include    <maint.h>
 #include    <eept.h>
 #include    "csstbfcc.h"
 #include    "csstbopr.h"
@@ -111,17 +115,9 @@ TCHAR *ConnEngineAddInfoToOutput (TCHAR *ptcsBuffer)
 {
 	int   nLength;
 
-	{
-		PARASPCCO        ParaSpcCo;
-
-		ParaSpcCo.uchMajorClass = CLASS_PARASPCCO;
-		ParaSpcCo.uchAddress = SPCO_CONSEC_ADR;
-		ParaRead(&ParaSpcCo);
-
-		nLength = _stprintf (ptcsBuffer, _T("<usConsNo>%d</usConsNo>\r"), ParaSpcCo.usCounter);
-		if (nLength >= 0)
-			ptcsBuffer += nLength;
-	}
+	nLength = _stprintf (ptcsBuffer, _T("<usConsNo>%d</usConsNo>\r"), MaintCurrentSpcCo(SPCO_CONSEC_ADR));
+	if (nLength >= 0)
+		ptcsBuffer += nLength;
 
 	{
 		PARASTOREGNO   StRegNoRcvBuff;
