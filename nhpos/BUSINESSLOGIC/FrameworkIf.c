@@ -68,6 +68,8 @@
 * Feb-19-18: 02.02.02  : R.Chambers  : BlFwIfSetOEPGroups() return error if no OEP windows
  ************************************************************************/
 
+#include "versioninfo.h"
+
 #include <windows.h>
 #include <tchar.h>
 #include <string.h>

@@ -104,9 +104,7 @@
 
 */
 
-// required to allow VOID THREADENTRY UifWatchPrintFilesFolder (VOID) use ReadDirectoryChangesW()
-// this define will exclude this application from running on Windows 95/98/ME.  Oh well not a problem.
-#define _WIN32_WINNT 0x0400
+#include "versioninfo.h"
 
 #include <windows.h>
 #include <tchar.h>
@@ -2394,7 +2392,6 @@ VOID  UifRequestSharedLuaFile (TCHAR *aszFileName)
 #endif
 }
 
-#define _WIN32_WINNT 0x0400
 VOID THREADENTRY UifWatchPrintFilesFolder (VOID)
 {
 	FILE_NOTIFY_INFORMATION  *pFileInfo;

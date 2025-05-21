@@ -50,8 +50,7 @@
 // This includes Windows XP.  We need this in order to access the
 // Windows crypto library functions.
 
-#define _WIN32_WINNT  0x0400
-#define WINVER        0x0400
+#include "versioninfo.h"
 
 #include <windows.h>
 #include <wincrypt.h>
