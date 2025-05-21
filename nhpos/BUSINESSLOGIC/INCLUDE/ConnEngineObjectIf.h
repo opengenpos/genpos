@@ -9,6 +9,8 @@ typedef struct {
 	USHORT usStateCount;             // count used to drive a state machine engine
 } CONNENGINE_PRINTSPOOLER_DIALOG;
 
+extern TCHAR const auchConnEngineTempFile[];
+extern TCHAR const auchConnEngineElectronicJournal[];
 
 SHORT ConnEngineSendTransactionFH (BOOL bRecordEj, SHORT sGcfStatus, GCNUM  usGCNumber, SHORT   hsFileHandle, ULONG   ulStartPoint, ULONG ulSize);
 
