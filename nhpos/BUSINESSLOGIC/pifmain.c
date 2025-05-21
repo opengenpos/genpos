@@ -3995,6 +3995,20 @@ USHORT  RflGetNoTermsInCluster (VOID)
     return (USHORT)(WorkMDC.uchMDCData & 0x0F) + 1;  // number of terminals value 0 to 15 translated to 1 to 16, TTL_MAX_INDFIN
 }
 
+RflStoreRegNo RflGetStoreRegisterNo(VOID)
+{
+	PARASTOREGNO   StRegNoRcvBuff = { 0 };
+	RflStoreRegNo  myData = { 0 };
+
+	StRegNoRcvBuff.uchMajorClass = CLASS_PARASTOREGNO;    /* get store/ reg No. */
+	StRegNoRcvBuff.uchAddress = SREG_NO_ADR;
+	CliParaRead(&StRegNoRcvBuff);
+
+	myData.usStoreNo = StRegNoRcvBuff.usStoreNo;
+	myData.usRegNo = StRegNoRcvBuff.usRegisterNo;
+	return myData;
+}
+
 /*
 *===========================================================================
 ** Format  : UCHAR  RflGetMdcData (USHORT usAddr);
