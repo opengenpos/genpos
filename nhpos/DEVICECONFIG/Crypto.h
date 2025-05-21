@@ -1,15 +1,5 @@
 #pragma once
 
-// Define the following to indicate to the Windows included files
-// that we are compiling this for Windows NT 4.0 and later.
-// This includes Windows XP.  We need this in order to access the
-// Windows crypto library functions.
-
-#if !defined(_WIN32_WINNT)
-#define _WIN32_WINNT  0x0400
-#define WINVER        0x0400
-#endif
-
 #include <windows.h>
 #include <wincrypt.h>
 
