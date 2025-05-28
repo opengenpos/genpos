@@ -77,55 +77,40 @@
 VOID  PrtSupEJ( RPTEJ *pData )
 {
 
-    static const TCHAR FARCONST auchPrtSupEJ1[] = _T("\t%6d / %-6d");
-    static const TCHAR FARCONST auchPrtSupEJ2[] = _T("    %s");
-    static const TCHAR FARCONST auchPrtSupEJ3[] = _T("%s");
+    static const TCHAR  auchPrtSupEJ1[] = _T("\t%6d / %-6d");
+    static const TCHAR  auchPrtSupEJ2[] = _T("    %s");
+    static const TCHAR  auchPrtSupEJ3[] = _T("%s");
 
-	TCHAR	aszEditBuff[56 + 1];
-
-    /* Initialize Buffer */
-
-    memset(aszEditBuff, '\0', sizeof(aszEditBuff));
+    TCHAR	aszEditBuff[56 + 1] = { 0 };
 
     switch(pData->uchMinorClass) {
     case CLASS_RPTEJ_PAGE:
 
-        PrtPrintf(PMG_PRT_RECEIPT,                    /* Printer Type */
-                  auchPrtSupEJ1,                      /* Format */
-                  pData->usPageNo,                    /* EJ Page No. */
-                  pData->usTtlPageNo);                /* EJ Total Page No. */
+        PrtPrintf(PMG_PRT_RECEIPT, auchPrtSupEJ1, pData->usPageNo, pData->usTtlPageNo);                /* EJ Total Page No. */
         break;
 
     case CLASS_RPTEJ_REVERSE:
 
         PrtDouble(aszEditBuff, TCHARSIZEOF(aszEditBuff), pData->aszLineData);
 
-        PrtPrintf(PMG_PRT_RECEIPT,                    /* Printer Type */
-                  auchPrtSupEJ2,                      /* Format */
-                  aszEditBuff);                       /* EJ Reverse Data */
+        PrtPrintf(PMG_PRT_RECEIPT, auchPrtSupEJ2, aszEditBuff);                       /* EJ Reverse Data */
 
         fbPrtTHHead = 1;                              /* header printed */                        
         break;
 
 	case CLASS_RPTEJ_CONFIGURATION:				//For Printing Configuration Information AC888 JHHJ 10-29-04
 		
-	 PrtPrintf(PMG_PRT_RECEIPT,                    
-                  pData->aszLineData,                      
-                  aszEditBuff);
+	 PrtPrintf(PMG_PRT_RECEIPT, pData->aszLineData, aszEditBuff);
 		break;
 
     default:                            /* CLASS_RPTEJ_LINE */
 
         /* Edit EJ Report Format */
-
-
         aszEditBuff[0] = _T(' ');
         _tcsncpy(aszEditBuff + 1, pData->aszLineData, EJ_COLUMN );
         _tcsncpy(aszEditBuff + 1 + EJ_COLUMN, _T("  |  "), _tcslen(_T("  |  ")) - 1);
         _tcsncpy(aszEditBuff + EJ_COLUMN + _tcslen(_T("  |  ")), pData->aszLineData + EJ_COLUMN, EJ_COLUMN);
-        PrtPrintf(PMG_PRT_RECEIPT,                    
-                  auchPrtSupEJ3,                      
-                  aszEditBuff); 
+        PrtPrintf(PMG_PRT_RECEIPT, auchPrtSupEJ3, aszEditBuff); 
 		
         //memcpy(aszEditBuff + 1, pData->aszLineData, EJ_COLUMN);
         //memcpy(aszEditBuff + 1 + EJ_COLUMN, "  |  ", sizeof("  |  ") - 1);

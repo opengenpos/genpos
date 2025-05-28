@@ -82,15 +82,8 @@
 
 VOID  PrtThrmSupGCNo( PARAGUESTNO *pData )
 {
-
-    /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupGCNo[] = _T("%9s%-8.8s   %4u");/*8 characters JHHJ*/
-
-    /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupGCNo[] = _T("%-6s%-8.8s %4u");/*8 characters JHHJ*/
-															
+    static const TCHAR  auchPrtThrmSupGCNo[] = _T("%9s%-8.8s   %4u");/* define thermal print format 8 characters JHHJ*/
+    static const TCHAR  auchPrtSupGCNo[] = _T("%-6s%-8.8s %4u");/* define EJ print format 8 characters JHHJ*/
 
     TCHAR   aszNull[1] = {'\0'};
 

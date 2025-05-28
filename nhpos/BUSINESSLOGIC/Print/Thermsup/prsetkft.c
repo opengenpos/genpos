@@ -82,9 +82,9 @@ TCHAR aszPrThrmInAMPM[2 + 1];
 TCHAR aszPrThrmOutAMPM[2 + 1];
 TCHAR aszPrThrmWorkTime[5 + 1 + 7 + 1];     /* R3.1 */
 
-const TCHAR FARCONST auchThrmEtkTime[] = _T("%2u:%02u");
-const TCHAR FARCONST auchThrmEtkDate[] = _T("%02u/%02u");
-const TCHAR FARCONST auchThrmEtkAMPM[] = _T("%s");
+const TCHAR  auchThrmEtkTime[] = _T("%2u:%02u");
+const TCHAR  auchThrmEtkDate[] = _T("%02u/%02u");
+const TCHAR  auchThrmEtkAMPM[] = _T("%s");
 
 /*
 *===========================================================================

@@ -99,12 +99,12 @@
 VOID  PrtThrmSupPLUFile( RPTPLU *pData )  
 {
     /* define print format */ 
-    static const TCHAR FARCONST auchPrtThrmSupPLUFile1[] = _T("%17u %-12s");
-    static const TCHAR FARCONST auchPrtThrmSupPLUFile6[] = _T("%21u");
-    static const TCHAR FARCONST auchNumber[] = _T("%s");                /* Saratoga */
+    static const TCHAR  auchPrtThrmSupPLUFile1[] = _T("%17u %-12s");
+    static const TCHAR  auchPrtThrmSupPLUFile6[] = _T("%21u");
+    static const TCHAR  auchNumber[] = _T("%s");                /* Saratoga */
 	//GroupReport - CSMALL
-	static const TCHAR FARCONST auchPrtThrmSupPLUGroup1[] = _T("**** OEP #: %d ****");
-	static const TCHAR FARCONST auchPrtThrmSupPLUGroup2[] = _T("%14.14s %-20s %4d");
+	static const TCHAR  auchPrtThrmSupPLUGroup1[] = _T("**** OEP #: %d ****");
+	static const TCHAR  auchPrtThrmSupPLUGroup2[] = _T("%14.14s %-20s %4d");
 
     /* UCHAR   aszDoubRepoNumb[4 * 2 + 1]; */
 	TCHAR   aszRepoNumb[PLU_MAX_DIGIT + 1] = { 0 };
@@ -147,7 +147,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                                                                 /* pData->usPercent is set over 600.00 data */
                 /* check if OPEN PLU is SCALABLE */
                 if (pData->uchStatus == RPT_DECIMAL_0) {        /* in case of NON-SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile2A0[] = _T("%1s%13s %-20s\n\t*****%%\n\t%6ld   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile2A0[] = _T("%1s%13s %-20s\n\t*****%%\n\t%6ld   %12l$");
 
                     /* print OPEN PLU with illegal percent data */
                     PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
@@ -158,7 +158,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                               pData->PLUTotal.lCounter,         /* counter */
                               pData->PLUTotal.lAmount);         /* amount */
                 } else {                                        /* in case of SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile2A1[] = _T("%1s%13s %-20s\n\t*****%%\n\t%7.*l$%s   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile2A1[] = _T("%1s%13s %-20s\n\t*****%%\n\t%7.*l$%s   %12l$");
 
                     if (pData->uchStatus == RPT_DECIMAL_1) {
                         uchDecimal = 1;                         
@@ -178,7 +178,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
             } else {                                            /* in case of legal percent data */
                 /* check if PLU is SCALABLE */
                 if (pData->uchStatus == RPT_DECIMAL_0) {        /* in case of NON-SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile2B0[] = _T("%1s%13s %-20s\n\t%6.2$%%\n\t%6ld   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile2B0[] = _T("%1s%13s %-20s\n\t%6.2$%%\n\t%6ld   %12l$");
 
                     /* print OPEN PLU with legal percent data */
                     PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
@@ -190,7 +190,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                               pData->PLUTotal.lCounter,         /* counter */
                               pData->PLUTotal.lAmount);         /* amount */
                 } else {
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile2B1[] = _T("%1s%13s %-20s\n\t%6.2$%%\n\t%7.*l$%s   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile2B1[] = _T("%1s%13s %-20s\n\t%6.2$%%\n\t%7.*l$%s   %12l$");
 
                     if (pData->uchStatus == RPT_DECIMAL_1) {
                         uchDecimal = 1;                         
@@ -213,7 +213,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
        
         case CLASS_RPTPLU_PRTTTLCREDIT:        
 			{
-				static const TCHAR FARCONST auchPrtThrmSupPLUFile2C0[] = _T("%1s%13s %-20s\n\t%6ld   %12l$");
+				static const TCHAR  auchPrtThrmSupPLUFile2C0[] = _T("%1s%13s %-20s\n\t%6ld   %12l$");
 
 				/* convert PLU No. to double wide,  Saratoga */
 				RflConvertPLU(aszRepoNumb, pData->auchPLUNumber);
@@ -238,7 +238,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                                                                 /* pData->usPercent is set over 600.00 data */
                 /* check if PLU is SCALABLE */
                 if (pData->uchStatus == RPT_DECIMAL_0) {        /* in case of NON-SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile3A0[] = _T("%1s%13s %-20s\n\t*****%%\n@%9l$\t%6ld   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile3A0[] = _T("%1s%13s %-20s\n\t*****%%\n@%9l$\t%6ld   %12l$");
 
                     /* print NON ADJECTIVE PLU with illegal percent data */
                     PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
@@ -250,7 +250,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                               pData->PLUTotal.lCounter,         /* counter */
                               pData->PLUTotal.lAmount);         /* amount */
                 } else {                                        /* in case of SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile3A1[] = _T("%1s%13s %-20s\n\t*****%%\n@%9l$\t%7.*l$%s   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile3A1[] = _T("%1s%13s %-20s\n\t*****%%\n@%9l$\t%7.*l$%s   %12l$");
 
                     if (pData->uchStatus == RPT_DECIMAL_1) {
                         uchDecimal = 1;
@@ -269,7 +269,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                               pData->PLUTotal.lAmount);         /* amount */
                 }
             } else {                                            /* in case of legal percent data */
-				static const TCHAR FARCONST auchPrtThrmSupPLUFile3B0[] = _T("%1s%13s %-20s\n\t%6.2$%%\n@%9l$\t%6ld   %12l$");
+				static const TCHAR  auchPrtThrmSupPLUFile3B0[] = _T("%1s%13s %-20s\n\t%6.2$%%\n@%9l$\t%6ld   %12l$");
 
                 /* check if PLU is SCALABLE */
                 if (pData->uchStatus == RPT_DECIMAL_0) {        /* in case of NON-SCALABLE */
@@ -284,7 +284,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                               pData->PLUTotal.lCounter,         /* counter */
                               pData->PLUTotal.lAmount);         /* amount */
                 } else {                                        /* in case of SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile3B1[] = _T("%1s%13s %-20s\n\t%6.2$%%\n@%9l$\t%7.*l$%s   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile3B1[] = _T("%1s%13s %-20s\n\t%6.2$%%\n@%9l$\t%7.*l$%s   %12l$");
 
 					if (pData->uchStatus == RPT_DECIMAL_1) {
                         uchDecimal = 1;
@@ -308,7 +308,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
        
         case CLASS_RPTPLU_PRTTTLCOUPON:
 			{
-				static const TCHAR FARCONST auchPrtThrmSupPLUFile3C0[] = _T("%1s%13s %-20s\n@%9l$\t%6ld   %12l$");
+				static const TCHAR  auchPrtThrmSupPLUFile3C0[] = _T("%1s%13s %-20s\n@%9l$\t%6ld   %12l$");
 
 				/* convert PLU No. to double wide,  Saratoga */
 				RflConvertPLU(aszRepoNumb, pData->auchPLUNumber);
@@ -334,7 +334,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                                                                 /* pData->usPercent is set over 600.00 data */
                 /* check if PLU is SCALABLE */
                 if (pData->uchStatus == RPT_DECIMAL_0) {        /* in case of NON_SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile4A10[] = _T("%1s%13s %-20s\n%4s\t*****%%\n@%9l$\t%6ld   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile4A10[] = _T("%1s%13s %-20s\n%4s\t*****%%\n@%9l$\t%6ld   %12l$");
 
                     /* print ONE ADJECTIVE PLU with illegal percent data */
                     PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
@@ -347,7 +347,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                               pData->PLUTotal.lCounter,         /* counter */
                               pData->PLUTotal.lAmount);         /* amount */
                 } else {                                        /* in case of SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile4A11[] = _T("%1s%13s %-20s\n%4s\t*****%%\n@%9l$\t%7.*l$%s   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile4A11[] = _T("%1s%13s %-20s\n%4s\t*****%%\n@%9l$\t%7.*l$%s   %12l$");
 
                     if (pData->uchStatus == RPT_DECIMAL_1) {
                         uchDecimal = 1;
@@ -369,7 +369,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
             } else {
                 /* check if PLU is SCALABLE */
                 if (pData->uchStatus == RPT_DECIMAL_0) {        /* in case of NON_SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile4B10[] = _T("%1s%13s %-20s\n%4s\t%6.2$%%\n@%9l$\t%6ld   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile4B10[] = _T("%1s%13s %-20s\n%4s\t%6.2$%%\n@%9l$\t%6ld   %12l$");
 
                     /* print ONE ADJECTIVE PLU with legal percent data */
                     PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
@@ -383,7 +383,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                               pData->PLUTotal.lCounter,         /* counter */
                               pData->PLUTotal.lAmount);         /* amount */
                 } else {                                        /* in case of SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile4B11[] = _T("%1s%13s %-20s\n%4s\t%6.2$%%\n@%9l$\t%7.*l$%s   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile4B11[] = _T("%1s%13s %-20s\n%4s\t%6.2$%%\n@%9l$\t%7.*l$%s   %12l$");
 
                     if (pData->uchStatus == RPT_DECIMAL_1) {
                         uchDecimal = 1;
@@ -413,7 +413,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                                                                 /* pData->usPercent is set over 600.00 data */
                 /* check if PLU is SCALABLE */
                 if (pData->uchStatus == RPT_DECIMAL_0) {        /* in case of NON_SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile4A20[] = _T("%4s\t*****%%\n@%9l$\t%6ld   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile4A20[] = _T("%4s\t*****%%\n@%9l$\t%6ld   %12l$");
 
                     /* print ONE ADJECTIVE PLU with illegal percent data */
                     PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
@@ -423,7 +423,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                               pData->PLUTotal.lCounter,         /* counter */
                               pData->PLUTotal.lAmount);         /* amount */
                 } else {                                        /* in case of SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile4A21[] = _T("%4s\t*****%%\n@%9l$\t%7.*l$%s   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile4A21[] = _T("%4s\t*****%%\n@%9l$\t%7.*l$%s   %12l$");
 
                     if (pData->uchStatus == RPT_DECIMAL_1) {
                         uchDecimal = 1;
@@ -442,7 +442,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
             } else {
                 /* check if PLU is SCALABLE */                  
                 if (pData->uchStatus == RPT_DECIMAL_0) {        /* in case of SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile4B20[] = _T("%4s\t%6.2$%%\n@%9l$\t%6ld   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile4B20[] = _T("%4s\t%6.2$%%\n@%9l$\t%6ld   %12l$");
 
                     /* print ONE ADJECTIVE PLU with legal percent data */
                     PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
@@ -453,7 +453,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                               pData->PLUTotal.lCounter,         /* counter */
                               pData->PLUTotal.lAmount);         
                 } else {                                        /* in case of SCALABLE */
-					static const TCHAR FARCONST auchPrtThrmSupPLUFile4B21[] = _T("%4s\t%6.2$%%\n@%9l$\t%7.*l$%s   %12l$");
+					static const TCHAR  auchPrtThrmSupPLUFile4B21[] = _T("%4s\t%6.2$%%\n@%9l$\t%7.*l$%s   %12l$");
 
                     if (pData->uchStatus == RPT_DECIMAL_1) {
                         uchDecimal = 1;
@@ -475,7 +475,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
 
         case CLASS_RPTPLU_PRTTTLMINUSADJ1:  /* ONE ADJECTIVE COUPON PLU with PLU name/number */
 			{
-				static const TCHAR FARCONST auchPrtThrmSupPLUFile4C10[] = _T("%1s%13s %-20s\n%4s\n@%9l$\t%6ld   %12l$");
+				static const TCHAR  auchPrtThrmSupPLUFile4C10[] = _T("%1s%13s %-20s\n%4s\n@%9l$\t%6ld   %12l$");
 
 				/* convert PLU No. to double wide,  Saratoga */
 				RflConvertPLU(aszRepoNumb, pData->auchPLUNumber);
@@ -496,7 +496,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
         case CLASS_RPTPLU_PRTTTLMINUSADJ2:  /* ONE ADJECTIVE COUPON PLU without PLU name/number */
             /* print ONE ADJECTIVE COUPON PLU */
 			{
-				static const TCHAR FARCONST auchPrtThrmSupPLUFile4C20[] = _T("%4s\n@%9l$\t%6ld   %12l$");
+				static const TCHAR  auchPrtThrmSupPLUFile4C20[] = _T("%4s\n@%9l$\t%6ld   %12l$");
 
 				PrtPrintf(PMG_PRT_RECEIPT,                          /* printer type */
 						  auchPrtThrmSupPLUFile4C20,                /* format */
@@ -510,7 +510,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
         case CLASS_RPTPLU_PRTTTLCNT:
             /* check if TOTAL is SCALABLE */
             if (pData->uchStatus == RPT_DECIMAL_0) {            /* in case of NON-SCALABLE */
-				static const TCHAR FARCONST auchPrtThrmSupPLUFile50[] = _T("%-8.8s\t%6ld   %12l$");/*8 characters JHHJ*/
+				static const TCHAR  auchPrtThrmSupPLUFile50[] = _T("%-8.8s\t%6ld   %12l$");/*8 characters JHHJ*/
 
                 /* print SUBTOTAL/PLUS/MINUS/HASH/GRAND/CIGARETTE TOTAL */
                 PrtPrintf(PMG_PRT_RECEIPT,                      /* printer type */
@@ -520,7 +520,7 @@ VOID  PrtThrmSupPLUFile( RPTPLU *pData )
                           pData->PLUTotal.lAmount);             /* amount */
 
             } else {                                            /* in case of SCALABLE */
-				static const TCHAR FARCONST auchPrtThrmSupPLUFile51[] = _T("%-8.8s\t%7.*l$%s   %12l$");/*8 characters JHHJ*/
+				static const TCHAR  auchPrtThrmSupPLUFile51[] = _T("%-8.8s\t%7.*l$%s   %12l$");/*8 characters JHHJ*/
 
                 if (pData->uchStatus == RPT_DECIMAL_1) {
                     uchDecimal = 1;

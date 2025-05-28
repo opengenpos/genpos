@@ -83,18 +83,16 @@ VOID  PrtThrmSupTaxTbl( MAINTTAXTBL *pData )
 {
 
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupTaxTbl1[] = _T("%6sTAX RATE  %2u.%02u/%02u%%");
-    static const TCHAR FARCONST auchPrtThrmSupTaxTbl2[] = _T("%6sTAX RATE  %2u.%02u/%02u%%\n%12sSALE AMOUNT%10sTAX ");
-    static const TCHAR FARCONST auchPrtThrmSupTaxTbl3[] = _T("%19s%6l$%6s%6$");
-    static const TCHAR FARCONST auchPrtThrmSupTaxTbl4[] = _T("%10s%6l$ - %6l$%6s%6$");
+    static const TCHAR  auchPrtThrmSupTaxTbl1[] = _T("%6sTAX RATE  %2u.%02u/%02u%%");
+    static const TCHAR  auchPrtThrmSupTaxTbl2[] = _T("%6sTAX RATE  %2u.%02u/%02u%%\n%12sSALE AMOUNT%10sTAX ");
+    static const TCHAR  auchPrtThrmSupTaxTbl3[] = _T("%19s%6l$%6s%6$");
+    static const TCHAR  auchPrtThrmSupTaxTbl4[] = _T("%10s%6l$ - %6l$%6s%6$");
 
     /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupTaxTbl1[] = _T("  TAX RATE%4u.%02u/%02u%%");
-    static const TCHAR FARCONST auchPrtSupTaxTbl2[] = _T("  TAX RATE%4u.%02u/%02u%%\n\tSALE AMOUNT  TAX ");
-    static const TCHAR FARCONST auchPrtSupTaxTbl3[] = _T("\t%6l$ %6$");
-    static const TCHAR FARCONST auchPrtSupTaxTbl4[] = _T("\t%6l$-%6l$ %6$");
+    static const TCHAR  auchPrtSupTaxTbl1[] = _T("  TAX RATE%4u.%02u/%02u%%");
+    static const TCHAR  auchPrtSupTaxTbl2[] = _T("  TAX RATE%4u.%02u/%02u%%\n\tSALE AMOUNT  TAX ");
+    static const TCHAR  auchPrtSupTaxTbl3[] = _T("\t%6l$ %6$");
+    static const TCHAR  auchPrtSupTaxTbl4[] = _T("\t%6l$-%6l$ %6$");
 
     TCHAR   aszPrtNull[1] = {'\0'};
 

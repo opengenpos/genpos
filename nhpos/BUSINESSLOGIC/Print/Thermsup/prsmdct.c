@@ -86,14 +86,8 @@
 
 VOID  PrtThrmSupMDC( VOID *pData )
 {
-
-    /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupMDC[] = _T("%18u  /  %s");           
-
-    /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupMDC[] = _T("%8u / %s");             
+    static const TCHAR  auchPrtThrmSupMDC[] = _T("%18u  /  %s");       /* define thermal print format */        
+    static const TCHAR  auchPrtSupMDC[] = _T("%8u / %s");     /* define EJ print format */            
 
     TCHAR           aszBuffer[5];
     UCHAR           uchMajorClass;

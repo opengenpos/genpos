@@ -79,9 +79,9 @@
 
 VOID  PrtThrmSupCPNFile( RPTCPN *pData )  
 {
-    static const TCHAR FARCONST auchPrtThrmSupCPNFile1[] = _T("        %6s         %-12s\n\t%12ld   %12l$");
-    static const TCHAR FARCONST auchPrtThrmSupCPNFile2[] = _T("%-8.8s\t%12ld   %12l$");
-    static const TCHAR FARCONST auchThrmNumber[] = _T("%3d");
+    static const TCHAR  auchPrtThrmSupCPNFile1[] = _T("        %6s         %-12s\n\t%12ld   %12l$");
+    static const TCHAR  auchPrtThrmSupCPNFile2[] = _T("%-8.8s\t%12ld   %12l$");
+    static const TCHAR  auchThrmNumber[] = _T("%3d");
 
 	TCHAR  aszDoubRepoNumb[8 * 2 + 1] = { 0 };
 	TCHAR  aszRepoNumb[8 + 1] = { 0 };

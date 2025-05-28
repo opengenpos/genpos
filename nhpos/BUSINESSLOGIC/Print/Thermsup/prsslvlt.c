@@ -79,36 +79,19 @@
 
 VOID PrtThrmSupSupLevel( PARASUPLEVEL *pData )
 {
-
-    /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupSupLevel[] = _T("%18u  /  %3u");
-
-    /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupSupLevel[] = _T("%8u / %3u");
+    static const TCHAR  auchPrtThrmSupSupLevel[] = _T("%18u  /  %3u");    /* define thermal print format */
+    static const TCHAR  auchPrtSupSupLevel[] = _T("%8u / %3u");    /* define EJ print format */
 
 
     /* check print control */
-
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
         /* print ADDRESS / SUPERVISOR No. */
-
-        PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
-                  auchPrtThrmSupSupLevel,           /* format */
-                  ( USHORT)pData->uchAddress,       /* address */
-                  pData->usSuperNumber);            /* supervisor number */
+        PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupSupLevel, ( USHORT)pData->uchAddress, pData->usSuperNumber);            /* supervisor number */
     } 
     
     if (pData->usPrintControl & PRT_JOURNAL) {  /* EJ */
-
         /* print ADDRESS / SUPERVISOR No. */
-
-        PrtPrintf(PMG_PRT_JOURNAL,                  /* printer type */
-                  auchPrtSupSupLevel,               /* format */
-                  ( USHORT)pData->uchAddress,       /* address */
-                  pData->usSuperNumber);            /* supervisor number */
+        PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupSupLevel, ( USHORT)pData->uchAddress, pData->usSuperNumber);            /* supervisor number */
     }
 }
 /***** End of Source *****/

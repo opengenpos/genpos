@@ -77,11 +77,11 @@
 VOID PrtThrmSupCstrData( MAINTCSTR *pData )
 {
     /* Print Format Define */
-    static const TCHAR FARCONST auchPrtThrmSupCstr[] = _T(" %4u   %4u\t%3u-%3u");
-    static const TCHAR FARCONST auchPrtThrmSupCstr2[] = _T(" %4u   %4u\t   -  %1c");
-    static const TCHAR FARCONST auchPrtSupCstr[] = _T(" %4u %4u\t%3u-%3u");
-    static const TCHAR FARCONST auchPrtSupCstr2[] = _T(" %4u %4u\t   -  %1c");
-    static const TCHAR FARCONST auchPrtThrmSupCstrDelete[] = _T(" %4u");
+    static const TCHAR  auchPrtThrmSupCstr[] = _T(" %4u   %4u\t%3u-%3u");
+    static const TCHAR  auchPrtThrmSupCstr2[] = _T(" %4u   %4u\t   -  %1c");
+    static const TCHAR  auchPrtSupCstr[] = _T(" %4u %4u\t%3u-%3u");
+    static const TCHAR  auchPrtSupCstr2[] = _T(" %4u %4u\t   -  %1c");
+    static const TCHAR  auchPrtThrmSupCstrDelete[] = _T(" %4u");
 
     switch(pData->usPrintControl){
     case PRT_RECEIPT:

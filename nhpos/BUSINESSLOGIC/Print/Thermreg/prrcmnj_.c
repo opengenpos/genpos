@@ -143,99 +143,99 @@ static UCHAR   auchPrtEJBuffer[EJ_PRT_BUFFLEN];   /* E/J print buffer R3.1 */
 static USHORT  usPrtEJOffset;                       /* E/J buffer write offset */
 
 
-CONST TCHAR FARCONST  aszPrtEJAmtMnem[] = _T("%s\t%l$");    /* trans.mnem and amount */
+CONST TCHAR   aszPrtEJAmtMnem[] = _T("%s\t%l$");    /* trans.mnem and amount */
 //SR 144 cwunn added to print quantity, mnemonic, and amount on the same line
-CONST TCHAR FARCONST  aszPrtEJAmtMnem1Line[] = _T("%ld X $%l$ %s\t%l$");  /* trans.mnem and amount */
+CONST TCHAR   aszPrtEJAmtMnem1Line[] = _T("%ld X $%l$ %s\t%l$");  /* trans.mnem and amount */
 //end SR 144
 
-CONST TCHAR FARCONST  aszPrtAmtMnemShift[] = _T("%8.8s\t %l$%*s"); /*8 characters JHHJ*/  /* trans.mnem and amount, V3.3 */
-CONST TCHAR FARCONST  aszPrtEJAmtDiscMnem[] = _T("%8.8s\t%d%%%11l$");    /* disc. rate and amount */
+CONST TCHAR   aszPrtAmtMnemShift[] = _T("%8.8s\t %l$%*s"); /*8 characters JHHJ*/  /* trans.mnem and amount, V3.3 */
+CONST TCHAR   aszPrtEJAmtDiscMnem[] = _T("%8.8s\t%d%%%11l$");    /* disc. rate and amount */
 
-CONST TCHAR FARCONST  aszPrtEJMnemMnem[] = _T("%.8s\t %s");/*8 characters JHHJ*/
+CONST TCHAR   aszPrtEJMnemMnem[] = _T("%.8s\t %s");/*8 characters JHHJ*/
 
 /*** Add Unique Transaction Number (REL 3.0) ***/
-CONST TCHAR FARCONST  aszPrtEJTblPerson[] = _T("%-4s %-3s %s %s");  /* table and person */
-CONST TCHAR FARCONST  aszPrtEJTransNo[] = _T("%-12s %-8s");         /* unique trans no. */
-CONST TCHAR FARCONST  aszPrtEJPerson[] = _T("         %s %s");      /* person no. */
-CONST TCHAR FARCONST  aszPrtEJCustomerName[] = _T("%-19s");         /* customer name */
+CONST TCHAR   aszPrtEJTblPerson[] = _T("%-4s %-3s %s %s");  /* table and person */
+CONST TCHAR   aszPrtEJTransNo[] = _T("%-12s %-8s");         /* unique trans no. */
+CONST TCHAR   aszPrtEJPerson[] = _T("         %s %s");      /* person no. */
+CONST TCHAR   aszPrtEJCustomerName[] = _T("%-19s");         /* customer name */
 /*** Add Unique Transaction Number (REL 3.0) ***/
 
-CONST TCHAR FARCONST  aszPrtEJMultiSeat[] = _T("%-s");          /* seat no. */
+CONST TCHAR   aszPrtEJMultiSeat[] = _T("%-s");          /* seat no. */
 
-CONST TCHAR FARCONST  aszPrtEJMnemNum[] = _T("%-8s %lu");       /* mnemo. and number */
+CONST TCHAR   aszPrtEJMnemNum[] = _T("%-8s %lu");       /* mnemo. and number */
 
-CONST TCHAR FARCONST  aszPrtEJPrinNo[]  = _T("PRT%d");          /* printer no. */
+CONST TCHAR   aszPrtEJPrinNo[]  = _T("PRT%d");          /* printer no. */
 
-CONST TCHAR FARCONST  aszPrtEJWaiter[]  = _T("%s%8.8Mu");         /* waiter mnemo. and ID */
-CONST TCHAR FARCONST  aszPrtEJWaiTaxMod[] = _T("%s%8.8Mu  %s");  /* waiter mnemo. and ID and taxmodifier */
+CONST TCHAR   aszPrtEJWaiter[]  = _T("%s%8.8Mu");         /* waiter mnemo. and ID */
+CONST TCHAR   aszPrtEJWaiTaxMod[] = _T("%s%8.8Mu  %s");  /* waiter mnemo. and ID and taxmodifier */
 
-CONST TCHAR FARCONST  aszPrtEJForeign1[]  = _T("%.*l$");         /* foreign amount */
+CONST TCHAR   aszPrtEJForeign1[]  = _T("%.*l$");         /* foreign amount */
 
-CONST TCHAR FARCONST  aszPrtEJForeign2[]  = _T("   / %10.*l$"); /* V3.4 */
+CONST TCHAR   aszPrtEJForeign2[]  = _T("   / %10.*l$"); /* V3.4 */
                                                  /* foreign conversion rate */
                                                  /* XXXXX.XXXXX */
 
-CONST TCHAR FARCONST  aszPrtEJSeat[] = _T("%-4s %1d"); //SR206 _T("%-4s %2d");       /* seat no. */
+CONST TCHAR   aszPrtEJSeat[] = _T("%-4s %1d"); //SR206 _T("%-4s %2d");       /* seat no. */
 
-CONST TCHAR FARCONST  aszPrtEJQuant[]   = _T("%8ld X\t %l$ ");         /* qty and unit price */
+CONST TCHAR   aszPrtEJQuant[]   = _T("%8ld X\t %l$ ");         /* qty and unit price */
 
-CONST TCHAR FARCONST  aszPrtEJPPIQuant[]   = _T("%8ld X\t %l$/%ld ");  /* qty, product and qty */
+CONST TCHAR   aszPrtEJPPIQuant[]   = _T("%8ld X\t %l$/%ld ");  /* qty, product and qty */
 
-CONST TCHAR FARCONST  aszPrtEJWeight1[] = _T("%8.*l$%s\t %s");         /* Weight and Manual Mnem. */
+CONST TCHAR   aszPrtEJWeight1[] = _T("%8.*l$%s\t %s");         /* Weight and Manual Mnem. */
 
-CONST TCHAR FARCONST  aszPrtEJWeight2[] = _T("\t@ %l$/%s ");           /* scale sym. and unit price */
+CONST TCHAR   aszPrtEJWeight2[] = _T("\t@ %l$/%s ");           /* scale sym. and unit price */
 
-CONST TCHAR FARCONST  aszPrtEJChild[]   = _T(" %4s %s");               /* child plu */
-CONST TCHAR FARCONST  aszPrtEJChild2[]   = _T(" %s");                  /* child plu, saratoga */
+CONST TCHAR   aszPrtEJChild[]   = _T(" %4s %s");               /* child plu */
+CONST TCHAR   aszPrtEJChild2[]   = _T(" %s");                  /* child plu, saratoga */
 
-CONST TCHAR FARCONST  aszPrtEJModLinkPLU1[]   = _T("%4s %s\t%l$ ");    /* child plu */
-CONST TCHAR FARCONST  aszPrtEJModLinkPLU2[]   = _T("%s\t%l$ ");        /* child plu, saratoga */
+CONST TCHAR   aszPrtEJModLinkPLU1[]   = _T("%4s %s\t%l$ ");    /* child plu */
+CONST TCHAR   aszPrtEJModLinkPLU2[]   = _T("%s\t%l$ ");        /* child plu, saratoga */
 
-CONST TCHAR FARCONST  aszPrtEJLinkPLU1[]   = _T("%4s %s\t%l$");        /* child plu */
-CONST TCHAR FARCONST  aszPrtEJLinkPLU2[]   = _T("%s\t%l$");            /* child plu, saratoga */
+CONST TCHAR   aszPrtEJLinkPLU1[]   = _T("%4s %s\t%l$");        /* child plu */
+CONST TCHAR   aszPrtEJLinkPLU2[]   = _T("%s\t%l$");            /* child plu, saratoga */
 
-CONST TCHAR FARCONST  aszPrtEJTrail2[] = _T("%04d\t %s");              /* trailer 2nd line */
+CONST TCHAR   aszPrtEJTrail2[] = _T("%04d\t %s");              /* trailer 2nd line */
 
-CONST TCHAR FARCONST  aszPrtEJGuest_WTCD[] = _T("%-8s %4d%02d");       /* guest no. with check digit */
+CONST TCHAR   aszPrtEJGuest_WTCD[] = _T("%-8s %4d%02d");       /* guest no. with check digit */
 
-CONST TCHAR FARCONST  aszPrtEJGuest_WOCD[] = _T("%-8s %4d");        /* guest no. without check digit */
+CONST TCHAR   aszPrtEJGuest_WOCD[] = _T("%-8s %4d");        /* guest no. without check digit */
 
-CONST TCHAR FARCONST  aszPrtQty[] = _T("%8ld X");                   /* qty line */
+CONST TCHAR   aszPrtQty[] = _T("%8ld X");                   /* qty line */
 
-CONST TCHAR FARCONST  aszPrtEJMnemCount[] = _T("%-8s\t%d");         /* mnemo. and counter */
+CONST TCHAR   aszPrtEJMnemCount[] = _T("%-8s\t%d");         /* mnemo. and counter */
 
-CONST TCHAR FARCONST  aszPrtEJModAmtMnem[] = _T("%s\t %l$ ");       /* mod. disc. product */
+CONST TCHAR   aszPrtEJModAmtMnem[] = _T("%s\t %l$ ");       /* mod. disc. product */
 
 //SR 144 cwunn added to print quantity, mnemonic, and amount on the same line
-CONST TCHAR FARCONST  aszPrtEJModAmtMnem1Line[] = _T("%ld X $%l$ %s\t %l$ ");    /* mod. disc. product */
+CONST TCHAR   aszPrtEJModAmtMnem1Line[] = _T("%ld X $%l$ %s\t %l$ ");    /* mod. disc. product */
 //end SR 144
 
-CONST TCHAR FARCONST  aszPrtEJCPRoomCharge[] = _T("%-4s%6s\t %-4s%3s"); /* room charge */
+CONST TCHAR   aszPrtEJCPRoomCharge[] = _T("%-4s%6s\t %-4s%3s"); /* room charge */
 
-CONST TCHAR FARCONST  aszPrtEJFolioPost[] = _T("%-4s%6s\t %-4s%6s");    /* folio, posted transaction no. */
+CONST TCHAR   aszPrtEJFolioPost[] = _T("%-4s%6s\t %-4s%6s");    /* folio, posted transaction no. */
 
-CONST TCHAR FARCONST  aszPrtEJCPRspMsgText[] = _T("%-40s");                /* charge posting */
-CONST TCHAR FARCONST  aszPrtEJOffline[] = _T("%-4s   %5s   %6s");       /* mnemo, date, approval code */
+CONST TCHAR   aszPrtEJCPRspMsgText[] = _T("%-40s");                /* charge posting */
+CONST TCHAR   aszPrtEJOffline[] = _T("%-4s   %5s   %6s");       /* mnemo, date, approval code */
 
-CONST TCHAR FARCONST  aszPrtEJOffDate[] = _T("%02d/%02d");              /* expiration date */
+CONST TCHAR   aszPrtEJOffDate[] = _T("%02d/%02d");              /* expiration date */
 
-CONST TCHAR FARCONST  aszPrtEJEPTError[] = _T("%c %d");                 /* mnemo. and error code */
+CONST TCHAR   aszPrtEJEPTError[] = _T("%c %d");                 /* mnemo. and error code */
 
-extern CONST TCHAR FARCONST aszPrtTime[];
-extern CONST TCHAR FARCONST aszPrtTimeZone[];
-extern CONST TCHAR FARCONST aszPrtDate[];
+extern CONST TCHAR  aszPrtTime[];
+extern CONST TCHAR  aszPrtTimeZone[];
+extern CONST TCHAR  aszPrtDate[];
 
-extern CONST TCHAR FARCONST  aszEtkCode[];
+extern CONST TCHAR   aszEtkCode[];
 
 
-extern CONST TCHAR FARCONST  aszPrtTHEuro1[];         /* Euro amount */
-extern CONST TCHAR FARCONST  aszPrtTHEuroAmtMnem[];   /* trans.mnem and amount */
+extern CONST TCHAR   aszPrtTHEuro1[];         /* Euro amount */
+extern CONST TCHAR   aszPrtTHEuroAmtMnem[];   /* trans.mnem and amount */
 
-CONST TCHAR FARCONST  aszPrtEJPluBuild[]      = _T("%s\t %13s %04d");     /* Plu no and Dept no. */
-CONST TCHAR FARCONST  aszPrtEJMoneyForeign[]  = _T("%.*l$");
+CONST TCHAR   aszPrtEJPluBuild[]      = _T("%s\t %13s %04d");     /* Plu no and Dept no. */
+CONST TCHAR   aszPrtEJMoneyForeign[]  = _T("%.*l$");
 
-CONST TCHAR FARCONST  aszPrtEJAmtMnemSI[] = _T("%s %s\t %l$");            /* trans.mnem and amount, 21RFC05437 */
-CONST TCHAR FARCONST  aszPrtEJAmtDiscMnemSI[] = _T("%s %s %d%%\t%11l$");  /* disc. rate and amount */
+CONST TCHAR   aszPrtEJAmtMnemSI[] = _T("%s %s\t %l$");            /* trans.mnem and amount, 21RFC05437 */
+CONST TCHAR   aszPrtEJAmtDiscMnemSI[] = _T("%s %s %d%%\t%11l$");  /* disc. rate and amount */
 
 /**
 ;========================================================================
@@ -1547,7 +1547,7 @@ VOID  PrtEJMnemCount(USHORT usTranAdr, SHORT sCount)
 */
 VOID  PrtEJTrail1(TRANINFORMATION *pTran, ULONG  ulStReg)
 {
-	extern CONST TCHAR FARCONST  aszCasWaiID[];
+	extern CONST TCHAR   aszCasWaiID[];
 	CONST TCHAR   *aszPrtEJTrail1  = _T("%s %s\t%04lu-%03lu"); /* trailer 1st line */
 
     TCHAR  aszMnem[PARA_SPEMNEMO_LEN + 1] = {0};
@@ -1607,7 +1607,7 @@ VOID PrtEJTrail2(TRANINFORMATION  *pTran)
 */
 VOID  PrtEJEtkCode(ITEMMISC  *pItem, SHORT sType)
 {
-	extern CONST TCHAR FARCONST  aszEtkJobCode[];
+	extern CONST TCHAR   aszEtkJobCode[];
 	CONST TCHAR   *aszPrtEJETKCode = _T("%-16s\n%8.8Mu\t%s"); /* add at R3.1 */
 	TCHAR   aszJobCode[12] = {0};
 
@@ -1747,7 +1747,7 @@ VOID  PrtForceEJInit(TRANINFORMATION  *pTran)
 		((EJT_HEADER *)auchPrtEJBuffer)->usGCFNo        = pTran->TranGCFQual.usGuestNo;
 		((EJT_HEADER *)auchPrtEJBuffer)->usOpeNo        = ulID;
 	} else {
-		PARASTOREGNO   StRegNoRcvBuff;
+        PARASTOREGNO   StRegNoRcvBuff = { 0 };
 
         StRegNoRcvBuff.uchMajorClass = CLASS_PARASTOREGNO;    /* get store/ reg No. */
         StRegNoRcvBuff.uchAddress = SREG_NO_ADR;

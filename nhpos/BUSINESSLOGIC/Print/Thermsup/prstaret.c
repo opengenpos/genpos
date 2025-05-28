@@ -82,18 +82,15 @@ VOID PrtThrmSupTare( PARATARE *pData )
 {
 
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupTare1[] = _T("%15u  /   %4.2$%-4s");
-    static const TCHAR FARCONST auchPrtThrmSupTare2[] = _T("%15u  /   %5.3$%-4s");
+    static const TCHAR  auchPrtThrmSupTare1[] = _T("%15u  /   %4.2$%-4s");
+    static const TCHAR  auchPrtThrmSupTare2[] = _T("%15u  /   %5.3$%-4s");
 
     /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupTare1[] = _T("%6u /\t%.2$%-4s");
-    static const TCHAR FARCONST auchPrtSupTare2[] = _T("%6u /\t%.3$%-4s");
+    static const TCHAR  auchPrtSupTare1[] = _T("%6u /\t%.2$%-4s");
+    static const TCHAR  auchPrtSupTare2[] = _T("%6u /\t%.3$%-4s");
 
 
     /* distinguish minor class */ 
-    
     switch(pData->uchMinorClass) {
     case CLASS_PARATARE_001:    /* minimum unit is 0.01 */             
 

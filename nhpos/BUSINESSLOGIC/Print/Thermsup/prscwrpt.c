@@ -112,19 +112,19 @@
 VOID  PrtThrmSupCashWaitFile( VOID *pData )  
 {
     /* define thermal print format */
-    static const TCHAR FARCONST auchPrtThrmSupCashWaitFile[] = _T("%6s%-20s%2s%8s");    /* V3.3 */
-    static const TCHAR FARCONST auchPrtThrmSupEmployeeNo[] = _T("%6s%-16s%3s%8.8Mu");
+    static const TCHAR  auchPrtThrmSupCashWaitFile[] = _T("%6s%-20s%2s%8s");    /* V3.3 */
+    static const TCHAR  auchPrtThrmSupEmployeeNo[] = _T("%6s%-16s%3s%8.8Mu");
 
     /* define EJ print format */
-    static const TCHAR FARCONST auchPrtSupCashWaitFile[] = _T("%3s%s\t%s");
-    static const TCHAR FARCONST auchPrtSupEmployeeNo[] = _T("%-s\t%8.8Mu");
+    static const TCHAR  auchPrtSupCashWaitFile[] = _T("%3s%s\t%s");
+    static const TCHAR  auchPrtSupEmployeeNo[] = _T("%-s\t%8.8Mu");
 
     /* define thermal/EJ common print format */
-    static const TCHAR FARCONST auchNumber[] = _T("%8.8Mu");
-    static const TCHAR FARCONST auchNumber1[] = _T("%3u");
+    static const TCHAR  auchNumber[] = _T("%8.8Mu");
+    static const TCHAR  auchNumber1[] = _T("%3u");
 
     TCHAR   aszPrtNull[1] = {'\0'};
-	TCHAR	aszDoubNumb[8 * 2 + 1];
+    TCHAR	aszDoubNumb[8 * 2 + 1] = { 0 };
 	TCHAR	aszNumb[8 + 1];
     UCHAR   uchMajorClass;
     UCHAR   uchMinorClass;

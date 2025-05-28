@@ -78,11 +78,11 @@ VOID PrtThrmSupServiceTime( RPTSERVICE *pData )
 
     /* define thermal print format */
 #if defined(DCURRENCY_LONGLONG)
-	static const TCHAR FARCONST auchPrtThrmSupService1[] = _T("#%1u\t%5lu  %9lu.%02u");
-	static const TCHAR FARCONST auchPrtThrmSupService2[] = _T("\t%5lu  %9lu.%02u");
+	static const TCHAR  auchPrtThrmSupService1[] = _T("#%1u\t%5lu  %9lu.%02u");
+	static const TCHAR  auchPrtThrmSupService2[] = _T("\t%5lu  %9lu.%02u");
 #else
-    static const TCHAR FARCONST auchPrtThrmSupService1[] = _T("#%1u\t%5u  %9lu.%02u");
-    static const TCHAR FARCONST auchPrtThrmSupService2[] = _T("\t%5u  %9lu.%02u");
+    static const TCHAR  auchPrtThrmSupService1[] = _T("#%1u\t%5u  %9lu.%02u");
+    static const TCHAR  auchPrtThrmSupService2[] = _T("\t%5u  %9lu.%02u");
 #endif
 
     /* check print control */

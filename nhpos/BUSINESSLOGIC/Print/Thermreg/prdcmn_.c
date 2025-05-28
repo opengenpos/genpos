@@ -109,44 +109,44 @@
 ;+                    S T A T I C    R A M s
 ;========================================================================
 **/
-extern CONST TCHAR FARCONST  aszPrtEJWeight1[];
-extern CONST TCHAR FARCONST  aszPrtEJWeight2[];
-extern CONST TCHAR FARCONST  aszPrtEJQuant[];
-extern CONST TCHAR FARCONST  aszPrtEJAmtMnem[];
-extern CONST TCHAR FARCONST  aszPrtEJChild[];
-extern CONST TCHAR FARCONST  aszPrtEJChild2[];
-extern CONST TCHAR FARCONST  aszPrtEJLinkPLU1[];
-extern CONST TCHAR FARCONST  aszPrtEJLinkPLU2[];
-extern CONST TCHAR FARCONST  aszPrtEJModLinkPLU1[];
-extern CONST TCHAR FARCONST  aszPrtEJModLinkPLU2[];
-extern CONST TCHAR FARCONST  aszPrtEJMnemMnem[];
-extern CONST TCHAR FARCONST  aszPrtEJAmtDiscMnem[];
-extern CONST TCHAR FARCONST  aszPrtEJWaiTaxMod[];
-extern CONST TCHAR FARCONST  aszPrtEJWaiter[];
-extern CONST TCHAR FARCONST  aszPrtEJGuest_WTCD[];
-extern CONST TCHAR FARCONST  aszPrtEJGuest_WOCD[];
-extern CONST TCHAR FARCONST  aszPrtEJMnemNum[];
-extern CONST TCHAR FARCONST  aszPrtEJMnemCount[];
-extern CONST TCHAR FARCONST  aszPrtEJForeign1[];
-extern CONST TCHAR FARCONST  aszPrtEJForeign2[];
-extern CONST TCHAR FARCONST  aszPrtEJTblPerson[];
-extern CONST TCHAR FARCONST  aszItemAmt[];
-extern CONST TCHAR FARCONST  aszPrtEJCPRoomCharge[];
-extern CONST TCHAR FARCONST  aszPrtEJOffDate[];
-extern CONST TCHAR FARCONST  aszPrtEJOffline[];
-extern CONST TCHAR FARCONST  aszPrtEJFolioPost[];
-extern CONST TCHAR FARCONST  aszPrtEJCPRspMsgText[];
+extern CONST TCHAR   aszPrtEJWeight1[];
+extern CONST TCHAR   aszPrtEJWeight2[];
+extern CONST TCHAR   aszPrtEJQuant[];
+extern CONST TCHAR   aszPrtEJAmtMnem[];
+extern CONST TCHAR   aszPrtEJChild[];
+extern CONST TCHAR   aszPrtEJChild2[];
+extern CONST TCHAR   aszPrtEJLinkPLU1[];
+extern CONST TCHAR   aszPrtEJLinkPLU2[];
+extern CONST TCHAR   aszPrtEJModLinkPLU1[];
+extern CONST TCHAR   aszPrtEJModLinkPLU2[];
+extern CONST TCHAR   aszPrtEJMnemMnem[];
+extern CONST TCHAR   aszPrtEJAmtDiscMnem[];
+extern CONST TCHAR   aszPrtEJWaiTaxMod[];
+extern CONST TCHAR   aszPrtEJWaiter[];
+extern CONST TCHAR   aszPrtEJGuest_WTCD[];
+extern CONST TCHAR   aszPrtEJGuest_WOCD[];
+extern CONST TCHAR   aszPrtEJMnemNum[];
+extern CONST TCHAR   aszPrtEJMnemCount[];
+extern CONST TCHAR   aszPrtEJForeign1[];
+extern CONST TCHAR   aszPrtEJForeign2[];
+extern CONST TCHAR   aszPrtEJTblPerson[];
+extern CONST TCHAR   aszItemAmt[];
+extern CONST TCHAR   aszPrtEJCPRoomCharge[];
+extern CONST TCHAR   aszPrtEJOffDate[];
+extern CONST TCHAR   aszPrtEJOffline[];
+extern CONST TCHAR   aszPrtEJFolioPost[];
+extern CONST TCHAR   aszPrtEJCPRspMsgText[];
 /*** Add Unique Transaction Number (REL 3.0) ***/
-extern CONST TCHAR FARCONST  aszPrtEJTransNo[];
-extern CONST TCHAR FARCONST  aszPrtEJPerson[];
-extern CONST TCHAR FARCONST  aszPrtEJCustomerName[];
+extern CONST TCHAR   aszPrtEJTransNo[];
+extern CONST TCHAR   aszPrtEJPerson[];
+extern CONST TCHAR   aszPrtEJCustomerName[];
 /*** Add Unique Transaction Number (REL 3.0) ***/
-extern CONST TCHAR FARCONST  aszPrtEJSeat[];    /* R3.1 */
-extern CONST TCHAR FARCONST  aszPrtAmtMnemShift[];
+extern CONST TCHAR   aszPrtEJSeat[];    /* R3.1 */
+extern CONST TCHAR   aszPrtAmtMnemShift[];
 
-extern CONST TCHAR FARCONST  aszPrtEJPPIQuant[];
+extern CONST TCHAR   aszPrtEJPPIQuant[];
 
-CONST TCHAR FARCONST  aszPrtDflPLUNo[] = _T("%s");
+CONST TCHAR   aszPrtDflPLUNo[] = _T("%s");
  
 /**
 ;========================================================================

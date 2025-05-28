@@ -78,8 +78,8 @@ VOID PrtThrmSupPPI( PARAPPI *pData )
 {
 
     /* Print Format Define */
-    static const TCHAR FARCONST auchPrtThrmSupPPIA[] = _T("%4u %4u /\t%3u-%6lu");
-    static const TCHAR FARCONST auchPrtThrmSupPPIB[] = _T("     %4u /\t%3u-%6lu");
+    static const TCHAR  auchPrtThrmSupPPIA[] = _T("%4u %4u /\t%3u-%6lu");
+    static const TCHAR  auchPrtThrmSupPPIB[] = _T("     %4u /\t%3u-%6lu");
 
     USHORT i;
 

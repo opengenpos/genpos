@@ -82,21 +82,17 @@ VOID PrtThrmSupHourly( PARAHOURLYTIME *pData )
 {
 
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupHourly1[] = _T("%18u  /  %2u");
-    static const TCHAR FARCONST auchPrtThrmSupHourly2[] = _T("%18u  /  %2u:%02u");
+    static const TCHAR  auchPrtThrmSupHourly1[] = _T("%18u  /  %2u");
+    static const TCHAR  auchPrtThrmSupHourly2[] = _T("%18u  /  %2u:%02u");
 
     /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupHourly1[] = _T("%8u / %2u");
-    static const TCHAR FARCONST auchPrtSupHourly2[] = _T("%8u / %2u:%02u");
+    static const TCHAR  auchPrtSupHourly1[] = _T("%8u / %2u");
+    static const TCHAR  auchPrtSupHourly2[] = _T("%8u / %2u:%02u");
 
     /* check print control */
-
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
 
         /* distinguish major class */ 
-    
         switch(pData->uchMinorClass) {
         case CLASS_PARAHOURLYTIME_BLOCK:            /* number of hourly block */
 

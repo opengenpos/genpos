@@ -85,17 +85,15 @@ VOID PrtThrmSupMenuPLU( MAINTMENUPLUTBL *pData )
 {
 
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupMenuPLU1[] = _T("  %-20s\t%s - %1u");
-    static const TCHAR FARCONST auchPrtThrmSupMenuPLU2[] = _T("%6s%1u  /  %-20s\t%s - %1u");
+    static const TCHAR  auchPrtThrmSupMenuPLU1[] = _T("  %-20s\t%s - %1u");
+    static const TCHAR  auchPrtThrmSupMenuPLU2[] = _T("%6s%1u  /  %-20s\t%s - %1u");
 
     /* define EJ print format */
+    static const TCHAR  auchPrtSupMenuPLU1[] = _T("%-s\t%s-%1u");
+    static const TCHAR  auchPrtSupMenuPLU2[] = _T("%1u / %-s\t%s-%1u");
 
-    static const TCHAR FARCONST auchPrtSupMenuPLU1[] = _T("%-s\t%s-%1u");
-    static const TCHAR FARCONST auchPrtSupMenuPLU2[] = _T("%1u / %-s\t%s-%1u");
-
-    static const TCHAR FARCONST auchPrtSupMenuPLU3[] = _T("%-s\n\t%s-%1u");
-    static const TCHAR FARCONST auchPrtSupMenuPLU4[] = _T("%1u / %-s\n\t%s-%1u");
+    static const TCHAR  auchPrtSupMenuPLU3[] = _T("%-s\n\t%s-%1u");
+    static const TCHAR  auchPrtSupMenuPLU4[] = _T("%1u / %-s\n\t%s-%1u");
 
     TCHAR  aszPLUNo[PLU_MAX_DIGIT+1];
     TCHAR  aszPrtNull[1] = {'\0'};

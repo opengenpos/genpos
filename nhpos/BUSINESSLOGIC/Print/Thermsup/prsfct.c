@@ -80,10 +80,10 @@
 VOID PrtThrmSupCurrency( PARACURRENCYTBL *pData )
 {
     /* define thermal print format */
-    static const TCHAR FARCONST auchPrtThrmSupCurrency[] = _T("%13u  /  %10.*l$");
+    static const TCHAR  auchPrtThrmSupCurrency[] = _T("%13u  /  %10.*l$");
 
     /* define EJ print format */
-    static const TCHAR FARCONST auchPrtSupCurrency[] = _T("%8u / \t%10.*l$");
+    static const TCHAR  auchPrtSupCurrency[] = _T("%8u / \t%10.*l$");
 
     SHORT       sDecPoint;
 

@@ -94,15 +94,15 @@ VOID  PrtThrmSupGCF( RPTGUEST *pData )
     /* check print control */
     if (pData->usPrintControl & PRT_RECEIPT) {
 		/* define thermal print format */
-		const TCHAR FARCONST *auchPrtThrmSupGCF1 = _T("%-8.8s %4u%02u\t%4s  %8.8Mu");
-		const TCHAR FARCONST *auchPrtThrmSupGCF2 = _T("%-8.8s %4u\t%4s  %8.8Mu");
-		const TCHAR FARCONST *auchPrtThrmSupGCF3 = _T("%-8.8s\t%2u:%02u");
-		const TCHAR FARCONST *auchPrtThrmSupGCF4 = _T("%-8.8s\t%2u:%02u%s");
-		const TCHAR FARCONST *auchPrtThrmSupGCF5 = _T("%-8.8s\t%3d");
-		const TCHAR FARCONST *auchPrtThrmSupGCF6 = _T("%-8.8s\t%12l$");
-		const TCHAR FARCONST *auchPrtThrmSupGCF7 = _T("%s");
-		const TCHAR FARCONST *auchPrtThrmSupGCF8 = _T("%-8.8s %4u *** \t%4s  %8.8Mu");
-		const TCHAR FARCONST *auchPrtThrmSupGCF9 = _T("%-8.8s\t%8.8Mu");
+		const TCHAR  *auchPrtThrmSupGCF1 = _T("%-8.8s %4u%02u\t%4s  %8.8Mu");
+		const TCHAR  *auchPrtThrmSupGCF2 = _T("%-8.8s %4u\t%4s  %8.8Mu");
+		const TCHAR  *auchPrtThrmSupGCF3 = _T("%-8.8s\t%2u:%02u");
+		const TCHAR  *auchPrtThrmSupGCF4 = _T("%-8.8s\t%2u:%02u%s");
+		const TCHAR  *auchPrtThrmSupGCF5 = _T("%-8.8s\t%3d");
+		const TCHAR  *auchPrtThrmSupGCF6 = _T("%-8.8s\t%12l$");
+		const TCHAR  *auchPrtThrmSupGCF7 = _T("%s");
+		const TCHAR  *auchPrtThrmSupGCF8 = _T("%-8.8s %4u *** \t%4s  %8.8Mu");
+		const TCHAR  *auchPrtThrmSupGCF9 = _T("%-8.8s\t%8.8Mu");
 
         /* distinguish minor class */
         switch(pData->uchMinorClass) {
@@ -187,15 +187,15 @@ VOID  PrtThrmSupGCF( RPTGUEST *pData )
         /* check status */
         if (pData->uchStatus == RPT_GCF_RESET) {            /* in case of RESET REPORT */
 			/* define E/J print format */
-			const TCHAR FARCONST *auchPrtSupGCF1 = _T("%-8.8s %4u%02u\t%4s %8.8Mu");
-			const TCHAR FARCONST *auchPrtSupGCF2 = _T("%-8.8s %4u\t%4s %8.8Mu");
-			const TCHAR FARCONST *auchPrtSupGCF3 = _T("%-8.8s\t%2u:%02u");
-			const TCHAR FARCONST *auchPrtSupGCF4 = _T("%-8.8s\t%2u:%02u%s");
-			const TCHAR FARCONST *auchPrtSupGCF5 = _T("%-8.8s\t%3d");
-			const TCHAR FARCONST *auchPrtSupGCF6 = _T("%-8.8s\n\t%l$");
-			const TCHAR FARCONST *auchPrtSupGCF7 = _T("%-8.8s\t%l$");        
-			const TCHAR FARCONST *auchPrtSupGCF8 = _T("%s");                
-			const TCHAR FARCONST *auchPrtSupGCF9 = _T("%-8.8s\t%8.8Mu");
+			const TCHAR  *auchPrtSupGCF1 = _T("%-8.8s %4u%02u\t%4s %8.8Mu");
+			const TCHAR  *auchPrtSupGCF2 = _T("%-8.8s %4u\t%4s %8.8Mu");
+			const TCHAR  *auchPrtSupGCF3 = _T("%-8.8s\t%2u:%02u");
+			const TCHAR  *auchPrtSupGCF4 = _T("%-8.8s\t%2u:%02u%s");
+			const TCHAR  *auchPrtSupGCF5 = _T("%-8.8s\t%3d");
+			const TCHAR  *auchPrtSupGCF6 = _T("%-8.8s\n\t%l$");
+			const TCHAR  *auchPrtSupGCF7 = _T("%-8.8s\t%l$");        
+			const TCHAR  *auchPrtSupGCF8 = _T("%s");                
+			const TCHAR  *auchPrtSupGCF9 = _T("%-8.8s\t%8.8Mu");
 
             /* distinguish minor class */
             switch(pData->uchMinorClass) {

@@ -79,8 +79,8 @@
 VOID PrtThermSupAge( PARABOUNDAGE *pData )
 {
     /* Define print format */
-    static const TCHAR FARCONST auchPrtThermSupAge[] = _T("%8u / %3d");
-    static const TCHAR FARCONST auchPrtSupAge[] = _T("%8u / %3d");
+    static const TCHAR  auchPrtThermSupAge[] = _T("%8u / %3d");
+    static const TCHAR  auchPrtSupAge[] = _T("%8u / %3d");
 
     /* check print control */
 

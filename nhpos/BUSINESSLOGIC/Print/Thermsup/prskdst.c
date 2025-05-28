@@ -85,13 +85,13 @@ VOID  PrtThrmSupKdsIp( PARAKDSIP *pData )
 
     /* define thermal print format */
 
-    static const TCHAR FARCONST auchPrtThrmSupKdsIpA[] = _T("%18u  /  %03u.%03u.%03u.%03u");       
-    static const TCHAR FARCONST auchPrtThrmSupKdsIpB[] = _T("%18u  /  %4u");       
+    static const TCHAR  auchPrtThrmSupKdsIpA[] = _T("%18u  /  %03u.%03u.%03u.%03u");       
+    static const TCHAR  auchPrtThrmSupKdsIpB[] = _T("%18u  /  %4u");       
 
     /* define EJ print format */
 
-    static const TCHAR FARCONST auchPrtSupKdsIpA[] = _T(" %2u / %03u.%03u.%03u.%03u");       
-    static const TCHAR FARCONST auchPrtSupKdsIpB[] = _T(" %2u / %4u");       
+    static const TCHAR  auchPrtSupKdsIpA[] = _T(" %2u / %03u.%03u.%03u.%03u");       
+    static const TCHAR  auchPrtSupKdsIpB[] = _T(" %2u / %4u");       
 
     /* check print control */
 
@@ -259,9 +259,9 @@ VOID  PrtThrmSupUnlockNo( PARAUNLOCKNO *pData )
 
     /* define thermal print format */
 
-    static const TCHAR FARCONST auchPrtThrmSupUnlockNo[] = _T("%15u  /  %24s\t%s");       
-    /* check print control */
+    static const TCHAR  auchPrtThrmSupUnlockNo[] = _T("%15u  /  %24s\t%s");       
 
+    /* check print control */
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
     
         PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */

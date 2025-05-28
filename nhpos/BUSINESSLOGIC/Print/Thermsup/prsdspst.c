@@ -78,11 +78,11 @@ VOID  PrtThrmSupDispPara( PARADISPPARA *pData )
 
     /* define thermal print format */
 
-    static const TCHAR FARCONST auchPrtThrmSupDispPara[] = _T("%18u  /  %5u%3s");
+    static const TCHAR  auchPrtThrmSupDispPara[] = _T("%18u  /  %5u%3s");
 
     /* define EJ print format */
 
-    static const TCHAR FARCONST auchPrtSupDispPara[] = _T("%8u / %5u%2s");
+    static const TCHAR  auchPrtSupDispPara[] = _T("%8u / %5u%2s");
 
     TCHAR   auchAdj[5] = {0, 0, 0, 0, 0};
 

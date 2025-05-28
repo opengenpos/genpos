@@ -80,20 +80,16 @@
 
 VOID PrtThrmSupPigRule( PARAPIGRULE *pData )
 {
-
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupPigRule1[] = _T("%15u  /  %8l$");
-    static const TCHAR FARCONST auchPrtThrmSupPigRule2[] = _T("%15u  /  %8lu");
+    static const TCHAR  auchPrtThrmSupPigRule1[] = _T("%15u  /  %8l$");
+    static const TCHAR  auchPrtThrmSupPigRule2[] = _T("%15u  /  %8lu");
 
     /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupPigRule1[] = _T("%6u / \t%8l$");
-    static const TCHAR FARCONST auchPrtSupPigRule2[] = _T("%6u / \t%2lu");
+    static const TCHAR  auchPrtSupPigRule1[] = _T("%6u / \t%8l$");
+    static const TCHAR  auchPrtSupPigRule2[] = _T("%6u / \t%2lu");
 
 
     /* distinguish minor class */ 
-    
     switch(pData->uchMinorClass) {
     case CLASS_PARAPIGRULE_PRICE:               /* Pig Rule Break Point */
 
@@ -157,8 +153,8 @@ VOID PrtThrmSupPigRule( PARAPIGRULE *pData )
 */
 VOID    PrtThrmSupMiscPara(PARAMISCPARA *pData)
 {
-    static const TCHAR FARCONST auchPrtThrmSupMiscPara[] = _T("%15u  /  %8l$");
-    static const TCHAR FARCONST auchPrtSupMiscPara[]     = _T("%6u / \t%8l$");
+    static const TCHAR  auchPrtThrmSupMiscPara[] = _T("%15u  /  %8l$");
+    static const TCHAR  auchPrtSupMiscPara[]     = _T("%6u / \t%8l$");
 
     if (pData->usPrintControl & PRT_RECEIPT) {
         PrtPrintf(PMG_PRT_RECEIPT, 

@@ -85,10 +85,10 @@
 
 VOID  PrtThrmSupOpeStatus( MAINTOPESTATUS *pData )
 {
-    const TCHAR FARCONST *auchPrtThrmSupOpeStatus = _T("                %8.8Mu");   /* define thermal print format for Operator/Waiter Id */
-    const TCHAR FARCONST *auchPrtThrmSupOpeStatus1 = _T("               %4.4u");    /* define thermal print format for guest check Id */
-    const TCHAR FARCONST *auchPrtSupOpeStatus = _T("   %8.8Mu");                    /* define EJ print format for Operator/Waiter Id */
-    const TCHAR FARCONST *auchPrtSupOpeStatus1 = _T("  %4.4u");                     /* define EJ print format for guest check Id */
+    const TCHAR  *auchPrtThrmSupOpeStatus = _T("                %8.8Mu");   /* define thermal print format for Operator/Waiter Id */
+    const TCHAR  *auchPrtThrmSupOpeStatus1 = _T("               %4.4u");    /* define thermal print format for guest check Id */
+    const TCHAR  *auchPrtSupOpeStatus = _T("   %8.8Mu");                    /* define EJ print format for Operator/Waiter Id */
+    const TCHAR  *auchPrtSupOpeStatus1 = _T("  %4.4u");                     /* define EJ print format for guest check Id */
 
     /* check print control */
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */

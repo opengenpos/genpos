@@ -79,10 +79,10 @@
 VOID PrtThrmSupDeptNoMenu( PARADEPTNOMENU *pData )
 {
     /* define thermal print format */
-    static const TCHAR FARCONST auchPrtThrmSupDeptNoMenu[] = _T("%12u - %3u  /  %4u");
+    static const TCHAR  auchPrtThrmSupDeptNoMenu[] = _T("%12u - %3u  /  %4u");
 
     /* define EJ print format */
-    static const TCHAR FARCONST auchPrtSupDeptNoMenu[] = _T("%4u - %3u / %4u");
+    static const TCHAR  auchPrtSupDeptNoMenu[] = _T("%4u - %3u / %4u");
 
     /* check print control */
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */

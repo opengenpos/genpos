@@ -80,10 +80,10 @@
 VOID  PrtThrmSupBcas( MAINTBCAS *pData )
 {
     /* define thermal print format */
-    static const TCHAR FARCONST auchPrtThrmSupBcas[] = _T("%15s#%03u   %03u  %03u");
+    static const TCHAR  auchPrtThrmSupBcas[] = _T("%15s#%03u   %03u  %03u");
 
     /* define EJ print format */
-    static const TCHAR FARCONST auchPrtSupBcas[] = _T("%6s#%03u  %03u  %03u");
+    static const TCHAR  auchPrtSupBcas[] = _T("%6s#%03u  %03u  %03u");
 
     TCHAR   aszNull[1] = {'\0'};
 

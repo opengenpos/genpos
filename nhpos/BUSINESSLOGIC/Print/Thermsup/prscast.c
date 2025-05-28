@@ -84,16 +84,16 @@
 VOID  PrtThrmSupCashierNo( MAINTCASHIERIF *pData )
 {
     /* define thermal print format */
-	static const TCHAR FARCONST auchPrtThrmSupCashier1[] = _T("%6s  %-20s");
-    static const TCHAR FARCONST auchPrtThrmSupCashier2[] = _T("%4s %4s %4s %4s %4u %4u %1s %1s %2s");
+	static const TCHAR  auchPrtThrmSupCashier1[] = _T("%6s  %-20s");
+    static const TCHAR  auchPrtThrmSupCashier2[] = _T("%4s %4s %4s %4s %4u %4u %1s %1s %2s");
 
     /* define EJ print format */
-    const TCHAR FARCONST *auchPrtSupCashier1 = _T("%6s\n\t%20s");
-    const TCHAR FARCONST *auchPrtSupCashier2 = _T("%4s %4s %4s");
-    const TCHAR FARCONST *auchPrtSupCashier3 = _T("%4s %4u %4u\n%1s %1s %2s");
+    const TCHAR  *auchPrtSupCashier1 = _T("%6s\n\t%20s");
+    const TCHAR  *auchPrtSupCashier2 = _T("%4s %4s %4s");
+    const TCHAR  *auchPrtSupCashier3 = _T("%4s %4u %4u\n%1s %1s %2s");
 
     /* define thermal/EJ common print format */
-    const TCHAR FARCONST *auchIdNumber = _T("%8.8Mu");
+    const TCHAR  *auchIdNumber = _T("%8.8Mu");
 
 	TCHAR	aszDoubRepoNumb[8 * 2 + 1];
 	TCHAR	aszRepoNumb[8 + 1];

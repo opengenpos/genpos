@@ -77,42 +77,24 @@
 
 VOID  PrtThrmSupCpm( MAINTCPM *pData )
 {
-
-    static TCHAR FARCONST auchPrtSupCpm[] = _T("%-5s");
+    static TCHAR  auchPrtSupCpm[] = _T("%-5s");
 
     /* check print control */
-
     if (pData->uchType == CPM_CHANGE_START) {           /* uifac78.c UISUP_START_CPM */
         if (pData->usPrtControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
-
-            PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
-                      auchPrtSupCpm,                    /* format */
-					  _T("START"));                         /* Mnemonics */
+            PrtPrintf(PMG_PRT_RECEIPT, auchPrtSupCpm, _T("START"));                         /* Mnemonics */
         } 
     
         if (pData->usPrtControl & PRT_JOURNAL) {  /* EJ */                                        /* EJ */
-
-
-            PrtPrintf(PMG_PRT_JOURNAL,                  /* printer type */
-                      auchPrtSupCpm,                    /* format */
-                      _T("START"));                         /* Mnemonics */
+            PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupCpm, _T("START"));                         /* Mnemonics */
         }
     } else {
         if (pData->usPrtControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
-
-            PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
-                      auchPrtSupCpm,                    /* format */
-                      _T("STOP"));                          /* Mnemonics */
+            PrtPrintf(PMG_PRT_RECEIPT, auchPrtSupCpm, _T("STOP"));                          /* Mnemonics */
         } 
     
         if (pData->usPrtControl & PRT_JOURNAL) {  /* EJ */                                        /* EJ */
-
-
-            PrtPrintf(PMG_PRT_JOURNAL,                  /* printer type */
-                      auchPrtSupCpm,                    /* format */
-                      _T("STOP"));                          /* Mnemonics */
+            PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupCpm, _T("STOP"));                          /* Mnemonics */
         }
     }
 }

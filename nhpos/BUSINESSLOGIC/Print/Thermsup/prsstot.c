@@ -80,15 +80,12 @@ VOID PrtThrmSupStoRegNo( PARASTOREGNO *pData )
 {
 
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupStoRegNo[] = _T("%18u  /  %04u%03u");
+    static const TCHAR  auchPrtThrmSupStoRegNo[] = _T("%18u  /  %04u%03u");
 
     /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupStoRegNo[] = _T("%8u / %04u%03u");
+    static const TCHAR  auchPrtSupStoRegNo[] = _T("%8u / %04u%03u");
 
     /* check print control */
-
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
 
         /* print ADDRESS / STORE/REGISTER No. */

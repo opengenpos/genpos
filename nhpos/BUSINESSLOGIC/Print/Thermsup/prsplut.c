@@ -91,26 +91,24 @@ VOID  PrtThrmSupPLU( PARAPLU *pData )
 {
 
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupPLU1[] = _T(" %s\t%-20s");
-    static const TCHAR FARCONST auchPrtThrmSupPLU2[] = _T(" %04u  %01u  %2d  %4s  %4s  %4s  %4s  %4s");
-    static const TCHAR FARCONST auchPrtThrmSupPLU3[] = _T("\t%4s     %s  %4s  %4s  %4s");
-    static const TCHAR FARCONST auchPrtThrmSupPLU4[] = _T("\t@ 02d/%8l$");   
-    static const TCHAR FARCONST auchPrtThrmSupPLU5[] = _T("\t@ %8l$   @ %8l$");   
-    static const TCHAR FARCONST auchPrtThrmSupPLU6[] = _T("   %3u   %3u   %3u   %3u  %4s %4s");
-    static const TCHAR FARCONST auchPrtThrmSupPLU7[] = _T("   %4u   %1d   %3d");
+    static const TCHAR  auchPrtThrmSupPLU1[] = _T(" %s\t%-20s");
+    static const TCHAR  auchPrtThrmSupPLU2[] = _T(" %04u  %01u  %2d  %4s  %4s  %4s  %4s  %4s");
+    static const TCHAR  auchPrtThrmSupPLU3[] = _T("\t%4s     %s  %4s  %4s  %4s");
+    static const TCHAR  auchPrtThrmSupPLU4[] = _T("\t@ 02d/%8l$");   
+    static const TCHAR  auchPrtThrmSupPLU5[] = _T("\t@ %8l$   @ %8l$");   
+    static const TCHAR  auchPrtThrmSupPLU6[] = _T("   %3u   %3u   %3u   %3u  %4s %4s");
+    static const TCHAR  auchPrtThrmSupPLU7[] = _T("   %4u   %1d   %3d");
 
     /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupPLU1[] = _T("%s\t%-s");
-    static const TCHAR FARCONST auchPrtSupPLU11[] = _T("%s\n\t%-s");
-    static const TCHAR FARCONST auchPrtSupPLU2[] = _T("%04d %d %2d %4s %4s");
-    static const TCHAR FARCONST auchPrtSupPLU3[] = _T("%4s %4s %4s");
-    static const TCHAR FARCONST auchPrtSupPLU4[] = _T("%4s %s %4s %4s %4s");
-    static const TCHAR FARCONST auchPrtSupPLU5[] = _T("\t@ %02d %8l$");
-    static const TCHAR FARCONST auchPrtSupPLU6[] = _T("\t@ %8l$  @ %8l$");
-    static const TCHAR FARCONST auchPrtSupPLU7[] = _T(" %2d  %2d  %2d  %3d %4s");
-    static const TCHAR FARCONST auchPrtSupPLU8[] = _T(" %4s %4u  %1d %3d");
+    static const TCHAR  auchPrtSupPLU1[] = _T("%s\t%-s");
+    static const TCHAR  auchPrtSupPLU11[] = _T("%s\n\t%-s");
+    static const TCHAR  auchPrtSupPLU2[] = _T("%04d %d %2d %4s %4s");
+    static const TCHAR  auchPrtSupPLU3[] = _T("%4s %4s %4s");
+    static const TCHAR  auchPrtSupPLU4[] = _T("%4s %s %4s %4s %4s");
+    static const TCHAR  auchPrtSupPLU5[] = _T("\t@ %02d %8l$");
+    static const TCHAR  auchPrtSupPLU6[] = _T("\t@ %8l$  @ %8l$");
+    static const TCHAR  auchPrtSupPLU7[] = _T(" %2d  %2d  %2d  %3d %4s");
+    static const TCHAR  auchPrtSupPLU8[] = _T(" %4s %4u  %1d %3d");
 
     DCURRENCY  ulPrice1;
     DCURRENCY  ulPrice2;

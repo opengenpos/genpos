@@ -91,19 +91,19 @@ VOID  PrtThrmSupCPN( PARACPN *pData )
     /*
      * define thermal print format
      */
-    static const TCHAR FARCONST auchPrtThrmSupCPN1[] = _T("  %3d    %-12s");
-    static const TCHAR FARCONST auchPrtThrmSupCPN2[] = _T("    %4s %4s %4s %4s");
-    static const TCHAR FARCONST auchPrtThrmSupCPN3[] = _T("    %13s-%1d-%1d %13s-%1d-%1d");
-    static const TCHAR FARCONST auchPrtThrmSupCPN4[] = _T("    %13s-%1d-%1d");
-    static const TCHAR FARCONST auchPrtThrmSupCPN5[] = _T("\t@ %8l$");
+    static const TCHAR  auchPrtThrmSupCPN1[] = _T("  %3d    %-12s");
+    static const TCHAR  auchPrtThrmSupCPN2[] = _T("    %4s %4s %4s %4s");
+    static const TCHAR  auchPrtThrmSupCPN3[] = _T("    %13s-%1d-%1d %13s-%1d-%1d");
+    static const TCHAR  auchPrtThrmSupCPN4[] = _T("    %13s-%1d-%1d");
+    static const TCHAR  auchPrtThrmSupCPN5[] = _T("\t@ %8l$");
 
     /*
      * define EJ print format
      */
-    static const TCHAR FARCONST auchPrtSupCPN1[] = _T("%3d\t%-12s");
-    static const TCHAR FARCONST auchPrtSupCPN2[] = _T("%4s %4s %4s %4s");
-    static const TCHAR FARCONST auchPrtSupCPN3[] = _T("%13s-%1d-%1d");
-    static const TCHAR FARCONST auchPrtSupCPN4[] = _T("\t@ %8l$");
+    static const TCHAR  auchPrtSupCPN1[] = _T("%3d\t%-12s");
+    static const TCHAR  auchPrtSupCPN2[] = _T("%4s %4s %4s %4s");
+    static const TCHAR  auchPrtSupCPN3[] = _T("%13s-%1d-%1d");
+    static const TCHAR  auchPrtSupCPN4[] = _T("\t@ %8l$");
 
     /*
      * work status character buffers

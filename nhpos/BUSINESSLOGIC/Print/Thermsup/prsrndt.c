@@ -80,72 +80,44 @@
 
 VOID PrtThrmSupRound( PARAROUNDTBL *pData )
 {
-
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupRound1[] = _T("%18u  /  %4u");
-    static const TCHAR FARCONST auchPrtThrmSupRound2[] = _T("%18u  /  %4d");
+    static const TCHAR  auchPrtThrmSupRound1[] = _T("%18u  /  %4u");
+    static const TCHAR  auchPrtThrmSupRound2[] = _T("%18u  /  %4d");
 
     /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupRound1[] = _T("%12u / %4u");
-    static const TCHAR FARCONST auchPrtSupRound2[] = _T("%12u / %4d");
+    static const TCHAR  auchPrtSupRound1[] = _T("%12u / %4u");
+    static const TCHAR  auchPrtSupRound2[] = _T("%12u / %4d");
 
     USHORT  usDeliModu;
 
-    /* distinguish major class */ 
-    
     switch(pData->uchMinorClass) {
-    case CLASS_PARAROUNDTBL_DELI:                           /* delimitor, modules */
+    case CLASS_PARAROUNDTBL_DELI:                           /* PrtThrmSupRound() print delimitor, modules */
 
-        usDeliModu = pData->uchRoundDelimit * 100;                                        
-        usDeliModu += pData->uchRoundModules;                
+        usDeliModu = pData->uchRoundDelimit * 100 + pData->uchRoundModules;                
         
         /* check print control */
-
         if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
             /* print ADDRESS / DELIMITOR / MODULUS */
-        
-            PrtPrintf(PMG_PRT_RECEIPT,                          /* printer type */
-                      auchPrtThrmSupRound1,                     /* format */
-                      ( USHORT)pData->uchAddress,               /* address */
-                      usDeliModu);                              /* delimitor, modulus Data */
+            PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupRound1, ( USHORT)pData->uchAddress, usDeliModu);
         } 
         
         if (pData->usPrintControl & PRT_JOURNAL) {  /* EJ */
-
             /* print ADDRESS / DELIMITOR / MODULUS */
-        
-            PrtPrintf(PMG_PRT_JOURNAL,                          /* printer type */
-                      auchPrtSupRound1,                         /* format */
-                      ( USHORT)pData->uchAddress,               /* address */
-                      usDeliModu);                              /* delimitor, modules data */
+            PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupRound1, ( USHORT)pData->uchAddress, usDeliModu);
         }
         break;
 
-    case CLASS_PARAROUNDTBL_POSI:                           /* rounding position */
+    case CLASS_PARAROUNDTBL_POSI:                           /* PrtThrmSupRound() print rounding position */
 
         /* check print control */
-
         if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
             /* print ROUNDING POSITION */
-
-            PrtPrintf(PMG_PRT_RECEIPT,                          /* printer type */
-                      auchPrtThrmSupRound2,                     /* format */
-                      ( USHORT)pData->uchAddress,               /* address */
-                      ( SHORT)pData->chRoundPosition);          /* position */
+            PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupRound2, ( USHORT)pData->uchAddress, ( SHORT)pData->chRoundPosition);
         } 
         
         if (pData->usPrintControl & PRT_JOURNAL) {  /* EJ */
-
             /* print ROUNDING POSITION */
-
-            PrtPrintf(PMG_PRT_JOURNAL,                          /* printer type */
-                      auchPrtSupRound2,                         /* format */
-                      ( USHORT)pData->uchAddress,               /* address */
-                      ( SHORT)pData->chRoundPosition);          /* position */
+            PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupRound2, ( USHORT)pData->uchAddress, ( SHORT)pData->chRoundPosition);          /* position */
         }
         break;
 

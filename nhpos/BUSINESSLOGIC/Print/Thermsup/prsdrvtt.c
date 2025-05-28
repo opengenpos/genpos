@@ -78,8 +78,8 @@
 
 VOID PrtThrmSupFxDrive( PARAFXDRIVE *pData )
 {
-    static const TCHAR FARCONST auchPrtSupFxDrv[] = _T("     %4u / %4u");
-    static const TCHAR FARCONST auchPrtSupFxDrvThrm[] = _T("       %8u   /   %8u");
+    static const TCHAR  auchPrtSupFxDrv[] = _T("     %4u / %4u");
+    static const TCHAR  auchPrtSupFxDrvThrm[] = _T("       %8u   /   %8u");
     USHORT                      usPrtType;
     USHORT                      usPrintControl;
     USHORT                      i;

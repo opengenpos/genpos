@@ -79,24 +79,16 @@
 
 VOID  PrtThrmSupTtlKeyCtl( PARATTLKEYCTL *pData )
 {
+    static const TCHAR  auchPrtThrmSupTtlKeyCtl[] = _T("%13u - %2u  /  %s");    /* define thermal print format */
+    static const TCHAR  auchPrtSupTtlKeyCtl[] = _T("%5u - %2u / %s");    /* define EJ print format */
 
-    /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupTtlKeyCtl[] = _T("%13u - %2u  /  %s");
-
-    /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupTtlKeyCtl[] = _T("%5u - %2u / %s");
-
-    TCHAR           aszBuffer[5];
+    TCHAR           aszBuffer[5] = { 0 };
 
 
     /* convert status data to binary ASCII data */
-
     PrtSupItoa(pData->uchTtlKeyMDCData, aszBuffer);             
                                                                 
     /* check print control */
-
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
 
         /* print ADDRESS/FILED NO./TOTAL KEY DATA */

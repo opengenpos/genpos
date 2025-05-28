@@ -86,65 +86,31 @@
 
 VOID  PrtThrmSupTrans( MAINTTRANS *pData )
 {
-
-    /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupTrans[] = _T("%s");
-
-    /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupTrans[] = _T("%s");
+    static const TCHAR  auchPrtThrmSupTrans[] = _T("%s");    /* define thermal print format */
+    static const TCHAR  auchPrtSupTrans[] = _T("%s");    /* define EJ print format */
 
     /* check print control */
-
     if (pData->usPrtControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
-        /* print MNEMONIC */
-
-        PrtPrintf(PMG_PRT_RECEIPT,              /* printer type */
-                  auchPrtThrmSupTrans,          /* format */
-                  pData->aszTransMnemo);        /* mnemonics */
+        PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupTrans, pData->aszTransMnemo);        /* mnemonics */
     } 
     
     if (pData->usPrtControl & PRT_JOURNAL) {  /* EJ */    
-
-        /* print MNEMONIC */
-
-        PrtPrintf(PMG_PRT_JOURNAL,              /* printer type */
-                  auchPrtSupTrans,              /* format */
-                  pData->aszTransMnemo);        /* mnemonics */
+        PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupTrans, pData->aszTransMnemo);        /* mnemonics */
     }
 }
 
 VOID  PrtThrmSupDspfline( MAINTDSPFLINE *pData )
 {
-
-    /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupDspfline[] = _T("%s");
-
-    /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupDspfline[] = _T("%s");
+    static const TCHAR  auchPrtThrmSupDspfline[] = _T("%s");    /* define thermal print format */
+    static const TCHAR  auchPrtSupDspfline[] = _T("%s");    /* define EJ print format */
 
     /* check print control */
-
     if (pData->usPrtControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
-        /* print MNEMONIC */
-
-        PrtPrintf(PMG_PRT_RECEIPT,              /* printer type */
-                  auchPrtThrmSupDspfline,          /* format */
-                  pData->aszMnemonics);        /* mnemonics */
+        PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupDspfline, pData->aszMnemonics);        /* mnemonics */
     } 
     
     if (pData->usPrtControl & PRT_JOURNAL) {  /* EJ */    
-
-        /* print MNEMONIC */
-
-        PrtPrintf(PMG_PRT_JOURNAL,              /* printer type */
-                  auchPrtSupDspfline,              /* format */
-                  pData->aszMnemonics);        /* mnemonics */
+        PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupDspfline, pData->aszMnemonics);        /* mnemonics */
     }
 }
 

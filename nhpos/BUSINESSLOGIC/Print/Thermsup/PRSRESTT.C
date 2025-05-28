@@ -76,8 +76,8 @@
 VOID PrtThermSupRest( PARARESTRICTION *pData )
 {
     /* Define print format */
-    static const TCHAR FARCONST auchPrtThermSupRest[] = _T("              %1u - %1u / %2u");
-    static const TCHAR FARCONST auchPrtSupRest[] = _T("       %2u - %1u / %2u");
+    static const TCHAR  auchPrtThermSupRest[] = _T("              %1u - %1u / %2u");
+    static const TCHAR  auchPrtSupRest[] = _T("       %2u - %1u / %2u");
 
 
     /* Check Print Control */

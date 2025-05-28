@@ -80,33 +80,16 @@
 
 VOID  PrtThrmSupErrorCode( MAINTERRORCODE *pData )
 {
-
-    /*  define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupError[] = _T("E- %4d");
-
-    /*  define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupError[] = _T("E- %4d");
+    static const TCHAR  auchPrtThrmSupError[] = _T("E- %4d");    /*  define thermal print format */
+    static const TCHAR  auchPrtSupError[] = _T("E- %4d");    /*  define EJ print format */
 
     /* check print control */
-
     if (pData->usPrtControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
-        /* print ERROR CODE */
-
-        PrtPrintf(PMG_PRT_RECEIPT,                    /* printer type */
-                  auchPrtThrmSupError,                /* format */
-                  pData->sErrorCode);                 /* error code */
+        PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupError, pData->sErrorCode);                 /* error code */
     }
 
     if (pData->usPrtControl & PRT_JOURNAL) {  /* EJ */
-
-        /* print ERROR CODE */
-
-        PrtPrintf(PMG_PRT_JOURNAL,                    /* printer type */
-                  auchPrtSupError,                    /* format */
-                  pData->sErrorCode);                 /* error code */
+        PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupError, pData->sErrorCode);                 /* error code */
     }
 }
 /***** End of Source *****/

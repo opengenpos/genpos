@@ -82,18 +82,15 @@ VOID PrtThrmSupTaxRate( PARATAXRATETBL *pData )
 {
 
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupTaxRate1[] = _T("%15u  /  %7.4l$%%");
-    static const TCHAR FARCONST auchPrtThrmSupTaxRate2[] = _T("%15u  /     %5lu");
+    static const TCHAR  auchPrtThrmSupTaxRate1[] = _T("%15u  /  %7.4l$%%");
+    static const TCHAR  auchPrtThrmSupTaxRate2[] = _T("%15u  /     %5lu");
 
     /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupTaxRate1[] = _T("%6u / \t%.4l$%%");
-    static const TCHAR FARCONST auchPrtSupTaxRate2[] = _T("%6u / \t%5lu");
+    static const TCHAR  auchPrtSupTaxRate1[] = _T("%6u / \t%.4l$%%");
+    static const TCHAR  auchPrtSupTaxRate2[] = _T("%6u / \t%5lu");
 
 
     /* distinguish minor class */ 
-    
     switch(pData->uchMinorClass) {
     case CLASS_PARATAXRATETBL_RATE:             /* tax rate */
 

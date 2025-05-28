@@ -82,7 +82,7 @@ VOID PrtThrmSupPresetAmount( PARAPRESETAMOUNT *pData )
 {
     /* check print control */
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-		static const TCHAR FARCONST auchPrtThrmSupPresetAmount[] = _T("%18u  /  %8l$");
+		static const TCHAR  auchPrtThrmSupPresetAmount[] = _T("%18u  /  %8l$");
 
         /* print ADDRESS / PRESET AMOUNT */
         PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
@@ -92,7 +92,7 @@ VOID PrtThrmSupPresetAmount( PARAPRESETAMOUNT *pData )
     } 
 
     if (pData->usPrintControl & PRT_JOURNAL) {  /* EJ */
-		static const TCHAR FARCONST auchPrtSupPresetAmount[] = _T("%8u / %8l$");
+		static const TCHAR  auchPrtSupPresetAmount[] = _T("%8u / %8l$");
 
         /* print ADDRESS / PRESET AMOUNT */
         PrtPrintf(PMG_PRT_JOURNAL,                  /* printer type */

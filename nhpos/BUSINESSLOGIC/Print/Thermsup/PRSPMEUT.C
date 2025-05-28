@@ -73,11 +73,11 @@
 VOID PrtThrmSupPLUNoMenu( PARAPLUNOMENU *pData )
 {
     /* Define print format */
-    static const TCHAR FARCONST auchPrtSupTHPLUNoMenu[] = _T("%1u - %3u  /  %1s %s");
-    /* static const TCHAR FARCONST auchPrtSupTHPLUNoMenu[] = "%1u - %3u  /  %1u %1s %s"; */
-    static const TCHAR FARCONST auchPrtSupEJPLUNoMenu1[] = _T("%1u - %3u");
-    static const TCHAR FARCONST auchPrtSupEJPLUNoMenu2[] = _T("   %1s \t%s");
-    /* static const TCHAR FARCONST auchPrtSupEJPLUNoMenu2[] = "   %1u %1s \t%s"; */
+    static const TCHAR  auchPrtSupTHPLUNoMenu[] = _T("%1u - %3u  /  %1s %s");
+    /* static const TCHAR  auchPrtSupTHPLUNoMenu[] = "%1u - %3u  /  %1u %1s %s"; */
+    static const TCHAR  auchPrtSupEJPLUNoMenu1[] = _T("%1u - %3u");
+    static const TCHAR  auchPrtSupEJPLUNoMenu2[] = _T("   %1s \t%s");
+    /* static const TCHAR  auchPrtSupEJPLUNoMenu2[] = "   %1u %1s \t%s"; */
 
     TCHAR   aszStatus[2] = { 0, 0 };
     TCHAR   aszPLUNumber[PLU_MAX_DIGIT+1];

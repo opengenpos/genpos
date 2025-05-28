@@ -83,14 +83,8 @@
 
 VOID  PrtThrmSupFlexMem( PARAFLEXMEM *pData )
 {
-
-    /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupFlexMem[] = _T("%18u  /  %6lu %1s");       
-
-    /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupFlexMem[] = _T("%8u / %6lu %1s");       
+    static const TCHAR  auchPrtThrmSupFlexMem[] = _T("%18u  /  %6lu %1s");       /* define thermal print format */    
+    static const TCHAR  auchPrtSupFlexMem[] = _T("%8u / %6lu %1s");       /* define EJ print format */    
 
     TCHAR   auchPTD[4] = {0, 0, 0, 0};
 

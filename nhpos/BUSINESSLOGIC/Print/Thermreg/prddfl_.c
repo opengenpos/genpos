@@ -84,10 +84,10 @@
 ;+                    S T A T I C    R A M s
 ;========================================================================
 **/
-extern CONST TCHAR FARCONST  aszPrtKPGuest_CD[];
-extern CONST TCHAR FARCONST  aszPrtKPGuest[];   
-extern CONST TCHAR FARCONST  aszPrtKPTrailer[];
-CONST TCHAR FARCONST aszPrtDflHeader[] = _T("%-4s %-3s  %-8.8s %-3s  %-4s %s");/*8 characters JHHJ*/
+extern CONST TCHAR   aszPrtKPGuest_CD[];
+extern CONST TCHAR   aszPrtKPGuest[];   
+extern CONST TCHAR   aszPrtKPTrailer[];
+CONST TCHAR  aszPrtDflHeader[] = _T("%-4s %-3s  %-8.8s %-3s  %-4s %s");/*8 characters JHHJ*/
 
 
 /*

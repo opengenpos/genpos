@@ -94,9 +94,9 @@
 */
 VOID    PrtSupLoanPickup_EJ( MAINTLOANPICKUP *pData )
 {
-    static const TCHAR FARCONST  aszPrtTHLPQty[]   = _T(" %5ld X\t%s ");
-/*    static const UCHAR FARCONST  aszPrtRJLPFor[]   = " %5ld /";*/
-    static const TCHAR FARCONST  aszPrtTHLPAmount[] = _T("%s\t%l$");
+    static const TCHAR   aszPrtTHLPQty[]   = _T(" %5ld X\t%s ");
+/*    static const UCHAR   aszPrtRJLPFor[]   = " %5ld /";*/
+    static const TCHAR   aszPrtTHLPAmount[] = _T("%s\t%l$");
 
 	TCHAR      aszSpecAmt[PARA_SPEMNEMO_LEN +PRT_AMOUNT_LEN + 1] = {0};
     TCHAR      aszTransBuff[PARA_TRANSMNEMO_LEN + 1] = {0};

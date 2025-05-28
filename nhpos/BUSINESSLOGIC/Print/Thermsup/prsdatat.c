@@ -98,8 +98,8 @@
 
 VOID PrtThrmSupComData( VOID *pData )
 {
-    static const TCHAR FARCONST auchPrtThrmSupCom[] = _T("%18u  /  %8lu");    /* define thermal print format */
-    static const TCHAR FARCONST auchPrtSupCom[] = _T("%8u / %8lu");           /* define EJ print format */
+    static const TCHAR  auchPrtThrmSupCom[] = _T("%18u  /  %8lu");    /* define thermal print format */
+    static const TCHAR  auchPrtSupCom[] = _T("%8u / %8lu");           /* define EJ print format */
 
     UCHAR      uchMajorClass = *(( UCHAR *)(pData));  /* get major class */
     USHORT     usAddress;
@@ -266,8 +266,8 @@ VOID PrtThrmSupComData( VOID *pData )
 
 VOID PrtThrmSupOepData( PARAOEPTBL *pData )
 {
-    static const TCHAR FARCONST auchPrtSupOep[] = _T("%4s  %4u / %4u");
-    static const TCHAR FARCONST auchPrtSupOepThrm[] = _T("%8s    %8u   /   %8u");
+    static const TCHAR  auchPrtSupOep[] = _T("%4s  %4u / %4u");
+    static const TCHAR  auchPrtSupOepThrm[] = _T("%8s    %8u   /   %8u");
 
     USHORT              usPrintControl;
     TCHAR               aszTblNumStr[4] = {0,0,0,0};

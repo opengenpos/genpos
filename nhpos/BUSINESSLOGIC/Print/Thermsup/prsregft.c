@@ -97,20 +97,19 @@ VOID  PrtThrmSupRegFin( RPTREGFIN *pData )
 {
 
     /* define thermal print format */
-    
-    static const TCHAR FARCONST auchPrtThrmSupRegFin1[] = _T("%-9.20s\t%6d   %12l$"); /*8 characters JHHJ //SR 623, increase the max
+    static const TCHAR  auchPrtThrmSupRegFin1[] = _T("%-9.20s\t%6d   %12l$"); /*8 characters JHHJ //SR 623, increase the max
 																						to 20 so that we show all the mnemonics. JHHJ*/
-    static const TCHAR FARCONST auchPrtThrmSupRegFin2[] = _T("%-9.9s\t %02u/%02u  %2u:%02u");/*8 characters JHHJ*/
-    static const TCHAR FARCONST auchPrtThrmSupRegFin3[] = _T("%-9.9s\t %02u/%02u  %2u:%02u%s");/*8 characters JHHJ*/
-    static const TCHAR FARCONST auchPrtThrmSupRegFin4[] = _T("%-9.9s\t%l$");/*8 characters JHHJ*/
-    static const TCHAR FARCONST auchPrtThrmSupRegFin5[] = _T("%-9.9s\t%L$");/*8 characters JHHJ*/
-    static const TCHAR FARCONST auchPrtThrmSupRegFin6[] = _T("%3u%%\t%l$");/*8 characters JHHJ*/
-    static const TCHAR FARCONST auchPrtThrmSupRegFin7[] = _T("%-9.9s\t%ld");/*8 characters JHHJ*/
-    static const TCHAR FARCONST auchPrtThrmSupRegFin8[] = _T("%-9.9s%13s%6d");/*8 characters JHHJ*/
-    static const TCHAR FARCONST auchPrtThrmSupRegFin9[] = _T("\t%11ld  ");
-    static const TCHAR FARCONST auchPrtThrmSupRegFin10[] = _T("\t%12.2l$  ");
-    static const TCHAR FARCONST auchPrtThrmSupRegFin11[] = _T("\t%12.3l$  ");
-    static const TCHAR FARCONST auchPrtThrmSupRegFin12[] = _T("%9.9s");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupRegFin2[] = _T("%-9.9s\t %02u/%02u  %2u:%02u");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupRegFin3[] = _T("%-9.9s\t %02u/%02u  %2u:%02u%s");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupRegFin4[] = _T("%-9.9s\t%l$");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupRegFin5[] = _T("%-9.9s\t%L$");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupRegFin6[] = _T("%3u%%\t%l$");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupRegFin7[] = _T("%-9.9s\t%ld");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupRegFin8[] = _T("%-9.9s%13s%6d");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupRegFin9[] = _T("\t%11ld  ");
+    static const TCHAR  auchPrtThrmSupRegFin10[] = _T("\t%12.2l$  ");
+    static const TCHAR  auchPrtThrmSupRegFin11[] = _T("\t%12.3l$  ");
+    static const TCHAR  auchPrtThrmSupRegFin12[] = _T("%9.9s");/*8 characters JHHJ*/
 
     TCHAR  aszPrtNull[1] = {'\0'};
     USHORT usHour;

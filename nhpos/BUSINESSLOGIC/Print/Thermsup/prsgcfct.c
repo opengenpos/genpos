@@ -88,12 +88,12 @@ VOID  PrtThrmSupGCFClose( RPTGUEST *pData )
 {
 
     /* define thermal print format */
-    static const TCHAR FARCONST auchPrtThrmSupGCF1[] = _T("%9s%-8.8s     %4u%02u");/*8 characters JHHJ*/
-    static const TCHAR FARCONST auchPrtThrmSupGCF2[] = _T("%9s%-8.8s     %4u");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupGCF1[] = _T("%9s%-8.8s     %4u%02u");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtThrmSupGCF2[] = _T("%9s%-8.8s     %4u");/*8 characters JHHJ*/
 
     /* define EJ print format */
-    static const TCHAR FARCONST auchPrtSupGCF1[] = _T("   %-8.8s\t%4u%02u   ");/*8 characters JHHJ*/
-    static const TCHAR FARCONST auchPrtSupGCF2[] = _T("   %-8.8s\t%4u   ");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtSupGCF1[] = _T("   %-8.8s\t%4u%02u   ");/*8 characters JHHJ*/
+    static const TCHAR  auchPrtSupGCF2[] = _T("   %-8.8s\t%4u   ");/*8 characters JHHJ*/
 
     TCHAR   aszNull[1] = {'\0'};
 

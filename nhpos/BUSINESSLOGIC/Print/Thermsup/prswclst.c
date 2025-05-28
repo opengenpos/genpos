@@ -85,14 +85,9 @@
 */
 VOID  PrtThrmSupWFClose( VOID *pData )
 {
-    /* define thermal print format */
-    static const TCHAR FARCONST auchPrtThrmSupWFClose[] = _T("%6s%-10s%13s%6s");
-
-    /* define EJ print format */
-    static const TCHAR FARCONST auchPrtSupWFClose[] = _T("%3s%-10s\t%6s");
-
-    /* define thermal/EJ common print format */
-    static const TCHAR FARCONST auchNumber[] = _T("%8.8Mu");
+    static const TCHAR  auchPrtThrmSupWFClose[] = _T("%6s%-10s%13s%6s");    /* define thermal print format */
+    static const TCHAR  auchPrtSupWFClose[] = _T("%3s%-10s\t%6s");    /* define EJ print format */
+    static const TCHAR  auchNumber[] = _T("%8.8Mu");    /* define thermal/EJ common print format */
 
     TCHAR   aszPrtNull[1] = {_T('\0')};
 	TCHAR	aszDoubRepoNumb[8 * 2 + 1];

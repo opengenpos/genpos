@@ -144,12 +144,12 @@
 ;========================================================================
 **/
 CONST TCHAR aszPrtNull[] = _T("");                         /* null */
-CONST TCHAR FARCONST aszPrtTime[] = _T("%2d:%02d%s ");      /* time */
-CONST TCHAR FARCONST aszPrtTimeWithZone[] = _T("%2d:%02d%s %-3.3s ");      /* time with a time zone */
-CONST TCHAR FARCONST aszPrtDate[] = _T("%02d/%02d/%02d");    /* date */
-CONST TCHAR FARCONST aszPrtSPNext[] = _T("\t%s");          /* continue to next line */
-CONST TCHAR FARCONST aszPrtSPHead1[] = _T("%-4s%03d    %-4s%03d    %8s %d%d");     /* Slip Header */
-CONST TCHAR FARCONST aszPrtSPHead2[] = _T("%-8s   %s%d\t%s ");     /* Slip Header */
+CONST TCHAR  aszPrtTime[] = _T("%2d:%02d%s ");      /* time */
+CONST TCHAR  aszPrtTimeWithZone[] = _T("%2d:%02d%s %-3.3s ");      /* time with a time zone */
+CONST TCHAR  aszPrtDate[] = _T("%02d/%02d/%02d");    /* date */
+CONST TCHAR  aszPrtSPNext[] = _T("\t%s");          /* continue to next line */
+CONST TCHAR  aszPrtSPHead1[] = _T("%-4s%03d    %-4s%03d    %8s %d%d");     /* Slip Header */
+CONST TCHAR  aszPrtSPHead2[] = _T("%-8s   %s%d\t%s ");     /* Slip Header */
 
 extern USHORT usShrSemDrawer;                           /* semaphore handle for PmgWait() */
 
@@ -1905,7 +1905,7 @@ VOID  PrtGetAllProduct(ITEMSALES *pItem, DCURRENCY *plProduct)
 */
 VOID  PrtAdjustNative(TCHAR *pszDest, DCURRENCY lAmount)
 {
-	CONST TCHAR FARCONST aszPrtAmount[]  = _T("%s%l$");          /* amount */
+	CONST TCHAR  aszPrtAmount[]  = _T("%s%l$");          /* amount */
 	TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
 
     /* -- get native mnemonics -- */

@@ -114,15 +114,15 @@ VOID  PrtThrmSupFSC( PARAFSC *pData )
 
         /* check print control */
         if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-			const TCHAR FARCONST *auchPrtThrmSupFSCPLU = _T("  P%2u %10u / %3u-%s %1s");
+			const TCHAR  *auchPrtThrmSupFSCPLU = _T("  P%2u %10u / %3u-%s %1s");
 
             /* print P PAGE-NUMBER ADDRESS / FSC DATA-EXTENDED FSC CODE */
             PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupFSCPLU, ( USHORT)(pData->uchPageNo), ( USHORT)(pData->uchAddress), ( USHORT)(pData->uchMajorFSCData), aszPLUNumber, aszStatus);
         } 
     
         if (pData->usPrintControl & PRT_JOURNAL) {  /* EJ */
-			const TCHAR FARCONST *auchPrtSupFSCPLUA = _T("P%2u %4u / %3u-%s %1s");
-			const TCHAR FARCONST *auchPrtSupFSCPLUB = _T("P%2u %4u / %3u-\n\t%s %1s");
+			const TCHAR  *auchPrtSupFSCPLUA = _T("P%2u %4u / %3u-%s %1s");
+			const TCHAR  *auchPrtSupFSCPLUB = _T("P%2u %4u / %3u-\n\t%s %1s");
 
             /* print P PAGE-NUMBER ADDRESS / FSC DATA-EXTENDED FSC CODE */
             if ((_tcslen(aszPLUNumber)+17) > (PRT_EJCOLUMN -1)) {
@@ -132,8 +132,8 @@ VOID  PrtThrmSupFSC( PARAFSC *pData )
             }
         }
     } else {
-		const TCHAR FARCONST *auchPrtThrmSupFSC  = _T("  P%2u %10u / %3u-%3u");  /* define thermal print format */
-		const TCHAR FARCONST *auchPrtSupFSC      = _T("P%2u %4u / %3u-%3u");     /* define EJ print format */
+		const TCHAR  *auchPrtThrmSupFSC  = _T("  P%2u %10u / %3u-%3u");  /* define thermal print format */
+		const TCHAR  *auchPrtSupFSC      = _T("P%2u %4u / %3u-%3u");     /* define EJ print format */
 
         usMinorFSCData = (UCHAR)pData->uchMinorFSCData;
 

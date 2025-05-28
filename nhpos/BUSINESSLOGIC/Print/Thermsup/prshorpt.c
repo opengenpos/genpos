@@ -94,7 +94,7 @@ VOID  PrtThrmSupHourlyAct( RPTHOURLY *pData )
         switch(pData->uchMinorClass) {  
         case CLASS_RPTHOURLY_PRTTIME:
             if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT3)) {           /* military format */
-				static const TCHAR FARCONST auchPrtThrmSupHourlyAct1[] = _T("\t%2u:%02u");
+				static const TCHAR  auchPrtThrmSupHourlyAct1[] = _T("\t%2u:%02u");
 
                 /* print TIME(MILITARY) */
                 PrtPrintf(PMG_PRT_RECEIPT,              /* printer type */
@@ -102,7 +102,7 @@ VOID  PrtThrmSupHourlyAct( RPTHOURLY *pData )
                           pData->StartTime.usHour,      /* hour */
                           pData->StartTime.usMin);      /* minutes */
             } else {                                    /* time is AM/PM */
-				static const TCHAR FARCONST auchPrtThrmSupHourlyAct2[] = _T("\t%2u:%02u%s");
+				static const TCHAR  auchPrtThrmSupHourlyAct2[] = _T("\t%2u:%02u%s");
 
                 /* check if Hour is '0' */
                 if (pData->StartTime.usHour == 0) {     /* in case of "0:00 AM" */
@@ -122,14 +122,14 @@ VOID  PrtThrmSupHourlyAct( RPTHOURLY *pData )
        
         case CLASS_RPTHOURLY_PERCENT:
             if (pData->Total.lAmount == RPT_OVERFLOW) {
-				static const TCHAR FARCONST auchPrtThrmSupHourlyAct5[] = _T("%-8.8s\t*****%%");
+				static const TCHAR  auchPrtThrmSupHourlyAct5[] = _T("%-8.8s\t*****%%");
 
                 /* print illegal Labor Cost % */
                 PrtPrintf(PMG_PRT_RECEIPT,              /* printer type */
                           auchPrtThrmSupHourlyAct5,     /* format */
                           pData->aszTransMnemo);        /* transaction mnemonics */
             } else {
-				static const TCHAR FARCONST auchPrtThrmSupHourlyAct4[] = _T("%-8.8s\t%.2l$%%");
+				static const TCHAR  auchPrtThrmSupHourlyAct4[] = _T("%-8.8s\t%.2l$%%");
 
                 PrtPrintf(PMG_PRT_RECEIPT,              /* printer type */
                           auchPrtThrmSupHourlyAct4,     /* format */
@@ -140,7 +140,7 @@ VOID  PrtThrmSupHourlyAct( RPTHOURLY *pData )
 
         default:                                    /* CLASS_RPTHOURLY_PRTASTER */
 			{
-				static const TCHAR FARCONST auchPrtThrmSupHourlyAct3[] = _T("%-8.8s\t**********");
+				static const TCHAR  auchPrtThrmSupHourlyAct3[] = _T("%-8.8s\t**********");
 
 				/* print illegal SALE/PERSON */
 				PrtPrintf(PMG_PRT_RECEIPT,              /* printer type */

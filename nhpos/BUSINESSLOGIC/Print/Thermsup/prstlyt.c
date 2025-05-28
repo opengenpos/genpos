@@ -75,14 +75,11 @@
 
 VOID  PrtThrmSupTally( PARACPMTALLY *pData )
 {
+    static TCHAR  auchPrtSupTally[] = _T("%-15s                      %5s");    /* define thermal print format */
 
     TCHAR  auchData[6] = {0,0,0,0,0,0};             /* ushort to decimal */
-    /* define thermal print format */
-
-    static TCHAR FARCONST auchPrtSupTally[] = _T("%-15s                      %5s");
 
     /* convert hex to decimal */
-
     _ultot( (ULONG)pData->usTallyData, auchData, 10);
 
     /* check print control */

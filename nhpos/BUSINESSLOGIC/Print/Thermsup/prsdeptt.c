@@ -87,17 +87,17 @@ VOID  PrtThrmSupDEPT( PARADEPT *pData )
 
     /* define thermal print format */
 
-    static const TCHAR FARCONST auchPrtThrmSupDEPT1[] = _T(" %4d\t%-20s");
-    static const TCHAR FARCONST auchPrtThrmSupDEPT2[] = _T("    %2d  %4s  %4s  %4s  %4s  %4s  %4s");
-    static const TCHAR FARCONST auchPrtThrmSupDEPT3[] = _T("     %1s  %4s    %02u    %2d  %4s  %4s");
+    static const TCHAR  auchPrtThrmSupDEPT1[] = _T(" %4d\t%-20s");
+    static const TCHAR  auchPrtThrmSupDEPT2[] = _T("    %2d  %4s  %4s  %4s  %4s  %4s  %4s");
+    static const TCHAR  auchPrtThrmSupDEPT3[] = _T("     %1s  %4s    %02u    %2d  %4s  %4s");
 
     /* define EJ print format */
 
-    static const TCHAR FARCONST auchPrtSupDEPT1[] = _T("%4d\t%-s");
-    static const TCHAR FARCONST auchPrtSupDEPT2[] = _T("%2d %4s %4s %4s");
-    static const TCHAR FARCONST auchPrtSupDEPT3[] = _T("%4s %4s %4s %s");
-    static const TCHAR FARCONST auchPrtSupDEPT4[] = _T("%4s %02d %2d %4s");
-    static const TCHAR FARCONST auchPrtSupDEPT5[] = _T("%4s");
+    static const TCHAR  auchPrtSupDEPT1[] = _T("%4d\t%-s");
+    static const TCHAR  auchPrtSupDEPT2[] = _T("%2d %4s %4s %4s");
+    static const TCHAR  auchPrtSupDEPT3[] = _T("%4s %4s %4s %s");
+    static const TCHAR  auchPrtSupDEPT4[] = _T("%4s %02d %2d %4s");
+    static const TCHAR  auchPrtSupDEPT5[] = _T("%4s");
 
     /* initialize buffer */
 

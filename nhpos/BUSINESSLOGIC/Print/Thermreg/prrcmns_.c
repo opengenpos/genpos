@@ -147,114 +147,114 @@
 ;+                    S T A T I C    R A M s
 ;========================================================================
 **/
-CONST TCHAR FARCONST  aszPrtSPMnemAmt[] = _T("%-32s %11l$");                   /* trans. mnem and amount */
+CONST TCHAR   aszPrtSPMnemAmt[] = _T("%-32s %11l$");                   /* trans. mnem and amount */
 /* V3.3 */
-CONST TCHAR FARCONST  aszPrtSPTaxRateAmt[] = _T("%-16s %7.2l$%%\t %l$");       /* trans. mnem, vat rate, and amount */    
-CONST TCHAR FARCONST  aszPrtSPTaxMnem[] = _T("          %10s  %10s  %10s");    /* tax mnemnics */
-CONST TCHAR FARCONST  aszPrtSPTaxAmt[] = _T("%5.2l$%%  %12l$%12l$%12l$");      /* tax amount */
+CONST TCHAR   aszPrtSPTaxRateAmt[] = _T("%-16s %7.2l$%%\t %l$");       /* trans. mnem, vat rate, and amount */    
+CONST TCHAR   aszPrtSPTaxMnem[] = _T("          %10s  %10s  %10s");    /* tax mnemnics */
+CONST TCHAR   aszPrtSPTaxAmt[] = _T("%5.2l$%%  %12l$%12l$%12l$");      /* tax amount */
 
-CONST TCHAR FARCONST  aszPrtSPDiscount[] = _T("%-27s %3d%% %11l$");                     /* trans. mnem, rate, and amount */    
-CONST TCHAR FARCONST  aszPrtSPTaxDisc[] = _T("%-8.8s %4s               %3d%% %11l$");   /*8 characters JHHJ, trans. mnem, rate, and amount */    
-CONST TCHAR FARCONST  aszPrtSPTaxMod[] = _T("%s");                               /* tax modifier mnemonics */
-CONST TCHAR FARCONST  aszPrtSPMnemTax[] = _T("%-8.8s %s");                       /*8 characters JHHJ, trans. mnem, and tax mnem */
-CONST TCHAR FARCONST  aszPrtSPMnemTaxQty[] = _T("%-8.8s %-14s    %4ld X %9l$");  /*8 characters JHHJ, mod. disc. mnem, tax mod. mnem, qty, and unit price */
-CONST TCHAR FARCONST  aszPrtSPMnemTaxAmt[] = _T("%-8.8s %-14s          %11l$");  /*8 characters JHHJ, trans. mnem, tax mnem, and amount */
-CONST TCHAR FARCONST  aszPrtSPMnemAmtD[] = _T("%.8s\t %l$");                     /*8 characters JHHJ, trans. mnem and amount */
-CONST TCHAR FARCONST  aszPrtSPSeat[] = _T("%-4s %1d");                           //SR206 _T("%-4s %2d");       /* seat no. */
+CONST TCHAR   aszPrtSPDiscount[] = _T("%-27s %3d%% %11l$");                     /* trans. mnem, rate, and amount */    
+CONST TCHAR   aszPrtSPTaxDisc[] = _T("%-8.8s %4s               %3d%% %11l$");   /*8 characters JHHJ, trans. mnem, rate, and amount */    
+CONST TCHAR   aszPrtSPTaxMod[] = _T("%s");                               /* tax modifier mnemonics */
+CONST TCHAR   aszPrtSPMnemTax[] = _T("%-8.8s %s");                       /*8 characters JHHJ, trans. mnem, and tax mnem */
+CONST TCHAR   aszPrtSPMnemTaxQty[] = _T("%-8.8s %-14s    %4ld X %9l$");  /*8 characters JHHJ, mod. disc. mnem, tax mod. mnem, qty, and unit price */
+CONST TCHAR   aszPrtSPMnemTaxAmt[] = _T("%-8.8s %-14s          %11l$");  /*8 characters JHHJ, trans. mnem, tax mnem, and amount */
+CONST TCHAR   aszPrtSPMnemAmtD[] = _T("%.8s\t %l$");                     /*8 characters JHHJ, trans. mnem and amount */
+CONST TCHAR   aszPrtSPSeat[] = _T("%-4s %1d");                           //SR206 _T("%-4s %2d");       /* seat no. */
 
-CONST TCHAR FARCONST  aszPrtSPQtyLP[] = _T("                 %4ld X %s");  /* Saratoga */
+CONST TCHAR   aszPrtSPQtyLP[] = _T("                 %4ld X %s");  /* Saratoga */
 
-CONST TCHAR FARCONST  aszPrtSPQty[] = _T("%-14s             %4ld X %9l$");           /* tax mnem, quantity, and unit price */
-CONST TCHAR FARCONST  aszPrtSPPPIQty[] = _T("%-14s         %4ld X %9l$/%ld ");       /* tax mnem, quantity, and unit price */
-CONST TCHAR FARCONST  aszPrtSPScale[] = _T("@ %l$/%s");                              /* scalable item unit price */                                        
-CONST TCHAR FARCONST  aszPrtSPWeight1[] = _T("%-14s%8.3l$%-4s %16s");                /* tax mnem, weight, and unit price */
-CONST TCHAR FARCONST  aszPrtSPWeight2[] = _T("%-14s%8.2l$%-4s %16s");                /* tax mnem, weight, and unit price */
-CONST TCHAR FARCONST  aszPrtSPMnlWeight1[] = _T("%-14s        %8.3l$%-4s %-8.8s");   /*8 characters JHHJ, tax mnem, weight, and mnemonic */
-CONST TCHAR FARCONST  aszPrtSPMnlWeight2[] = _T("%-14s        %8.2l$%-4s %-8.8s");   /*8 characters JHHJ, tax mnem, weight, and mnemonic */
-CONST TCHAR FARCONST  aszPrtSPMnlWeight3[] = _T("                           %16s");  /* tax mnem, weight, and mnemonic */
-CONST TCHAR FARCONST  aszPrtSPTranMnem[] = _T("%-8.8s");                             /*8 characters JHHJ, transaction mnemonics */
-CONST TCHAR FARCONST  aszPrtSPTblPerson[] = _T("%-4s %-3s     %-8.8s %-3s");         /*8 characters JHHJ, table No and No. of person */
+CONST TCHAR   aszPrtSPQty[] = _T("%-14s             %4ld X %9l$");           /* tax mnem, quantity, and unit price */
+CONST TCHAR   aszPrtSPPPIQty[] = _T("%-14s         %4ld X %9l$/%ld ");       /* tax mnem, quantity, and unit price */
+CONST TCHAR   aszPrtSPScale[] = _T("@ %l$/%s");                              /* scalable item unit price */                                        
+CONST TCHAR   aszPrtSPWeight1[] = _T("%-14s%8.3l$%-4s %16s");                /* tax mnem, weight, and unit price */
+CONST TCHAR   aszPrtSPWeight2[] = _T("%-14s%8.2l$%-4s %16s");                /* tax mnem, weight, and unit price */
+CONST TCHAR   aszPrtSPMnlWeight1[] = _T("%-14s        %8.3l$%-4s %-8.8s");   /*8 characters JHHJ, tax mnem, weight, and mnemonic */
+CONST TCHAR   aszPrtSPMnlWeight2[] = _T("%-14s        %8.2l$%-4s %-8.8s");   /*8 characters JHHJ, tax mnem, weight, and mnemonic */
+CONST TCHAR   aszPrtSPMnlWeight3[] = _T("                           %16s");  /* tax mnem, weight, and mnemonic */
+CONST TCHAR   aszPrtSPTranMnem[] = _T("%-8.8s");                             /*8 characters JHHJ, transaction mnemonics */
+CONST TCHAR   aszPrtSPTblPerson[] = _T("%-4s %-3s     %-8.8s %-3s");         /*8 characters JHHJ, table No and No. of person */
 /****************** Add Unique Transaction Number (REL 3.0) ****************/
-CONST TCHAR FARCONST  aszPrtSPTransPerson[] = _T("%-12s %-8.8s     %-8s %-3s");/*8 characters JHHJ, unique trans. no. and No. of person */
-CONST TCHAR FARCONST  aszPrtSPCustomerName[] = _T("%-19s");
+CONST TCHAR   aszPrtSPTransPerson[] = _T("%-12s %-8.8s     %-8s %-3s");/*8 characters JHHJ, unique trans. no. and No. of person */
+CONST TCHAR   aszPrtSPCustomerName[] = _T("%-19s");
 /****************** Add Unique Transaction Number (REL 3.0) ****************/
 
-CONST TCHAR FARCONST  aszPrtSPMultiSeat[] = _T("%-s");       /* seat no. */
+CONST TCHAR   aszPrtSPMultiSeat[] = _T("%-s");       /* seat no. */
 
-CONST TCHAR FARCONST  aszPrtSPChildPLU[] = _T(" %-4s %-s");             /* adj. mnem., and child PLU mnem. */
+CONST TCHAR   aszPrtSPChildPLU[] = _T(" %-4s %-s");             /* adj. mnem., and child PLU mnem. */
 
-CONST TCHAR FARCONST  aszPrtSPModLinkPLU1[] = _T("%-4s %-s\t%l$ ");     /* adj. mnem., and child PLU mnem. */
-CONST TCHAR FARCONST  aszPrtSPModLinkPLU2[] = _T("%-s\t%l$ ");          /* adj. mnem., and child PLU mnem. */
-CONST TCHAR FARCONST  aszPrtSPLinkPLU1[] = _T("%-4s %-s\t%l$");         /* adj. mnem., and child PLU mnem. */
-CONST TCHAR FARCONST  aszPrtSPLinkPLU2[] = _T("%-s\t%l$");              /* adj. mnem., and child PLU mnem. */
+CONST TCHAR   aszPrtSPModLinkPLU1[] = _T("%-4s %-s\t%l$ ");     /* adj. mnem., and child PLU mnem. */
+CONST TCHAR   aszPrtSPModLinkPLU2[] = _T("%-s\t%l$ ");          /* adj. mnem., and child PLU mnem. */
+CONST TCHAR   aszPrtSPLinkPLU1[] = _T("%-4s %-s\t%l$");         /* adj. mnem., and child PLU mnem. */
+CONST TCHAR   aszPrtSPLinkPLU2[] = _T("%-s\t%l$");              /* adj. mnem., and child PLU mnem. */
 
-CONST TCHAR FARCONST  aszPrtSPTipsPO[] = _T("%-4s %8.8Mu           %-8.8s %11l$");     /*8 characters JHHJ, waiter mnem. and ID, and tips p/o mnem. and amount */
-
-
-CONST TCHAR FARCONST  aszPrtSPGCTran[] = _T("%-8.8s  %8.8Mu  %-8.8s %4s");             /*8 characters JHHJ, old waiter mnem. and ID, and G/C mnem and number */               
-CONST TCHAR FARCONST  aszPrtSPGCTranCdv[] = _T("%-8.8s  %8.8Mu  %-8.8s %4s%02d");      /*8 characters JHHJ, old waiter mnem. and ID, and G/C mnem and number */               
+CONST TCHAR   aszPrtSPTipsPO[] = _T("%-4s %8.8Mu           %-8.8s %11l$");     /*8 characters JHHJ, waiter mnem. and ID, and tips p/o mnem. and amount */
 
 
-CONST TCHAR FARCONST  aszPrtSPChkPaid[] = _T("--------------%-16s--------------");        /* check paid mnemonic (double wide) */
+CONST TCHAR   aszPrtSPGCTran[] = _T("%-8.8s  %8.8Mu  %-8.8s %4s");             /*8 characters JHHJ, old waiter mnem. and ID, and G/C mnem and number */               
+CONST TCHAR   aszPrtSPGCTranCdv[] = _T("%-8.8s  %8.8Mu  %-8.8s %4s%02d");      /*8 characters JHHJ, old waiter mnem. and ID, and G/C mnem and number */               
 
-CONST TCHAR FARCONST  aszPrtSPGCNo[] = _T("                       %-8.8s   %4s");         /*8 characters JHHJ, check paid mnemonic and guest check No. */
-CONST TCHAR FARCONST  aszPrtSPGCNoCdv[] = _T("                       %-8.8s   %4s%02d");  /*8 characters JHHJ, check paid mnemonic and guest check No. (with Cdv) */
-CONST TCHAR FARCONST  aszPrtSPTrayCo[] = _T("%-8.8s                              %6d");   /*8 characters JHHJ, tray total co. mnemonic and counter */
-CONST TCHAR FARCONST  aszPrtSPForeign1[] = _T("%.*l$ / %10.*l$");         /* V3.4 , foreign amount and conversion rate */
-CONST TCHAR FARCONST  aszPrtSPForeign2[] = _T("%-44s");                   /* foreign amount and conversion rate */
-CONST TCHAR FARCONST  aszPrtSPMnemNatAmtS[] = _T("%-20s         %15s");            /* transaction mnem, and native mnem and amount */
-CONST TCHAR FARCONST  aszPrtSPMnemNatAmtD[] = _T("%-8.8s      %30s");              /*8 characters JHHJ, transaction mnem, and native mnem and amount */
-CONST TCHAR FARCONST  aszPrtSPSevTaxSumS[] = _T("                    %-.8s");      /*8 characters JHHJ, tax / check sum mnem. */
-CONST TCHAR FARCONST  aszPrtSPSevTaxSum[] = _T("                    %-8.8s %15s"); /*8 characters JHHJ, tax / check sum mnem. and amount */
-CONST TCHAR FARCONST  aszPrtSPCancel[] = _T("%-16s   %-8.8s      %11l$");          /*8 characters JHHJ, cancel mnem., cancel total mnem, and amount */
-CONST TCHAR FARCONST  aszPrtSPTrail2[]  = _T("%04d %-4s %8.8Mu %04lu-%03lu %10s");      /* trailer  */
-CONST TCHAR FARCONST  aszPrtSPServTotal1[]  = _T("%02d %04d %-4s %03d    %-8.8s");        /*8 characters JHHJ, trailer in service total */
-CONST TCHAR FARCONST  aszPrtSPServTotal2[]  = _T("%-28s %15s");                               /* trailer in service total */
-CONST TCHAR FARCONST  aszPrtSPGCTrnTril[]  = _T("                       %-8.8s  %11l$");      /*8 characters JHHJ, check transfer line */
-CONST TCHAR FARCONST  aszPrtSPHdr1[] = _T("%-4s %8.8Mu %-4s %-3s %-8.8s %4s   %4s");       /*8 characters JHHJ, header 1st line */
-CONST TCHAR FARCONST  aszPrtSPHdr1Cdv[] = _T("%-4s %8.8Mu %-4s %-3s %-8.8s %4s%02d %4s");  /*8 characters JHHJ, header 1st line */
+
+CONST TCHAR   aszPrtSPChkPaid[] = _T("--------------%-16s--------------");        /* check paid mnemonic (double wide) */
+
+CONST TCHAR   aszPrtSPGCNo[] = _T("                       %-8.8s   %4s");         /*8 characters JHHJ, check paid mnemonic and guest check No. */
+CONST TCHAR   aszPrtSPGCNoCdv[] = _T("                       %-8.8s   %4s%02d");  /*8 characters JHHJ, check paid mnemonic and guest check No. (with Cdv) */
+CONST TCHAR   aszPrtSPTrayCo[] = _T("%-8.8s                              %6d");   /*8 characters JHHJ, tray total co. mnemonic and counter */
+CONST TCHAR   aszPrtSPForeign1[] = _T("%.*l$ / %10.*l$");         /* V3.4 , foreign amount and conversion rate */
+CONST TCHAR   aszPrtSPForeign2[] = _T("%-44s");                   /* foreign amount and conversion rate */
+CONST TCHAR   aszPrtSPMnemNatAmtS[] = _T("%-20s         %15s");            /* transaction mnem, and native mnem and amount */
+CONST TCHAR   aszPrtSPMnemNatAmtD[] = _T("%-8.8s      %30s");              /*8 characters JHHJ, transaction mnem, and native mnem and amount */
+CONST TCHAR   aszPrtSPSevTaxSumS[] = _T("                    %-.8s");      /*8 characters JHHJ, tax / check sum mnem. */
+CONST TCHAR   aszPrtSPSevTaxSum[] = _T("                    %-8.8s %15s"); /*8 characters JHHJ, tax / check sum mnem. and amount */
+CONST TCHAR   aszPrtSPCancel[] = _T("%-16s   %-8.8s      %11l$");          /*8 characters JHHJ, cancel mnem., cancel total mnem, and amount */
+CONST TCHAR   aszPrtSPTrail2[]  = _T("%04d %-4s %8.8Mu %04lu-%03lu %10s");      /* trailer  */
+CONST TCHAR   aszPrtSPServTotal1[]  = _T("%02d %04d %-4s %03d    %-8.8s");        /*8 characters JHHJ, trailer in service total */
+CONST TCHAR   aszPrtSPServTotal2[]  = _T("%-28s %15s");                               /* trailer in service total */
+CONST TCHAR   aszPrtSPGCTrnTril[]  = _T("                       %-8.8s  %11l$");      /*8 characters JHHJ, check transfer line */
+CONST TCHAR   aszPrtSPHdr1[] = _T("%-4s %8.8Mu %-4s %-3s %-8.8s %4s   %4s");       /*8 characters JHHJ, header 1st line */
+CONST TCHAR   aszPrtSPHdr1Cdv[] = _T("%-4s %8.8Mu %-4s %-3s %-8.8s %4s%02d %4s");  /*8 characters JHHJ, header 1st line */
 /****************** Add Unique Transaction Number (REL 3.0) ****************/
-CONST TCHAR FARCONST  aszPrtSPHdrTrans[] = _T("%-12s %-8.8s   %-16s");
+CONST TCHAR   aszPrtSPHdrTrans[] = _T("%-12s %-8.8s   %-16s");
                                     /* header 1st line (Unique Tran #) */
 /****************** Add Unique Transaction Number (REL 3.0) ****************/
-CONST TCHAR FARCONST  aszPrtSPItemAmt[] = _T("%44s");               /* amount */  
-CONST TCHAR FARCONST  aszPrtSPEtkTimeIn[] = _T("%-16s\t%-3s");      /* R3.1 , ETK time-in data */  
-CONST TCHAR FARCONST  aszPrtSPEtkTimeOut[] = _T("%-16s - %-16s");   /* R3.1 , ETK time-out data */  
-CONST TCHAR FARCONST  aszItemAmt[] = _T("%l$");                     /* amount */  
-CONST TCHAR FARCONST  aszCasWaiID[] = _T("%8.8Mu");   //
+CONST TCHAR   aszPrtSPItemAmt[] = _T("%44s");               /* amount */  
+CONST TCHAR   aszPrtSPEtkTimeIn[] = _T("%-16s\t%-3s");      /* R3.1 , ETK time-in data */  
+CONST TCHAR   aszPrtSPEtkTimeOut[] = _T("%-16s - %-16s");   /* R3.1 , ETK time-out data */  
+CONST TCHAR   aszItemAmt[] = _T("%l$");                     /* amount */  
+CONST TCHAR   aszCasWaiID[] = _T("%8.8Mu");   //
                                     
-CONST TCHAR FARCONST  aszEtkCode[] = _T("%-2d");
-CONST TCHAR FARCONST  aszEtkJobCode[] = _T("JOB %-2d");
+CONST TCHAR   aszEtkCode[] = _T("%-2d");
+CONST TCHAR   aszEtkJobCode[] = _T("JOB %-2d");
                                     
-CONST TCHAR FARCONST  aszEtkEmp[] = _T("%4d");
+CONST TCHAR   aszEtkEmp[] = _T("%4d");
 
-CONST TCHAR FARCONST  aszPrtSPCPRoomCharge[] = _T("%-4s%6s\t %-4s%3s");  /* room charge */
+CONST TCHAR   aszPrtSPCPRoomCharge[] = _T("%-4s%6s\t %-4s%3s");  /* room charge */
 
-CONST TCHAR FARCONST  aszPrtSPCPRspMsgText[] = _T("%-40s");
-CONST TCHAR FARCONST  aszPrtSPOffline[] = _T("%-4s   %5s   %6s"); /* mnemo.  date */
-CONST TCHAR FARCONST  aszPrtSPOffDate[] = _T("%02d/%02d");  /* expiration date  */
-CONST TCHAR FARCONST  aszPrtSPMnem[] = _T("%-s");           /* mnemonics        */
-CONST TCHAR FARCONST  aszPrtSPTranNumber[] = _T("        %-8.8s\t%25s"); /*8 characters JHHJ, No. mnemo. & No. */
+CONST TCHAR   aszPrtSPCPRspMsgText[] = _T("%-40s");
+CONST TCHAR   aszPrtSPOffline[] = _T("%-4s   %5s   %6s"); /* mnemo.  date */
+CONST TCHAR   aszPrtSPOffDate[] = _T("%02d/%02d");  /* expiration date  */
+CONST TCHAR   aszPrtSPMnem[] = _T("%-s");           /* mnemonics        */
+CONST TCHAR   aszPrtSPTranNumber[] = _T("        %-8.8s\t%25s"); /*8 characters JHHJ, No. mnemo. & No. */
 
-extern CONST TCHAR FARCONST  aszPrtTHEuro1[];
+extern CONST TCHAR   aszPrtTHEuro1[];
                                                  /* Euro amount */
-extern CONST TCHAR FARCONST  aszPrtTHEuroAmtMnem[];
+extern CONST TCHAR   aszPrtTHEuroAmtMnem[];
                                                  /* trans.mnem and amount */
-CONST TCHAR FARCONST  aszPrtSPPLUNo[] = _T("%s");
-CONST TCHAR FARCONST  aszPrtSPMnemMnem[] = _T("%s\t %s");
+CONST TCHAR   aszPrtSPPLUNo[] = _T("%s");
+CONST TCHAR   aszPrtSPMnemMnem[] = _T("%s\t %s");
                                                  /* mnem. and mnem. */
 
-CONST TCHAR FARCONST  aszPrtSPPluBuild[]      = _T("%s\t %13s %04d"); /* Plu no and Dept no. */
-CONST TCHAR FARCONST  aszPrtSPMoneyForeign[] = _T("%.*l$"); /* foreign amount of money, Saratoga */
-CONST TCHAR FARCONST  aszPrtSPQtyFor[] = _T("\t %3ld X %s / %2u "); /* qty, unit price, for */
-CONST TCHAR FARCONST  aszPrtSPDecQty[] = _T("\t %6.*l$ X %s ");     /* qty, unit price */
-CONST TCHAR FARCONST  aszPrtSPDecQtyFor[] = _T("\t %6.*l$ X %s / %2u ");/* qty, unit price, for */
-CONST TCHAR FARCONST  aszPrtSupSPHead[] = _T("   %-12s %6s");
+CONST TCHAR   aszPrtSPPluBuild[]      = _T("%s\t %13s %04d"); /* Plu no and Dept no. */
+CONST TCHAR   aszPrtSPMoneyForeign[] = _T("%.*l$"); /* foreign amount of money, Saratoga */
+CONST TCHAR   aszPrtSPQtyFor[] = _T("\t %3ld X %s / %2u "); /* qty, unit price, for */
+CONST TCHAR   aszPrtSPDecQty[] = _T("\t %6.*l$ X %s ");     /* qty, unit price */
+CONST TCHAR   aszPrtSPDecQtyFor[] = _T("\t %6.*l$ X %s / %2u ");/* qty, unit price, for */
+CONST TCHAR   aszPrtSupSPHead[] = _T("   %-12s %6s");
                                     /* header line */
 
 /* --- DTREE#2 Check Endorsement,   Dec/18/2000, 21RFC05402 --- */
-CONST TCHAR FARCONST  aszPrtSPMnemAmtSI[] = _T("%s %s\t%11l$");              /* trans. mnem and amount, 21RFC05437 */
-CONST TCHAR FARCONST  aszPrtSPDiscountSI[] = _T("%s %s\t%3d%% %11l$");       /* trans. mnem, rate, and amount */    
+CONST TCHAR   aszPrtSPMnemAmtSI[] = _T("%s %s\t%11l$");              /* trans. mnem and amount, 21RFC05437 */
+CONST TCHAR   aszPrtSPDiscountSI[] = _T("%s %s\t%3d%% %11l$");       /* trans. mnem, rate, and amount */    
 
 /*
 *===========================================================================
@@ -1830,9 +1830,9 @@ USHORT PrtSPTrail2(TCHAR *pszWork, TRANINFORMATION  *pTran)
     TCHAR   aszMnem[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
 
     if ( PRT_CASHIER == PrtChkCasWai(aszMnem, pTran->TranModeQual.ulCashierID, pTran->TranModeQual.ulWaiterID) ) {
-        ulID = pTran->TranModeQual.ulCashierID;
+        ulID = RflTruncateEmployeeNumber(pTran->TranModeQual.ulCashierID);
     } else {
-        ulID = pTran->TranModeQual.ulWaiterID;
+        ulID = RflTruncateEmployeeNumber(pTran->TranModeQual.ulWaiterID);
     }
 
     /* -- get date and time -- */
@@ -1943,9 +1943,9 @@ USHORT PrtSPServiceTotal( TCHAR  *pszWork, USHORT usAdr, DCURRENCY  lAmount,
     TCHAR  aszStrLen[PRT_SPCOLUMN*2 + 1] = {0}; 
 
     if ( PRT_CASHIER == PrtChkCasWai(aszMnem, pTran->TranModeQual.ulCashierID, pTran->TranModeQual.ulWaiterID) ) {
-        ulID = pTran->TranModeQual.ulCashierID;
+        ulID = RflTruncateEmployeeNumber(pTran->TranModeQual.ulCashierID);
     } else {
-        ulID = pTran->TranModeQual.ulWaiterID;
+        ulID = RflTruncateEmployeeNumber(pTran->TranModeQual.ulWaiterID);
     }
 
     /* -- get transaction mnemonics -- */
@@ -2030,9 +2030,9 @@ USHORT PrtSPHeader1( TCHAR *pszWork, TRANINFORMATION *pTran, SHORT sWidthType )
 
     /* --- set up operator special mnemonic, and operator ID --- */
     if ( PRT_CASHIER == PrtChkCasWai( aszMnem, pTran->TranModeQual.ulCashierID, pTran->TranModeQual.ulWaiterID )) {
-        ulID = pTran->TranModeQual.ulCashierID;
+        ulID = RflTruncateEmployeeNumber(pTran->TranModeQual.ulCashierID);
     } else {
-        ulID = pTran->TranModeQual.ulWaiterID;
+        ulID = RflTruncateEmployeeNumber(pTran->TranModeQual.ulWaiterID);
     }
 
     /* --- set up table no. special mnemonic, and retrieve table no. or
@@ -2378,7 +2378,7 @@ USHORT PrtCheckLine(USHORT  usSPCurrLine, TRANINFORMATION  *pTran)
     }                                /* '2' is for trailer */                  
                                                         
     /* initialize the buffer */                                                            
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));                                                            
+    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));                                                            
 
     /* -- set "Continue to Next" Message -- */
     PrtGet24Mnem(aszSPPrintBuff[0], CH24_NXTMSG_ADR);
@@ -2740,9 +2740,9 @@ VOID  PrtSPVLTrail(TRANINFORMATION *pTran)
 
     /* check cashier or waiter, and get mnemonics */
     if ( PRT_CASHIER == PrtChkCasWai(aszMnem, pTran->TranModeQual.ulCashierID, pTran->TranModeQual.ulWaiterID) ) {
-        ulID = pTran->TranModeQual.ulCashierID;
+        ulID = RflTruncateEmployeeNumber(pTran->TranModeQual.ulCashierID);
     } else {
-        ulID = pTran->TranModeQual.ulWaiterID;
+        ulID = RflTruncateEmployeeNumber(pTran->TranModeQual.ulWaiterID);
     }
 
     PrtGetDate(aszDate, TCHARSIZEOF(aszDate), pTran);   /* get date time */
@@ -3217,9 +3217,9 @@ USHORT PrtSupSPTrail1(TCHAR *pszWork, VOID *pItem)
 *===========================================================================
 */
 extern  CONST TCHAR aszPrtNull[];           /* null */
-extern  CONST TCHAR FARCONST aszPrtTime[];  /* time */
-extern  CONST TCHAR FARCONST aszPrtTimeZone[];
-extern  CONST TCHAR FARCONST aszPrtDate[];  /* date */
+extern  CONST TCHAR  aszPrtTime[];  /* time */
+extern  CONST TCHAR  aszPrtTimeZone[];
+extern  CONST TCHAR  aszPrtDate[];  /* date */
 
 USHORT  PrtSupSPTrail2(TCHAR *pszWork, VOID *pItem)
 {
@@ -3252,7 +3252,7 @@ USHORT  PrtSupSPTrail2(TCHAR *pszWork, VOID *pItem)
     }
 
 	{
-		CONST TCHAR FARCONST  aszPrtSupSPTrail2[]  = _T("%04u     %04u-%03u\t%16s");   /* trailer ( cons,store-reg,date&time )*/
+		CONST TCHAR   aszPrtSupSPTrail2[]  = _T("%04u     %04u-%03u\t%16s");   /* trailer ( cons,store-reg,date&time )*/
 		RflSPrintf(pszWork, PRT_SPCOLUMN + 1, aszPrtSupSPTrail2, pData->usConsCount, pData->usStoreNumber, pData->usRegNumber, aszDate);
 	}
 
@@ -3532,10 +3532,9 @@ USHORT  PrtSPEndorsMnemH2(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lAmount)
 */
 USHORT  PrtSPEndorsTrail2(TCHAR *pszWork, TRANINFORMATION *pTran)
 {
-	CONST TCHAR FARCONST  *aszPrtSPEndorsTrail2Cas = _T("           %04d %4s %8.8Mu ");
-    TCHAR  aszMnem[PARA_SPEMNEMO_LEN + 1];
+	CONST TCHAR  *aszPrtSPEndorsTrail2Cas = _T("           %04d %4s %8.8Mu ");
+    TCHAR  aszMnem[PARA_SPEMNEMO_LEN + 1] = { 0 };
 
-    *aszMnem = '\0';
     PrtChkCasWai(aszMnem, pTran->TranModeQual.ulCashierID, pTran->TranModeQual.ulWaiterID);
     RflSPrintf(pszWork, PRT_SPCOLUMN + 1, aszPrtSPEndorsTrail2Cas, pTran->TranCurQual.usConsNo, aszMnem, RflTruncateEmployeeNumber(pTran->TranModeQual.ulCashierID));
     return(1);
@@ -3569,17 +3568,11 @@ USHORT  PrtSPEndorsTrail3(TCHAR *pszWork, TRANINFORMATION *pTran)
 	CONST TCHAR  aszPrtSPEndorsTrail3[]    = _T("                %04lu-%03lu   %8s");
     USHORT          usLen;
 	TCHAR           aszDate[PRT_DATETIME_LEN + 1] = {0};
-	PARASTOREGNO    StoReg = {0};
-
-    /* -- get store reg number -- */
-    StoReg.uchMajorClass = CLASS_PARASTOREGNO;
-    StoReg.uchAddress    = SREG_NO_ADR;
-    CliParaRead(&StoReg);
 
     /* -- get date and time -- */
     PrtGetDate(aszDate, TCHARSIZEOF(aszDate), pTran);
     usLen = tcharlen(aszDate);
-    RflSPrintf(pszWork, PRT_SPCOLUMN + 1, aszPrtSPEndorsTrail3, (ULONG)StoReg.usStoreNo, (ULONG)StoReg.usRegisterNo, &aszDate[usLen-8]);
+    RflSPrintf(pszWork, PRT_SPCOLUMN + 1, aszPrtSPEndorsTrail3, pTran->TranCurQual.ulStoreregNo / 1000L, pTran->TranCurQual.ulStoreregNo % 1000L, &aszDate[usLen-8]);
 
     return(1);
 }
@@ -3743,15 +3736,9 @@ USHORT  PrtSPEndorsMnemAmtV2(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lAmount
 USHORT  PrtSPEndorsTrail1(TCHAR *pszWork, TRANINFORMATION *pTran)
 {
 	CONST TCHAR  aszPrtSPEndorsTrail1Cas[] = _T("       %04d %04lu-%03lu %-4s %8.8Mu %8s");
-	PARASTOREGNO    StRegNoRcvBuff = {0};
     USHORT  usLen;
     TCHAR   aszDate[PRT_DATETIME_LEN + 1] = {0};
 	TCHAR   aszMnem[PARA_SPEMNEMO_LEN + 1] = {0};
-
-    /* -- get store reg number -- */
-    StRegNoRcvBuff.uchMajorClass = CLASS_PARASTOREGNO;
-    StRegNoRcvBuff.uchAddress    = SREG_NO_ADR;
-    CliParaRead( &StRegNoRcvBuff );
 
     /* -- get date and time -- */
     PrtGetDate(aszDate, TCHARSIZEOF(aszDate), pTran);
@@ -3760,8 +3747,9 @@ USHORT  PrtSPEndorsTrail1(TCHAR *pszWork, TRANINFORMATION *pTran)
     /* check cashier or waiter, and get mnemonics */
     PrtChkCasWai(aszMnem, pTran->TranModeQual.ulCashierID, 0);
 
-    RflSPrintf( pszWork, PRT_SPCOLUMN + 1, aszPrtSPEndorsTrail1Cas, pTran->TranCurQual.usConsNo, ( ULONG )StRegNoRcvBuff.usStoreNo,
-                    ( ULONG )StRegNoRcvBuff.usRegisterNo, aszMnem, RflTruncateEmployeeNumber(pTran->TranModeQual.ulCashierID), &aszDate[usLen-8] );
+    RflSPrintf( pszWork, PRT_SPCOLUMN + 1, aszPrtSPEndorsTrail1Cas, pTran->TranCurQual.usConsNo,
+        pTran->TranCurQual.ulStoreregNo / 1000L, pTran->TranCurQual.ulStoreregNo % 1000L, aszMnem,
+        RflTruncateEmployeeNumber(pTran->TranModeQual.ulCashierID), &aszDate[usLen-8] );
 
     return(1);
 }

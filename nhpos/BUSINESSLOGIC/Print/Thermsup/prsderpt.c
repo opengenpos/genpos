@@ -87,13 +87,13 @@
 VOID  PrtThrmSupDEPTFile( RPTDEPT *pData )  
 {
     /* define thermal print format */ 
-    static const TCHAR FARCONST auchPrtThrmSupDEPTFile1[] = _T("%17u %s");
-    static const TCHAR FARCONST auchPrtThrmSupDEPTFile2A0[] = _T("%8s %s\t*****%%\n\t%6ld   %12l$");
-    static const TCHAR FARCONST auchPrtThrmSupDEPTFile2B0[] = _T("%8s %s\t%6.2$%%\n\t%6ld   %12l$");
-    static const TCHAR FARCONST auchPrtThrmSupDEPTFile30[] = _T("%8s %s\n\t%6ld   %12l$");
-    static const TCHAR FARCONST auchPrtThrmSupDEPTFile4[] = _T("%-8s\t%6ld   %12l$");
-    static const TCHAR FARCONST auchPrtThrmSupDEPTFile50[] = _T("%-8s\t%6ld   %12l$");
-    static const TCHAR FARCONST auchNumber[] = _T("%4d");                   /* Saratoga */
+    static const TCHAR  auchPrtThrmSupDEPTFile1[] = _T("%17u %s");
+    static const TCHAR  auchPrtThrmSupDEPTFile2A0[] = _T("%8s %s\t*****%%\n\t%6ld   %12l$");
+    static const TCHAR  auchPrtThrmSupDEPTFile2B0[] = _T("%8s %s\t%6.2$%%\n\t%6ld   %12l$");
+    static const TCHAR  auchPrtThrmSupDEPTFile30[] = _T("%8s %s\n\t%6ld   %12l$");
+    static const TCHAR  auchPrtThrmSupDEPTFile4[] = _T("%-8s\t%6ld   %12l$");
+    static const TCHAR  auchPrtThrmSupDEPTFile50[] = _T("%-8s\t%6ld   %12l$");
+    static const TCHAR  auchNumber[] = _T("%4d");                   /* Saratoga */
 
     TCHAR  aszPrtNull[1] = {'\0'};
 	TCHAR  aszDoubRepoNumb[8 * 2 + 1] = { 0 };
