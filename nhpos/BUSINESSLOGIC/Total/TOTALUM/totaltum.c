@@ -505,8 +505,8 @@ VOID THREADENTRY TtlTUMMain(VOID)
 				// if this transaction item is either an Operator Close or if it is a tender of some kind then TRANSLOG it
 				if (TtlTranUpBuff.TtlClass.uchMajorClass == CLASS_ITEMOPECLOSE || TtlTranUpBuff.TtlClass.uchMajorClass == CLASS_ITEMTENDER) {
 					if (RflLoggingRulesTransactions()) {
-						LONG          lRound = TtlTranUpBuff.TtlItemTender.lRound;
-						LONG          lTenderAmount = TtlTranUpBuff.TtlItemTender.lTenderAmount;
+						DCURRENCY     lRound = TtlTranUpBuff.TtlItemTender.lRound;
+						DCURRENCY     lTenderAmount = TtlTranUpBuff.TtlItemTender.lTenderAmount;
 						ULONG         ulCashierIDTemp, ulStoreregNoTemp;
 						USHORT        usConsNoTemp, usGuestNoTemp = 0, uchTermTemp;
 						char transBuff[256];
@@ -519,7 +519,11 @@ VOID THREADENTRY TtlTUMMain(VOID)
 							ulCashierIDTemp = TtlTranUpBuff.TtlItemClose.ulID;
 						}
 						uchTermTemp = TtlTranQualBuff.TtlTranModeQual.uchTerm;
-						sprintf (transBuff, "%05d|%05d|%08d|%08d|%03d|%03d|%08d|%08d|%03d", usConsNoTemp, usGuestNoTemp, ulCashierIDTemp, ulStoreregNoTemp, TtlTranUpBuff.TtlClass.uchMajorClass, TtlTranUpBuff.TtlClass.uchMinorClass, lRound, lTenderAmount, TtlTranUpBuff.TtlClass.uchMajorClass);
+#if defined(DCURRENCY_LONGLONG)
+						sprintf (transBuff, "%05d|%05d|%08d|%08d|%03d|%03d|%08lld|%08lld|%03d", usConsNoTemp, usGuestNoTemp, ulCashierIDTemp, ulStoreregNoTemp, TtlTranUpBuff.TtlClass.uchMajorClass, TtlTranUpBuff.TtlClass.uchMinorClass, lRound, lTenderAmount, TtlTranUpBuff.TtlClass.uchMajorClass);
+#else
+						sprintf(transBuff, "%05d|%05d|%08d|%08d|%03d|%03d|%08ld|%08ld|%03d", usConsNoTemp, usGuestNoTemp, ulCashierIDTemp, ulStoreregNoTemp, TtlTranUpBuff.TtlClass.uchMajorClass, TtlTranUpBuff.TtlClass.uchMinorClass, lRound, lTenderAmount, TtlTranUpBuff.TtlClass.uchMajorClass);
+#endif
 						PifTransactionLog (0, transBuff, __FILE__, __LINE__);
 					}
 				}
