@@ -72,10 +72,14 @@
 
 VOID ParaSharedPrtRead( PARASHAREDPRT *pData )
 {
-    UCHAR    i = ( UCHAR)(pData->uchAddress - 1);      /* "-1" fits program address to RAM address */
+    UCHAR    i = ( UCHAR)(pData->uchAddress - 1);      /* "-1" fits program address to RAM address, overflow if "0" */
 
-    pData->uchTermNo = Para_SharedPrt[i];
-
+    if (i < MAX_SHAREDPRT_SIZE) {   // out of bounds guard, ParaSharedPrtWrite( PARASHAREDPRT *pData )
+        pData->uchTermNo = Para_SharedPrt[i];
+    }
+    else {
+        pData->uchTermNo = 0;
+    }
 }
 
 PARA_KP_SHRALT ParaSharedPrtReadShrAlt(USHORT iTermNo) {
