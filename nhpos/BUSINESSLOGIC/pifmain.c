@@ -2458,6 +2458,33 @@ VOID THREADENTRY UifWatchPrintFilesFolder (VOID)
 ** Description: Create Application
 *===========================================================================
 */
+static int checkFolderAndCreate(TCHAR* folderName)
+{
+	int iRet = 0;
+
+	if (!(0 == _tchdir(folderName)))
+	{
+		switch (_tmkdir(folderName)) {
+		case -1:    // error so what kind of error
+			switch (errno) {
+			case EEXIST:     // already exists so ignore the error.
+				break;
+			case ENOENT:     // path not found
+				iRet = 1;
+				NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate() failed ENOENT.");
+				break;
+			default:
+				iRet = 2;
+				NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate() failed Unknown.");
+				break;
+			}
+			break;
+		}
+	}
+
+	return iRet;
+}
+
 VOID THREADENTRY UifCreateMain(VOID)
 {
 	SHORT           sError = 0;
@@ -2470,21 +2497,24 @@ VOID THREADENTRY UifCreateMain(VOID)
 	NHPOS_NONASSERT_NOTE("==STATE", "==STARTUP STATE:  UifCreateMain() start.");
 
     usReturn = CliEJGetStatus();
-	if(!( 0 == _tchdir(STD_FOLDER_LOGFOLDER)))
-	{
-		_tmkdir(STD_FOLDER_LOGFOLDER);
+
+	if (checkFolderAndCreate(STD_FOLDER_DATABASEFILES) != 0) {
+		NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate(STD_FOLDER_DATABASEFILES) failed.");
 	}
-	if(!( 0 == _tchdir(STD_FOLDER_WEBFOLDER)))
-	{
-		_tmkdir(STD_FOLDER_WEBFOLDER);
+	if (checkFolderAndCreate(STD_FOLDER_TEMPROOT_FILES) != 0) {
+		NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate(STD_FOLDER_TEMPROOT_FILES) failed.");
 	}
-	if(!( 0 == _tchdir(STD_FOLDER_PRINTFOLDER)))
-	{
-		_tmkdir(STD_FOLDER_PRINTFOLDER);
+	if (checkFolderAndCreate(STD_FOLDER_LOGFOLDER) != 0) {
+		NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate(STD_FOLDER_LOGFOLDER) failed.");
 	}
-	if (!(0 == _tchdir(STD_FOLDER_QUERYFOLDER)))
-	{
-		_tmkdir(STD_FOLDER_QUERYFOLDER);
+	if (checkFolderAndCreate(STD_FOLDER_WEBFOLDER) != 0) {
+		NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate(STD_FOLDER_WEBFOLDER) failed.");
+	}
+	if (checkFolderAndCreate(STD_FOLDER_PRINTFOLDER) != 0) {
+		NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate(STD_FOLDER_PRINTFOLDER) failed.");
+	}
+	if (checkFolderAndCreate(STD_FOLDER_QUERYFOLDER) != 0) {
+		NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate(STD_FOLDER_QUERYFOLDER) failed.");
 	}
 
 	//  Log the fact that we are starting up into the PifLog
