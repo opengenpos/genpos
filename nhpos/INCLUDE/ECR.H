@@ -136,11 +136,19 @@ extern "C"{
 #define VOID            void
 #endif
 
+#if 1 // defined(POSSIBLE_DEAD_CODE)
+				// Consider removal of this old pointer address conversion code
+				// which appears to be a holdover from 16 bit Intel 8086 type processors
+				// with segmented addresses with near and far pointers.
+				// It looks like FP_OFF() is still in use. See VosVirtualFree().
+				// The entire VOS subsystem needs to be redone but it will be work.
+				//     Richard Chambers May-05-2025
 #ifndef FP_SEG
 #define FP_SEG(fp)          (*((USHORT FAR *)&(fp) + 1))
 #endif
 #ifndef FP_OFF
 #define FP_OFF(fp)          (*((USHORT FAR *)&(fp)))
+#endif
 #endif
 
 /*
@@ -464,6 +472,7 @@ extern "C"{
 #define	 STD_NUM_FUTURE_TTLS	20	  // Number of fincnial totals in TTLCASHIER and others JHHJ
 #define	 STD_FILENAME_LENGTH_MAX 64	  // Maximum length of file names, increased from 9, to allow
 									  // larger file names to be transfered. JHHJ
+#define STD_FILENAME_MODE_SIZE    4   // Maximum size for the file open mode argument.
 
 #define	 STD_FILE_PATH_LEN		100	  // max file length
 #define  STD_MAX_PRIORITY_CPNS	50	  // maximum number of priority auto coupons JHHJ
@@ -494,6 +503,7 @@ extern "C"{
 #define     STD_FOLDER_TEMPROOT        _T("C:\\TempDisk\\NCR\\Saratoga")
 #define		STD_FOLDER_PROGRAMFILES    _T("C:\\FlashDisk\\NCR\\Saratoga\\Program")
 #define     STD_FOLDER_DATABASEFILES   _T("C:\\FlashDisk\\NCR\\Saratoga\\Database")
+#define     STD_FOLDER_TEMPROOT_FILES  _T("C:\\TempDisk\\NCR\\Saratoga\\Database")
 #define     STD_FOLDER_LOGFILES        _T("C:\\FlashDisk\\NCR\\Saratoga\\Database")
 #define     STD_FOLDER_ICONFILES       _T("C:\\FlashDisk\\NCR\\Saratoga\\Icons")
 #define     STD_FOLDER_WEBFOLDER       _T("C:\\FlashDisk\\NCR\\Saratoga\\Web")
@@ -697,7 +707,8 @@ extern "C"{
 // values of binary zero so this is used to test if a PLU number array has a
 // value or not.  This is same as TCHAR    auchDummy[NUM_PLU_LEN] = {0};
 #define MLD_NO_DISP_PLU_DUMMY  _T("\0\0\0\0\0\0\0\0\0\0\0\0\0\0")
-#define MLD_ZERO_PLU           _T("00000000000000")    // aszDummy[]  or invalid PLU number
+#define MLD_ZERO_PLU           _T("00000000000000")    // aszDummy[]  or invalid PLU number or min PLU number for a range
+#define MLD_NINES_PLU          _T("99999999999999")    // max PLU number for a range
 
 // The following constant is used to test that a PLU number data field is not
 // being used for a PLU. This constant is primarily used with the struct PRTIDX
@@ -742,6 +753,20 @@ typedef unsigned long long  ULONGLONG;
 #endif
 
 typedef unsigned long   NHPOSCOLORREF;	//colorpalette-changes
+
+// The following types are introduced in order to indicate the type of error
+// code that is contained in the variable. These types will be gradually inserted
+// into the source code base over time to make error handling more transparent.
+// Be aware that there are several different ranges of error codes with a number of
+// different error code classes. Each subsystem appears to have developed its own
+// list of error codes though there is some overlap between the various error code
+// types.
+// 
+// There are two main classes of error codes:
+//   - lead thru codes that result in an error message displayed to the user. see LDT_FLFUL_ADR, etc.
+//   - PIF or STUB codes internal error indicators which may be transformed into a lead thru code
+typedef unsigned short  USLEADTHRUERR;  // variable containing one of the CLASS_PARALEADTHRU error codes
+typedef signed short    SPIFSTUBERR;    // variable containing one of the PIF_ERROR_ or STUB_ error codes
 
 // -----------------------------------------------------------------------
 //  Following sizes are used for transaction data files to specify file
@@ -788,9 +813,9 @@ extern UCHAR CONST  auchOLD_FILE_WRITE[];        /* to csop.c */
 extern UCHAR CONST  auchOLD_FILE_READ_WRITE[];   /* to csop.c */
 extern UCHAR CONST  auchOLD_FILE_READ[];         /* to csop.c */
 
-extern UCHAR CONST  auchTEMP_NEW_FILE_WRITE[];
+extern UCHAR CONST  auchTEMP_NEW_FILE_WRITE[];          // open mode: New file for write in TEMP directory
 extern UCHAR CONST  auchTEMP_NEW_FILE_READ_WRITE[];
-extern UCHAR CONST  auchTEMP_OLD_FILE_WRITE[];
+extern UCHAR CONST  auchTEMP_OLD_FILE_WRITE[];          // open mode: Existing file for write in TEMP directory
 extern UCHAR CONST  auchTEMP_OLD_FILE_READ_WRITE[];
 extern UCHAR CONST  auchTEMP_OLD_FILE_READ[];
 
@@ -814,6 +839,10 @@ extern UCHAR CONST  auchOLD_FILE_READ_WRITE_SAVTTL[];
 #else
 #pragma pack(1)
 #endif
+
+typedef WCHAR AucPluNo[STD_PLU_NUMBER_LEN];              // use this for PLU number function arguments
+typedef struct { AucPluNo aucPluNumber; } AucPluNumber;  // use this for PLU number assignment *(AucPluNumber *)x.aucPluNumber
+#define AUCPLUNO(x)  *(AucPluNumber *)(x)    // use like AUCPLUNO(plu.aucPluNumber) = AUCPLUNO(x->aucPluNumber);
 
 typedef short       D4DIGITS;
 typedef long        D9DIGITS;
