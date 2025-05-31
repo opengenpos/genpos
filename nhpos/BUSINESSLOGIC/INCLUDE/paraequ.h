@@ -2267,7 +2267,19 @@ UCHAR   CliParaMDCCheckField(USHORT address, UCHAR field);
 *   Define - Lead Through Mnemonics Address (PRG # 21), P21 Mnemonics
 *
 *	see ParaLeadThru in UNINIRAM UNINT Para and CLASS_PARALEADTHRU with CliParaAllRead()
+*   variables and functions that return one of these lead thru error codes
+*   should use a type of USLEADTHRUERR which has been introduced to help the
+*   reader of the source code to better understand error handling and how an
+*   internal error, typically a negative signed value, is transformed into a
+*   lead thru error code which results in a message displayed to the user.
 \*------------------------------------------------------------------------*/
+
+// This is one of several error value types to be gradually inserted into the
+// source code base over time to make error handling more transparent.
+//
+// See the description in ECR.H by searching for the following new type.
+//
+typedef unsigned short  USLDTERR;  // variable containing one of the CLASS_PARALEADTHRU error codes
 
 #define LDT_NTINFL_ADR          1       /* Not In File */
 #define LDT_FLFUL_ADR           2       /* File Full */
