@@ -2,6 +2,12 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#if defined(POSSIBLE_DEAD_CODE) || defined(_CNPLUTOTAL_TRACE)
+
+// This source for a CnString class is used for converting a PLU Number
+// into a string for the purposes of logs. See areas that are
+// ifdefed out with the defined constant of _CNPLUTOTAL_TRACE.
+
 #include "stdafx.h"
 #include "NDbgTrc.h"
 
@@ -124,3 +130,5 @@ void CnDbgTrace::GetTimeString(LPTSTR szCurTime)
 	::GetSystemTime(&m_stTime);
 	wsprintf(szCurTime,TEXT("%02u:%02u:%02u.%03u"),m_stTime.wHour,m_stTime.wMinute,m_stTime.wSecond,m_stTime.wMilliseconds);
 }
+
+#endif

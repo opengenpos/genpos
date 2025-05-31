@@ -2,6 +2,13 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#if defined(POSSIBLE_DEAD_CODE) || defined(_CNPLUTOTAL_TRACE)
+
+// This source for a CnString class is used for converting a PLU Number
+// into a string for the purposes of logs. See areas that are
+// ifdefed out with the defined constant of _CNPLUTOTAL_TRACE.
+
+
 #include "stdafx.h"
 #ifndef _PLUTOTAL_NOP
 // if turning off PluTotal functionality, don't include PluTotal.h file
@@ -79,4 +86,4 @@ void	CnString::Clear(){
 	m_aStr[0] = '\0';
 }
 
-
+#endif

@@ -65,8 +65,10 @@ CPluTotalApp::CPluTotalApp()
 CPluTotalApp		theApp;
 CnPluTotalAPI		plutotal;	// PluTotal Object
 
+#ifdef  _CNPLUTOTAL_TRACE
 CnDbgTrace			dbgtrc(TEXT("\\FlashDisk\\PluTtlLog.txt"));
 CnDbgTrace			dbgtrc2(TEXT("\\FlashDisk\\PluTtlLog2.txt"));
+#endif
 
 #ifndef	_PLUTOTAL_NOP
 
@@ -367,7 +369,9 @@ PLUTOTAL_EXTERN_C	__declspec( dllexport )	VOID 	PLUTTLAPI  PluTotalPutLog_Dbg(LP
 	mbstowcs(tMsg3,szLabel3,len3);
 */
 #ifdef	_DEBUG
+#if defined(POSSIBLE_DEAD_CODE) || defined(_CNPLUTOTAL_TRACE)
 	dbgtrc2.PutLog(tMsg1,tMsg2,tMsg3);
+#endif
 #endif
 
 }
