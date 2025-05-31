@@ -815,8 +815,8 @@
 #pragma message("  ====++++====   TrnDeleteFile_Debug() is ENABLED     ====++++====")
 #pragma message("  ====++++====   File: Include\\trans.h              ====++++====")
     PifFileHandle   TrnOpenFile_Debug(CONST TCHAR *uchFileName, CONST UCHAR *auchType, CONST char *aszFilePath, int nLineNo);
-    SHORT   TrnExpandFile_Debug(PifFileHandle hsFileHandle, ULONG ulInquirySize, CONST char *aszFilePath, int nLineNo);
-    SHORT   TrnSeekFile_Debug(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove, CONST char *aszFilePath, int nLineNo);
+    STRNRSLT   TrnExpandFile_Debug(PifFileHandle hsFileHandle, ULONG ulInquirySize, CONST char *aszFilePath, int nLineNo);
+    STRNRSLT   TrnSeekFile_Debug(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove, CONST char *aszFilePath, int nLineNo);
     VOID    TrnCloseFile_Debug(PifFileHandle hsFileHandle, CONST char *aszFilePath, int nLineNo);
     VOID    TrnDeleteFile_Debug(CONST TCHAR *uchFileName, CONST char *aszFilePath, int nLineNo);
     USHORT  TrnConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo);
@@ -829,8 +829,8 @@
 #define TrnConvertError(sError) TTrnConvertError_Debug(sError,__FILE__,__LINE__)
 #else
     PifFileHandle   TrnOpenFile(CONST TCHAR *uchFileName, CONST UCHAR *auchType);
-    SHORT   TrnExpandFile( PifFileHandle hsFileHandle, ULONG ulInquirySize );
-    SHORT   TrnSeekFile(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove);
+    STRNRSLT   TrnExpandFile( PifFileHandle hsFileHandle, ULONG ulInquirySize );
+    STRNRSLT   TrnSeekFile(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove);
     VOID    TrnCloseFile(PifFileHandle hsFileHandle);
     VOID    TrnDeleteFile(CONST TCHAR *uchFileName);
     USHORT  TrnConvertError(SHORT sError);

@@ -2074,12 +2074,9 @@ VOID PifSetDiskNamePath(VOID)
 **                                                                  **
 **********************************************************************
 fhfh*/
-USHORT PifCheckAndCreateDirectory(VOID)
+SPIFRSLT PifCheckAndCreateDirectory(VOID)
 {
-    DWORD   dwError;
-    wchar_t wszFilePath[MAX_PATH];
-    wchar_t *pwszStart, *pwszFilePath;
-    int     i;
+    DWORD   dwError = 0;              // keep this variable 
 	TCHAR   *pwszPathName[] = {
 		wszPifDiskPathName,           // folder for the database folder
 		wszPifTempPathName,           // folder for temporary files used during transactions, etc.
@@ -2091,18 +2088,34 @@ USHORT PifCheckAndCreateDirectory(VOID)
 		0
 	};
 
-    for (i=0; pwszPathName[i]; i++) {
-        memset(wszFilePath, 0, sizeof(wszFilePath));
-        memcpy(wszFilePath, pwszPathName[i], MAX_PATH);
+    for (int i=0; pwszPathName[i]; i++) {
+        wchar_t *pwszStart, *pwszFilePath;
+        wchar_t wszFilePath[MAX_PATH] = { 0 };
+
+        _tcsncpy(wszFilePath, pwszPathName[i], MAX_PATH - 1);
         pwszFilePath = &wszFilePath[0];
         pwszStart = pwszFilePath;
 
 		if (pwszStart[0] == 0)
 			continue;
 
-        do {
-            pwszFilePath++;
+        // skip past any leading drive letter and colon to the first back slash
+        if (*pwszFilePath != _T('\\')) pwszFilePath++;
+        if (*pwszFilePath != _T('\\')) pwszFilePath++;
 
+        // traverse the path and make sure the various folders needed to build
+        // the path exist.
+        // position our ending pointer to the first character in the first folder name
+        // after this pwszStart points to the C:\folder while pwszFilePath points to name.
+        // we will continue with pwszStart containing the complete pathname for this piece
+        // of the total file path since we have to build the folder structure one folder at
+        // a time.
+        if (*pwszFilePath == _T('\\')) pwszFilePath++;
+        do {
+            // traverse the path until we find the back slash after the end of the
+            // current piece of the total file path. Then replace the back slash
+            // found with an end of string terminator, try to create the directory
+            // path thus far,
             if (*pwszFilePath == TEXT('\\')) {  /* create each directoy path */
                 *pwszFilePath = TEXT('\0');
                 if (CreateDirectory(pwszStart, NULL)) {
@@ -2112,10 +2125,14 @@ USHORT PifCheckAndCreateDirectory(VOID)
                     if (dwError == ERROR_ALREADY_EXISTS) {
                         ;
                     } else {
-                        return (USHORT)PIF_ERROR_SYSTEM;
+                        char xBuff[64] = { 0 };
+                        sprintf(xBuff, "PifCheckAndCreateDirectory(): dwError = %d", dwError);
+                        NHPOS_ASSERT_TEXT(0, xBuff);
+                        return PIF_ERROR_SYSTEM;
                     }
                 }
-                *pwszFilePath = TEXT('\\');
+                *pwszFilePath = TEXT('\\');    // replace the end of string with a back slash.
+                pwszFilePath++;                // point to begining of next folder name and continue
                 continue;
             }
             if (*pwszFilePath == TEXT('\0')) {  /* last directroy */
@@ -2126,12 +2143,15 @@ USHORT PifCheckAndCreateDirectory(VOID)
                     if (dwError == ERROR_ALREADY_EXISTS) {
                         ;
                     } else {
-                        return (USHORT)PIF_ERROR_SYSTEM;
+                        char xBuff[64] = { 0 };
+                        sprintf(xBuff, "PifCheckAndCreateDirectory(): dwError = %d", dwError);
+                        NHPOS_ASSERT_TEXT(0, xBuff);
+                        return PIF_ERROR_SYSTEM;
                     }
                 }
                 break;
             }
-
+            pwszFilePath++;
         } while(1);
     }
     return (PIF_OK);

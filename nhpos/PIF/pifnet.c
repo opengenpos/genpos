@@ -772,7 +772,7 @@ SHORT PifNetStartupDiscoverNet (VOID)
 	return PIF_OK;
 }
 
-SHORT PifNetStartup(VOID)
+SPIFRSLT PifNetStartup(VOID)
 {
     WSADATA    wsaData;
 
@@ -827,7 +827,7 @@ SHORT  PIFENTRY PifNetDiscoverNet (VOID)
 **              See PifNetOpenEx(pHeader, PIF_NET_GENERALPORTMODE)  **
 **********************************************************************
 fhfh*/
-SHORT  PIFENTRY PifNetOpen(CONST XGHEADER *pHeader)
+SPIFRSLT  PIFENTRY PifNetOpen(CONST XGHEADER *pHeader)
 {
     SOCKET  hHandle = INVALID_SOCKET;
     SHORT   sNet;

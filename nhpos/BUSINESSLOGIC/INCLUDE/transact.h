@@ -63,6 +63,15 @@
 #pragma pack(1)
 #endif
 
+// This is one of several error value types to be gradually inserted into the
+// source code base over time to make error handling more transparent.
+//
+// See the description in ECR.H by searching for the following new type.
+//
+// PIF or STUB codes internal error indicators which may be transformed into a
+// lead thru code to generate an error message to display to the user.
+
+typedef signed short   STRNRSLT;      // result variable containing one of the TRN_ error codes
 
 #define     TRN_SUCCESS_REPLACE     1    // TRN_SUCCESS and item was replaced and not added to end of file
 #define     TRN_SUCCESS             0
@@ -915,19 +924,19 @@
     VOID    TrnChkAndDelFile(USHORT usSize, UCHAR uchStorageType);     /* check and delete item/cons./post rec. storage file */
 
 #if 0
-    SHORT   TrnReadFile_Debug(ULONG ulOffset, VOID *pData,
+    STRNRSLT  TrnReadFile_Debug(ULONG ulOffset, VOID *pData,
                         ULONG ulSize, PifFileHandle hsFileHandle,
 						ULONG *pulActualBytesRead, CONST char *pFileName, int iLineNo);
-    SHORT   TrnWriteFile_Debug(ULONG ulOffset, VOID *pData,
+    STRNRSLT  TrnWriteFile_Debug(ULONG ulOffset, const VOID *pData,
                          ULONG ulSize, PifFileHandle hsFileHandle, CONST char *pFileName, int iLineNo);
 
 #define TrnReadFile(ulOffset,pData,ulSize,hsFileHandle,pulActualBytesRead) TrnReadFile_Debug(ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead, __FILE__, __LINE__)
 #define TrnWriteFile(ulOffset,pData,ulSize,hsFileHandle) TrnReadFile_Debug(ulOffset, pData, ulSize, hsFileHandle, __FILE__, __LINE__)
 
 #else
-    SHORT   TrnReadFile(ULONG ulOffset, VOID *pData,
+    STRNRSLT  TrnReadFile(ULONG ulOffset, VOID *pData,
                         ULONG ulSize, PifFileHandle hsFileHandle, ULONG *pulActualBytesRead);
-    SHORT   TrnWriteFile(ULONG ulOffset, VOID *pData, ULONG ulSize, PifFileHandle hsFileHandle);
+    STRNRSLT  TrnWriteFile(ULONG ulOffset, const VOID *pData, ULONG ulSize, PifFileHandle hsFileHandle);
 
 #endif
     VOID    TrnStoGetConsToPostR(VOID);

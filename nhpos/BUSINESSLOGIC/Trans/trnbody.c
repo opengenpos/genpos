@@ -2971,11 +2971,11 @@ PifFileHandle TrnOpenFile(CONST TCHAR *uchFileName, CONST UCHAR *auchType)
 */
 #if defined(TrnExpandFile)
 #pragma message("TrnExpandFile defined")
-SHORT TrnExpandFile_Special( PifFileHandle hsFileHandle, ULONG ulInquirySize);
+STRNRSLT TrnExpandFile_Special( PifFileHandle hsFileHandle, ULONG ulInquirySize);
 
-SHORT TrnExpandFile_Debug( PifFileHandle hsFileHandle, ULONG ulInquirySize, CONST char *aszFilePath, int nLineNo)
+STRNRSLT TrnExpandFile_Debug( PifFileHandle hsFileHandle, ULONG ulInquirySize, CONST char *aszFilePath, int nLineNo)
 {
-    SHORT   sReturn;
+    STRNRSLT   sReturn;
 	int iLen = 0;
 	char  xBuffer[256];
 
@@ -2997,13 +2997,13 @@ SHORT TrnExpandFile_Debug( PifFileHandle hsFileHandle, ULONG ulInquirySize, CONS
 	return sReturn;
 }
 
-SHORT TrnExpandFile_Special( PifFileHandle hsFileHandle, ULONG ulInquirySize )
+STRNRSLT TrnExpandFile_Special( PifFileHandle hsFileHandle, ULONG ulInquirySize )
 #else
-SHORT TrnExpandFile( PifFileHandle hsFileHandle, ULONG ulInquirySize )
+STRNRSLT TrnExpandFile( PifFileHandle hsFileHandle, ULONG ulInquirySize )
 #endif
 {
     ULONG        ulActualSize;
-    SHORT        sReturn;
+    STRNRSLT     sReturn;
 	TrnFileSize  usInquirySize = ulInquirySize;
 
     // WARNING: over the years file sizes have increased especially the transaction file size
@@ -3054,11 +3054,11 @@ SHORT TrnExpandFile( PifFileHandle hsFileHandle, ULONG ulInquirySize )
 */
 #if defined(TrnSeekFile)
 #pragma message("TrnSeekFile defined")
-SHORT TrnSeekFile_Special(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove);
+STRNRSLT TrnSeekFile_Special(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove);
 
-SHORT TrnSeekFile_Debug(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove, CONST char *aszFilePath, int nLineNo)
+STRNRSLT TrnSeekFile_Debug(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove, CONST char *aszFilePath, int nLineNo)
 {
-    SHORT   sReturn;
+    STRNRSLT   sReturn;
 	int iLen = 0;
 	char  xBuffer[256];
 
@@ -3080,9 +3080,9 @@ SHORT TrnSeekFile_Debug(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulAc
 	return sReturn;
 }
 
-SHORT TrnSeekFile_Special(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove)
+STRNRSLT TrnSeekFile_Special(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove)
 #else
-SHORT TrnSeekFile(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove)
+STRNRSLT TrnSeekFile(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove)
 #endif
 {
     return(PifSeekFile(hsFileHandle, ulActSize, ulActMove));
@@ -3109,15 +3109,15 @@ SHORT TrnSeekFile(PifFileHandle hsFileHandle, ULONG ulActSize, ULONG *ulActMove)
 */
 #if defined(TrnReadFile)
 #pragma message("TrnReadFile defined")
-SHORT TrnReadFile_Special(ULONG ulOffset, VOID *pData,
+STRNRSLT TrnReadFile_Special(ULONG ulOffset, VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle,
 				   ULONG *pulActualBytesRead);
 
-SHORT TrnReadFile_Debug(ULONG ulOffset, VOID *pData,
+STRNRSLT TrnReadFile_Debug(ULONG ulOffset, VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle,
 				   ULONG *pulActualBytesRead, CONST char *aszFilePath, int nLineNo)
 {
-    SHORT  sReturn;
+    STRNRSLT  sReturn;
 	int iLen = 0;
 	char  xBuffer[256];
 
@@ -3139,11 +3139,11 @@ SHORT TrnReadFile_Debug(ULONG ulOffset, VOID *pData,
 	return sReturn;
 }
 
-SHORT TrnReadFile_Special(ULONG ulOffset, VOID *pData,
+STRNRSLT TrnReadFile_Special(ULONG ulOffset, VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle,
 				   ULONG *pulActualBytesRead)
 #else
-SHORT TrnReadFile(ULONG ulOffset, VOID *pData,
+STRNRSLT TrnReadFile(ULONG ulOffset, VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle,
 				   ULONG *pulActualBytesRead)
 #endif
@@ -3211,14 +3211,14 @@ SHORT TrnReadFile(ULONG ulOffset, VOID *pData,
 */
 #if defined(TrnWriteFile)
 #pragma message("TrnWriteFile defined")
-SHORT TrnWriteFile_Special(ULONG ulOffset, const VOID *pData,
+STRNRSLT TrnWriteFile_Special(ULONG ulOffset, const VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle);
 
-SHORT TrnWriteFile_Debug(ULONG ulOffset, const VOID *pData,
+STRNRSLT TrnWriteFile_Debug(ULONG ulOffset, const VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle,
 				   CONST char *aszFilePath, int nLineNo)
 {
-    SHORT   sReturn;
+    STRNRSLT   sReturn;
 	int iLen = 0;
 	char  xBuffer[256];
 
@@ -3240,14 +3240,14 @@ SHORT TrnWriteFile_Debug(ULONG ulOffset, const VOID *pData,
 	return sReturn;
 }
 
-SHORT TrnWriteFile_Special(ULONG ulOffset, const VOID *pData,
+STRNRSLT TrnWriteFile_Special(ULONG ulOffset, const VOID *pData,
                    ULONG ulSize, PifFileHandle hsFileHandle)
 #else
-SHORT TrnWriteFile(ULONG ulOffset, const VOID *pData,
+STRNRSLT TrnWriteFile(ULONG ulOffset, const VOID *pData,
                   ULONG ulSize, PifFileHandle hsFileHandle)
 #endif
 {
-    SHORT   sReturn;
+    STRNRSLT   sReturn;
     ULONG   ulActPos;
 //  TrnFileSize  usFSize;
 //	ULONG	ulActualBytesRead; //For PifReadFile 11-7-3

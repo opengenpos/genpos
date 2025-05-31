@@ -754,19 +754,30 @@ typedef unsigned long long  ULONGLONG;
 
 typedef unsigned long   NHPOSCOLORREF;	//colorpalette-changes
 
-// The following types are introduced in order to indicate the type of error
-// code that is contained in the variable. These types will be gradually inserted
-// into the source code base over time to make error handling more transparent.
+// There are several error value types to be gradually inserted into the
+// source code base over time to make error handling more transparent.
+// 
+// The definitions for the error value types will be in the header file where
+// the error values are defined. However this area is used for a centralized
+// discussion of these types.
+//
 // Be aware that there are several different ranges of error codes with a number of
 // different error code classes. Each subsystem appears to have developed its own
 // list of error codes though there is some overlap between the various error code
 // types.
 // 
-// There are two main classes of error codes:
-//   - lead thru codes that result in an error message displayed to the user. see LDT_FLFUL_ADR, etc.
-//   - PIF or STUB codes internal error indicators which may be transformed into a lead thru code
-typedef unsigned short  USLEADTHRUERR;  // variable containing one of the CLASS_PARALEADTHRU error codes
-typedef signed short    SPIFSTUBERR;    // variable containing one of the PIF_ERROR_ or STUB_ error codes
+// In most cases a success return code is a value of zero with definitions such as
+//   - PIF_SUCCESS is a SPIFRSLT value for success
+//   - TRN_SUCCESS is a STRNRSLT value for success
+//
+// Error value types definitions created thus far:
+//   - SPIFRSLT: PIF or STUB codes internal error indicators which may be transformed into a lead thru code.
+//   - STRNRSLT: result variable containing one of the TRN_ error codes
+// 
+// Operator Lead Thru message codes aren't error codes though they may be used to indicate an
+// error message to display to the operator. Error codes may be transformed into the appropriate
+// Lead Thru code to inform the operator of an error condition.
+//   - USLDTERR: lead thru codes that result in an error message displayed to the user. see LDT_FLFUL_ADR, etc.
 
 // -----------------------------------------------------------------------
 //  Following sizes are used for transaction data files to specify file

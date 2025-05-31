@@ -87,11 +87,11 @@ VOID PifSnapShotCommTable (TCHAR *pSnapFileName, CHAR *pcSourcePath, int iLineNo
 VOID PifSnapShotCommTableFH (SHORT  shFile);
 VOID PifSnapShotSemaphoreTable (SHORT  shSnap);
 SHORT PifSubSearchId(USHORT usHandle, PIFHANDLETABLE *pPifHandleTable, USHORT usMaxNumber);
-VOID PifSemInitialize();
-VOID PifQueueInitialize();
+VOID PifSemInitialize(VOID);
+VOID PifQueueInitialize(VOID);
 VOID PifTaskTableInit(VOID);
-USHORT PifCheckAndCreateDirectory(VOID);
-SHORT PifNetStartup(VOID);
+SPIFRSLT PifCheckAndCreateDirectory(VOID);
+SPIFRSLT PifNetStartup(VOID);
 VOID PifFinalize(VOID);
 VOID PifNetFinalize(VOID);
 VOID PifCloseHandle(USHORT usPowerDown);

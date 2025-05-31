@@ -171,6 +171,17 @@ extern "C"{
 #define THREADENTRY  CDECL 
 
 /* function return values or return data */
+
+// This is one of several error value types to be gradually inserted into the
+// source code base over time to make error handling more transparent.
+//
+// See the description in ECR.H by searching for the following new type.
+//
+// PIF or STUB codes internal error indicators which may be transformed into a
+// lead thru code to generate an error message to display to the user.
+
+typedef signed short   SPIFRSLT;      // result variable containing PIF handle or one of the PIF_ERROR_ or STUB_ error codes
+
 #define PIF_OK  1
 
 #define PIF_ERROR_SYSTEM                (-1)
@@ -1892,7 +1903,7 @@ VOID*  PIFENTRY PifGetComRowHandle(USHORT usPort);
 
 /* --- Network --- */
 SHORT  PIFENTRY PifNetDiscoverNet (VOID);
-SHORT  PIFENTRY PifNetOpen(CONST XGHEADER *pHeader);
+SPIFRSLT  PIFENTRY PifNetOpen(CONST XGHEADER *pHeader);
 SHORT  PIFENTRY PifNetOpenEx(CONST XGHEADER *pHeader, USHORT fsMode);
 SHORT  PIFENTRY PifNetSend(USHORT usNet, CONST VOID *pBuffer, ULONG ulBytes);
 SHORT  PIFENTRY PifNetReceive(USHORT usNet, VOID *pBuffer, USHORT usBytes);
