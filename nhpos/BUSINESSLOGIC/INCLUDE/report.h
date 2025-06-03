@@ -768,10 +768,10 @@ SHORT   RptPrtError( SHORT sError );
 
 /***** EJ REPORT *****/
 
-SHORT RptEJRead( VOID );                                /* RptEJ.c */
+USLDTERR RptEJRead( VOID );                                /* RptEJ.c */
 SHORT RptEJReset( VOID );                               /* RptEJ.c */
 SHORT RptEJClusterReset( VOID );                        /* RptEJ.c */
-SHORT RptEJReverse( VOID );                             /* RptEJ.c */
+USLDTERR RptEJReverse( VOID );                          /* RptEJ.c */
 SHORT Rpt_EJEdit( SHORT sType, UCHAR uchTermNo );       /* RptEJ.c */
 SHORT Rpt_EJEdit_Print( SHORT sType, UCHAR uchTermNo ); /* RptEJ.c */
 SHORT Rpt_EJEdit_Display( VOID );                       /* RptEJ.c */
@@ -788,7 +788,7 @@ SHORT   RptETKReset(UCHAR uchType, UCHAR uchFunc);
 SHORT   RptETKAllReset(UCHAR uchType, UCHAR uchFunc);
 SHORT   RptETKAllOnlyReset( UCHAR  uchType, UCHAR  uchFunc);
 SHORT   RptETKAllRstReport( UCHAR  uchType, UCHAR  uchFunc);
-SHORT   RptETKLock(VOID);
+USLDTERR   RptETKLock(VOID);
 VOID    RptETKUnLock(VOID);
 
 /****** Report Cpm/Ept Tally ********/

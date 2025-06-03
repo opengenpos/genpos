@@ -88,9 +88,7 @@
 
 static USHORT      usCliTranNo = 0;            /* transaction # of my terminal */
 
-extern XGRAM       CliSndBuf;          /* Send Buffer */    
-extern XGRAM       CliRcvBuf;          /* Receive Buffer */
-extern  CLICOMIF   CliMsg;
+extern  CLICOMIF   CliMsg;             /* Client message description buffer initialized by caller */
 
 
 /*
@@ -254,13 +252,13 @@ SHORT   SerTtlTotalIncrRead(VOID *pTotal)
 ** Description:  This function supports to reset Total file.
 *===========================================================================
 */
-SHORT   SerTtlTotalReset(VOID *pTotal, USHORT usMDCBit)
+STTLRSLT  SerTtlTotalReset(VOID *pTotal, USHORT usMDCBit)
 {
     TTLCASHIER      *pTtl = pTotal;
     CLIREQRESETTL   ReqMsgH = {0};
     CLIRESTOTAL     ResMsgH = {0};
     SERINQSTATUS    InqData = {0};
-    SHORT           sRetCode;
+    STTLRSLT        sRetCode;
 
     PifRequestSem(husCliExeNet);
 

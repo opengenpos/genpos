@@ -236,7 +236,7 @@ SHORT   EJRead(EJ_READ *pEJRead, UCHAR *pBuff, UCHAR uchType);
 SHORT   EJReverse(EJ_READ *pEJRead, WCHAR *pBuff, UCHAR uchType);
 SHORT   EJClear(VOID);
 UCHAR   EJGetFlag(VOID);
-USHORT  EJConvertError(SHORT sError);
+USLDTERR  EJConvertError(SHORT sError);
 USHORT  EJGetStatus(VOID);
 SHORT   EJRead1Line(EJ_READ *pEJRead, UCHAR *pBuff, UCHAR uchType); /* Add R3.0 */
 SHORT   EJ_Write(EJT_HEADER FAR *pTHeader, USHORT usSize,

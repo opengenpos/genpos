@@ -66,12 +66,7 @@
 **  Description: A/C No.72 Function Entry Mode  
 *===============================================================================
 */
-
-
-
-
-
-SHORT UifAC72Function( VOID ) 
+USLDTERR UifAC72Function( VOID )
 {
 
 

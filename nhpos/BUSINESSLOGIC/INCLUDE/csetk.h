@@ -215,7 +215,7 @@ SHORT   EtkOpenFile(CONST CHAR *pszMode, UCHAR uchFileType, SHORT *phsEtkFile);
 VOID    EtkCloseFile(SHORT hsEtkFile);
 SHORT   EtkReadFile(SHORT hsEtkFile, ULONG ulOffset, ULONG ulLen, UCHAR *puchReadData, ULONG *pulActualBytesRead);
 VOID    EtkWriteFile(SHORT hsEtkFile, ULONG ulOffset, ULONG ulLen, UCHAR  *puchWriteData);
-USHORT  EtkConvertErrorWithLineNumber(SHORT sError, ULONG ulCalledFromLineNo);
+USLDTERR  EtkConvertErrorWithLineNumber(SHORT sError, ULONG ulCalledFromLineNo);
 #define EtkConvertError(sError) EtkConvertErrorWithLineNumber(sError,__LINE__)
 SHORT   EtkAllDataCheck(UCHAR uchMinor);
 SHORT   EtkStatRead(ULONG  ulEmployeeNo, SHORT   *psTimeIOStat, USHORT  *pusMaxFieldNo, ETK_JOB *pEtkJob);

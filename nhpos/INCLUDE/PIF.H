@@ -182,7 +182,7 @@ extern "C"{
 
 typedef signed short   SPIFRSLT;      // result variable containing PIF handle or one of the PIF_ERROR_ or STUB_ error codes
 
-#define PIF_OK  1
+#define PIF_OK  1          // indicates success. most error code ranges use 0 for success by the way.
 
 #define PIF_ERROR_SYSTEM                (-1)
 

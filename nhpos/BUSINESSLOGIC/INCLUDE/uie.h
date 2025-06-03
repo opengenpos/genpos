@@ -62,6 +62,8 @@
 #include "pif.h"
 #endif
 
+#include "paraequ.h"
+
 #if     (defined(_WIN32_WCE) || defined(WIN32)) && _MSC_VER >= 800
 #pragma pack(push, 1)
 #else
@@ -603,7 +605,7 @@ SHORT   UieShelExecuteLinkFile (TCHAR *aszName, UCHAR uchLen);
 /* ----- UIESEQ.C ----- */
 SHORT   UieCheckSequence(KEYMSG *pData);
 SHORT   UieSetExtendedStatus (SHORT sRetStatus);
-SHORT   UieDefProc(KEYMSG *pData);
+USLDTERR   UieDefProc(KEYMSG *pData);
 
 /* ----- UIEKEY.C ----- */
 VOID    UieSetCvt(CONST CVTTBL *pCvt);

@@ -103,7 +103,7 @@ SHORT Rpt_EJEdit_Print_SingleColumn( VOID );
 **  Description: Read Electronic Journal File.  
 *===============================================================================
 */
-SHORT RptEJRead( VOID )
+USLDTERR RptEJRead( VOID )
 {
     UCHAR   uchUAddr;       /* Terminal Unique Address, R3.1 */
 
@@ -305,7 +305,7 @@ SHORT RptEJClusterReset( VOID )
 **  Description: Edit and Print Electronic Journal File for Reverse Function.  
 *===============================================================================
 */
-SHORT RptEJReverse( VOID )
+USLDTERR RptEJReverse( VOID )
 {
 	TCHAR           auchRBuff[EJ_COLUMN + 1] = {0};
     SHORT           sError;

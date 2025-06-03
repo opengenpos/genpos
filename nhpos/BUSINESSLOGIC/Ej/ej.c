@@ -790,16 +790,16 @@ UCHAR    EJGetFlag(VOID)
 ** Description: This function converts error code to leadthru number.
 *===========================================================================
 */
-USHORT   EJConvertError(SHORT sError)
+USLDTERR   EJConvertError(SHORT sError)
 {
-    USHORT  usLeadthruNo = LDT_ERR_ADR;
+    USLDTERR  usLeadthruNo = LDT_ERR_ADR;
 
     switch ( sError ) {
 //  case EJ_CONTINUE:                   /* Success  0 for EJReadResetTrans() more data to read */
     case EJ_END:                        /* Success -1 for EJReadResetTrans() end of data */
     case EJ_EOF:                        /* Success -120 for EJReadFile() end of data */
     case EJ_PERFORM:                    /* Success 0 */
-        usLeadthruNo = 0;
+        usLeadthruNo = SUCCESS;
         break;
 
     case EJ_FILE_NEAR_FULL:

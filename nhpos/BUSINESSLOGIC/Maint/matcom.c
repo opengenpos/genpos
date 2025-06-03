@@ -441,7 +441,7 @@ SHORT MaintPLUCopy()
 ** Description: Lock PLU/DEPT File and Save This Lock Handle to Own Save Area
 *===========================================================================
 */
-SHORT MaintPLUDEPTLock()
+USLDTERR MaintPLUDEPTLock()
 {
     SHORT   sError;
     

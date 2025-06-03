@@ -1563,7 +1563,7 @@ SHORT RptCashierReset(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchFunc, ULONG u
 
 SHORT RptCashierIndReset(UCHAR uchMinorClass, UCHAR uchFunc, ULONG ulCashierNo) 
 {
-    SHORT           sReturn;
+    STTLRSLT        sReturn;
 	TTLCASHIER      TtlCas = {0};
     UCHAR           uchSpecMnemo, uchSpecReset;
 

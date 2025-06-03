@@ -198,7 +198,7 @@ SHORT   MaintLoanPickupCasSignOut(MAINTLOANPICKUP *pData)
 **  Description: Cashier Sign Out of Loan/Pickup, in case of abort
 *======================================================================================
 */
-SHORT   MaintLoanPickupAbort(VOID)
+USLDTERR   MaintLoanPickupAbort(VOID)
 {
 
     if (MaintWork.LoanPickup.uchLoanPickStatus & MAINT_DATA_INPUT) {

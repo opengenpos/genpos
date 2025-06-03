@@ -551,7 +551,62 @@ extern "C"{
 #define EXTFSC_ASK_REPORT16    16                   /* Ask(Report) key, used with FSC_ASK  Saratoga */
 #define EXTFSC_ASK_REPORT20    20                   /* Ask(Report) key, used with FSC_ASK  Saratoga */
 
-// ------------------------------
+// ----------------------------------------------------------------------
+// There are several error value types to be gradually inserted into the
+// source code base over time to make error handling more transparent.
+// 
+// The definitions for the error value types will be in the header file where
+// the error values are defined. However this area is used for a centralized
+// discussion of these types.
+//
+// Be aware that there are several different ranges of error codes with a number of
+// different error code classes. Each subsystem appears to have developed its own
+// list of error codes though there is some overlap between the meanings of the
+// individual error codes in the ranges of the various error code types.
+// 
+// In general we want to have the same error code value to represent a similar error
+// condition across all of the error code types. Obviously this is not always possible
+// so those error code values unique to a specific error code type should use values
+// outside of the range of -1 through -20.
+// 
+// Most of the error code types adopt the following conventions:
+//  - a positive, a value of zero or greater, error code value indicates success
+//  - non-zero error code values provide some additional information such as number of bytes read
+//  - a negative error code value indicates a failure with different values providing the reason
+// 
+// In most cases a success return code is a value of zero with definitions such as:
+//   - SUCCESS is a generally used SHORT value for success. See also STD_RET_SUCCESS
+//   - TRN_SUCCESS is a STRNRSLT value for success
+//   - TTL_SUCCESS is a STTLRSLT value for success
+//   - UIF_SUCCESS is a SUIFRSLT value for success
+//   - SHR_PERFORM is a SSHRRSLT value for success
+// 
+// Other error code value ranges can be found near the defines for the following:
+//   - CAS_PERFORM cashier action
+//   - OP_PERFORM 
+//   - KPS_PERFORM  kitchen printer action
+//   - KDS_PERFORM  kitchen display action
+//   - DFL_PERFORM
+//   - EJ_PERFORM   Electronic Journal action
+// 
+// However the Platform Independent Functions library uses a value of 1 to indicate success
+//   - PIF_OK is a SPIFRSLT value for success.
+//
+// The STUB_RETCODE_ codes are a variation of the STUB_ codes that are created by adding the
+// value of STUB_RETCODE to a STUB_ error code value.
+// 
+// Error value types definitions created thus far:
+//   - SPIFRSLT: PIF or STUB codes internal error indicators which may be transformed into a lead thru code.
+//   - STRNRSLT: result variable containing one of the TRN_ error codes
+//   - STTLRSLT: result variable containing one of the TTL_ error codes for totals.
+//   - SUIFRSLT: result variable containing one of the UIF_ error codes
+// 
+// Operator Lead Thru message codes aren't error codes though they may be used to indicate an
+// error message to display to the operator. Error codes may be transformed into the appropriate
+// Lead Thru code to inform the operator of an error condition.
+//   - USLDTERR: lead thru codes that result in an error message displayed to the user. see LDT_FLFUL_ADR, etc.
+
+
 //  Defines for Return Value and Status
 //  The following defines are being used to standardize function
 //  return status indicating if an error occurred or not and if an
@@ -754,30 +809,6 @@ typedef unsigned long long  ULONGLONG;
 
 typedef unsigned long   NHPOSCOLORREF;	//colorpalette-changes
 
-// There are several error value types to be gradually inserted into the
-// source code base over time to make error handling more transparent.
-// 
-// The definitions for the error value types will be in the header file where
-// the error values are defined. However this area is used for a centralized
-// discussion of these types.
-//
-// Be aware that there are several different ranges of error codes with a number of
-// different error code classes. Each subsystem appears to have developed its own
-// list of error codes though there is some overlap between the various error code
-// types.
-// 
-// In most cases a success return code is a value of zero with definitions such as
-//   - PIF_SUCCESS is a SPIFRSLT value for success
-//   - TRN_SUCCESS is a STRNRSLT value for success
-//
-// Error value types definitions created thus far:
-//   - SPIFRSLT: PIF or STUB codes internal error indicators which may be transformed into a lead thru code.
-//   - STRNRSLT: result variable containing one of the TRN_ error codes
-// 
-// Operator Lead Thru message codes aren't error codes though they may be used to indicate an
-// error message to display to the operator. Error codes may be transformed into the appropriate
-// Lead Thru code to inform the operator of an error condition.
-//   - USLDTERR: lead thru codes that result in an error message displayed to the user. see LDT_FLFUL_ADR, etc.
 
 // -----------------------------------------------------------------------
 //  Following sizes are used for transaction data files to specify file

@@ -53,6 +53,10 @@
     PROTOTYPE
 ===========================================================================
 */
+#if !defined(CSSTBTTL_INCLUDED)
+#define CSSTBTTL_INCLUDED
+
+#include <csttl.h>
 
 /*---------------------------------------
     USER I/F TOTAL FUNCTION (CLIENT)
@@ -71,7 +75,7 @@ SHORT    CliRecvTtlGetLen(UCHAR uchMajorClass);
 
 SHORT    SerTtlTotalRead(VOID *pTotal);
 SHORT    SerTtlTotalIncrRead(VOID *pTotal);
-SHORT    SerTtlTotalReset(VOID *pTotal, USHORT usMDCBit);
+STTLRSLT SerTtlTotalReset(VOID *pTotal, USHORT usMDCBit);
 /* SHORT    SerTtlTotalReset(VOID *pTotal, UCHAR uchMDCBit); */
 SHORT    SerTtlIssuedSet(VOID *pTotal, UCHAR fIssued);
 SHORT    SerTtlIssuedCheck(VOID *pTotal, UCHAR fIssued);
@@ -89,5 +93,7 @@ SHORT   SerTtlTumUpdateDelayedBalance(VOID);
 
 VOID    SerTtlStartTransferredTotalsUpdate (USHORT usTerminalNo);
 VOID  SerTtlStartUpdateTotalsMsg (USHORT  usTerminalPosition);
+
+#endif
 
 /*===== END OF DEFINITION =====*/

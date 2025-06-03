@@ -989,7 +989,7 @@ SHORT MaintPPIDelete( MAINTPPI *pData)
 *===========================================================================
 */
 
-SHORT MaintPPILock()
+USLDTERR MaintPPILock()
 {
     SHORT    sError;
     

@@ -1131,7 +1131,7 @@ SHORT MaintPLUEdit( MAINTPLU *pData );
 SHORT MaintDEPTDelete( PARADEPT *pData );
 SHORT MaintPLUWrite( VOID );
 SHORT MaintPLUDelete( VOID );
-SHORT MaintPLUReport( VOID );
+USLDTERR MaintPLUReport( VOID );
 VOID MaintPLUDisplayFirstPage( VOID );  /* R3.1 */
 VOID MaintPLUDisplaySecondPage( VOID ); /* R3.1 */
 SHORT MaintPLUModifier( MAINTPLU *pData  ); /* 2172 */
@@ -1286,7 +1286,7 @@ VOID  MaintCashABAssignReport( VOID );
 VOID  MaintPreModeInPrg( VOID );
 VOID  MaintPreModeInSup( VOID );
 SHORT MaintModeInPrg( MAINTMODEIN *pData );
-SHORT MaintModeInSup( MAINTMODEIN *pData );
+USLDTERR MaintModeInSup( const MAINTMODEIN *pData );
 VOID  MaintTODInit( VOID );
 SHORT MaintTODEdit( MAINTTOD *pData );
 VOID  MaintTODWrite( VOID );
@@ -1313,7 +1313,7 @@ SHORT MaintEntSup( MAINTENT *pData );
 SHORT MaintEntPrg( MAINTENT *pData );
 SHORT MaintSetPage( MAINTSETPAGE *pData );
 UCHAR MaintGetPage( VOID );
-SHORT MaintSetPageOnly( MAINTSETPAGE *pData );
+USLDTERR MaintSetPageOnly( const MAINTSETPAGE *pData );
 VOID  MaintReDisp( MAINTREDISP *pData );
 VOID  MaintFinExt(UCHAR uchMinorClass, USHORT usPrtControl);
 VOID  MaintFin(UCHAR uchMinorClass);
@@ -1372,7 +1372,7 @@ VOID MaintConv4bto3b(UCHAR auchPrice[], ULONG *ulPrice);             /* Convert 
 UCHAR MaintChkPLUType(UCHAR uchPLUType);
 SHORT MaintChkBinary(WCHAR auchChkString[], UCHAR uchChkDigit);      /* Check Binary Data */
 UCHAR MaintAtoStatus(WCHAR auchString[]);
-SHORT MaintPLUDEPTLock(VOID);
+USLDTERR MaintPLUDEPTLock(VOID);
 VOID  MaintPLUDEPTUnLock(VOID);
 VOID  MaintPLUFileUpDate(VOID);
 UCHAR MaintChkFcFormat( UCHAR uchMDCAddress );
@@ -1429,7 +1429,7 @@ SHORT MaintCPNRead( PARACPN *pData );                /* A/C 161 */
 SHORT MaintCPNEdit( MAINTCPN *pData );
 SHORT MaintCPNWrite( VOID );
 VOID  MaintSetCPNDispData(UCHAR uchFieldAddr);
-SHORT MaintCPNLock( VOID );
+USLDTERR MaintCPNLock( VOID );
 VOID  MaintCPNUnLock( VOID );
 VOID  MaintCPNReport( VOID );
 SHORT MaintCPNPLUModifier( UCHAR uchMinorClass );
@@ -1443,7 +1443,7 @@ SHORT MaintCSTREdit( MAINTCSTR *pData );
 SHORT MaintCSTRDelete( MAINTCSTR *pData );
 SHORT MaintCSTRWrite( VOID );
 SHORT MaintCSTRReport( VOID );
-SHORT MaintCstrLock( VOID );
+USLDTERR MaintCstrLock( VOID );
 VOID  MaintCstrUnLock( VOID );
 SHORT MaintPPIRead( MAINTPPI *pData, USHORT pPage );                /* A/C 71 */
 SHORT MaintPPIEdit( MAINTPPI *pData );
@@ -1457,7 +1457,7 @@ SHORT MaintPPIWrite( VOID );
 SHORT MaintPPIWriteAddtlSettings( VOID ); //CSMALL
 
 SHORT MaintPPIReport( VOID );
-SHORT MaintPPILock( VOID );
+USLDTERR MaintPPILock( VOID );
 VOID  MaintPPIUnLock( VOID );
 SHORT MaintServiceTimeRead( PARASERVICETIME *pData );          /* MATSERV.C */
 SHORT MaintServiceTimeWrite( PARASERVICETIME *pData );         /* MATSERV.C */
@@ -1500,7 +1500,7 @@ VOID MaintSetPrintMode( UCHAR uchMode ); //ESMITH PRTFILE
 SHORT MaintLoanPickupConnectionEngine (MAINTLOANPICKUP  *pLoanPickupData);
 SHORT MaintLoanPickupCasSignIn( MAINTLOANPICKUP *pData,USHORT usDrawer );   /* R2.0 */
 SHORT MaintLoanPickupCasSignOut( MAINTLOANPICKUP *pData );
-SHORT MaintLoanPickupAbort( VOID );
+USLDTERR MaintLoanPickupAbort( VOID );
 SHORT MaintLoanPickupErrorCorrect( MAINTLOANPICKUP *pData );
 VOID  MaintLoanPickupDisp( MAINTLOANPICKUP *pData );
 VOID  MaintLoanPickupHeaderCtl( MAINTLOANPICKUP *pData );

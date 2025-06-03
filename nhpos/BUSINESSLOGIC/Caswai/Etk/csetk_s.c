@@ -59,15 +59,14 @@
 ** Description: This function converts error code to leadthru number.
 *===========================================================================
 */
-USHORT   EtkConvertErrorWithLineNumber(SHORT sError, ULONG ulCalledFromLineNo)
+USLDTERR   EtkConvertErrorWithLineNumber(SHORT sError, ULONG ulCalledFromLineNo)
 {
-    USHORT  usLeadthruNo;
-	SHORT   sErrorSave = sError;
+    USLDTERR  usLeadthruNo;
 
     switch ( sError ) {
     case  ETK_SUCCESS :   /* Success  0  */
     case  ETK_CONTINUE :
-        usLeadthruNo = 0               ; 
+        usLeadthruNo = SUCCESS; 
         break;
 
     case  ETK_FIELD_OVER:
@@ -136,7 +135,7 @@ USHORT   EtkConvertErrorWithLineNumber(SHORT sError, ULONG ulCalledFromLineNo)
     }
 	if (usLeadthruNo != 0) {
 		PifLog (MODULE_ETK, LOG_EVENT_STB_CONVERTERROR);
-		PifLog (MODULE_ERROR_NO(MODULE_ETK), (USHORT)abs(sErrorSave));
+		PifLog (MODULE_ERROR_NO(MODULE_ETK), (USHORT)abs(sError));
 		PifLog (MODULE_ERROR_NO(MODULE_ETK), usLeadthruNo);
 		PifLog (MODULE_LINE_NO(MODULE_CASHIER), (USHORT)ulCalledFromLineNo);
 	}

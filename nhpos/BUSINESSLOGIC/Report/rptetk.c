@@ -564,7 +564,7 @@ SHORT  RptETKAllRstReport(UCHAR  uchType,
 *===============================================================================
 */
 
-SHORT RptETKLock(VOID) 
+USLDTERR RptETKLock(VOID)
 {
     SHORT  sReturn;  
                                                                      

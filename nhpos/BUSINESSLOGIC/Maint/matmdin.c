@@ -113,13 +113,13 @@ SHORT MaintModeInPrg( MAINTMODEIN *pData )
 *===========================================================================
 */                                         
 
-SHORT MaintModeInSup( MAINTMODEIN *pData )
+USLDTERR MaintModeInSup( const MAINTMODEIN *pData )
 {
-    UCHAR           uchSecret;
-	PARASUPLEVEL    ParaSupLevel;
 
     /* check if data is or not */
     if (!(pData->uchStatus & MAINT_WITHOUT_DATA)) {
+        PARASUPLEVEL    ParaSupLevel = { 0 };
+
         MaintWork.MaintModeIn = *pData;      /* copy structure */
 
         /* ---- MSR entry check ---- */
@@ -139,7 +139,7 @@ SHORT MaintModeInSup( MAINTMODEIN *pData )
         }
         if (CliParaSupLevelRead(&ParaSupLevel) == SUCCESS) {  /* read data */
             /* check if secret code is or not */
-            uchSecret = ( UCHAR)MAINT_SUP_GET_SECRET_NUMBER(MaintWork.MaintModeIn.ulModeInNumber);
+            UCHAR   uchSecret = ( UCHAR)MAINT_SUP_GET_SECRET_NUMBER(MaintWork.MaintModeIn.ulModeInNumber);
 
             if (pData->uchStatus & MAINT_MSR_DATA) {    /* msr entry */
                 if (uchSecret) {

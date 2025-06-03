@@ -103,6 +103,16 @@
 #define     TTL_WITHOUT_PTD     0       /* create total file except PTD total */
 #define     TTL_WITH_PTD        1       /* create total file with PTD total */
 
+// This is one of several error value types to be gradually inserted into the
+// source code base over time to make error handling more transparent.
+//
+// See the description in ECR.H by searching for the following new type.
+//
+// PIF or STUB codes internal error indicators which may be transformed into a
+// lead thru code to generate an error message to display to the user.
+
+typedef signed short   STTLRSLT;      // result variable containing one of the TTL_ error codes for totals.
+
 /* Total subsystem error codes
    These error codes are converted by function TtlConvertError()
    into LDT_ type codes for use by function UieErrorMsg() to

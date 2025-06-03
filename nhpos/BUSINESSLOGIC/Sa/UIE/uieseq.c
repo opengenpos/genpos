@@ -582,20 +582,20 @@ SHORT  UifCreateQueueStringWaitEvent(VOID)
 ** Description:
 *===========================================================================
 */
-SHORT  UieDefProc(KEYMSG *pData)
+USLDTERR  UieDefProc(KEYMSG *pData)
 {
-    TCHAR auchReceiptFeed[] = {ESC, _T('|'), _T('8'), _T('l'), _T('F')/*UIE_RECEIPT_FEED_ROW*/}; /* Receipt Feed Command */
-    TCHAR auchJournalFeed[] = {ESC, _T('|'), _T('8'), _T('l'), _T('F')/*UIE_JOURNAL_FEED_ROW*/}; /* Journal Feed Command */
+    TCHAR auchReceiptFeed[] = {ESC, _T('|'), _T('8'), _T('l'), _T('F'), 0/*UIE_RECEIPT_FEED_ROW*/}; /* Receipt Feed Command */
+    TCHAR auchJournalFeed[] = {ESC, _T('|'), _T('8'), _T('l'), _T('F'), 0/*UIE_JOURNAL_FEED_ROW*/}; /* Journal Feed Command */
 
     switch (pData->uchMsg) {
     case UIM_DRAWER:                                    /* Drawer Close Message */
 		UieKeepMessage();
         UieRetry.fchStatus |= UIE_SKIP_RETRY_WRT;
-        return (UIE_SUC_KEY_SEQ);                       /* Successful */
+        return (SUCCESS);                       /* Successful */
 
     case UIM_REDISPLAY:
         UieRedisplay();
-        return (UIE_SUC_KEY_SEQ);
+        return (SUCCESS);
 
     case UIM_INPUT:                                     /* Input Message */
         switch (pData->SEL.INPUT.uchMajor) {
@@ -603,24 +603,24 @@ SHORT  UieDefProc(KEYMSG *pData)
             PmgPrint(PMG_PRT_RECEIPT, auchReceiptFeed, (USHORT)_tcslen(auchReceiptFeed));
 			UieKeepMessage();
             UieRetry.fchStatus |= UIE_SKIP_RETRY_WRT;
-            return (UIE_SUC_KEY_SEQ);
+            return (SUCCESS);
 
         case FSC_JOURNAL_FEED:                          /* Journal Feed Key */
             PmgPrint(PMG_PRT_JOURNAL, auchJournalFeed, (USHORT)_tcslen(auchJournalFeed));
 			UieKeepMessage();
             UieRetry.fchStatus |= UIE_SKIP_RETRY_WRT;
-            return (UIE_SUC_KEY_SEQ);
+            return (SUCCESS);
 
 					//SR 143 cwunn @/For cancel mechanism
 		case FSC_CANCEL:
 			UieSendCancel(iuchUieCurrentFunc[iuchUieFuncSts]);  //execute cancel for the current function
 			UieSendRedisplay(1);	//Reset leadthrough display
 			UieSetMacro(0, NULL, 0);               /* disable macro function */
-			return(UIE_SUC_KEY_SEQ);
+			return(SUCCESS);
 
 		case FSC_AUTO_SIGN_OUT:
 			UieSetMacro(0, NULL, 0);               /* disable macro function */
-			return(UIE_SUC_KEY_SEQ);
+			return(SUCCESS);
 
         case FSC_CNTRL_STRING_EVENT:           /* Journal Feed Key */
 			{
@@ -632,7 +632,7 @@ SHORT  UieDefProc(KEYMSG *pData)
 
 			UieKeepMessage();
             UieRetry.fchStatus |= UIE_SKIP_RETRY_WRT;
-            return (UIE_SUC_KEY_SEQ);
+            return (SUCCESS);
 
         default:                                        /* other FSC */
             break;

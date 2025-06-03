@@ -53,6 +53,17 @@
 	Try to keep in synch with STUB_ values in csstbfcc.h,
 	with SERV_ values in servmin.h, and KPS_ values in cskp.h
 */
+
+// This is one of several error value types to be gradually inserted into the
+// source code base over time to make error handling more transparent.
+//
+// See the description in ECR.H by searching for the following new type.
+//
+// PIF or STUB codes internal error indicators which may be transformed into a
+// lead thru code to generate an error message to display to the user.
+
+typedef signed short   SSHRRSLT;      // result variable containing one of the SHR_ error codes for shared printers.
+
 #define SHR_PERFORM                0
 #define SHR_TIMERON                1
 #define SHR_BUSY                  (-3)

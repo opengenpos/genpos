@@ -100,7 +100,19 @@
 #define UIFREG_NUMERIC_INPUT     0                  // indicates numeric input required
 #define UIFREG_ALFANUM_INPUT     1                  // indicates alphanumeric input required
 #define UIFREG_FLAG_MACROPAUSE  0x0100              // flag to indicate macro should pause
-/*
+
+
+// This is one of several error value types to be gradually inserted into the
+// source code base over time to make error handling more transparent.
+//
+// See the description in ECR.H by searching for the following new type.
+//
+// PIF or STUB codes internal error indicators which may be transformed into a
+// lead thru code to generate an error message to display to the user.
+
+typedef signed short   SUIFRSLT;      // result variable containing one of the UIF_ error codes
+
+									  /*
 *---------------------------------------------------------------------------
 *   Return Code from Item module and Dialog return status.
 *

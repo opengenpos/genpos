@@ -846,8 +846,7 @@ VOID MaintSetCPNDispData(UCHAR uchFieldAddr)
 ** Description: Lock CPN File and Save This Lock Handle to Own Save Area
 *===========================================================================
 */
-
-SHORT MaintCPNLock()
+USLDTERR MaintCPNLock()
 {
     SHORT    sError;
     

@@ -69,7 +69,7 @@
 */
 
 
-SHORT UifAC70Function( VOID ) 
+USLDTERR UifAC70Function( VOID )
 {
 
 

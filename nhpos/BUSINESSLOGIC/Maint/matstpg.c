@@ -146,11 +146,8 @@ UCHAR MaintGetPage( VOID )
 **  Description: Check and Set Menu Shift Page.  
 *======================================================================================
 */
-
-SHORT MaintSetPageOnly( MAINTSETPAGE *pData )
+USLDTERR MaintSetPageOnly( const MAINTSETPAGE *pData )
 {
-
-
     /* Check W/o Amount Case */
 
     if (pData->uchStatus & MAINT_WITHOUT_DATA) {            /* W/o Amount Case */
@@ -164,11 +161,8 @@ SHORT MaintSetPageOnly( MAINTSETPAGE *pData )
         }
 
         /* Save Menu Page Data */
-    
         uchMaintMenuPage = pData->uchPageNumber;
-
     }
 
     return(SUCCESS);
-
 }

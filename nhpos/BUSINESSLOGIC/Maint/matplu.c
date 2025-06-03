@@ -1378,7 +1378,7 @@ SHORT MaintPLUDelete( VOID )
 *===========================================================================
 */
 
-SHORT MaintPLUReport( VOID )
+USLDTERR MaintPLUReport( VOID )
 {
     UCHAR           i;
     UCHAR           uchFeedChk = 0;

@@ -846,7 +846,7 @@ SHORT MaintCSTRDelete( MAINTCSTR *pData)
 *===========================================================================
 */
 
-SHORT MaintCstrLock()
+USLDTERR MaintCstrLock()
 {
     SHORT    sError;
     
