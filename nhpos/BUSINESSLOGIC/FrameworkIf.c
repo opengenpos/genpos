@@ -2223,7 +2223,7 @@ BOOL BlFwIfReloadOEPGroup ()
 *				for the asynchronous PostMessage call.
 *===========================================================================
 */
-USHORT BlFwIfPostMessage(UINT MsgType, WPARAM wparam, TCHAR *ptcMsgPayload)
+static DWORD BlFwIfPostMessage(UINT MsgType, WPARAM wparam, const TCHAR *ptcMsgPayload)
 {
 	static TCHAR tcStringPool[1024];
 	static TCHAR *ptcNextString = tcStringPool;
@@ -2231,22 +2231,22 @@ USHORT BlFwIfPostMessage(UINT MsgType, WPARAM wparam, TCHAR *ptcMsgPayload)
 
 	DWORD   dwLastError = 0;
 	HANDLE  hWnd = PifGetWindowHandle(0);
-	USHORT  usRet = 0;
+	BOOL  bRet = 0;
 		
 	if (hWnd) {
 		if (ptcMsgPayload) {
 			ptcThisString = ptcNextString;
 			_tcsncpy (ptcThisString, ptcMsgPayload, 255);
-			*(ptcNextString + 255) = 0;  // ensure there is an end of string
+			ptcThisString[255] = 0;  // ensure there is an end of string
 			ptcNextString += _tcslen (ptcThisString) + 1;
 			if (ptcNextString > tcStringPool + sizeof(tcStringPool)/sizeof(tcStringPool[0]) - 260)
 				ptcNextString = tcStringPool;
 		}
-		usRet = PostMessage(hWnd, MsgType, wparam, (LPARAM)ptcThisString);
-		dwLastError = GetLastError();
+		bRet = PostMessage(hWnd, MsgType, wparam, (LPARAM)ptcThisString);
+		if (!bRet) dwLastError = GetLastError();
 	}
 
-	return usRet;
+	return dwLastError;
 }
 
 /*
@@ -2265,7 +2265,7 @@ USHORT BlFwIfPostMessage(UINT MsgType, WPARAM wparam, TCHAR *ptcMsgPayload)
 *               if a button whose action is to popup a window is pressed.
 *===========================================================================
 */
-USHORT  BlFwIfPopupWindowName (TCHAR *ptcWindowName){
+DWORD  BlFwIfPopupWindowName (const TCHAR *ptcWindowName){
 	return BlFwIfPostMessage((UINT)WU_EVS_POPUP_WINDOW, (WPARAM)0, ptcWindowName);
 }
 
@@ -2285,11 +2285,11 @@ USHORT  BlFwIfPopupWindowName (TCHAR *ptcWindowName){
 *               if a button whose action is to popup a window is pressed.
 *===========================================================================
 */
-USHORT BlFwIfPopupWindowPrefix (TCHAR *WindowPrefix){
+DWORD BlFwIfPopupWindowPrefix (const TCHAR *WindowPrefix){
 	return BlFwIfPostMessage((UINT)WU_EVS_POPUP_WINDOW, (WPARAM)3, WindowPrefix);
 }
 
-USHORT BlFwIfPopupWindowGroup (TCHAR *WindowPrefix){
+DWORD BlFwIfPopupWindowGroup (const TCHAR *WindowPrefix){
 	return BlFwIfPostMessage((UINT)WU_EVS_POPUP_WINDOW, (WPARAM)5, WindowPrefix);
 }
 
@@ -2309,17 +2309,17 @@ USHORT BlFwIfPopupWindowGroup (TCHAR *WindowPrefix){
 *               if a button whose action is to popup a window is pressed.
 *===========================================================================
 */
-USHORT BlFwIfPopupMessageWindow (TCHAR *tcsMessage) {
+DWORD BlFwIfPopupMessageWindow (const TCHAR *tcsMessage) {
 	return BlFwIfPostMessage((UINT)WU_EVS_POPUP_WINDOW, (WPARAM)4, tcsMessage);
 }
 
-USHORT BlFwIfPopdownMessageWindow (VOID) {
+DWORD BlFwIfPopdownMessageWindow (VOID) {
 	return BlFwIfPostMessage((UINT)WU_EVS_POPDOWN_WINDOW, (WPARAM)4, 0);    // m_pMessageDialog->UnshowAndRemove ()
 }
 
 // Process the list of windows in the displayed layout and popdown all windows
 // that are marked as Popup windows.
-USHORT BlFwIfPopdownMessageAllVirtual (VOID) {
+DWORD BlFwIfPopdownMessageAllVirtual (VOID) {
 	return BlFwIfPostMessage((UINT)WU_EVS_POPDOWN_WINDOW, (WPARAM)6, 0);   // CFrameworkWndDoc::SearchForItemByTypeApplyFunc()
 }
 
@@ -2340,13 +2340,13 @@ USHORT BlFwIfPopdownMessageAllVirtual (VOID) {
 *               if a button whose action is to popup a window is pressed.
 *===========================================================================
 */
-USHORT  BlFwIfPopupWindowEventTrigger (int SpecWinEventTrigger_WId)
+BOOL  BlFwIfPopupWindowEventTrigger (int SpecWinEventTrigger_WId)
 {
 	static TCHAR tcStringPool[512];
 	static TCHAR *ptcNextString = tcStringPool;
 	DWORD   dwLastError = 0;
 	TCHAR   *ptcThisString = 0;
-    BOOL    status;
+    BOOL    status = FALSE;
 
 	HANDLE hWnd = PifGetWindowHandle(0);
 
@@ -2377,7 +2377,7 @@ USHORT  BlFwIfPopupWindowEventTrigger (int SpecWinEventTrigger_WId)
 *               if a button whose action is to popdown a window is pressed.
 *===========================================================================
 */
-USHORT  BlFwIfPopdownWindowName (TCHAR *ptcWindowName){
+DWORD  BlFwIfPopdownWindowName (const TCHAR *ptcWindowName){
 	return BlFwIfPostMessage((UINT)WU_EVS_POPDOWN_WINDOW, (WPARAM)0, ptcWindowName);
 }
 
@@ -2397,11 +2397,11 @@ USHORT  BlFwIfPopdownWindowName (TCHAR *ptcWindowName){
 *               if a button whose action is to popdown a window is pressed.
 *===========================================================================
 */
-USHORT BlFwIfPopdownWindowPrefix (TCHAR *WindowPrefix){
+DWORD BlFwIfPopdownWindowPrefix (const TCHAR *WindowPrefix){
 	return BlFwIfPostMessage((UINT)WU_EVS_POPDOWN_WINDOW, (WPARAM)1, WindowPrefix);
 }
 
-USHORT BlFwIfPopdownWindowGroup (TCHAR *WindowPrefix){
+DWORD BlFwIfPopdownWindowGroup (const TCHAR *WindowPrefix){
 	return BlFwIfPostMessage((UINT)WU_EVS_POPDOWN_WINDOW, (WPARAM)5, WindowPrefix);   // CFrameworkWndDoc::DismissWindowsByGroup()
 }
 

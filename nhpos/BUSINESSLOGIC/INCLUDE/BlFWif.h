@@ -274,16 +274,16 @@ VOID	BlFwIfWindowTranslate(ULONG ulBoolTranslate);
 LONG	BlFwIfDisplayOEPImagery (UCHAR uchCommand, UCHAR uchDeptNo, UCHAR uchTableNo, UCHAR uchGroupNo);
 
 
-USHORT  BlFwIfPopupWindowEventTrigger (int SpecWinEventTrigger_WId);
-USHORT  BlFwIfPopupWindowName (TCHAR *ptcWindowName);
-USHORT BlFwIfPopupWindowPrefix (TCHAR *WindowPrefix);
-USHORT BlFwIfPopupWindowGroup (TCHAR *WindowPrefix);
-USHORT BlFwIfPopupMessageWindow (TCHAR *tcsMessage);
-USHORT  BlFwIfPopdownWindowName (TCHAR *ptcWindowName);
-USHORT BlFwIfPopdownWindowPrefix (TCHAR *WindowPrefix);
-USHORT BlFwIfPopdownWindowGroup (TCHAR *WindowPrefix);
-USHORT BlFwIfPopdownMessageWindow (VOID);
-USHORT BlFwIfPopdownMessageAllVirtual (VOID);
+BOOL    BlFwIfPopupWindowEventTrigger (int SpecWinEventTrigger_WId);
+DWORD   BlFwIfPopupWindowName (const TCHAR *ptcWindowName);
+DWORD   BlFwIfPopupWindowPrefix (const TCHAR *WindowPrefix);
+DWORD   BlFwIfPopupWindowGroup (const TCHAR *WindowPrefix);
+DWORD   BlFwIfPopupMessageWindow (const TCHAR *tcsMessage);
+DWORD   BlFwIfPopdownWindowName (const TCHAR *ptcWindowName);
+DWORD   BlFwIfPopdownWindowPrefix (const TCHAR *WindowPrefix);
+DWORD   BlFwIfPopdownWindowGroup (const TCHAR *WindowPrefix);
+DWORD   BlFwIfPopdownMessageWindow (VOID);
+DWORD   BlFwIfPopdownMessageAllVirtual (VOID);
 
 
 //windows printer drivers
