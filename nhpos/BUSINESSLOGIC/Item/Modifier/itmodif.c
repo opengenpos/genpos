@@ -1707,8 +1707,10 @@ SHORT   ItemModFor( CONST UIFREGSALES *pItemModifier, CONST UIFREGSALES *pRegDat
 	RegDisplay.uchMajorClass = CLASS_UIFREGDISP;
     RegDisplay.uchMinorClass = CLASS_UIFDISP_FOR;
 	RegDisplay.lAmount = pItemModifier->lQTY * 1000L;
-    memcpy( RegDisplay.aszStringData, pItemModifier->aszNumber, NUM_NUMBER);
-    DispWrite( &RegDisplay );
+//    memcpy( RegDisplay.aszStringData, pItemModifier->aszNumber, NUM_NUMBER);
+    _tcsncpy(RegDisplay.aszStringData, pItemModifier->aszNumber, NUM_NUMBER);
+    RegDisplay.aszStringData[STD_NUMBER_LEN] = 0;  // ensure it's zero terminated.
+    DispWrite(&RegDisplay);
 
 
 	// SR 143 @/For key cwunn peform price entry
@@ -1767,7 +1769,9 @@ SHORT   ItemModFor( CONST UIFREGSALES *pItemModifier, CONST UIFREGSALES *pRegDat
     RegDisplay.uchMajorClass = CLASS_UIFREGOTHER;
     RegDisplay.uchMinorClass = CLASS_UIFPRICE;
 	RegDisplay.lAmount = WorkUI.ulData;
-    memcpy( RegDisplay.aszStringData, pItemModifier->aszNumber, NUM_NUMBER);
+//    memcpy( RegDisplay.aszStringData, pItemModifier->aszNumber, NUM_NUMBER);
+    _tcsncpy(RegDisplay.aszStringData, pItemModifier->aszNumber, NUM_NUMBER);
+    RegDisplay.aszStringData[STD_NUMBER_LEN] = 0;  // ensure it's zero terminated.
     DispWrite( &RegDisplay );
 
 	{
