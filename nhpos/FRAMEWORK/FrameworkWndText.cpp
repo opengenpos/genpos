@@ -347,7 +347,7 @@ void CFrameworkWndTextSubWindow::InitializeSubWindowSystem ()
 }
 
 
-void CFrameworkWndTextSubWindow::SetOepString (TCHAR *tcsOepString)
+void CFrameworkWndTextSubWindow::SetOepString (const TCHAR *tcsOepString)
 {
 	if (tcsOepString)
 	{
@@ -361,11 +361,12 @@ void CFrameworkWndTextSubWindow::SetOepString (TCHAR *tcsOepString)
 	}
 }
 
-void CFrameworkWndTextSubWindow::CompileOepString (TCHAR *tcsOepString)
+void CFrameworkWndTextSubWindow::CompileOepString (const TCHAR *tcsOepString)
 {
-	if (tcsOepString)
+	SetOepString (tcsOepString);
+	if (tcsOepString == nullptr)
 	{
-		SetOepString (tcsOepString);
+		return;
 	}
 
 	// Compile the OEP string by parsing it and putting the required pieces
@@ -383,10 +384,11 @@ void CFrameworkWndTextSubWindow::CompileOepString (TCHAR *tcsOepString)
 	// group number plus 1.  Then when we do searches in the array for a particular group
 	// number, we have to add one to the specified group number to compare against the
 	// values in the array.  See function DoesMatchGroupNumber() above.
-	TCHAR *pFirstDigit = 0, *pLastDigit = 0, myDigits1[20], myDigits2[20];
+	const TCHAR* pFirstDigit = 0, * pLastDigit = 0;
+	TCHAR  myDigits1[20], myDigits2[20];
 	int   nValue1 = 0, nValue2 = 0;
 	int   nRange = 0;
-	for (TCHAR *pString = tcsOepString; *pString;)
+	for (const TCHAR *pString = tcsOepString; *pString;)
 	{
 		switch (*pString)
 		{

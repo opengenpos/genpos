@@ -167,8 +167,8 @@ public:
 	CFrameworkWndTextSubWindow (CFrameworkWndText  *pWndText = 0, int idWindow = 0, int idSubWindow = 0);
 	~CFrameworkWndTextSubWindow ();
 	bool DoesMatchGroupNumber (int nGroupNo);
-	void SetOepString (TCHAR *tcsOepString = 0);
-	void CompileOepString (TCHAR *tcsOepString = 0);
+	void SetOepString (const TCHAR *tcsOepString = nullptr);
+	void CompileOepString (const TCHAR *tcsOepString = nullptr);
 	SHORT  EvsConnectSubWindow ();
 	SHORT  EvsDisconnectSubWindow ();
 
