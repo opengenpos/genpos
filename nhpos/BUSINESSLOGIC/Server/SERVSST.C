@@ -64,6 +64,7 @@
 #include	<tchar.h>
 #include    <math.h>
 #include    <memory.h>
+#include    <stdio.h>
 
 #include    "ecr.h"
 #include    "pif.h"
@@ -140,7 +141,6 @@ TCHAR    aszSerTmpFileName[]   = _T("SERTMP");
 */
 VOID    SstInitialize(USHORT usMode)
 {
-    PifFileHandle   hsFileHandle;
 
     if (usMode & POWER_UP_CLEAR_TOTAL) {
         usSerCurStatus = 0;  // clear the inquiry status, will be set later using SstChangeInqStat().
@@ -159,21 +159,31 @@ VOID    SstInitialize(USHORT usMode)
     } 
 
     husSerIFSerCli = PifCreateSem(1);           /* Create Semapho */
-    NHPOS_ASSERT(husSerIFSerCli >= 0);
+    if (husSerIFSerCli < 0) {
+        char  xBuff[128];
+
+        sprintf(xBuff, "==ERROR: SstInitialize() husSerIFSerCli = %d", husSerIFSerCli);
+        NHPOS_ASSERT_TEXT(husSerIFSerCli >= 0, xBuff);
+    }
 
     /* open server temporary file */
     husSerCreFileSem = PifCreateSem(1);         /* Create Semapho */
-    NHPOS_ASSERT(husSerCreFileSem >= 0);
+    if (husSerCreFileSem < 0) {
+        char  xBuff[128];
 
-    hsSerTmpFile = -1;
-    hsFileHandle = PifOpenFile(aszSerTmpFileName, auchTEMP_OLD_FILE_READ_WRITE);    /* saratoga */
-    NHPOS_ASSERT(hsFileHandle >= 0);
-    if (hsFileHandle >= 0) {
-        hsSerTmpFile = hsFileHandle;
+        sprintf(xBuff, "==ERROR: SstInitialize() husSerCreFileSem = %d", husSerCreFileSem);
+        NHPOS_ASSERT_TEXT(husSerCreFileSem >= 0, xBuff);
     }
-	else {
+
+    hsSerTmpFile = PifOpenFile(aszSerTmpFileName, auchTEMP_OLD_FILE_READ_WRITE);    /* saratoga */
+    if (hsSerTmpFile < 0) {
+        char  xBuff[128];
+
+        sprintf(xBuff, "==ERROR: SstInitialize() hsSerTmpFile = %d", hsSerTmpFile);
+        NHPOS_ASSERT_TEXT(hsSerTmpFile >= 0, xBuff);
+
         PifLog(MODULE_SER_LOG, LOG_EVENT_SER_TEMP_FILE_ERR_01);
-        PifLog(MODULE_ERROR_NO(MODULE_SER_LOG), abs(hsFileHandle));
+        PifLog(MODULE_ERROR_NO(MODULE_SER_LOG), abs(hsSerTmpFile));
     }
 }
 
@@ -753,7 +763,7 @@ SHORT   SerCreateTmpFile( USHORT usSize )
     /* save file handle and set the max size of the temp file */
     hsSerTmpFile = hsFileHandle;
     PifSeekFile(hsSerTmpFile, 0L, &ulActMove);
-    PifWriteFile(hsSerTmpFile, ( USHORT *)&ulFileSize, sizeof(USHORT)); 
+    PifWriteFile(hsSerTmpFile, &ulFileSize, sizeof(USHORT)); 
     PifReleaseSem(husSerCreFileSem);
     return(SERV_PERFORM);
 }
