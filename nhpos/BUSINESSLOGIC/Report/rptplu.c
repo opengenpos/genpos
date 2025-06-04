@@ -346,14 +346,14 @@ SHORT   RptPLUEditInd(UCHAR uchMinorClass, UCHAR uchType, TCHAR *puchPLUNumber)
     PLUIF      PluIf = {0};
 	DEPTIF     DeptIf = {0};
 
-    _tcsncpy(PluIf.auchPluNo, puchPLUNumber, OP_PLU_LEN);        /* Set PLU No   */
+    AUCPLUNO(PluIf.auchPluNo) = AUCPLUNO(puchPLUNumber);        /* Set PLU No   */
     PluIf.uchPluAdj = 1;                                                    /* Must put 1 to read 1st PLU */ 
     if ((sReturn = CliOpPluIndRead(&PluIf, 0)) != OP_PERFORM) {
         return(OpConvertError(sReturn));
     }
     TtlPlu.uchMajorClass = CLASS_TTLPLU;                                    /* Set Major for Ttl */
     TtlPlu.uchMinorClass = uchMinorClass;                                   /* Set Minor for Ttl */
-    _tcsncpy(TtlPlu.auchPLUNumber, puchPLUNumber, OP_PLU_LEN);
+    AUCPLUNO(TtlPlu.auchPLUNumber) = AUCPLUNO(puchPLUNumber);
     TtlPlu.uchAdjectNo = PluIf.uchPluAdj;                                   /* Set Adj for Ttl */
     if ((sReturn = SerTtlTotalRead(&TtlPlu)) != TTL_SUCCESS) {              /* Get Total */    
         if (sReturn == TTL_NOTINFILE) {           
@@ -542,8 +542,9 @@ SHORT   RptPLUIndAdj(PLUIF *pPluIf, TTLPLU *pTtlPlu, UCHAR uchMinor, UCHAR uchTy
         /*----- to store new Adjective unit price -----*/
         memcpy(pPluIf->ParaPlu.auchPrice, PluFile.ParaPlu.auchPrice, sizeof(pPluIf->ParaPlu.auchPrice));  
 
-        memset(&pTtlPlu->PLUTotal, 0, sizeof(pTtlPlu->PLUTotal));               /* Clear Total */
-        _tcsncpy(pTtlPlu->auchPLUNumber, pPluIf->auchPluNo, OP_PLU_LEN);
+//        memset(&pTtlPlu->PLUTotal, 0, sizeof(pTtlPlu->PLUTotal));               /* Clear Total */
+        pTtlPlu->PLUTotal = (LTOTAL){ 0 };               /* Clear Total */
+        AUCPLUNO(pTtlPlu->auchPLUNumber) = AUCPLUNO(pPluIf->auchPluNo);
         pTtlPlu->uchAdjectNo = PluFile.uchPluAdj;                               /* Set incremented Adj # */
         if (((sReturn = SerTtlTotalRead(pTtlPlu)) != TTL_SUCCESS) && (sReturn != TTL_NOTINFILE))   {
             sReturn = TtlConvertError(sReturn);                                 /* Convert Error */
@@ -838,10 +839,10 @@ SHORT   RptPLUCode(UCHAR uchMinorClass, UCHAR uchType, USHORT usStatus,
 		TtlPlu.uchMajorClass = CLASS_TTLPLU;                            /* Set Major for Ttl */
 		TtlPlu.uchMinorClass = uchMinorClass;                           /* Set Minor for Ttl */
         TtlPlu.uchAdjectNo = PluIf_Rep.uchPluAdj;           /* MUST set 1 (non-adjective) for Total */
-        _tcsncpy(TtlPlu.auchPLUNumber, PluIf_Rep.auchPluNo, OP_PLU_LEN);
+        AUCPLUNO(TtlPlu.auchPLUNumber) = AUCPLUNO(PluIf_Rep.auchPluNo);
         RflConvertPLU(PluIf_Rep.auchPluNo,TtlPlu.auchPLUNumber);
         RptPLUHeader(uchMinorClass, uchType, PluIf_Rep.auchPluNo, 0);
-        _tcsncpy(PluIf_Rep.auchPluNo,TtlPlu.auchPLUNumber, OP_PLU_LEN);
+        AUCPLUNO(PluIf_Rep.auchPluNo) = AUCPLUNO(TtlPlu.auchPLUNumber);
         if ((usStatus == RPT_OPEN) &&                               /* Execute 1st Code ? */
            (uchCodeFlag == 0)) {                                    /*  to check OPEN & Flag */
             RptFeed(RPT_DEFALTFEED);                                /* Line Feed        */
@@ -1196,8 +1197,8 @@ SHORT  RptPLUCodeAdj(PLUIF_REP  *pPluIf_Rep,
         /*----- to store new Adjective unit price -----*/
         memcpy(pPluIf_Rep->ParaPlu.auchPrice, PluFile_Rep.ParaPlu.auchPrice, sizeof(pPluIf_Rep->ParaPlu.auchPrice));  
 
-        memset(&pTtlPlu->PLUTotal, 0, sizeof(pTtlPlu->PLUTotal));           /* Clear Total */
-        _tcsncpy(pTtlPlu->auchPLUNumber, pPluIf_Rep->auchPluNo, OP_PLU_LEN);
+        pTtlPlu->PLUTotal = (LTOTAL){ 0 };           /* Clear Total */
+        AUCPLUNO(pTtlPlu->auchPLUNumber) = AUCPLUNO(pPluIf_Rep->auchPluNo);
         pTtlPlu->uchAdjectNo = PluFile_Rep.uchPluAdj;                       /* Set Adjective */
         if (((sReturn = SerTtlTotalRead(pTtlPlu)) != TTL_SUCCESS) && (sReturn != TTL_NOTINFILE)) {
             return(TtlConvertError(sReturn));
@@ -1482,7 +1483,7 @@ SHORT   RptPLUEditAll(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchResetType)
 						fContinue = TRUE;
 					}
 
-					_tcsncpy(PluIf.auchPluNo, myTotal.Plu[i].auchPLUNumber, NUM_PLU_LEN);
+                    AUCPLUNO(PluIf.auchPluNo) = AUCPLUNO(myTotal.Plu[i].auchPLUNumber);
 					if ((myTotal.Plu[i].uchAdjectNo - 1) % 5 + 1) {
 						PluIf.uchPluAdj = (myTotal.Plu[i].uchAdjectNo - 1) % 5 + 1;
 					} else {
@@ -2134,7 +2135,7 @@ SHORT  RptPLUAdj(PLUIF      *pPluIf,
 
 
     PluFile_IF = *pPluIf;   /* Copy to other work Buffer  */
-    _tcsncpy(PluFile_IF.auchPluNo,pTtlPlu->auchPLUNumber,OP_PLU_LEN);/*checks PLU label*/
+    AUCPLUNO(PluFile_IF.auchPluNo) = AUCPLUNO(pTtlPlu->auchPLUNumber);/*checks PLU label*/
 
                                                              /* to save copied Status */
     for (uchAdjNo = uchNo+(UCHAR)1; uchAdjNo < uchNo+(UCHAR)5; uchAdjNo++) {      
@@ -2146,8 +2147,8 @@ SHORT  RptPLUAdj(PLUIF      *pPluIf,
         /*----- to store new Adjective unit price -----*/
         memcpy(pPluIf->ParaPlu.auchPrice, PluFile_IF.ParaPlu.auchPrice, sizeof(pPluIf->ParaPlu.auchPrice));  
 
-        memset(&pTtlPlu->PLUTotal, 0, sizeof(pTtlPlu->PLUTotal));           /* Clear Total */
-        _tcsncpy(pTtlPlu->auchPLUNumber, PluFile_IF.auchPluNo, OP_PLU_LEN);
+        pTtlPlu->PLUTotal = (LTOTAL){ 0 };           /* Clear Total */
+        AUCPLUNO(pTtlPlu->auchPLUNumber) = AUCPLUNO(PluFile_IF.auchPluNo);
         pTtlPlu->uchAdjectNo = PluFile_IF.uchPluAdj;                       /* Set Adjective */
         if (((sReturn = SerTtlTotalRead(pTtlPlu)) != TTL_SUCCESS) && (sReturn != TTL_NOTINFILE)) {
             return(TtlConvertError(sReturn));
@@ -2585,16 +2586,16 @@ SHORT   RptPLUByPLU(UCHAR uchMinorClass, UCHAR uchType,
 
     TtlPlu.uchMajorClass = CLASS_TTLPLU;
     TtlPlu.uchMinorClass = uchMinorClass;
-    _tcsncpy(TtlPlu.auchPLUNumber, pPluIf->auchPluNo, OP_PLU_LEN);
+    AUCPLUNO(TtlPlu.auchPLUNumber) = AUCPLUNO(pPluIf->auchPluNo);
     TtlPlu.uchAdjectNo = pPluIf->uchPluAdj;
     if (((sReturn = SerTtlTotalRead(&TtlPlu)) != TTL_SUCCESS) && (sReturn != TTL_NOTINFILE)) {
         return(TtlConvertError(sReturn));
     }
 
-    _tcsncpy(auchPluNo, pPluIf->auchPluNo, NUM_PLU_LEN);  /* save plu no, before convert */
+    AUCPLUNO(auchPluNo) = AUCPLUNO(pPluIf->auchPluNo);  /* save plu no, before convert */
     RflConvertPLU(pPluIf->auchPluNo,TtlPlu.auchPLUNumber);
     RptPLUHeader(uchMinorClass, uchType, pPluIf->auchPluNo, uchResetType);
-    _tcsncpy(pPluIf->auchPluNo, auchPluNo, NUM_PLU_LEN);  /* recover plu no */
+    AUCPLUNO(pPluIf->auchPluNo) = AUCPLUNO(auchPluNo);  /* recover plu no */
     if (uchType == RPT_DEPT_READ) {
         RptFeed(RPT_DEFALTFEED);
     }
@@ -2797,7 +2798,7 @@ SHORT   RptPLUByACTPLU(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchResetType, U
         }
     }
 
-    _tcsncpy(pPluIf->auchPluNo,TtlPlu.auchPLUNumber,OP_PLU_LEN);
+    AUCPLUNO(pPluIf->auchPluNo) = AUCPLUNO(TtlPlu.auchPLUNumber);
     pPluIf->uchPluAdj = TtlPlu.uchAdjectNo;
     
     sReturn = CliOpPluIndRead(pPluIf, 0);
@@ -3238,14 +3239,14 @@ SHORT   RptPLUByDEPT(UCHAR uchMinorClass, UCHAR uchType, USHORT usStatus,
     }            
     TtlPlu.uchMajorClass = CLASS_TTLPLU;                                    /* Set Major for Ttl */
     TtlPlu.uchMinorClass = uchMinorClass;                                   /* Set Minor for Ttl */
-    _tcsncpy(TtlPlu.auchPLUNumber, PluIf_Dep.auchPluNo, OP_PLU_LEN);
+    AUCPLUNO(TtlPlu.auchPLUNumber) = AUCPLUNO(PluIf_Dep.auchPluNo);
     RflConvertPLU(PluIf_Dep.auchPluNo,TtlPlu.auchPLUNumber);
     TtlPlu.uchAdjectNo = PluIf_Dep.uchPluAdj;                               /* Adjective must be 1 */
     if (((sReturn = SerTtlTotalRead(&TtlPlu)) != TTL_SUCCESS) && (sReturn != TTL_NOTINFILE)) {                                     
         return(TtlConvertError(sReturn));                                                  
     }
     RptPLUHeader(uchMinorClass, uchType, PluIf_Dep.auchPluNo, uchResetType);
-    _tcsncpy(PluIf_Dep.auchPluNo,TtlPlu.auchPLUNumber, OP_PLU_LEN);
+    AUCPLUNO(PluIf_Dep.auchPluNo) = AUCPLUNO(TtlPlu.auchPLUNumber);
     if ((uchType == RPT_DEPT_READ) && (usStatus == RPT_OPEN)) {
         RptFeed(RPT_DEFALTFEED);
         RptDEPTNamePrt(usDEPTNo, uchType);
@@ -3259,8 +3260,8 @@ SHORT   RptPLUByDEPT(UCHAR uchMinorClass, UCHAR uchType, USHORT usStatus,
 		DEPTIF      DeptIf = {0};
 		UCHAR       uchScaleIn = 0;      /* To Check scalable item is existed */
 
-        memset(&TtlPlu.PLUTotal, 0, sizeof(TtlPlu.PLUTotal));
-        _tcsncpy(TtlPlu.auchPLUNumber, PluIf_Dep.auchPluNo, OP_PLU_LEN);
+        TtlPlu.PLUTotal = (LTOTAL){ 0 };
+        AUCPLUNO(TtlPlu.auchPLUNumber) = AUCPLUNO(PluIf_Dep.auchPluNo);
         TtlPlu.uchAdjectNo = PluIf_Dep.uchPluAdj;                               /* Adjective must be 1 */
                                                                                 /* Clear 0xc0 in ...uchDEPT */
         /*----- PLU Parameter file Address 7 BIT3 is 1 (Using DEPT status) -----*/
@@ -3622,8 +3623,8 @@ SHORT   RptPLUByDEPTAdj(PLUIF_DEP *pPluIf_Dep, TTLPLU *pTtlPlu, UCHAR uchMinor,
         /*----- to store new Adjective unit price -----*/
         memcpy(pPluIf_Dep->ParaPlu.auchPrice, PluFile_Dep.ParaPlu.auchPrice, sizeof(pPluIf_Dep->ParaPlu.auchPrice));  
 
-        memset(&pTtlPlu->PLUTotal, 0, sizeof(pTtlPlu->PLUTotal));
-        _tcsncpy(pTtlPlu->auchPLUNumber, pPluIf_Dep->auchPluNo, OP_PLU_LEN);
+        pTtlPlu->PLUTotal = (LTOTAL){ 0 };
+        AUCPLUNO(pTtlPlu->auchPLUNumber) = AUCPLUNO(pPluIf_Dep->auchPluNo);
         pTtlPlu->uchAdjectNo = PluFile_Dep.uchPluAdj;
         if (((sReturn = SerTtlTotalRead(pTtlPlu)) != TTL_SUCCESS) && (sReturn != TTL_NOTINFILE)) {
             return(TtlConvertError(sReturn));

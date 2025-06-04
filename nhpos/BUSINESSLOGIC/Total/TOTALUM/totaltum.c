@@ -2231,7 +2231,7 @@ VOID THREADENTRY TtlTUMJoinDisconnectedSatellite(VOID)
 										// if department from Master Terminal is lower then use that department number
 										// this probably means that the Master Terminal has used a department that the Joined Terminal did not.
 										usDeptTemp = area1.TtlDepartments[usArea1].usDeptNo;
-										memset (&DEPTTotal, 0, sizeof(DEPTTotal));
+										DEPTTotal = (LTOTAL){ 0 };
 										usArea1++;
 									}
 									else {
@@ -2245,7 +2245,7 @@ VOID THREADENTRY TtlTUMJoinDisconnectedSatellite(VOID)
 								}
 								else if (area1.TtlDepartments[usArea1].usDeptNo) {
 										usDeptTemp = area1.TtlDepartments[usArea1].usDeptNo;
-										memset (&DEPTTotal, 0, sizeof(DEPTTotal));
+										DEPTTotal = (LTOTAL){ 0 };
 										usArea1++;
 								}
 								else if (area2.TtlDepartmentsJoin[usArea2].usDeptNo) {
@@ -2336,9 +2336,8 @@ VOID THREADENTRY TtlTUMJoinDisconnectedSatellite(VOID)
 				while (ulActualBytesRead) {
 					PifReadFile (hsTtlHandleJoin, &TotalRecordJoin, sizeof(PLUTOTAL_REC), &ulActualBytesRead);
 					if (ulActualBytesRead == sizeof(PLUTOTAL_REC)) {
-						TTLPLU TotalRecord;
+						TTLPLU TotalRecord = { 0 };
 
-						memset (&TotalRecord, 0, sizeof(TotalRecord));
 						TotalRecord.uchMajorClass = CLASS_TTLPLU;         /* Major Class Data definition */
 						TotalRecord.uchMinorClass = CLASS_TTLCURDAY;      /* Minor Class Data definition */
 						_tcsncpy (TotalRecord.auchPLUNumber, TotalRecordJoin.auchPluNumber, STD_PLU_NUMBER_LEN);
