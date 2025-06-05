@@ -134,7 +134,7 @@ DCURRENCY  ItemSalesCalcDetermineBasePrice (CONST ITEMSALES  *pItemSales, LONG l
 			lAllPrice = pItemSales->lProduct;
 		} else {
 			// anything else is the quantity times the unit price of the item.
-			lAllPrice = pItemSales->lUnitPrice * lQTY;
+			lAllPrice = (DCURRENCY)pItemSales->lUnitPrice * lQTY;
 		}
 	}
 
@@ -612,14 +612,15 @@ SHORT ItemSalesCalcPPITable(ITEMSALES *pItemSales, PPIDATA *pPpiData, PPIIF   *p
 		{
 			// if the discount/premium is zero (0) then we just use the item PLU price.
 			// The discount or premium is specified as a percentage of three digits with an assummed
-			// decimal point. So 123 is seen as 12.3%.
+			// decimal point. So 123 is seen as 12.3% or 0.123 so to convert from the percentage value
+			// we need to divide by 1000 after multiplying by the discount/premium.
 			if (PPIRecRcvBuffer.ParaPpi.ulPpiLogicFlags01 & PPI_LOGICFLAGS01_PLUDISCOUNT)
 			{
-				lWork = (pItemSales->lUnitPrice * (1000 - (LONG)ModifiedPpiRec[1].ulPrice)) / 1000;
+				lWork = (pItemSales->lUnitPrice * (1000 - (DCURRENCY)(LONG)ModifiedPpiRec[1].ulPrice)) / 1000;
 			}
 			else if (PPIRecRcvBuffer.ParaPpi.ulPpiLogicFlags01 & PPI_LOGICFLAGS01_PLUPREMIUM)
 			{
-				lWork = (pItemSales->lUnitPrice * ((DCURRENCY)1000 + (LONG)ModifiedPpiRec[1].ulPrice)) / 1000;
+				lWork = (pItemSales->lUnitPrice * (1000 + (DCURRENCY)(LONG)ModifiedPpiRec[1].ulPrice)) / 1000;
 			}
 		}
 		else {
@@ -703,7 +704,7 @@ SHORT ItemSalesCalcPPITable(ITEMSALES *pItemSales, PPIDATA *pPpiData, PPIIF   *p
 		{
 			if (sQuantity >= (SHORT)ModifiedPpiRec[sPpiIndex].uchQTY)
 			{
-				LONG  lPriceAmount = (LONG)ModifiedPpiRec[sPpiIndex].ulPrice;
+				DCURRENCY  lPriceAmount = (LONG)ModifiedPpiRec[sPpiIndex].ulPrice;
 
 				fPpiStatus |= PRECEDENCEDATA_FLAG_PPI_APPLIED;
 
@@ -716,18 +717,21 @@ SHORT ItemSalesCalcPPITable(ITEMSALES *pItemSales, PPIDATA *pPpiData, PPIIF   *p
 				if (PPIRecRcvBuffer.ParaPpi.ulPpiLogicFlags01 & (PPI_LOGICFLAGS01_PLUDISCOUNT | PPI_LOGICFLAGS01_PLUPREMIUM))
 				{
 					// if the discount/premium is zero (0) then we just use the item PLU price.
-					lPriceAmount = pItemSales->lUnitPrice;
+					lPriceAmount = (LONG)pItemSales->lUnitPrice;
 					lPriceAmount *= ModifiedPpiRec[sPpiIndex].uchQTY;
 					if (ModifiedPpiRec[sPpiIndex].ulPrice > 0)
 					{
+						// The discount or premium is specified as a percentage of three digits with an assummed
+						// decimal point. So 123 is seen as 12.3% or 0.123 so to convert from the percentage value
+						// we need to divide by 1000 after multiplying by the discount/premium.
 						if (PPIRecRcvBuffer.ParaPpi.ulPpiLogicFlags01 & PPI_LOGICFLAGS01_PLUDISCOUNT)
 						{
-							lPriceAmount = (pItemSales->lUnitPrice * (1000 - (LONG)ModifiedPpiRec[sPpiIndex].ulPrice)) / 1000;
+							lPriceAmount = (pItemSales->lUnitPrice * (1000 - (DCURRENCY)(LONG)ModifiedPpiRec[sPpiIndex].ulPrice)) / 1000;
 							lPriceAmount *= ModifiedPpiRec[sPpiIndex].uchQTY;
 						}
 						else if (PPIRecRcvBuffer.ParaPpi.ulPpiLogicFlags01 & PPI_LOGICFLAGS01_PLUPREMIUM)
 						{
-							lPriceAmount = (pItemSales->lUnitPrice * (1000 + (LONG)ModifiedPpiRec[sPpiIndex].ulPrice)) / 1000;
+							lPriceAmount = (pItemSales->lUnitPrice * (1000 + (DCURRENCY)(LONG)ModifiedPpiRec[sPpiIndex].ulPrice)) / 1000;
 							lPriceAmount *= ModifiedPpiRec[sPpiIndex].uchQTY;
 						}
 					}
@@ -741,7 +745,7 @@ SHORT ItemSalesCalcPPITable(ITEMSALES *pItemSales, PPIDATA *pPpiData, PPIIF   *p
 			}
 		}
 
-		lCalPPIPrice += sQuantity * (LONG)ModifiedPpiRec[0].ulPrice;
+		lCalPPIPrice += sQuantity * (DCURRENCY)(LONG)ModifiedPpiRec[0].ulPrice;
 	}
 
 	/*
