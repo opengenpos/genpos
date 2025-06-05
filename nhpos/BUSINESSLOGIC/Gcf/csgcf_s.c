@@ -58,8 +58,8 @@
 *===========================================================================
 */
 #if defined(GusConvertError)
-USHORT   GusConvertError_Special(SHORT sError);
-USHORT   GusConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo)
+USLDTERR   GusConvertError_Special(SHORT sError);
+USLDTERR   GusConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo)
 {
 	if (sError < 0) {
 		char  xBuffer[256];
@@ -70,12 +70,12 @@ USHORT   GusConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo)
 	return GusConvertError_Special(sError);
 }
 
-USHORT   GusConvertError_Special(SHORT sError)
+USLDTERR   GusConvertError_Special(SHORT sError)
 #else
-USHORT   GusConvertError(SHORT sError)
+USLDTERR   GusConvertError(SHORT sError)
 #endif
 {
-    USHORT  usLeadthruNo;
+	USLDTERR  usLeadthruNo;
 
 	if (sError > 0) {
 		usLeadthruNo = 0; // errors are negative numbers only

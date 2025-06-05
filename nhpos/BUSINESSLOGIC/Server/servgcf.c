@@ -55,6 +55,7 @@
 #include    <stdio.h>
 
 #include    <ecr.h>
+#include    <paraequ.h>
 #include    <appllog.h>
 #include    <pif.h>
 #include    <plu.h>

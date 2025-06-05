@@ -279,9 +279,9 @@ SHORT   GusResBackUpFH(UCHAR  *puchRcvData, USHORT usRcvLen, PifFileHandle  hsFi
 // generate a warning so this place is easy to find from a compiler warning.
 //#pragma message("  ====++++====   GusConvertError_Debug() is ENABLED  \z  ====++++====")
 #define GusConvertError(sError) GusConvertError_Debug(sError, __FILE__, __LINE__)
-USHORT  GusConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo);               /* Convert error code  */
+USLDTERR  GusConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo);               /* Convert error code  */
 #else
-USHORT   GusConvertError(SHORT sError);
+USLDTERR   GusConvertError(SHORT sError);
 #endif
 
 SHORT   GusDeleteDeliveryQueue(GCNUM  uchOrderNo, USHORT usType);
