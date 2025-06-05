@@ -253,19 +253,19 @@ static SHORT  ItemPreviousItemItemCommonLocal (SHORT bClearStore)
         break;
     
     case CLASS_ITEMDISC:
-        if ((ItemCommonLocal.ItemSales.uchMinorClass == CLASS_CHARGETIP) ||
-            (ItemCommonLocal.ItemSales.uchMinorClass == CLASS_CHARGETIP2) ||
-            (ItemCommonLocal.ItemSales.uchMinorClass == CLASS_CHARGETIP3)) {
+        if ((ItemCommonLocal.uItemSalesDisc.uchMinorClass == CLASS_CHARGETIP) ||
+            (ItemCommonLocal.uItemSalesDisc.uchMinorClass == CLASS_CHARGETIP2) ||
+            (ItemCommonLocal.uItemSalesDisc.uchMinorClass == CLASS_CHARGETIP3)) {
         
             /*----- PRINT TICKET FOR PREVIOUS ITEM -----*/
-            if (((ITEMDISC *) &(ItemCommonLocal.ItemSales))->fsPrintStatus & PRT_SINGLE_RECPT) {
+            if (ItemCommonLocal.uItemSalesDisc.fsPrintStatus & PRT_SINGLE_RECPT) {
                 if ((TranCurQualPtr->flPrintStatus & CURQUAL_GC_SYS_MASK) != CURQUAL_PRE_UNBUFFER) {
-                    ItemPrevChargeTipTicketPrint((ITEMDISC *) &ItemCommonLocal.ItemSales);
+                    ItemPrevChargeTipTicketPrint(&ItemCommonLocal.uItemSalesDisc);
                 } else {
-                    ((ITEMDISC *) &(ItemCommonLocal.ItemSales))->fsPrintStatus &= ~(PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT);  /* turn off ticket status */
+                    ItemCommonLocal.uItemSalesDisc.fsPrintStatus &= ~(PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT);  /* turn off ticket status */
                 }
             }
-            if((sReturnStatus = ItemPrevChargeTipAffection((ITEMDISC *) &ItemCommonLocal.ItemSales)) != ITM_SUCCESS) {
+            if((sReturnStatus = ItemPrevChargeTipAffection(&ItemCommonLocal.uItemSalesDisc)) != ITM_SUCCESS) {
                 return(sReturnStatus);
             }
         }
@@ -510,15 +510,13 @@ SHORT   ItemPreviousItemClearStore (SHORT bClearStore, VOID *pReceiveItem, USHOR
 
 			/*----- check strage size remaining -----*/
 			if ((sCompSize = ItemCommonCheckSize(&PrevItemWork.ItemSales, 0)) < 0) {
-				ITEMMODIFIER    DummyModifier = {0};
-
 				ItemSalesCalcECCom(&PrevItemWork.ItemSales);                  /* R3.1 */
 				memset(&ItemCommonLocal.ItemSales, 0, sizeof(ITEMSALES)); /* clear ItemCommonLocal.ItemDisc */
 				ItemCommonLocal.usDiscBuffSize = 0;
 				ItemCommonLocal.uchItemNo = 0;
 
 				MldECScrollWrite();                                 /* R3.0 */
-				ItemCommonDispECSubTotal(&DummyModifier);           /* Saratoga */
+				ItemCommonDispECSubTotal(0);           /* Saratoga */
 
 				return(LDT_TAKETL_ADR);
 			} 
@@ -1098,7 +1096,7 @@ VOID    ItemPrevChargeTipTicketPrint(ITEMDISC *pDisc)
 SHORT   ItemPrevSendSales(VOID)
 {
     SHORT               sStatus, sQty;
-    TRANINFORMATION     * const WorkTran = TrnGetTranInformationPointer();
+    TRANINFORMATION     const * const WorkTran = TrnGetTranInformationPointer();
 
     /* --- Void Super Int.  V3.3 --- */
 /*
@@ -1426,7 +1424,7 @@ SHORT   ItemCondCompare(USHORT *pusCurCondiment, ITEMCOND *pPrevCondiment)
 */
 #define     REQUIRE_SPVINT      1
 
-SHORT   ItemPrevModDisc(VOID)
+USLDTERR  ItemPrevModDisc(VOID)
 {
     LONG            lSign = 1L;
     DCURRENCY       lItemizer = 0;
@@ -1453,15 +1451,14 @@ SHORT   ItemPrevModDisc(VOID)
     ItemSalesSalesAmtCalc(&ItemSalesWork, &lItemizer);
 
     if (lItemizer < ItemSalesWork.lDiscountAmount) { 
-		ITEMMODIFIER    DummyModifier = {0};
-                                            /* disc. amount exceeds itemizer */
+        /* disc. amount exceeds itemizer */
         memset(&ItemCommonLocal.ItemSales, 0, sizeof(ITEMSALES));
         ItemCommonLocal.uchItemNo = 0;
         ItemCommonLocal.usSalesBuffSize = 0;
 
         ItemCommonLocal.fbCommonStatus &= ~COMMON_VOID_EC;    /* enable E.C */
         MldECScrollWrite();                                 /* R3.0 */
-        ItemCommonDispECSubTotal(&DummyModifier);           /* Saratoga */
+        ItemCommonDispECSubTotal(0);           /* Saratoga */
         return(LDT_KEYOVER_ADR);
     }
 
@@ -1591,9 +1588,9 @@ SHORT   ItemPrevTotalProc(VOID *pReceiveItem, USHORT usTempBuffSize)
 *===========================================================================
 */
 
-SHORT    ItemPrevChargeTipAffection(ITEMDISC *pDisc) 
+SHORT    ItemPrevChargeTipAffection(const ITEMDISC *pDisc) 
 {
-    TRANINFORMATION    * const WorkTran = TrnGetTranInformationPointer();
+    TRANINFORMATION    const * const WorkTran = TrnGetTranInformationPointer();
 
     if (WorkTran->TranGCFQual.ulCashierID != WorkTran->TranModeQual.ulCashierID) {
 		ITEMAFFECTION      AffectionData = {0};
@@ -1615,7 +1612,7 @@ SHORT    ItemPrevChargeTipAffection(ITEMDISC *pDisc)
         AffectionData.lAmount = pDisc->lAmount;                                   /* cahrge tip amount */
         AffectionData.fbModifier = pDisc->fbDiscModifier;                         /* set modifier status */
         AffectionData.fbStorageStatus = STORAGE_STATUS_MASK & ~NOT_ITEM_STORAGE;  /* set only item storage status */
-        return(TrnItem(&AffectionData));
+        return(TrnAffection(&AffectionData));
     } else {
         return (ITM_SUCCESS);
     }
