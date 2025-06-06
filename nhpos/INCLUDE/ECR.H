@@ -605,6 +605,7 @@ extern "C"{
 // error message to display to the operator. Error codes may be transformed into the appropriate
 // Lead Thru code to inform the operator of an error condition.
 //   - USLDTERR: lead thru codes that result in an error message displayed to the user. see LDT_FLFUL_ADR, etc.
+//   - SLDTITM:  may be lead thru address (positive and non-zero) or event indication (zero or negative) ITM_CANCEL, etc.
 
 
 //  Defines for Return Value and Status
