@@ -295,7 +295,7 @@ SHORT UifAC116EnterData1(KEYMSG *pKeyMsg)
             SetPageNo.uchLeadAddr = LDT_NUM_ADR;
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
                 /* pData = (FSCTBL FAR *)&ParaFSC1[uchMaintMenuPage - 1]; */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();                                                /* Shift Cur. Func. to Act. Func. */ 
             }
@@ -314,7 +314,7 @@ SHORT UifAC116EnterData1(KEYMSG *pKeyMsg)
             SetPageNo.uchStatus = 0;                                    /* Set W/ Amount Status */
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
                 /* pData = (FSCTBL FAR *)&ParaFSC1[uchMaintMenuPage - 1]; */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();                                            /* Shift Current Func. to Active Func. */
             }
@@ -537,7 +537,7 @@ SHORT UifAC116EnterData2(KEYMSG *pKeyMsg)
             MenuPLUTbl.uchMinorClass = CLASS_PARAMENUPLU_PAGE;
             if ((sError = MaintMenuPLUEdit(&MenuPLUTbl)) == SUCCESS) {   
                 /* pData = (FSCTBL FAR *)&ParaFSC1[uchMaintMenuPage - 1]; */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();
             }
@@ -555,7 +555,7 @@ SHORT UifAC116EnterData2(KEYMSG *pKeyMsg)
             MenuPLUTbl.uchStatus = 0;                                   /* Set W/ Amount Status */
             if ((sError = MaintMenuPLUEdit(&MenuPLUTbl)) == SUCCESS) {   
                 /* pData = (FSCTBL FAR *)&ParaFSC1[uchMaintMenuPage - 1]; */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();
             }

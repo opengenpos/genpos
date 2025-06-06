@@ -112,7 +112,7 @@
 
 typedef signed short   SUIFRSLT;      // result variable containing one of the UIF_ error codes
 
-									  /*
+/*
 *---------------------------------------------------------------------------
 *   Return Code from Item module and Dialog return status.
 *
@@ -243,7 +243,7 @@ extern SHORT       UifSupInterventRetStatus;
 *===========================================================================
 */
 SHORT   UifReg(KEYMSG *pData);                          /* uifreg.c */
-SHORT   UifRegString(KEYMSG *pData);                    /* R3.0 */
+USLDTERR  UifRegString(const KEYMSG *pData);                    /* R3.0 */
                                                     
 SHORT   UifDiaGetNumericEntry(UIFDIADATA *pData, USHORT usEcho, USHORT usNoDigits, UIMENU *aUieMenu);
 SHORT   UifDiaCashier(UIFDIADATA *pData, USHORT usEcho);/* uidcas.c */

@@ -169,7 +169,7 @@ VOID MaintPreModeInSup( VOID )
     if (MenuPage.uchPageNumber < 1 || MenuPage.uchPageNumber > MAX_PAGE_NO) {
         MenuPage.uchPageNumber = 1;
     }
-    pData = (FSCTBL *)&ParaFSC[MenuPage.uchPageNumber - 1];
+    pData = (FSCTBL *)&Para.ParaFSC[MenuPage.uchPageNumber - 1];
     UieSetFsc(pData);
     uchMaintMenuPage = MenuPage.uchPageNumber;
     /* --- Set Shift Page,  V3.3 --- */

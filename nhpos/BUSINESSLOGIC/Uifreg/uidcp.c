@@ -241,7 +241,7 @@ SHORT UifDiaCP1(UIFDIADATA *pData)
 
 	/* corrected at 04/15/96 */
     /* UieSetFsc((FSCTBL FAR *)&ParaFSC1[uchDispCurrMenuPage-1]);  */
-    UieSetFsc((FSCTBL FAR *)&ParaFSC[uchDispCurrMenuPage-1]);  /* set FSC table pointer */
+    UieSetFsc((FSCTBL *)&Para.ParaFSC[uchDispCurrMenuPage-1]);  /* set FSC table pointer */
     UieEchoBack(UIE_ECHO_ROW0_REG, UIFREG_MAX_INPUT);           /* set echo back */
     return(sRetStatus);
 }
@@ -348,7 +348,7 @@ SHORT UifDiaCP2(UIFDIADATA *pData)
 
     /* corrected at 04/15/96 */
     /* UieSetFsc((FSCTBL FAR *)&ParaFSC1[uchDispCurrMenuPage-1]);  */
-    UieSetFsc((FSCTBL FAR *)&ParaFSC[uchDispCurrMenuPage-1]);   /* set FSC table pointer */
+    UieSetFsc((FSCTBL *)&Para.ParaFSC[uchDispCurrMenuPage-1]);   /* set FSC table pointer */
     UieEchoBack(UIE_ECHO_ROW0_REG, UIFREG_MAX_INPUT);           /* set echo back */
     return(sRetStatus);
 }
@@ -529,7 +529,7 @@ SHORT UifDiaCP6(UIFDIADATA *pData, UCHAR uchMaxLen, USHORT usInputType)
 	if (usKBMode_Prev != 0x7FFF)
 		UifChangeKeyboardType (usKBMode_Prev);
 
-    UieSetFsc((FSCTBL FAR *)&ParaFSC[uchDispCurrMenuPage-1]);  /* set FSC table pointer */
+    UieSetFsc((FSCTBL *)&Para.ParaFSC[uchDispCurrMenuPage-1]);  /* set FSC table pointer */
 
     return(sRetStatus);
 }

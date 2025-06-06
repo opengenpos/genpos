@@ -79,7 +79,7 @@
 *===========================================================================
 */
 
-SHORT MaintDeptNoMenuRead( PARADEPTNOMENU *pData )
+USLDTERR MaintDeptNoMenuRead( const PARADEPTNOMENU *pData )
 {
     UCHAR           uchMinorFSCData;
 
@@ -127,7 +127,7 @@ SHORT MaintDeptNoMenuRead( PARADEPTNOMENU *pData )
 *===========================================================================
 */
 
-SHORT MaintDeptNoMenuWrite( PARADEPTNOMENU *pData )
+USLDTERR MaintDeptNoMenuWrite( const PARADEPTNOMENU *pData )
 {
 
     /* Dept number has already checked by UI */

@@ -1477,8 +1477,8 @@ SHORT MaintTendWrite( PARATEND *pData );                      /* V3.3 */
 VOID  MaintTendReport( VOID );                                /* V3.3 */
 UCHAR   MaintResetLog(UCHAR uchAction);                     /* V3.3 */
 VOID    MaintDelayedBalance(UCHAR uchStatus);				/* Delayed Balance for EOD JHHJ */
-SHORT MaintDeptNoMenuRead( PARADEPTNOMENU *pData ); /* 2172 */
-SHORT MaintDeptNoMenuWrite( PARADEPTNOMENU *pData ); /* 2172 */
+USLDTERR MaintDeptNoMenuRead( const PARADEPTNOMENU *pData ); /* 2172 */
+USLDTERR MaintDeptNoMenuWrite( const PARADEPTNOMENU *pData ); /* 2172 */
 VOID MaintDeptNoMenuReport( VOID ); /* 2172 */
 VOID MaintDeptNoMenuReplace( VOID ); /* 2172 */
 SHORT MaintKdsIpRead( PARAKDSIP *pData ); /* 2172 */

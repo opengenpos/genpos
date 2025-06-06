@@ -242,7 +242,7 @@ SHORT UifAC68EnterData1(KEYMSG *pKeyMsg)
             SetPageNo.uchACNumber = AC_PLU_ADDDEL;                          /* Set Major Class */
             SetPageNo.uchLeadAddr = LDT_NUM_ADR;
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
-				FSCTBL   *pData = (FSCTBL *)&ParaFSC[uchMaintMenuPage - 1];
+				FSCTBL   *pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
 
 				UieSetFsc(pData);
                 UieReject();                                                /* Shift Current Func. to Active Func. */ 
@@ -260,7 +260,7 @@ SHORT UifAC68EnterData1(KEYMSG *pKeyMsg)
             SetPageNo.uchPageNumber = pKeyMsg->SEL.INPUT.uchMinor;      /* set page number */
             SetPageNo.uchStatus = 0;                                    /* Set W/ Amount Status */
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
-				FSCTBL   *pData = (FSCTBL *)&ParaFSC[uchMaintMenuPage - 1];
+				FSCTBL   *pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
 
                 UieSetFsc(pData);
                 UieReject();                                            /* Shift Current Func. to Active Func. */

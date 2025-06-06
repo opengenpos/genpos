@@ -609,7 +609,7 @@ SHORT UifRegDefProc(KEYMSG *pData)
 ** Description: Control String,        R3.0
 *===========================================================================
 */
-SHORT   UifRegString(KEYMSG *pData)
+USLDTERR  UifRegString(const KEYMSG *pData)
 {
     SHORT   sStatus;
     USHORT  usSize = 0;
@@ -936,7 +936,7 @@ SHORT   UifRegPauseString(USHORT *pusSize, ULONG  ulFlags)  // FSC_PAUSE, handle
 				/*Implemented a for loop to run through the new information entered 
 				during the Pause Message, where it gets the information until it gets 
 				to a null terminated. JHHJ*/
-				for( i = 0; i < usSize, auchWork[(*puchPtr) - 1][i] !=0; i++) {
+				for( i = 0; i < usSize && auchWork[(*puchPtr) - 1][i] !=0; i++) {
 					auchUifString[sStatus + i] = (UCHAR)auchWork[(*puchPtr) - 1][i];
 				}
 
@@ -1097,7 +1097,7 @@ SHORT   UifDiaAlphaNameNoEcho (UIFDIADATA *pData, UCHAR uchEchoType)
 
     /* bug fixed at 04/15/96 */
     /* UieSetFsc((FSCTBL FAR *)&ParaFSC1[uchDispCurrMenuPage-1]);  */ 
-    UieSetFsc((FSCTBL FAR *)&ParaFSC[uchDispCurrMenuPage-1]);  /* set FSC table pointer */
+    UieSetFsc((FSCTBL *)&Para.ParaFSC[uchDispCurrMenuPage-1]);  /* set FSC table pointer */
     UieEchoBack(UIE_ECHO_ROW0_REG, UIFREG_MAX_INPUT);           /* set echo back */
     return(sRetStatus);
 }

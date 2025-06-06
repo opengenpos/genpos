@@ -1918,7 +1918,7 @@ VOID    ItemCommonMldInit( VOID )
 */
 VOID    ItemCommonShiftPage(UCHAR uchPage)
 {
-    FSCTBL *pData = (FSCTBL *)&ParaFSC[uchPage - 1];
+    FSCTBL *pData = (FSCTBL *)&Para.ParaFSC[uchPage - 1];
 
     UieSetFsc(pData);
 }

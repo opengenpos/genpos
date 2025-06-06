@@ -145,8 +145,8 @@ SHORT ParaAllRead( USHORT usClass,
     case CLASS_PARAFSC:
 		/* usRamSize = sizeof(ParaFSC1); */
 		/* puchSystemRam = ( UCHAR FAR *)ParaFSC1; */
-		usRamSize = sizeof(ParaFSC);
-        puchSystemRam = ( UCHAR FAR *)ParaFSC;
+		usRamSize = sizeof(Para.ParaFSC);
+        puchSystemRam = ( UCHAR *)Para.ParaFSC;
         break;
 
     case CLASS_PARASECURITYNO:
@@ -533,8 +533,8 @@ SHORT ParaAllWrite( USHORT usClass,
 		//MWS Keyboard Issue
 		//For the FSC table, after build 2.0.0.58, we will only allow
 		//Menu pages 1-9 to be available for modification.
-		usRamSize = (sizeof(ParaFSC) - (sizeof(PARAFSCTBL) * 2));
-		puchSystemRam = ( UCHAR FAR *)ParaFSC;
+		usRamSize = (sizeof(Para.ParaFSC) - (sizeof(PARAFSCTBL) * 2));
+		puchSystemRam = ( UCHAR *)Para.ParaFSC;
         break;
 
     case CLASS_PARASECURITYNO:
@@ -820,9 +820,9 @@ SHORT ParaAllWrite( USHORT usClass,
 		// are writting. This size will always me smaller than the size that is
 		// supposed to be written.
 		if ( usStartPointer >= usRamSize ) {
-			if ( usStartPointer < sizeof(ParaFSC) ) {
-				if ((usStartPointer + usWrtBufLen) > sizeof(ParaFSC)) {
-					*pusReturnLen = (sizeof(ParaFSC) - usStartPointer);
+			if ( usStartPointer < sizeof(Para.ParaFSC) ) {
+				if ((usStartPointer + usWrtBufLen) > sizeof(Para.ParaFSC)) {
+					*pusReturnLen = (sizeof(Para.ParaFSC) - usStartPointer);
 				} else {
 					*pusReturnLen = usWrtBufLen;
 				}

@@ -75,7 +75,7 @@
 
 /* Define Next Function at UIM_INIT */
 
-UIMENU FARCONST aChildAC115Init[] = {{UifAC115IssueRpt, CID_AC115ISSUERPT},
+static UIMENU CONST aChildAC115Init[] = {{UifAC115IssueRpt, CID_AC115ISSUERPT},
                                    {UifAC115EnterData1, CID_AC115ENTERDATA1},
                                    {UifAC115EnterData2, CID_AC115ENTERDATA2},
                                    {NULL,             0                }};
@@ -83,7 +83,7 @@ UIMENU FARCONST aChildAC115Init[] = {{UifAC115IssueRpt, CID_AC115ISSUERPT},
 
 /* Define Next Function at UIM_ACCEPTED */
 
-UIMENU FARCONST aChildAC115Accept[] = {{UifACExitFunction, CID_AC115EXITFUNCTION},
+static UIMENU CONST aChildAC115Accept[] = {{UifACExitFunction, CID_AC115EXITFUNCTION},
                                      {UifAC115EnterData1, CID_AC115ENTERDATA1},
                                      {UifAC115EnterData2, CID_AC115ENTERDATA2},
                                      {NULL,             0                }};
@@ -92,16 +92,9 @@ UIMENU FARCONST aChildAC115Accept[] = {{UifACExitFunction, CID_AC115EXITFUNCTION
 
 SHORT UifAC115Function(KEYMSG *pKeyMsg) 
 {
-
-
-    MAINTSETPAGE        SetPage;
-    PARADEPTNOMENU       DeptNoMenu;
+    MAINTSETPAGE        SetPage = { 0 };
+    PARADEPTNOMENU       DeptNoMenu = { 0 };
     
-    
-    /* Clear SetPage Work */
-            
-    memset(&SetPage, '\0', sizeof(MAINTSETPAGE));
-
     switch (pKeyMsg->uchMsg) {
     case UIM_INIT:
 
@@ -118,7 +111,6 @@ SHORT UifAC115Function(KEYMSG *pKeyMsg)
 /*        MaintSetPageOnly(&SetPage);                               */  /* Execute Set Procedure */
 
         /* Display Address 1 of This Function */
-
         DeptNoMenu.uchStatus = 0;                                    /* Set W/ Amount Status */
         DeptNoMenu.uchMinorFSCData = 1;                              /* Set MinorFSCData 1 */
         DeptNoMenu.uchMajorClass = CLASS_PARADEPTNOMENU;              /* Set Major Class */
@@ -149,13 +141,8 @@ SHORT UifAC115Function(KEYMSG *pKeyMsg)
 **  Description: A/C No.115 Issue Report Mode 
 *===============================================================================
 */
-
-
 SHORT UifAC115IssueRpt(KEYMSG *pKeyMsg) 
 {
-    
-
-
     switch(pKeyMsg->uchMsg) {
     case UIM_INIT:
         UieOpenSequence(aszSeqACFSC_AC);                        /* Register Key Sequence */
@@ -203,17 +190,14 @@ SHORT UifAC115IssueRpt(KEYMSG *pKeyMsg)
     
 /* Define Key Sequence */
 
-UISEQ FARCONST aszSeqAC115EnterData1[] = {FSC_KEYED_DEPT, FSC_NUM_TYPE, FSC_DEPT, 0};
+static UISEQ CONST aszSeqAC115EnterData1[] = {FSC_KEYED_DEPT, FSC_NUM_TYPE, FSC_DEPT, 0};
 
 
-SHORT UifAC115EnterData1(KEYMSG *pKeyMsg) 
+USLDTERR UifAC115EnterData1(const KEYMSG *pKeyMsg)
 {
-    
     SHORT          sError;
-    PARADEPTNOMENU  DeptNoMenu;
+    PARADEPTNOMENU  DeptNoMenu = { 0 };
                    
-
-
     switch(pKeyMsg->uchMsg) {
     case UIM_INIT:
         UieOpenSequence(aszSeqAC115EnterData1);                                    /* Register Key Sequence */
@@ -301,16 +285,13 @@ SHORT UifAC115EnterData1(KEYMSG *pKeyMsg)
     
 /* Define Key Sequence */
 
-UISEQ FARCONST aszSeqAC115EnterData2[] = {FSC_MENU_SHIFT, FSC_D_MENU_SHIFT, 0};
+static UISEQ CONST aszSeqAC115EnterData2[] = {FSC_MENU_SHIFT, FSC_D_MENU_SHIFT, 0};
 
 
-SHORT UifAC115EnterData2(KEYMSG *pKeyMsg) 
+USLDTERR UifAC115EnterData2(const KEYMSG *pKeyMsg)
 {
-    
-    SHORT          sError;
-    MAINTSETPAGE   SetPage;
-    PARADEPTNOMENU  DeptNoMenu;
-    FSCTBL FAR     *pData;
+    USLDTERR       sError;
+    MAINTSETPAGE   SetPage = { 0 };
 
     switch(pKeyMsg->uchMsg) {
     case UIM_INIT:
@@ -321,14 +302,10 @@ SHORT UifAC115EnterData2(KEYMSG *pKeyMsg)
         switch (pKeyMsg->SEL.INPUT.uchMajor) {
         case FSC_MENU_SHIFT:
             /* Check Digit */
-
             if (pKeyMsg->SEL.INPUT.uchLen > UIF_DIGIT1) {                       /* Over Digit */
                 return(LDT_KEYOVER_ADR);
             }
 
-            /* Clear SetPage Work */
-            
-            memset(&SetPage, '\0', sizeof(MAINTSETPAGE));
             SetPage.uchMajorClass = CLASS_MAINTSETPAGE;                         /* Set Major Class */
             SetPage.uchStatus = 0;                                      /* Set W/ Amount Status */
             if (!pKeyMsg->SEL.INPUT.uchLen) {                           /* W/o Amount Input Case */
@@ -337,12 +314,15 @@ SHORT UifAC115EnterData2(KEYMSG *pKeyMsg)
                 SetPage.uchPageNumber = ( UCHAR)pKeyMsg->SEL.INPUT.lData;
             }
             if ((sError = MaintSetPageOnly(&SetPage)) == SUCCESS) { 
+                FSCTBL* pData;
+                PARADEPTNOMENU  DeptNoMenu = { 0 };
+
                 DeptNoMenu.uchStatus = 0;                                        /* Set W/ Amount Status */
                 DeptNoMenu.uchMinorFSCData = 1;                                  /* Set MinorFSCData 1 */
                 DeptNoMenu.uchMajorClass = CLASS_PARADEPTNOMENU;                  /* Set Major Class */
                 MaintDeptNoMenuRead(&DeptNoMenu);                                 /* Execute Read Procedure */
                 /* pData = (FSCTBL FAR *)&ParaFSC1[uchMaintMenuPage - 1]; */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieAccept();                                                    /* Return to UifAC115Function() */
             }
@@ -350,25 +330,24 @@ SHORT UifAC115EnterData2(KEYMSG *pKeyMsg)
           
         case FSC_D_MENU_SHIFT:
             /* Check W/o Amount */
-
             if (pKeyMsg->SEL.INPUT.uchLen) {                    /* W/ Amount */
                 return(LDT_SEQERR_ADR);
             }
 
-            /* Clear SetPage Work */
-            
-            memset(&SetPage, '\0', sizeof(MAINTSETPAGE));
             SetPage.uchMajorClass = CLASS_MAINTSETPAGE;                 /* Set Major Class */
             SetPage.uchPageNumber = pKeyMsg->SEL.INPUT.uchMinor;        /* set page number */
             SetPage.uchStatus = 0;                                      /* Set W/ Amount Status */
 
             if ((sError = MaintSetPageOnly(&SetPage)) == SUCCESS) { 
+                FSCTBL* pData;
+                PARADEPTNOMENU  DeptNoMenu = { 0 };
+
                 DeptNoMenu.uchStatus = 0;                                        /* Set W/ Amount Status */
                 DeptNoMenu.uchMinorFSCData = 1;                                  /* Set MinorFSCData 1 */
                 DeptNoMenu.uchMajorClass = CLASS_PARADEPTNOMENU;                  /* Set Major Class */
                 MaintDeptNoMenuRead(&DeptNoMenu);                                 /* Execute Read Procedure */
                 /* pData = (FSCTBL FAR *)&ParaFSC1[uchMaintMenuPage - 1]; */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieAccept();                                                    /* Return to UifAC115Function() */
             }

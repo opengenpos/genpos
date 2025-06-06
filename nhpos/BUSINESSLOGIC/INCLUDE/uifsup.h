@@ -844,7 +844,7 @@ SHORT   UifAC169EnterData1(KEYMSG *pKeyMsg);
 SHORT   UifAC175Function(KEYMSG *pKeyMsg);
 SHORT   UifAC175EnterKey(KEYMSG *pKeyMsg);
 SHORT   UifAC176Function(KEYMSG *pKeyMsg);
-SHORT   UifACDefProc(KEYMSG *pKeyMsg);            
+USLDTERR  UifACDefProc(const KEYMSG *pKeyMsg);
 SHORT   UifACChangeKB1(KEYMSG *pKeyMsg); 
 SHORT   UifACChangeKB2(KEYMSG *pKeyMsg); 
 SHORT   UifACExitFunction(KEYMSG *pKeyMsg);
@@ -933,8 +933,8 @@ SHORT   UifAC137EnterData3(KEYMSG *pKeyMsg);
 VOID    UifACRedisp( VOID );
 SHORT   UifAC115Function(KEYMSG *pKeyMsg); /* 2172 */
 SHORT   UifAC115IssueRpt(KEYMSG *pKeyMsg); /* 2172 */
-SHORT   UifAC115EnterData1(KEYMSG *pKeyMsg); /* 2172 */
-SHORT   UifAC115EnterData2(KEYMSG *pKeyMsg); /* 2172 */
+USLDTERR  UifAC115EnterData1(const KEYMSG *pKeyMsg); /* 2172 */
+USLDTERR  UifAC115EnterData2(const KEYMSG *pKeyMsg); /* 2172 */
 SHORT   UifAC115ExitFunction(KEYMSG *pKeyMsg); /* 2172 */
 SHORT UifAC170Function(KEYMSG *pKeyMsg); /* 2172 */
 SHORT UifAC170EnterAddr(KEYMSG *pKeyMsg); /* 2172 */

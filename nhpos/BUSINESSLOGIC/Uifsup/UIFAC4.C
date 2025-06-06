@@ -432,7 +432,7 @@ SHORT UifAC4EnterData2(KEYMSG *pKeyMsg)
                 PLUNoMenu.uchMajorClass = CLASS_PARAPLUNOMENU;                /* Set Major Class */
                 PLUNoMenu.uchMinorClass = CLASS_PARAPLUNOMENU_ADDRESS;      /* Set Minor Class */
                 MaintPLUNoMenuRead(&PLUNoMenu);                               /* Execute Read Procedure */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieAccept();                                                    /* Return to UifAC4Function() */
             }
@@ -457,7 +457,7 @@ SHORT UifAC4EnterData2(KEYMSG *pKeyMsg)
                 PLUNoMenu.uchMinorFSCData = 1;                                  /* Set MinorFSCData 1 */
                 PLUNoMenu.uchMajorClass = CLASS_PARAPLUNOMENU;                  /* Set Major Class */
                 MaintPLUNoMenuRead(&PLUNoMenu);                                 /* Execute Read Procedure */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieAccept();                                                    /* Return to UifAC4Function() */
             }

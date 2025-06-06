@@ -605,7 +605,7 @@ SHORT   UieShelExecuteLinkFile (TCHAR *aszName, UCHAR uchLen);
 /* ----- UIESEQ.C ----- */
 SHORT   UieCheckSequence(KEYMSG *pData);
 SHORT   UieSetExtendedStatus (SHORT sRetStatus);
-USLDTERR   UieDefProc(KEYMSG *pData);
+USLDTERR   UieDefProc(const KEYMSG *pData);
 
 /* ----- UIEKEY.C ----- */
 VOID    UieSetCvt(CONST CVTTBL *pCvt);

@@ -582,7 +582,7 @@ SHORT  UifCreateQueueStringWaitEvent(VOID)
 ** Description:
 *===========================================================================
 */
-USLDTERR  UieDefProc(KEYMSG *pData)
+USLDTERR  UieDefProc(const KEYMSG *pData)
 {
     TCHAR auchReceiptFeed[] = {ESC, _T('|'), _T('8'), _T('l'), _T('F'), 0/*UIE_RECEIPT_FEED_ROW*/}; /* Receipt Feed Command */
     TCHAR auchJournalFeed[] = {ESC, _T('|'), _T('8'), _T('l'), _T('F'), 0/*UIE_JOURNAL_FEED_ROW*/}; /* Journal Feed Command */

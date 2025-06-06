@@ -117,7 +117,7 @@ SHORT PifFileMigrationGP41(VOID *pData, TCHAR *pVersion)
 
 
 	//Program 3, conversion neccessary.
-	memcpy(&ParaFSC[0], &OldPara.HGV20_ParaFSC[0], sizeof(OldPara.HGV20_ParaFSC));
+	memcpy(&Para.ParaFSC[0], &OldPara.HGV20_ParaFSC[0], sizeof(OldPara.HGV20_ParaFSC));
 
 	memcpy(&ParaSecurityNo, &OldPara.HGV20_ParaSecurityNo, sizeof(OldPara.HGV20_ParaSecurityNo));
 

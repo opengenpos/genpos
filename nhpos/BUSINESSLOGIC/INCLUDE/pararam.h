@@ -169,7 +169,7 @@ extern UNINIRAM UNINT ParaDefault;                          /* Default, initiali
 #define ParaTaxRate         (Para.ParaTaxRate)
 #define ParaMiscPara        (Para.ParaMiscPara)
 #define ParaMDC             (Para.ParaMDC)
-#define ParaFSC             (Para.ParaFSC)
+//#define ParaFSC             (Para.ParaFSC)
 #define ParaSecurityNo          (Para.ParaSecurityNo)
 #define ParaSupLevel            (Para.ParaSupLevel)
 #define ParaActCodeSec          (Para.ParaActCodeSec)

@@ -211,7 +211,7 @@ static CONST CVTTBL * pUifCvtTOUCH[UIF_MAX_MODE] = {NULL, NULL, NULL, CvtRegTouc
 static CONST CVTTBL * pUifCvtW68[UIF_MAX_MODE] = {NULL, NULL, NULL, CvtReg5932_68, CvtReg5932_68, CvtProg5932_68};
 static CONST CVTTBL * pUifCvtW78[UIF_MAX_MODE] = {NULL, NULL, NULL, CvtReg5932_78, CvtReg5932_78, CvtProg5932_78};
 static CONST CVTTBL * pUifCvtBigTicket[UIF_MAX_MODE] = {NULL, NULL, NULL, CvtRegTicket, CvtRegTicket, CvtRegTicket};
-static CONST FSCTBL * pUifFsc[UIF_MAX_MODE] = {NULL, NULL, NULL, (FSCTBL *)ParaFSC, (FSCTBL *)ParaFSC, NULL};
+static CONST FSCTBL * pUifFsc[UIF_MAX_MODE] = {NULL, NULL, NULL, (FSCTBL *)Para.ParaFSC, (FSCTBL *)Para.ParaFSC, NULL};
 
 static const TCHAR aUifInitialResetPrint[] = _T(" ***INITIAL RESET***");
 static const TCHAR aUifLoaderPrint[] = _T("  ***LOAD LOADER***");
@@ -437,12 +437,12 @@ VOID PifMain(TCHAR *pVersion)
 	}
 
 	memcpy (&Para, &ParaDefault, sizeof(Para));
-	memcpy(&ParaTable, &ParaFSC[9], sizeof(ParaTable));
+	memcpy(&ParaTable, &Para.ParaFSC[9], sizeof(ParaTable));
     sRetStatusParaLoad = PifLoadFarData (&Para, sizeof(Para), pVersion);      /* load uninitialaize data */
 	if (sRetStatusParaLoad < 0) {
 		memset (&Para, 0, sizeof(Para));
 		memcpy (&Para, &ParaDefault, sizeof(Para));
-		memcpy(&ParaTable, &ParaFSC[9], sizeof(ParaTable));
+		memcpy(&ParaTable, &Para.ParaFSC[9], sizeof(ParaTable));
 	}
 
 	// set the current offset for the ASSRTLOG file
@@ -499,7 +499,7 @@ VOID PifMain(TCHAR *pVersion)
 		ParaFlexMem[FLEX_MLD_ADR - 1].ulRecordNumber = MAX_MLDMNEMO_SIZE;
 	}
 
-	memcpy(&ParaFSC[9], &ParaTable, sizeof(ParaTable));
+	memcpy(&Para.ParaFSC[9], &ParaTable, sizeof(ParaTable));
     VosInitialize(MLD_BACKLIGHT_LIMIT);             /* Add R3.0 */
 
 	UifDeviceMessageSystemInit();

@@ -601,7 +601,7 @@ SHORT UifAC29EnterPLU1(KEYMSG *pKeyMsg)
             SetPageNo.uchRptType = uchUifACRptType;
             SetPageNo.uchLeadAddr = LDT_NUM_ADR;
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
-				FSCTBL  *pData = (FSCTBL *)&ParaFSC[uchMaintMenuPage - 1];
+				FSCTBL  *pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();                                                /* Shift Cur. Func. to Act. Func. */ 
             }
@@ -620,7 +620,7 @@ SHORT UifAC29EnterPLU1(KEYMSG *pKeyMsg)
             SetPageNo.uchPageNumber = pKeyMsg->SEL.INPUT.uchMinor;      /* set page number */
             SetPageNo.uchStatus = 0;                                    /* Set W/ Amount Status */
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
-				FSCTBL  *pData = (FSCTBL *)&ParaFSC[uchMaintMenuPage - 1];
+				FSCTBL  *pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();                                            /* Shift Current Func. to Active Func. */
             }
@@ -1001,7 +1001,7 @@ SHORT UifAC29EnterPLU2(KEYMSG *pKeyMsg)
             SetPageNo.uchRptType = uchUifACRptType;
             SetPageNo.uchLeadAddr = LDT_NUM_ADR;
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
-				FSCTBL   *pData = (FSCTBL *)&ParaFSC[uchMaintMenuPage - 1];
+				FSCTBL   *pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();                                                /* Shift Current Func. to Active Func. */ 
             }
@@ -1020,7 +1020,7 @@ SHORT UifAC29EnterPLU2(KEYMSG *pKeyMsg)
             SetPageNo.uchPageNumber = pKeyMsg->SEL.INPUT.uchMinor;      /* set page number */
             SetPageNo.uchStatus = 0;                                    /* Set W/ Amount Status */
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
-				FSCTBL   *pData = (FSCTBL *)&ParaFSC[uchMaintMenuPage - 1];
+				FSCTBL   *pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();                                            /* Shift Current Func. to Active Func. */
             }

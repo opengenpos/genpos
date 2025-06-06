@@ -200,7 +200,7 @@ SHORT UifAC64EnterData1(KEYMSG *pKeyMsg)
             SetPageNo.uchLeadAddr = LDT_NUM_ADR;
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
                 /* pData = (FSCTBL FAR *)&ParaFSC1[uchMaintMenuPage - 1]; */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();                                                /* Shift Current Func. to Active Func. */ 
             }
@@ -219,7 +219,7 @@ SHORT UifAC64EnterData1(KEYMSG *pKeyMsg)
             SetPageNo.uchStatus = 0;                                    /* Set W/ Amount Status */
             if ((sError = MaintSetPage(&SetPageNo)) == SUCCESS) {
                 /* pData = (FSCTBL FAR *)&ParaFSC1[uchMaintMenuPage - 1]; */
-                pData = (FSCTBL FAR *)&ParaFSC[uchMaintMenuPage - 1];
+                pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 UieReject();                                            /* Shift Current Func. to Active Func. */
             }

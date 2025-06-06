@@ -367,7 +367,7 @@ USHORT UieConvertFsc(CONST CVTTBL *pCvt, CONST FSCTBL *pFsc, CHARDATA Char, FSCT
 		{
 			pCvt = CvtRegTouch;                         
 		}
-		pFsc = &ParaFSC[uchDispCurrMenuPage-1].TblFsc[0];
+		pFsc = &Para.ParaFSC[uchDispCurrMenuPage-1].TblFsc[0];
 	}
 
     uchBias = Char.uchASCII + Char.uchScan - (UCHAR)UIE_FSC_BIAS;

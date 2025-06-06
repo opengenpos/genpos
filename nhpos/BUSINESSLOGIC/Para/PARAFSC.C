@@ -74,8 +74,8 @@ VOID ParaFSCRead( PARAFSC *pData )
     /* pData->uchMajorFSCData = ParaFSC1[j].TblFsc[i].uchFsc;/* 0 = Major FSC RAM Address */
     /* pData->uchMinorFSCData = ParaFSC1[j].TblFsc[i].uchExt;/* 1 = Minor FSC RAM Address */
 
-    pData->uchMajorFSCData = ParaFSC[j].TblFsc[i].uchFsc;/* 0 = Major FSC RAM Address */
-    pData->uchMinorFSCData = ParaFSC[j].TblFsc[i].uchExt;/* 1 = Minor FSC RAM Address */
+    pData->uchMajorFSCData = Para.ParaFSC[j].TblFsc[i].uchFsc;/* 0 = Major FSC RAM Address */
+    pData->uchMinorFSCData = Para.ParaFSC[j].TblFsc[i].uchExt;/* 1 = Minor FSC RAM Address */
 
 }
 
@@ -103,7 +103,7 @@ VOID ParaFSCWrite( PARAFSC *pData )
 
     /* ParaFSC1[j].TblFsc[i].uchFsc = pData->uchMajorFSCData;  /* 0 = Major FSC RAM Address */
     /* ParaFSC1[j].TblFsc[i].uchExt = pData->uchMinorFSCData;  /* 1 = Minor FSC RAM Address */
-    ParaFSC[j].TblFsc[i].uchFsc = pData->uchMajorFSCData;  /* 0 = Major FSC RAM Address */
-    ParaFSC[j].TblFsc[i].uchExt = pData->uchMinorFSCData;  /* 1 = Minor FSC RAM Address */
+    Para.ParaFSC[j].TblFsc[i].uchFsc = pData->uchMajorFSCData;  /* 0 = Major FSC RAM Address */
+    Para.ParaFSC[j].TblFsc[i].uchExt = pData->uchMinorFSCData;  /* 1 = Minor FSC RAM Address */
 }
 

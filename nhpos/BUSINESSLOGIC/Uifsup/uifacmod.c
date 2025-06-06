@@ -1271,7 +1271,7 @@ SHORT UifACEnter(KEYMSG *pKeyMsg)
 **  Description: Supervisor Default Mode 
 *===============================================================================
 */
-SHORT UifACDefProc(KEYMSG *pKeyMsg) 
+USLDTERR UifACDefProc(const KEYMSG *pKeyMsg)
 {
     USHORT          usACNumber = MaintGetACNumber();
     SHORT           sError = SUCCESS;
@@ -1341,8 +1341,6 @@ SHORT UifACDefProc(KEYMSG *pKeyMsg)
                 return(LDT_KEYOVER_ADR);
             }
 
-            /* Clear SetPage Work */
-            memset(&SetPage, '\0', sizeof(MAINTSETPAGE));
             SetPage.uchMajorClass = CLASS_MAINTSETPAGE;                 /* Set Major Class */
             SetPage.uchStatus = 0;                                      /* Set W/ Amount Status */
             if (!pKeyMsg->SEL.INPUT.uchLen) {                           /* W/o Amount Input Case */
@@ -1351,7 +1349,7 @@ SHORT UifACDefProc(KEYMSG *pKeyMsg)
                 SetPage.uchPageNumber = ( UCHAR)pKeyMsg->SEL.INPUT.lData;
             }
             if ((sError = MaintSetPageOnly(&SetPage)) == SUCCESS) { 
-				FSCTBL   *pData = (FSCTBL *)&ParaFSC[uchMaintMenuPage - 1];
+				FSCTBL   *pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
 
                 UieSetFsc(pData);
                 ReDisplay.uchMajorClass = CLASS_MAINTREDISP;
@@ -1366,14 +1364,12 @@ SHORT UifACDefProc(KEYMSG *pKeyMsg)
                 return(LDT_SEQERR_ADR);
             }
 
-            /* Clear SetPage Work */
-            memset(&SetPage, '\0', sizeof(MAINTSETPAGE));
             SetPage.uchMajorClass = CLASS_MAINTSETPAGE;                 /* Set Major Class */
             SetPage.uchPageNumber = pKeyMsg->SEL.INPUT.uchMinor;        /* set page number */
             SetPage.uchStatus = 0;                                      /* Set W/ Amount Status */
 
             if ((sError = MaintSetPageOnly(&SetPage)) == SUCCESS) { 
-				FSCTBL   *pData = (FSCTBL *)&ParaFSC[uchMaintMenuPage - 1];
+				FSCTBL   *pData = (FSCTBL *)&Para.ParaFSC[uchMaintMenuPage - 1];
                 UieSetFsc(pData);
                 ReDisplay.uchMajorClass = CLASS_MAINTREDISP;
                 ReDisplay.uchMinorClass = CLASS_MAINTREDISP_PAGEDISP;
@@ -1433,7 +1429,7 @@ SHORT UifACDefProc(KEYMSG *pKeyMsg)
 			// The shortcut is put into the Database folder allowing people to
 			// download and update links.
 			sError = UieShelExecuteLinkFile (pKeyMsg->SEL.INPUT.aszKey, pKeyMsg->SEL.INPUT.uchLen);
-			return UIF_SUCCESS;
+			return SUCCESS;
 
 		case FSC_WINDOW_DISPLAY:
 			sError = SUCCESS;
@@ -1806,7 +1802,7 @@ USHORT UifChangeKeyboardType (UCHAR  uchKBType)
 			}
 			//SR 661, by moving this into the area where we change it only when we are not in program mode
 			//we alleviate the problem where the scroll up and down buttons wont work. JHHJ
-			pData = (FSCTBL *)&ParaFSC[Para.TerminalInformation[usTerminalPosition - 1].uchMenuPageDefault - 1];
+			pData = (FSCTBL *)&Para.ParaFSC[Para.TerminalInformation[usTerminalPosition - 1].uchMenuPageDefault - 1];
 			UieSetFsc(pData);
 		}
 
@@ -1909,7 +1905,7 @@ USHORT UifACChgKBType(UCHAR uchKBType)
 			}
 			//SR 661, by moving this into the area where we change it only when we are not in program mode
 			//we alleviate the problem where the scroll up and down buttons wont work. JHHJ
-			pData = (FSCTBL *)&ParaFSC[Para.TerminalInformation[usTerminalPosition - 1].uchMenuPageDefault - 1];
+			pData = (FSCTBL *)&Para.ParaFSC[Para.TerminalInformation[usTerminalPosition - 1].uchMenuPageDefault - 1];
 			UieSetFsc(pData);
 		}
 
