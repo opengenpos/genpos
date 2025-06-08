@@ -737,7 +737,7 @@ SHORT   SerCreateTmpFile( USHORT usSize )
 
     hsFileHandle = PifOpenFile(aszSerTmpFileName, auchTEMP_NEW_FILE_READ_WRITE);    /* saratoga */
     if (hsFileHandle == PIF_ERROR_FILE_EXIST) {
-        PifCloseFile(hsSerTmpFile);
+        PifCloseFile(hsFileHandle);
         PifDeleteFile(aszSerTmpFileName);
         hsFileHandle = PifOpenFile(aszSerTmpFileName, auchTEMP_NEW_FILE_READ_WRITE);    /* saratoga */
     }
@@ -746,7 +746,7 @@ SHORT   SerCreateTmpFile( USHORT usSize )
         PifReleaseSem(husSerCreFileSem);
 		PifLog (MODULE_SER_LOG, LOG_EVENT_SER_TEMP_FILE_ERR_02);
 		PifLog (MODULE_ERROR_NO(MODULE_SER_LOG), abs(hsFileHandle));
-		return (SERV_ERROR);
+		return (TRN_ERROR);
 	}
  
     sReturn = PifSeekFile(hsFileHandle, ulFileSize, &ulActMove);
@@ -757,7 +757,7 @@ SHORT   SerCreateTmpFile( USHORT usSize )
 		PifReleaseSem(husSerCreFileSem);
 		PifLog (MODULE_SER_LOG, LOG_EVENT_SER_TEMP_FILE_ERR_04);
 		PifLog (MODULE_ERROR_NO(MODULE_SER_LOG), abs(sReturn));
-        return(SERV_ERROR);
+        return(TRN_ERROR);
     }
 
     /* save file handle and set the max size of the temp file */
@@ -765,7 +765,7 @@ SHORT   SerCreateTmpFile( USHORT usSize )
     PifSeekFile(hsSerTmpFile, 0L, &ulActMove);
     PifWriteFile(hsSerTmpFile, &ulFileSize, sizeof(USHORT)); 
     PifReleaseSem(husSerCreFileSem);
-    return(SERV_PERFORM);
+    return(SUCCESS);
 }
 
 /*
