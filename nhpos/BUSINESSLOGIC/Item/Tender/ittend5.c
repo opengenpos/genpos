@@ -111,13 +111,13 @@ static VOID    ItemTendCPSaveRsp(UCHAR uchFCode, EEPTRSPDATA *CPRcv, SHORT sType
 ** Description: This function converts error code to leadthru number.
 *===========================================================================
 */
-USHORT   CpmConvertError(SHORT sError)
+USLDTERR   CpmConvertError(SHORT sError)
 {
-	USHORT  usLeadthruNo;
+	USLDTERR  usLeadthruNo;
 
 	switch (sError) {
 	case CPM_RET_SUCCESS:                       /* Success              */
-		usLeadthruNo = 0;
+		usLeadthruNo = SUCCESS;
 		break;
 
 	case CPM_RET_LENGTH:                        /* EEPT_RET_LENGTH receive length error */
@@ -307,7 +307,7 @@ VOID    ItemTendCPPrintAccRej(EEPTRSPDATA  *CPRcv, SHORT sType)
 *   Description:    Display Error Message from Response Text for Ask
 *==========================================================================
 */
-static VOID    ItemTendCPRejectAskDisp(USHORT usLead)
+static VOID    ItemTendCPRejectAskDisp(USLDTERR usLead)
 {
 	REGDISPMSG      Disp = {0};
 
@@ -1400,9 +1400,9 @@ VOID ItemTendCPConvData( UCHAR *pDesBuff,
 *   Description: convert CPM error to 2170 error
 ==========================================================================*/
 
-SHORT ItemTendCPConvErr( UCHAR *pCPMErrorDef )
+USLDTERR ItemTendCPConvErr( const UCHAR *pCPMErrorDef )
 {
-    USHORT  usLeadthruNo = LDT_ERR_ADR;
+	USLDTERR  usLeadthruNo = LDT_ERR_ADR;
     SHORT   sCPMErrorDef;
     UCHAR   aszCPMErrorDef[3];
 
@@ -2349,7 +2349,7 @@ static SHORT   ItemTendEPTCommDoComms (UCHAR uchFuncCode, UIFREGTENDER *UifRegTe
 		}
 		else{
 			if(CPRcv.auchEptStatus == EEPT_FC2_ACCEPTED || CPRcv.auchEptStatus == EEPT_FC2_STORED){
-				LONG       newBalance = 0, checkBalance = 0;
+				DCURRENCY   newBalance = 0, checkBalance = 0;
 
 				newBalance = RflConvertCharFieldToLongCurrency(CPRcv.auchAuthorize, 10);
 
@@ -2404,29 +2404,27 @@ static SHORT   ItemTendEPTCommDoComms (UCHAR uchFuncCode, UIFREGTENDER *UifRegTe
 			ItemTender->fbModifier |= DECLINED_EPT_MODIF;    // indicate that is is a declined EPT, EEPT_FC2_REJECTED
 //			if(UifRegTender->GiftCard == IS_GIFT_CARD_GENERIC || UifRegTender->GiftCard == IS_GIFT_CARD_FREEDOMPAY)
 			{
-				int j = 0, i = 0;
-
 				// this is static for the moment. we may need to add some code
 				// that will determine what uchPrintSelect should be set to
 				// instead of just NUM_SLIP_1LINE
 				ItemTender->uchPrintSelect = NUM_SLIP_1LINE;
 				usMsgIndex = 0;
-				for(i = 0; i < NUM_CPRSPCO_CARDLABEL;i++)
+				for(int i = 0; i < NUM_CPRSPCO_CARDLABEL; i++)
 				{
 					// if data exists before we copy to the next array in aszCPMsgText[i]
 					// we will want to increment the no. of lines to be printed.
 					if(CPRcv.auchMsgText[usMsgIndex])
 						ItemTender->uchCPLineNo++;
 
-					for(j = 0; j < NUM_CPRSPTEXT;j++)
+					for(int j = 0; j < NUM_CPRSPTEXT; j++)
 					{
 						ItemTender->aszCPMsgText[i][j] = (TCHAR)CPRcv.auchMsgText[usMsgIndex++];
 					}
 				}
 
-				for(i=0; i < NUM_AUTHCODE;i++)
+				for(int i=0; i < NUM_AUTHCODE; i++)
 					ItemTender->authcode.auchAuthCode[i] = CPRcv.auchAuthCode[i];
-				for(i=0; i < NUM_REFERENCE;i++)
+				for(int i=0; i < NUM_REFERENCE; i++)
 					ItemTender->refno.auchReferncNo[i] = CPRcv.auchRefNo[i];
 
 			}
@@ -3229,7 +3227,7 @@ VOID    ItemTendEPTEdit(UCHAR uchCPFlag, UCHAR uchFuncCode, EEPTREQDATA *CPSend,
 *   Description:    Check Relation of Function and Response Status
 *==========================================================================
 */
-SHORT   ItemTendCPFuncRsp1(UCHAR uchFCode, EEPTRSPDATA *CPRcv, SHORT sResponse)
+SLDTITM   ItemTendCPFuncRsp1(UCHAR uchFCode, EEPTRSPDATA *CPRcv, SHORT sResponse)
 {
 
     /* --- Current Waiting Status --- */

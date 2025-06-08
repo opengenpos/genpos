@@ -3526,6 +3526,30 @@ ULONG TrnCalStoSize( ULONG ulNoOfItem, UCHAR uchStorageType )
 */
 SHORT   TrnTaxSystem(VOID)
 {
+#if 1
+    // compile time check that defined constants
+    // returned by ItemCommonTaxSystem() are the
+    // same values as are used for TrnCheckTaxSystem().
+    switch (0) {
+    case 0:
+        break;
+    case (TRN_TAX_INTL == ITM_TAX_INTL):
+        break;
+    }
+    switch (0) {
+    case 0:
+        break;
+    case (TRN_TAX_CANADA == ITM_TAX_CANADA):
+        break;
+    }
+    switch (0) {
+    case 0:
+        break;
+    case (TRN_TAX_US == ITM_TAX_US):
+        break;
+    }
+    return ItemCommonTaxSystem();
+#else
     if (TrnInformation.TranModeQual.fsModeStatus & MODEQUAL_INTL) {
         return(TRN_TAX_INTL);
     } else if (TrnInformation.TranModeQual.fsModeStatus & MODEQUAL_CANADIAN) {
@@ -3533,6 +3557,7 @@ SHORT   TrnTaxSystem(VOID)
     } else {
         return(TRN_TAX_US);
     }
+#endif
 }
 
 /*

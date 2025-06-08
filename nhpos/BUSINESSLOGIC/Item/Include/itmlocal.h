@@ -77,6 +77,7 @@
 */
 #define ITM_BEEP                        500     /* beep time */
 #define COMP_VAL                        1       /* compulsory validation print */
+
 /* definition for charge posting */
 #define ITM_CR                          0x0d    /* CR */
 
@@ -84,30 +85,37 @@
 
 // Various kinds of status return defines follow. these are used under various circumstances
 // some of which are separate from each other so we use the same value for different meanings.
-#define ITM_SUCCESS                STD_RET_SUCCESS       /* success status */
-#define ITM_CONT                        -1      /* continue status */
-#define ITM_PRINT                       0       /* print item               */
-#define ITM_NOT_PRINT                   1       /* not print item           */
-#define ITM_CANCEL                      100     /* cancel status */
-#define ITM_COMP_ADJ                    -1      /* compulsory adj */
-#define ITM_EPT_TENDER                  200     /* EPT Tender status */
-#define ITM_PRICECHANGE                 -1      /* plu place change, 2172 */
+// Some of these are also used as return values in functions that also return a lead thru mnemonic
+// address so these should be values that do not conflict with the lead thru mnemonic address range.
+// 
+// The idea is to replace a status return check code such as:
+//      if ((sReturnStatus != ITM_SUCCESS) && (sReturnStatus != ITM_CANCEL)) {
+//          return(sReturnStatus);
+//      }
+// with code such as:
+//      if (sReturnStatus > ITM_SUCCESS) {     // it's a lead thru mnemonic address
+//          return(sReturnStatus);
+//      }
 
-#define ITM_PREVIOUS					3
+// We are using the return type of SLDTITM with functions that return either an ITM_ value
+// or a lead thru mnemonic address value. 
+#define ITM_SUCCESS                      0      /* success status STD_RET_SUCCESS */
+#define ITM_ERROR                       (-1)    /* Error for Client,    Saratoga */
+#define ITM_REJECT_ASK                  (-2)    /* Reject Itemize for ASK,          Saratoga */
+#define ITM_NO_READ_SIZE			   (-32)	// No size was sent to Read 11-10-3 RPH
+#define ITM_CONT                       (-50)    /* continue status same value as UIF_DIA_SUCCESS */
+#define ITM_CANCEL                    (-100)    /* cancel status similar to UIF_CANCEL in function */
+#define ITM_PREVIOUS				  (-120)    // Unknown meaning at this time.
+#define ITM_SEAT_DISC                 (-150)    /* V3.3 status return indicating split check */
+#define ITM_EPT_TENDER                (-200)    /* EPT Tender status */
+#define ITM_PRICECHANGE               (-250)    /* plu price changed. See MDC 296 Bit D, 2172 */
+#define ITM_COMP_ADJ                  (-260)    /* compulsory adj required. */
 
-#define ITM_ERROR                       -1      /* Error for Client,    Saratoga */
-#define ITM_REJECT_ASK                  -2      /* Reject Itemize for ASK,          Saratoga */
-#define ITM_NO_READ_SIZE				-32		// No size was sent to Read 11-10-3 RPH
+// following are used with tender processing functions to indicate various conditions.
+#define ITM_PARTTEND                   (-210)   /* partial tender for charge post,  Saratoga */
+#define ITM_OVERTEND                   (-211)   /* over tender for charge post,     Saratoga */
+#define ITM_REJECT_DECLINED            (-212)   // Electronic Payment response indicated transaction was declined. See also DECLINED_EPT_MODIF
 
-#define ITM_SEAT_DISC                   -100    /* V3.3 */
-
-#define ITM_PARTTEND                    -100    /* partial tender for charge post,  Saratoga */
-#define ITM_OVERTEND                    -101    /* over tender for charge post,     Saratoga */
-#define ITM_REJECT_DECLINED             -102    // Electronic Payment response indicated transaction was declined. See also DECLINED_EPT_MODIF
-
-
-/* definition for charge posting */
-#define ITM_CR                          0x0d    /* CR */
 
 /* #define ITM_CPRESP_MAXLINE              6    Response Msg Print Line  */
 
@@ -126,13 +134,6 @@
 /* --- Definition by V3.3 --- */
 #define ITM_SPLIT_IND_TAX_PRNIT         0       /* Tax is total of ind. tax */
 #define ITM_SPLIT_WHOLE_TAX_PRNIT       99      /* Tax is whole tax */
-
-/*----- Return of "ItemCommonTaxSystem()",  V3.3 -----*/
-// see also function PrtCheckTaxSystem() which does the same thing, returns same values, different defines. <sigh>
-// see also function TrnTaxSystem() which does the same thing, returns same values, different defines. <sigh>
-#define     ITM_TAX_US              0       /* US Tax System, see also PRT_TAX_US and TRN_TAX_US */
-#define     ITM_TAX_CANADA          1       /* Canada Tax System, see also PRT_TAX_CANADA and TRN_TAX_CANADA as well flag MODEQUAL_CANADIAN */
-#define     ITM_TAX_INTL            2       /* Int'l VAT System, see also PRT_TAX_INTL and TRN_TAX_INTL as well flag MODEQUAL_INTL */
 
 /*----- Return of "ItemCommonCondimentTax()" ------- CSMALL */
 #define		ITM_COND_MAIN_TAX		0
@@ -331,6 +332,10 @@
 #define		SALES_PREAUTHCAP_DECLN	0x1000       // Preauth Capture transaction has auto decline.  Preauth was Declined.
 #define		SALES_RESETLOG_START	0x2000		 /* this transaction has started a reset log that is not yet complete */
 
+// Quantity as a count of number of items is stored as 1000 * count.
+// This is done to be compatible with a quantity as a weight since scales
+// may have weights as 1000th of a pound or 1000th of a kilogram (milligram)
+// so Quantity is scaled to one thousandth though scale resolution can vary.
 #define		MIN_QTY_ALLOWED			1*1000		//Minimum quantity allowed for Quantity Restriction  (set to 1 QTY currently)
 
 
@@ -764,7 +769,7 @@ VOID    ItemSalesSetupStatus(UCHAR  *pauchData);
 SHORT   ItemSalesCommon(CONST UIFREGSALES *pData1, ITEMSALES *pData2);
 SHORT   ItemSalesDeptOpen(UIFREGSALES *pData1, ITEMSALES *pData2);
 SHORT   ItemSalesNonAdj(UIFREGSALES *pData);
-SHORT   ItemSalesAdj(UIFREGSALES *pData1, ITEMSALES *pData2);
+SLDTITM  ItemSalesAdj(UIFREGSALES *pData1, ITEMSALES *pData2);
 SHORT   ItemSalesCondiment(UIFREGSALES *pData1, ITEMSALES *pData2);
 SHORT   ItemSalesSetMenu(CONST UIFREGSALES *pData1, ITEMSALES *pData2);
 SHORT   ItemSalesSetCheckValidation(UCHAR auchControlStatus, UCHAR uchAdjective);
@@ -780,7 +785,7 @@ SHORT   ItemSalesSpvInt(CONST ITEMSALES *pData);
 SHORT   ItemSalesSpvIntForCond(ITEMSALES *pData);
 VOID    ItemSalesSetDefltPage( VOID );
 VOID    ItemSalesGenerateAdj(ITEMSALES *pData, UCHAR *auchWriteBuff);
-SHORT   ItemSalesBreakDownAdj(ITEMSALES *pData, UCHAR *auchWriteBuff);
+SLDTITM  ItemSalesBreakDownAdj(ITEMSALES *pData, UCHAR *auchWriteBuff);
 VOID    ItemSalesDisplay(CONST UIFREGSALES *pData1, CONST ITEMSALES *pData2, REGDISPMSG *pDisplayData);
 SHORT   ItemSalesSalesAmtCalc(CONST ITEMSALES *pSalesData, DCURRENCY *plCalProduct);
 SHORT   ItemSalesModDiscCheck(CONST UIFREGSALES *pData1, ITEMSALES *pData2);
@@ -1142,7 +1147,7 @@ VOID    ItemTendEPTEdit(UCHAR uchCPFlag, UCHAR uchFuncCode, VOID *CPSend,
             UIFREGTENDER *pUifTender, ITEMTENDER *ItemTender, PARATENDERKEYINFO *pTendKeyInfo,
             LONG lChargeTips, UCHAR uchSeat, LONG lTax, ULONG ulNo);
 VOID    ItemTendCPCanDisp(UIFREGTENDER *UifTender);
-SHORT   ItemTendCPConvErr( UCHAR *pCPMErrorDef );
+USLDTERR   ItemTendCPConvErr( const UCHAR *pCPMErrorDef );
 VOID    ItemTendCPCommDisp(VOID);
 SHORT   ItemTendCPTrain( ITEMTENDER *ItemTender, UCHAR uchFuncCode, UIFREGTENDER *UifTender);
 SHORT   ItemTendCPECTend( ITEMTENDER *ItemTender );
@@ -1462,7 +1467,6 @@ VOID    ItemCurTaxWorkSpl(CONST UCHAR *puchTotal, ITEMCOMMONTAX *WorkTax);
 SHORT   ItemCommonGetSRAutoNo(USHORT *pusGuestNo);  /* R3.3 */
 SHORT   ItemCommonTransOpen(USHORT usGuestNo);      /* R3.3 */
 void    ItemCommonResetLocalCounts (VOID);
-SHORT   ItemCommonTaxSystem(VOID);
 VOID    ItemCommonDiscStatus(ITEMDISC *pItem, SHORT sType);
 SHORT   ItemCommonIncExcVAT(VOID);
 

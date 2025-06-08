@@ -3393,6 +3393,30 @@ SHORT    PrtGetSISym( TCHAR  *aszSISym, UCHAR uchOffset1, UCHAR uchOffset2 )
 */
 SHORT   PrtCheckTaxSystem(VOID)
 {
+#if 1
+    // compile time check that defined constants
+    // returned by ItemCommonTaxSystem() are the
+    // same values as are used for PrtCheckTaxSystem().
+    switch (0) {
+    case 0:
+        break;
+    case (PRT_TAX_INTL == ITM_TAX_INTL):
+        break;
+    }
+    switch (0) {
+    case 0:
+        break;
+    case (PRT_TAX_CANADA == ITM_TAX_CANADA):
+        break;
+    }
+    switch (0) {
+    case 0:
+        break;
+    case (PRT_TAX_US == ITM_TAX_US):
+        break;
+    }
+    return ItemCommonTaxSystem();
+#else
     if (CliParaMDCCheck(MDC_TAX_ADR, ODD_MDC_BIT0)) {
         if (CliParaMDCCheck(MDC_TAXINTL_ADR, ODD_MDC_BIT0)) {
             return(PRT_TAX_INTL);
@@ -3402,6 +3426,7 @@ SHORT   PrtCheckTaxSystem(VOID)
     } else {
         return(PRT_TAX_US);
     }
+#endif
 }
 
 /****** End of Source ******/

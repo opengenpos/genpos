@@ -88,6 +88,13 @@ extern DCURRENCY       couponAmount;
 #define PLU_BM_ADJ_PROHIBIT_4  0x00000800    // indicates ParaPlu.ContPlu.auchContOther[4] & PLU_PROHIBIT_VAL4
 #define PLU_BM_ADJ_PROHIBIT_5  0x00001000    // indicates ParaPlu.ContPlu.auchContOther[4] & PLU_PROHIBIT_VAL5
 
+/*----- Return of "ItemCommonTaxSystem()",  V3.3 -----*/
+// see also function PrtCheckTaxSystem() which does the same thing, returns same values, different defines. <sigh>
+// see also function TrnTaxSystem() which does the same thing, returns same values, different defines. <sigh>
+#define     ITM_TAX_US              0       /* US Tax System, see also PRT_TAX_US and TRN_TAX_US */
+#define     ITM_TAX_CANADA          1       /* Canada Tax System, see also PRT_TAX_CANADA and TRN_TAX_CANADA as well flag MODEQUAL_CANADIAN */
+#define     ITM_TAX_INTL            2       /* Int'l VAT System, see also PRT_TAX_INTL and TRN_TAX_INTL as well flag MODEQUAL_INTL */
+
 /*
 *===========================================================================
     Function Prototype Declarations
@@ -256,6 +263,8 @@ SHORT   ItemTendGetTotal(UCHAR *auchTotalStatus, UCHAR uchMinor);
 SHORT   ItemTendNoPerson(VOID);
 SHORT   ItemTendGetOffset(VOID);
 VOID    ItemTransDispGCFNo(USHORT  usTranAddr);
+
+SHORT   ItemCommonTaxSystem(VOID);
 
 /** following functions are defined to share between tender and report */
 

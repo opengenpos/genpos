@@ -2274,13 +2274,26 @@ UCHAR   CliParaMDCCheckField(USHORT address, UCHAR field);
 *   lead thru error code which results in a message displayed to the user.
 \*------------------------------------------------------------------------*/
 
-// This is one of several error value types to be gradually inserted into the
-// source code base over time to make error handling more transparent.
+// Some functions return ITM_ and other values that do not map to a lead thru mnemonic but are often
+// returned by a function that may return a lead thru mnemonic address as well. These indicate some
+// kind of condition that doesn't map to a lead thru mnemonic but are returned by a function
+// that would otherwise return a lead thru mnemonic. Often these values indicate an external
+// event such as operator pressing the Cancel key which requires some kind of cleanup.
+//
+// These values are zero or a negative number in order to be outside the range of the lead thru
+// mnemonic addresses. Examples provided for easy searches:
+//  - SUCCESS or ITM_SUCCESS or UIF_SUCCESS
+//  - ITM_CONT or UIF_DIA_SUCCESS indicating a successful event such as key press or data entry
+//  - ITM_CANCEL or UIFREG_ABORT or UIF_CANCEL an unsuccessful event such as Cancel key press
+//  - ITM_PRICECHANGE
+
 //
 // See the description in ECR.H by searching for the following new type.
 //
-typedef unsigned short  USLDTERR;  // variable containing one of the CLASS_PARALEADTHRU error codes
+typedef unsigned short  USLDTERR;  // unsigned variable containing one of the CLASS_PARALEADTHRU addresses
+typedef          short  SLDTITM;   // signed variable containing either CLASS_PARALEADTHRU addresses or ITM_ type values
 
+// following are the LDT_ values that do map to a lead thru mnemonic. See RflGetLead().
 #define LDT_NTINFL_ADR          1       /* Not In File */
 #define LDT_FLFUL_ADR           2       /* File Full */
 #define LDT_KTNERR_ADR          3       /* Kitchen Printer Error */

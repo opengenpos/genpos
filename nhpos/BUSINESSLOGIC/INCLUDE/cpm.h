@@ -225,7 +225,7 @@ SHORT   CpmSendMessage(UCHAR *pSendData, USHORT usSendLen, UCHAR uchTerminal);
 SHORT   CpmReceiveMessage(UCHAR *pRecData, USHORT usRecSize);
 SHORT   CpmChangeStatus(UCHAR uchState);
 VOID    CpmReadResetTally(UCHAR uchType, CPMTALLY *pTally);
-USHORT  CpmConvertError(SHORT sError);
+USLDTERR CpmConvertError(SHORT sError);
 
 #endif /* CPM_INCLUDED */
 /* ---------- End of CPM.H ---------- */

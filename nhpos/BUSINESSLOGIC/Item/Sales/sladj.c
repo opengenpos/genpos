@@ -68,7 +68,7 @@
 ** Description: This function executs following process.
 *===========================================================================
 */
-SHORT   ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
+SLDTITM  ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
 {
 	UCHAR  auchAdjData[2];
 	SHORT  sReturnStatus;
@@ -237,7 +237,7 @@ VOID   ItemSalesGenerateAdj(ITEMSALES *pItemSales, UCHAR *auchAdjWriteBuff)
 *===========================================================================
 */
 
-SHORT   ItemSalesBreakDownAdj(ITEMSALES *pItemSales, UCHAR *auchAdjWriteBuff)
+SLDTITM  ItemSalesBreakDownAdj(ITEMSALES *pItemSales, UCHAR *auchAdjWriteBuff)
 {
     auchAdjWriteBuff[0] = (UCHAR) ((pItemSales->uchAdjective - 1) / 5 + 1); /* adj. group */
     auchAdjWriteBuff[1] = (UCHAR) ((pItemSales->uchAdjective - 1) % 5 + 1); /* adj valiation */
