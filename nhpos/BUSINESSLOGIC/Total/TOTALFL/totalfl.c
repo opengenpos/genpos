@@ -2886,7 +2886,7 @@ SHORT  TtlReadWrtChk(VOID)  /* check read&write point in total update file */
 *
 *============================================================================
 */
-SHORT  TtlUpdateFileFH(ULONG ulOffset, SHORT hsFileHandle, ULONG ulLength, UCHAR *puchDelayBalance)     
+STTLRSLT  TtlUpdateFileFH(ULONG ulOffset, SHORT hsFileHandle, ULONG ulLength, UCHAR *puchDelayBalance)     
 {
 	static USHORT  usLastPifLogCode = 0;
 	static UCHAR   auchTtlWrBuff[TTL_UPDATE_WORK_SIZE];   /* V3.3 work area, access sequenced by semaphore usTtlSemWrite  */
@@ -3224,7 +3224,7 @@ SHORT  TtlUpdateFileFH(ULONG ulOffset, SHORT hsFileHandle, ULONG ulLength, UCHAR
 *==========================================================================
 */
 
-SHORT TtlReadFileFH(ULONG ulOffset, VOID FAR *pData,
+STTLRSLT TtlReadFileFH(ULONG ulOffset, VOID FAR *pData,
                      ULONG ulSize, SHORT hsFileHandle, ULONG *pulActualBytesRead)
 {
     ULONG   ulActPos;

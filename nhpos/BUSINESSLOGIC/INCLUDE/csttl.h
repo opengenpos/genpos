@@ -1287,13 +1287,13 @@ SHORT  TtlReadWrtChk(VOID);                         /* check read&write point in
 // generate a warning so this place is easy to find from a compiler warning.
 #pragma message("  ====++++====   TtlConvertError_Debug() is ENABLED    ====++++====  \z")
 #define TtlConvertError(sError) TtlConvertError_Debug(sError, __FILE__, __LINE__)
-USHORT TtlConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo);               /* Convert error code  */
+USLDTERR TtlConvertError_Debug(STTLRSLT sError, char *aszFilePath, int nLineNo);               /* Convert error code  */
 #else
-USHORT TtlConvertError(SHORT sError);               /* Convert error code  */
+USLDTERR TtlConvertError(STTLRSLT sError);               /* Convert error code  */
 #endif
 SHORT  TtlStringCheck(VOID *pStrBuff, USHORT usLength, UCHAR uchCmpChar);
-SHORT  TtlUpdateFileFH(ULONG ulOffset, SHORT hsFileHandle, ULONG ulLength, UCHAR *puchDelayBalance);/* update total file */
-SHORT TtlReadFileFH(ULONG ulOffset, VOID FAR *pData,       
+STTLRSLT TtlUpdateFileFH(ULONG ulOffset, SHORT hsFileHandle, ULONG ulLength, UCHAR *puchDelayBalance);/* update total file */
+STTLRSLT TtlReadFileFH(ULONG ulOffset, VOID FAR *pData,
                      ULONG ulSize, SHORT hsFileHandle, ULONG *pulActualBytesRead);    /* read data from interfaced file handle */
 
 VOID   TtlTtlUpdDeleteFile(VOID);                   /* Delete Total Update File */

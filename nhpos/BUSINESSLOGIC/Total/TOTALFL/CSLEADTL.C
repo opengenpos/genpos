@@ -55,10 +55,10 @@
 *===========================================================================
 */
 #if defined(TtlConvertError)
-USHORT   TtlConvertError_Special(SHORT sError);
-USHORT   TtlConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo)
+USLDTERR   TtlConvertError_Special(STTLRSLT sError);
+USLDTERR   TtlConvertError_Debug(STTLRSLT sError, char *aszFilePath, int nLineNo)
 {
-	USHORT  usRetStatus = TtlConvertError_Special(sError);
+	USLDTERR  usRetStatus = TtlConvertError_Special(sError);
 
 	if (TTL_SUCCESS != sError) {
 		int     iLen = 0;
@@ -78,12 +78,12 @@ USHORT   TtlConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo)
 	return usRetStatus;
 }
 
-USHORT   TtlConvertError_Special(SHORT sError)
+USLDTERR   TtlConvertError_Special(STTLRSLT sError)
 #else
-USHORT   TtlConvertError(SHORT sError)
+USLDTERR   TtlConvertError(STTLRSLT sError)
 #endif
 {
-    USHORT  usLeadthruNo;
+	USLDTERR  usLeadthruNo;
 
     switch ( sError ) {
 //		case  TTL_UNLOCKED:        /* same as TTL_SUCCESS, TtlConvertError() */
