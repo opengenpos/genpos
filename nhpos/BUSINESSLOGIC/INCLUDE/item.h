@@ -247,7 +247,7 @@ VOID    ItemSalesCalcInitCom(VOID);
 SHORT   ItemSalesCalcECCom(ITEMSALES *pItemSales);
 SHORT   ItemSalesSalesRestriction(ITEMSALES *pItemSales, UCHAR uchRestrict);
 VOID	ItemSalesClosePpiPM(VOID);
-SHORT   ItemSalesOnlyCalcPPI(ITEMSALES *pItemSales);    /* R3.1 */
+SLDTITM  ItemSalesOnlyCalcPPI(ITEMSALES *pItemSales);    /* R3.1 */
 SHORT   ItemSalesOnlyCalcPM(ITEMSALES *pItemSales);    /* 2172 */
 
 

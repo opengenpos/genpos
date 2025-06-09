@@ -87,7 +87,7 @@ SLDTITM  ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
     if (pItemSales->uchAdjective == 0) {    /* adjective valiation wasn't entered */
         if ((pItemSales->ControlCode.auchPluStatus[4] & PLU_IMP_ADJKEY_MASK) == PLU_COMP_ADJKEY) {
             if (ItemSalesLocal.uchAdjCurShift == 0) {
-                return(ITM_COMP_ADJ);
+                return (LDT_SEQERR_ADR);   // RJC: 06-09-2025 was however that error code doesn't seem appropriate (ITM_COMP_ADJ);
             }
         }
         /* get adj. */

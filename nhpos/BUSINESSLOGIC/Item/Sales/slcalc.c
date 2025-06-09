@@ -279,7 +279,7 @@ SHORT   ItemSalesCalcECCom(ITEMSALES *pItemSales)
 ** Description: This function caluculates product and round the value. 
 *===========================================================================
 */
-SHORT   ItemSalesCalculation(ITEMSALES *pItemSales)
+SLDTITM   ItemSalesCalculation(ITEMSALES *pItemSales)
 {
     SHORT     sReturn = ITM_SUCCESS;
 
@@ -989,7 +989,7 @@ DCURRENCY   ItemSalesCalcCondimentPPIReplaceQty(ITEMSALES *pItemSales, LONG lQty
 *           has not been added to the accumulator WorkTI->lMI.
 *===========================================================================
 */
-SHORT   ItemSalesCalcPPI(ITEMSALES *pItemSales)
+SLDTITM  ItemSalesCalcPPI(ITEMSALES *pItemSales)
 {
     SHORT   sSalesPpiIndex;
 	BOOL	blVoid = FALSE;
@@ -1124,7 +1124,6 @@ SHORT   ItemSalesCalcPPI(ITEMSALES *pItemSales)
 	}
 
     return (ITM_SUCCESS);
-
 }
 
 /*
@@ -1200,7 +1199,7 @@ SHORT   ItemSalesCalcPPIEC(ITEMSALES *pItemSales)
 ** Description: This module is the calculate routine of PPI for split check
 ============================================================================
 */
-SHORT   ItemSalesOnlyCalcPPI(ITEMSALES *pItemSales)
+SLDTITM   ItemSalesOnlyCalcPPI(ITEMSALES *pItemSales)
 {
     PPIIF   PPIRecRcvBuffer;
     SHORT   sQuantity, sReturnStatus;
@@ -1325,7 +1324,7 @@ VOID ItemSalesCalcPMInit(VOID)
 *           ( - )    ( - )    ( - )   -New - Old    void + void
 *===========================================================================
 */
-SHORT   ItemSalesCalcPM(ITEMSALES *pItemSales)
+SLDTITM  ItemSalesCalcPM(ITEMSALES *pItemSales)
 {
     SHORT   sOldPMQty, sCalPMQty, sQuantity;
     DCURRENCY    lOldPMPrice, lCalPMPrice, lCalWholePrice;
@@ -1406,7 +1405,7 @@ SHORT   ItemSalesCalcPM(ITEMSALES *pItemSales)
     /* calculate whole amount */
     j = sQuantity/pItemSales->uchPM;
     lCalWholePrice = 0L;
-    for (lCalWholePrice=0L; j>0 ; j--) {   /* add unit price, if qty reached to pm */
+    for ( ; j > 0 ; j--) {   /* add unit price, if qty reached to pm */
         lCalWholePrice += pItemSales->lUnitPrice;
         sQuantity -= pItemSales->uchPM;
     }

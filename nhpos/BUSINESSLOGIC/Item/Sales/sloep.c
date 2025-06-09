@@ -103,7 +103,7 @@ STATIC  SHORT   ItemSalesAdjMakeMenu(UCHAR uchGroupNo, UCHAR uchNounAdj,
                                      LONG *pculCounterFirst, LONG *pculCounterLast);
 
 STATIC  SHORT   ItemSalesOEPCheckObjectPLU(ITEMSALES *pItem);
-STATIC  SHORT   ItemSalesOEPOrderPlu(USHORT *pusOrderNo,
+STATIC  SUIFRSLT ItemSalesOEPOrderPlu(USHORT *pusOrderNo,
                                         UCHAR *puchAdjNo,
                                         MLDPOPORDER_VARY *pDisp,
                                         USHORT usOption1, USHORT usOption2, USHORT usOption3,
@@ -383,6 +383,7 @@ SHORT ItemSalesOEPNextPlu(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
 
     uchNounAdj = pItemSales->uchAdjective;
     _tcsncpy(aszNounMnem, pItemSales->aszMnemonic, NUM_DEPTPLU);
+    aszNounMnem[NUM_DEPTPLU] = 0;  // ensure zero termination.
 
 	lNounAmount = 0;
 	ItemSalesSalesAmtCalc(pItemSales, &lNounAmount);
@@ -674,11 +675,11 @@ SHORT ItemSalesOEPNextPlu(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
 				sResult = ItemSalesOEPOrderPlu(&usOrderNo, &uchChildAdj, pDisp,
 											   usOption1, usOption2, usOption3, &auchPluNo[0], &fbModifier2);
 
-				if (sResult != ITM_SUCCESS) {
+				if (sResult != UIF_SUCCESS) {
 					PifLog (MODULE_SALES, LOG_EVENT_SALES_ORDERPLU_ERR_1);
 					{
 						char  xBuff[128];
-						sprintf (xBuff, "ItemSalesOEPNextPlu(): ItemSalesOEPOrderPlu failed %d. Resetting.", sResult);
+						sprintf (xBuff, "ItemSalesOEPNextPlu(): ItemSalesOEPOrderPlu SUIFRSLT %d. Resetting.", sResult);
 						NHPOS_ASSERT_TEXT((sResult == ITM_SUCCESS), xBuff);
 					}
 					BlFwIfSetOEPGroups(BL_OEPGROUP_STR_RESET, 0);
@@ -727,8 +728,6 @@ SHORT ItemSalesOEPNextPlu(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
 
             /* V3.3 */
             if (ItemSalesLocal.fbSalesStatus & SALES_OEP_POPUP) {
-				TCHAR      auchDummy[NUM_PLU_LEN] = {0};
-
                 for (i=(nNoOrderPmt-1); i>0; i--) {
                     if (pDisp->OrderPmt[i].uchOrder) break;
                 }
@@ -757,7 +756,7 @@ SHORT ItemSalesOEPNextPlu(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
 				{
 					usOrderNo-= nNoOrderPmt;
 				}
-                if (_tcsncmp(pMenu[usOrderNo].auchPluNo, auchDummy, NUM_PLU_LEN) == 0) { /* 2172 */
+                if (_tcsncmp(pMenu[usOrderNo].auchPluNo, MLD_NO_DISP_PLU_DUMMY, NUM_PLU_LEN) == 0) { /* 2172 */
                     UieErrorMsg(LDT_NTINFL_ADR, UIE_WITHOUT);
 
 					// set indicator to 102 because of input error - CSMALL 2/7/06
@@ -954,7 +953,7 @@ STATIC SHORT ItemSalesOEPMakeMenu(UCHAR uchGroupNo, UCHAR uchNounAdj,
 			if (sRetStatus != OP_PERFORM) {
 				char aszErrorBuffer[128];
 				PifLog (MODULE_SALES, LOG_EVENT_SALES_MAKEMENU_PLU_2);
-				sprintf (aszErrorBuffer, "ItemSalesOEPMakeMenu() error from CliOpPluOepRead().  PLU: %S  jPluOepIf: %d. ", PluOepIf[jPluOepIf].PluNo.auchPluNo, jPluOepIf);
+				sprintf (aszErrorBuffer, "ItemSalesOEPMakeMenu() error from CliOpPluOepRead(). sRetStatus=%d  jPluOepIf: %d. ", sRetStatus, jPluOepIf);
 				NHPOS_ASSERT_TEXT(sRetStatus == OP_PERFORM, aszErrorBuffer);
 				return (ITM_CANCEL);
 			}
@@ -1132,7 +1131,7 @@ SHORT ItemSalesOEPCheckObjectPLU(ITEMSALES *pItem)
 *               UIF_CANCEL  - cancel
 *===========================================================================
 */
-SHORT ItemSalesOEPOrderPlu(USHORT *pusOrderNo, UCHAR *puchAdjNo,
+SUIFRSLT ItemSalesOEPOrderPlu(USHORT *pusOrderNo, UCHAR *puchAdjNo,
                            MLDPOPORDER_VARY *pDisp,
                            USHORT usOption1, USHORT usOption2, USHORT usOption3, TCHAR *pauchPluNo, UCHAR *pfbModifier2)
 {
@@ -1212,7 +1211,7 @@ SHORT ItemSalesOEPOrderPlu(USHORT *pusOrderNo, UCHAR *puchAdjNo,
                 /* if (ItemSalesOEPSetNoOfPluKey(UI.auchFsc[1], pusOrderNo) == ITM_SUCCESS) { */
                     *puchAdjNo = uchAdjSave;
                     *pusOrderNo = SLOEP_PLUKEY;
-                    return (ITM_SUCCESS);
+                    return (UIF_SUCCESS);
                 } else {
                     UieErrorMsg(LDT_PROHBT_ADR, UIE_WITHOUT);
                     continue;
@@ -1249,7 +1248,7 @@ SHORT ItemSalesOEPOrderPlu(USHORT *pusOrderNo, UCHAR *puchAdjNo,
                     sSlOepCounterIndex++;
                 }
                 *pusOrderNo = SLOEP_SCROLL_DOWN;
-                return (ITM_SUCCESS);
+                return (UIF_SUCCESS);
             }
             continue;
 
@@ -1262,7 +1261,7 @@ SHORT ItemSalesOEPOrderPlu(USHORT *pusOrderNo, UCHAR *puchAdjNo,
                     sSlOepCounterIndex--;
                 }
                 *pusOrderNo = SLOEP_SCROLL_UP;
-                return (ITM_SUCCESS);
+                return (UIF_SUCCESS);
             }
             continue;
 
@@ -1279,12 +1278,12 @@ SHORT ItemSalesOEPOrderPlu(USHORT *pusOrderNo, UCHAR *puchAdjNo,
 			// in the OEP window was pressed - CFrameworkWndButton::SPL_BTN_DONE
 			UI.ulData = 0;
             *pusOrderNo = 0;
-            return (ITM_SUCCESS);
+            return (UIF_CANCEL);      // was UIF_DIA_ABORT but wasn't clearing lead thru message area.
 		}
 
         /* ---- shift page for direct plu key entry ---- */
         if (UI.auchFsc[0] == FSC_MENU_SHIFT) {   /* shift key */
-            if (UI.ulData > (LONG)MAX_PAGE_NO) {
+            if (UI.ulData > (ULONG)MAX_PAGE_NO) {
                 UieErrorMsg(LDT_PROHBT_ADR, UIE_WITHOUT);
                 continue;
             }
@@ -1347,7 +1346,7 @@ SHORT ItemSalesOEPOrderPlu(USHORT *pusOrderNo, UCHAR *puchAdjNo,
 
     *pusOrderNo = (USHORT)UI.ulData;            /* set order number  */
 
-    return (ITM_SUCCESS);
+    return (UIF_SUCCESS);
 
     usOption2 = usOption2;
 }
@@ -1709,26 +1708,22 @@ SHORT ItemSalesOEPUpdateGroupNoCondiment(TCHAR *pauchPlu, UCHAR uchStatus, UCHAR
 *               other       - error
 *===========================================================================
 */
-SHORT ItemSalesOEPUpdateGroupNo(UCHAR uchStatus, UCHAR *pszGroup,
+static SHORT ItemSalesOEPUpdateGroupNo(UCHAR uchStatus, UCHAR *pszGroup,
    USHORT usGroupPos, USHORT *pfsType, USHORT usContinue, USHORT usNoOfGroup, UCHAR uchTableNumber)
 {
-    SHORT   /*sResult,*/ i;
     USHORT  usNumNew, usLeave, usInsert;
-    /* UCHAR   uchTableNo; */
-    UCHAR   szWorkGroup[STD_OEP_MAX_NUM + 1]; /* increased TAR #129199 */
+    UCHAR   szWorkGroup[STD_OEP_MAX_NUM + 1] = { 0 }; /* increased TAR #129199 */
     UCHAR   *pszCurrent;
 
     *pfsType = 0;                           /* clear flag               */
 
     /* --- get OEP table number --- */
-
     if (uchTableNumber > MAX_TABLE_NO) {
-        return (LDT_PROHBT_ADR);
+        return (ITM_ERROR);
     } else if (uchTableNumber == 0) {
         return (ITM_CANCEL);
     }
     /* --- get OEP group number --- */
-
     usNumNew = ItemSalesOEPGetGroupNo(uchTableNumber, szWorkGroup);
     if (usNumNew == 0) {                    /* group number not found   */
         return (ITM_CANCEL);                /* exit ...                 */
@@ -1736,6 +1731,7 @@ SHORT ItemSalesOEPUpdateGroupNo(UCHAR uchStatus, UCHAR *pszGroup,
 
     /* --- check condiment status ---- */
     if (uchStatus & PLU_CONDIMENT) {
+        SHORT   i;
         for (i=0; i<STD_OEP_MAX_NUM; i++) {       /* increased TAR #129199 */
             if (szWorkGroup[i] == SLOEP_SELFROMKEY) {
                 return (ITM_CANCEL);    /* if "97" option at condiment, ignor */
@@ -1744,18 +1740,16 @@ SHORT ItemSalesOEPUpdateGroupNo(UCHAR uchStatus, UCHAR *pszGroup,
     }
 
     /* --- create group number ? --- */
-
     if (*(pszGroup + usGroupPos) == '\0') { /* group number not found   */
         memcpy(pszGroup, szWorkGroup, STD_OEP_MAX_NUM);   /* increased TAR #129199 */
         return (ITM_SUCCESS);               /* exit ...                 */
     }
 
     /* --- add or insert group number --- */
-
     if (usGroupPos != 0 && (usContinue)) {  /* multi. selection */
+        SHORT   i;
         for (i=usNoOfGroup; ((SHORT)usGroupPos - i) > 0; i++) {
             if (*(pszGroup + usGroupPos - i) < SLOEP_FREEONE) {
-
                 i--;                            /* insert next table in front of multi. TAR #129199 */
                 break;
             }
@@ -1767,15 +1761,12 @@ SHORT ItemSalesOEPUpdateGroupNo(UCHAR uchStatus, UCHAR *pszGroup,
     }
 
     /* --- check number of current group --- */
-
     usLeave = STD_OEP_MAX_NUM - strlen(pszGroup);     /* increased TAR #129199 */
-
     if (usLeave == 0) {                     /* free space not found     */
         return (ITM_CANCEL);                /* exit ...                 */
     }
 
     /* --- check end of group number --- */
-
     usInsert = (usNumNew <= usLeave) ? (usNumNew) : (usLeave);
 
     while (szWorkGroup[usInsert - 1] >= SLOEP_FREEONE) { /* last group no is option */
@@ -1785,14 +1776,15 @@ SHORT ItemSalesOEPUpdateGroupNo(UCHAR uchStatus, UCHAR *pszGroup,
     }
 
     if (*pszCurrent) {                      /* exist group number       */
+        SHORT   i;
         *pfsType |= SLOEP_F_INSERT;         /* inserted new group no.   */
 
         /* --- check "97" option --- */
-        for(i=(SHORT)(usInsert-1); i>=0; i--) {
+        for(i=(SHORT)(usInsert-1); i >= 0; i--) {
             if (szWorkGroup[i] == SLOEP_SELFROMKEY) break;
         }
 
-        if ((i>=0) && (*pszCurrent < SLOEP_FREEONE)) {
+        if ((i >= 0) && (*pszCurrent < SLOEP_FREEONE)) {
             memmove(pszCurrent + 1, pszCurrent, strlen(pszCurrent));
             *pszCurrent = SLOEP_DUMMY;  /* set dummy option to terminate group no */
         }
@@ -1800,7 +1792,6 @@ SHORT ItemSalesOEPUpdateGroupNo(UCHAR uchStatus, UCHAR *pszGroup,
     }
 
     /* --- insert new group number --- */
-
     memcpy(pszCurrent, szWorkGroup, usInsert);
 
     return (ITM_SUCCESS);
@@ -1819,11 +1810,9 @@ SHORT ItemSalesOEPUpdateGroupNo(UCHAR uchStatus, UCHAR *pszGroup,
 */
 USHORT ItemSalesOEPGetGroupNo(UCHAR uchTable, UCHAR *pszGroup)
 {
-    PARAOEPTBL  OepTable;
+    PARAOEPTBL  OepTable = { 0 };
 
     /* --- get OEP table --- */
-
-    memset(&OepTable, 0, sizeof(PARAOEPTBL));
     OepTable.uchMajorClass = CLASS_PARAOEPTBL;
     OepTable.uchTblNumber  = uchTable;
     OepTable.uchTblAddr    = 0;
@@ -1831,7 +1820,6 @@ USHORT ItemSalesOEPGetGroupNo(UCHAR uchTable, UCHAR *pszGroup)
     CliParaOepRead(&OepTable);
 
     /* --- set OEP group number --- */
-
     memset(pszGroup, 0, STD_OEP_MAX_NUM + 1); /* increased TAR #129199 */
     memcpy(pszGroup, OepTable.uchOepData, SALES_NUM_GROUP);
 
@@ -2065,24 +2053,25 @@ SHORT   ItemSalesOEPSetNoOfPluKey(UIFDIADATA *pUI, TCHAR *pauchPLUNo)
     return(ITM_SUCCESS);
 
 }
-UCHAR  adjTable[] =   
+UCHAR  adjTable[] =   // should be MAX_ADJM_NO + 1 in size
 {
+    0,    // not an adjective PLU
+	1,    // adjective group #1, 5 variants.
 	1,
 	1,
 	1,
 	1,
-	1,
+	2,    // adjective group #2, 5 variants.
 	2,
 	2,
 	2,
 	2,
-	2,
+	3,    // adjective group #3, 5 variants.
 	3,
 	3,
 	3,
 	3,
-	3,
-	4,
+	4,    // adjective group #4, 5 variants.
 	4,
 	4,
 	4,
@@ -2101,33 +2090,32 @@ UCHAR  adjTable[] =
 *               other       - error
 *===========================================================================
 */
-SHORT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales,
-                                         ITEMSALES *pItemSales,
-                                         UCHAR *pszGroups)
+SUIFRSLT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales, UCHAR *pszGroups)
 {
     SHORT               sResult;
 	int                 nNoOrderPmt = 0;
     USHORT              ausOption[SALES_NUM_GROUP + 1], i, usNoOfOption;    /* OEP option save area */
     USHORT              usOption1 =0 , usOption2 = 0, usOption3 = 0;
-    USHORT              usGroupPos, usNumMenu, usOrderNo, usContinue, fsType;
-    USHORT              usNoOfGroup;
+    USHORT              usNumMenu, usOrderNo, usContinue;
+//    USHORT              usGroupPos, usNoOfGroup, fsType;
     UCHAR				uchNounAdj, uchChildAdj;
 	UCHAR               uchAdjProhibitMask[] = { PLU_PROHIBIT_VAL1, PLU_PROHIBIT_VAL2, PLU_PROHIBIT_VAL3, PLU_PROHIBIT_VAL4, PLU_PROHIBIT_VAL5 };
 	TCHAR               aszNounMnem[NUM_DEPTPLU + 1] = {0};
-    DCURRENCY           lNounAmount;
-    LONG                lCounter;
-    UCHAR               uchCondStatus;                      /* for 97 option */
+//    DCURRENCY           lNounAmount;
+//    LONG                lCounter;
+//    UCHAR               uchCondStatus;                      /* for 97 option */
+//	UCHAR               uchTableNumber;
+//    UCHAR               auchGroupNo[SALES_NUM_GROUP + 1];     /* for 97 option */
     ITEMSALESOEPLOCAL   *pMenu;
 	MLDPOPORDER_VARY    *pDisp;
-    UCHAR               auchGroupNo[SALES_NUM_GROUP + 1];     /* for 97 option */
     TCHAR               auchPluNo[NUM_PLU_LEN];
     UCHAR               fbModifier2;
-	UCHAR               uchTableNumber;
 	UCHAR				uchAdjGroup;
 	USHORT usContinueLoop = 0;
 
     uchNounAdj = pItemSales->uchAdjective;
     _tcsncpy(aszNounMnem, pItemSales->aszMnemonic, NUM_DEPTPLU);
+    aszNounMnem[NUM_DEPTPLU] = 0;  // ensure zero termination.
 
 	pDisp = (MLDPOPORDER_VARY *) alloca (sizeof(MLDPOPORDER_VARY) + sizeof(ORDERPMT) * (128));
 	NHPOS_ASSERT(pDisp);
@@ -2216,7 +2204,7 @@ SHORT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales,
 
 		if (nNoOrderPmt < 1) {
 			BlFwIfSetOEPGroups(BL_OEPGROUP_STR_RESET, 0);
-			return (ITM_SUCCESS);                       /* exit ...          */
+			return (UIF_SUCCESS);                       /* exit ...          */
 		}
 	}
 
@@ -2299,26 +2287,61 @@ SHORT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales,
 			ItemSalesLocal.fbSalesStatus &= ~SALES_OEP_POPUP;
 		}
 
-		uchAdjGroup = adjTable[uchNounAdj - 1];
+        if (sResult < 0) {
+            // if we don't have a valid adjective from the popup then
+            // exit out with a UIF_ type of error.
+            usContinueLoop = 2;
+            break;
+        }
+
+        // ensure the adjTable[] array is large enough by
+        // using this hack to check at compile time whether
+        // the adjTable[] array is as large as the number of
+        // possible adjectives. This is mainly here to catch
+        // if the adjective provisioning data storage is changed.
+        switch (0) {
+        case 0:
+            break;
+        case (sizeof(adjTable) / sizeof(adjTable[0]) == (MAX_ADJM_NO + 1)):
+                break;
+        }
+
+        // determine offset to the adjective mnemonic for
+        // this adjective indicator. The first entry in this
+        // table is  to detect a non-adjective PLU however
+        // this should not happen due to data entry checks
+        // already made before we get here.
+		uchAdjGroup = adjTable[uchNounAdj];
 		switch(uchAdjGroup)
 		{
-		case 1:
+		case 1:         // PLU adjective group 1
 			uchChildAdj = 0 + (uchChildAdj);
 			break;
-		case 2:
+		case 2:         // PLU adjective group 2
 			uchChildAdj = 6 + (uchChildAdj - 1);
 			break;
-		case 3:
+		case 3:         // PLU adjective group 3
 			uchChildAdj = 11 + (uchChildAdj - 1);
 			break;
-		case 4:
+		case 4:         // PLU adjective group 4
 			uchChildAdj = 16 + (uchChildAdj - 1);
 			break;
+        case 0:    // not an adjective PLU
 		default:
-			return -1;
+			return UIF_CANCEL;      // was UIF_DIA_ABORT but wasn't clearing lead thru message area.
 		}
 
 		return uchChildAdj;
+
+#if 0
+    // following source code was found after the return statement above
+    // which should mean that it is never executed. So why does this
+    // source exist? There doesn't appear to be any way for this source
+    // to be jumped into or otherwise executed.
+    // 
+    // I have Preprocessor to remove this source from being compiled but
+    // hesitate to actually remove it for now.
+    //     Richard Chambers, Jun =-09-2025
 
         if (sResult != ITM_SUCCESS) {
 			BlFwIfSetOEPGroups(BL_OEPGROUP_STR_RESET, 0);
@@ -2361,8 +2384,6 @@ SHORT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales,
 
         /* V3.3 */
         if (ItemSalesLocal.fbSalesStatus & SALES_OEP_POPUP) {
-			TCHAR   auchDummy[NUM_PLU_LEN] = {0};
-
             for (i=(nNoOrderPmt-1); i>0; i--) {
                 if (pDisp->OrderPmt[i].uchOrder) break;
             }
@@ -2391,7 +2412,7 @@ SHORT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales,
 			{
 				usOrderNo-= nNoOrderPmt;
 			}
-            if (_tcsncmp(pMenu[usOrderNo].auchPluNo, auchDummy, NUM_PLU_LEN) == 0) { /* 2172 */
+            if (_tcsncmp(pMenu[usOrderNo].auchPluNo, MLD_NO_DISP_PLU_DUMMY, NUM_PLU_LEN) == 0) { /* 2172 */
                 UieErrorMsg(LDT_NTINFL_ADR, UIE_WITHOUT);
 
 				// set indicator to 102 because of input error - CSMALL 2/7/06
@@ -2493,8 +2514,12 @@ SHORT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales,
         if (!usContinue) {                  /* single item       */
             break;                          /* exit loop         */
         }
+#endif
     }
 
+    // clean up the display by removing the OEP popup window
+    // if it is still displayed and then check for an error and
+    // return with the error code if there is one.
 	if (ItemSalesLocal.fbSalesStatus & SALES_OEP_POPUP) {
 		MldDeletePopUp();  // Delete the popup managed within this loop
 		ItemSalesLocal.fbSalesStatus &= ~SALES_OEP_POPUP;
@@ -2512,7 +2537,7 @@ SHORT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales,
     }
 	BlFwIfSetOEPGroups(BL_OEPGROUP_STR_RESET, 0);
     
-	return (ITM_SUCCESS);                       /* exit ...          */
+	return (UIF_SUCCESS);                       /* exit ...          */
 }
 /*
 *===========================================================================
@@ -2556,7 +2581,6 @@ STATIC SHORT ItemSalesAdjMakeMenu(UCHAR uchGroupNo, UCHAR uchNounAdj,
 	NHPOS_ASSERT(uchNounAdj > 0);
 
     /* --- initialization --- */
-	if (uchNounAdj > 0) uchNounAdj--;
 	usOff = 1;
 	switch(adjTable[uchNounAdj])
 	{
@@ -2571,6 +2595,7 @@ STATIC SHORT ItemSalesAdjMakeMenu(UCHAR uchGroupNo, UCHAR uchNounAdj,
 		// fall through to allow the correct offset to be calculated
 	case 1:             // Adjective Group #1 mnemonics starting address
 		break;
+    case 0:      // not an adjective PLU
 	default:
 		return -1;
 	}

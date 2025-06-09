@@ -129,11 +129,11 @@ typedef signed short   SUIFRSLT;      // result variable containing one of the U
 */
 #define UIF_SUCCESS         0               /* Success */
 #define UIF_DIA_SUCCESS     (-1)               /* dialog success */
-#define UIF_DIA_ABORT       (-2)               /* cancel dialog, same as UIFREG_ABORT */
+#define UIF_DIA_ABORT       (-2)               /* cancel dialog, same as UIFREG_ABORT, rarely used, use UIF_CANCEL. */
 #define UIF_DIA_CLEAR       (-3)               /* clear(skip) dialog, same as UIFREG_CLEAR */
 #define UIF_NEW_FSC         (-4)              /* handle UIF_DIA_CHANGE_FSC, UIFREG_NEW_FSC status from dialog */
 #define UIF_DIA_RETRY_INPUT     (-10)          /* new FSC from dialog, same as UIFREG_NEW_FSC */
-#define UIF_CANCEL         (-10)              /* Cancel */
+#define UIF_CANCEL         (-10)              /* Cancel operation. will clear lead thru window message */
 #define UIF_FINALIZE       (-11)              /* Finalize */
 #define UIF_CAS_SIGNOUT    (-12)              /* Cashier Sign Out */
 #define UIF_WAI_SIGNOUT    (-13)              /* Waiter Sign Out */

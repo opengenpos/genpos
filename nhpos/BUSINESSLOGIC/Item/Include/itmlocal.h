@@ -773,9 +773,9 @@ SLDTITM  ItemSalesAdj(UIFREGSALES *pData1, ITEMSALES *pData2);
 SHORT   ItemSalesCondiment(UIFREGSALES *pData1, ITEMSALES *pData2);
 SHORT   ItemSalesSetMenu(CONST UIFREGSALES *pData1, ITEMSALES *pData2);
 SHORT   ItemSalesSetCheckValidation(UCHAR auchControlStatus, UCHAR uchAdjective);
-SHORT   ItemSalesCalculation(ITEMSALES *pData);
-DCURRENCY   ItemSalesCalcCondimentPPIOnly(CONST ITEMSALES *pItemSales);
-SHORT   ItemSalesCalcPPI(ITEMSALES *pItemSales);        /* R3.1 */
+SLDTITM  ItemSalesCalculation(ITEMSALES *pData);
+DCURRENCY  ItemSalesCalcCondimentPPIOnly(CONST ITEMSALES *pItemSales);
+SLDTITM  ItemSalesCalcPPI(ITEMSALES *pItemSales);        /* R3.1 */
 SHORT   ItemSalesCalcPPIEC(ITEMSALES *pItemSales);      /* R3.1 */
 VOID    ItemSalesCalcPPIInit(VOID);                     /* R3.1 */
 SHORT   ItemSalesModifier(UIFREGSALES *pData1, ITEMSALES *pData2);
@@ -820,7 +820,7 @@ SHORT   ItemSalesGetDeptNo(USHORT *pusDept, UCHAR *puchMajorFsc, UCHAR *puchMino
 SHORT   ItemSalesGetDeptNoSans(USHORT *pusDept);
 SHORT   ItemSalesPriceChange(ITEMSALES *pItemSales);
 SHORT   ItemSalesGetPrice(ITEMSALES *pItemSales, DCURRENCY *plPrice);
-SHORT   ItemSalesCalcPM(ITEMSALES *pItemSales);        /* 2172 */
+SLDTITM  ItemSalesCalcPM(ITEMSALES *pItemSales);        /* 2172 */
 SHORT   ItemSalesCalcPMEC(ITEMSALES *pItemSales);      /* 2172 */
 VOID    ItemSalesCalcPMInit(VOID);                     /* 2172 */
 
@@ -1494,7 +1494,7 @@ SHORT   ItemSalesOEPUpdateGroupNoCondiment(TCHAR *pauchPlu, UCHAR uchStaus,
 
 SHORT   ItemSalesOEPNextPluCondiment(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales, UCHAR *pszGroups);
 
-SHORT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales, UCHAR *pszGroups);
+SUIFRSLT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales, UCHAR *pszGroups);
 
 /*
 * --------------------------------------------------------------------------

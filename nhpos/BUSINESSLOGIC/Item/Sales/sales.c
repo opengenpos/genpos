@@ -1036,7 +1036,7 @@ SHORT ItemSalesAdjModify(UIFREGSALES *pUifRegSales)
 	SHORT		  sReturnStatus =0, qtyHolder = 0;
     SHORT         sQty = 0, sStorage;
 	ULONG         ulUnitPrice;
-	USHORT		  usRet;
+	SHORT		  sRet;
 	ITEMSALES	  ItemSales = {0}, CondimentWorkArea = {0};
 	UIFREGSALES   test = {0};
 	PLUIF         PLURecRcvBuffer = {0};        /* PLU record receive buffer */
@@ -1064,14 +1064,21 @@ SHORT ItemSalesAdjModify(UIFREGSALES *pUifRegSales)
 	CondimentWorkArea.lQTY = 0 - ItemSales.lQTY;
 
 	//we get the new adjective number for the item
-	usRet = ItemSalesOEPAdjective(&test, &ItemSales, &uchTest);
-	ItemSales.uchAdjective = (UCHAR) usRet;
-	pUifRegSales->uchAdjective = (UCHAR) usRet;
+	sRet = ItemSalesOEPAdjective(&test, &ItemSales, &uchTest);
+	if (sRet < 0) {
+		// error of some kind so return without doing anything further.
+		// we expect to be return a SUIFRSLT type of error which is what
+		// the menu processing logic will be expecting.
+		return sRet;
+	}
 
-	usRet = ItemSalesAdj(pUifRegSales, &ItemSales);
-	if(usRet != SUCCESS)
+	ItemSales.uchAdjective = (UCHAR) sRet;
+	pUifRegSales->uchAdjective = (UCHAR) sRet;
+
+	sRet = ItemSalesAdj(pUifRegSales, &ItemSales);
+	if(sRet != SUCCESS)
 	{
-		return usRet;
+		return sRet;
 	}
 
 	//update PRICE!!!!
@@ -1085,7 +1092,7 @@ SHORT ItemSalesAdjModify(UIFREGSALES *pUifRegSales)
     sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0);
 	RflConv3bto4b(&ulUnitPrice,PLURecRcvBuffer.ParaPlu.auchPrice);
 	ItemSales.lUnitPrice = ulUnitPrice;
-	ItemSales.lProduct = ItemSales.lUnitPrice * ((LONG)ItemSales.lQTY / 1000L);
+	ItemSales.lProduct = (DCURRENCY)ItemSales.lUnitPrice * ((LONG)ItemSales.lQTY / 1000L);
 
 	{
 		UCHAR  uchMajorClassSave = ItemSales.uchMajorClass;  // save major class to change it temporarily below.
