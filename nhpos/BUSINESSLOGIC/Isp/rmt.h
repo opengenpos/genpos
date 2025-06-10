@@ -34,7 +34,7 @@
 \*******************************/
 #define RMT_NUM_FILETBL                 1
 #define RMT_FILENAME_SIZE               STD_FILENAME_LENGTH_MAX
-#define RMT_MODE_SIZE                   4
+#define RMT_MODE_SIZE                   STD_FILENAME_MODE_SIZE
 #define RMT_MAXBYTES_SIZE               32767
 #define RMT_MSGDATA_SIZE                448
 #define RMT_NUM_DBG_FILE				2 /*JHHJ Total number of saved debug files 10-18-05*/
