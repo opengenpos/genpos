@@ -189,7 +189,7 @@ VOID *ItemCommonGetLocalItemUnionPointer(VOID)
 *                
 *===========================================================================
 */
-SHORT   ItemSPVIntDialog( UCHAR uchLeadAddr, UCHAR uchDialogLeadAddr )
+SUIFRSLT  ItemSPVIntDialog( UCHAR uchLeadAddr, UCHAR uchDialogLeadAddr )
 {
 	ULONG           flDisplaySettings = ( VOID_CNTRL | EC_CNTRL | ITEMDISC_CNTRL | REGDISC_CNTRL
 										| CHRGTIP_CNTRL | CRED_CNTRL | TAXMOD_CNTRL | TAXEXMPT_CNTRL | PO_CNTRL | ROA_CNTRL 

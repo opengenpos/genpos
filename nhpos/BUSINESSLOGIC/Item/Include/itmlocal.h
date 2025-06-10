@@ -780,7 +780,7 @@ SHORT   ItemSalesCalcPPIEC(ITEMSALES *pItemSales);      /* R3.1 */
 VOID    ItemSalesCalcPPIInit(VOID);                     /* R3.1 */
 SHORT   ItemSalesModifier(UIFREGSALES *pData1, ITEMSALES *pData2);
 //SHORT   ItemSalesCommonIF(UIFREGSALES *pData1, ITEMSALES *pData2); //Function prototype moved to item.h for US Customs
-SHORT   ItemSalesComnIFVoidHALO(DCURRENCY lAmount);
+SLDTITM ItemSalesComnIFVoidHALO(DCURRENCY lAmount);
 SHORT   ItemSalesSpvInt(CONST ITEMSALES *pData);
 SHORT   ItemSalesSpvIntForCond(ITEMSALES *pData);
 VOID    ItemSalesSetDefltPage( VOID );
@@ -1401,7 +1401,7 @@ VOID    ItemUSTaxCopy1(ITEMAFFECTION *pAffect, CONST ITEMCOMMONTAX *pTax);
 VOID    ItemCanTaxCopy1(ITEMAFFECTION *pAffect, CONST ITEMCOMMONTAX *pTax);
 VOID    ItemCanTaxCopy2(ITEMAFFECTION *pAffect);
 
-SHORT   ItemSPVIntDialog( UCHAR uchLeadAddr, UCHAR uchDialogLeadAddr );
+SUIFRSLT ItemSPVIntDialog( UCHAR uchLeadAddr, UCHAR uchDialogLeadAddr );
 SHORT   ItemSPVInt( UCHAR uchLeadAddr );
 VOID    ItemCurPrintStatus( VOID );
 VOID    ItemCheckAndSetTransDate( VOID );

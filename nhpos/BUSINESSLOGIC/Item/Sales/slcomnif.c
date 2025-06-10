@@ -950,9 +950,9 @@ SHORT    ItemSalesSpvIntForCond(ITEMSALES *pItemSales)
 *===========================================================================
 */
 
-SHORT   ItemSalesComnIFVoidHALO(DCURRENCY lAmount)
+SLDTITM ItemSalesComnIFVoidHALO(DCURRENCY lAmount)
 {
-	PARATRANSHALO      HaloDataRcvBuff;
+    PARATRANSHALO      HaloDataRcvBuff = { 0 };
 
     HaloDataRcvBuff.uchMajorClass = CLASS_PARATRANSHALO;
     HaloDataRcvBuff.uchAddress = HALO_VOID_ADR;

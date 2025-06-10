@@ -2394,7 +2394,7 @@ typedef struct {
         UCHAR   uchMinorClass;              /* 2:minor class */
         USHORT  usTableNo;                  /* 3:table No or also used for Return type, usReturnType */
         USHORT  usNoPerson;                 /* 4:No of person or also used for Reason Code, usReasonCode */
-        UCHAR   uchLineNo;                  /* 5:line No also used for seat number with CLASS_SEATNO  */
+        UCHAR   uchLineNo;                  /* 5:line No also used for seat number with CLASS_SEATNO and tax modifier with CLASS_TAXMODIFIER */
         USHORT  fsPrintStatus;              /* print status, lower byte is printer (PRT_RECEIPT), upper byte is status (PRT_SINGLE_RECPT) */
         TCHAR   aszName[NUM_NAME];          /* Customer Name,  R3.0 */
     }ITEMMODIFIER;

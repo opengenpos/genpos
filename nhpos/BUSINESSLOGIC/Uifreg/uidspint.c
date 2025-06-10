@@ -89,7 +89,7 @@ SHORT       UifSupInterventRetStatus = UIFREG_ABORT;
 ** Description: Reg Supervisor Intervention
 *===========================================================================
 */
-SHORT UifSupIntervent(VOID)
+SUIFRSLT UifSupIntervent(VOID)
 {
     USHORT  usModeStatus, usCtrlDevice;
     SHORT   sRetStatus = UIF_SUCCESS, sStatusSave;
@@ -305,7 +305,7 @@ SHORT UifSupIntervent(VOID)
 **  Description:    WIC modifier key entry Dialog
 *--------------------------------------------------------------------------
 */
-SHORT   UifDiaWICMod(VOID)
+SUIFRSLT  UifDiaWICMod(VOID)
 {
     USHORT  usModeStatus;       /* mode lock enable/disable bit save area */
     USHORT  usCtrlDevice;       /* control device save area       */

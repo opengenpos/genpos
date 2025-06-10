@@ -253,7 +253,7 @@ SHORT   UifDiaTableNo(UIFDIADATA *pData);               /* uidtbl.c */
 SHORT   UifDiaLineNo(UIFDIADATA *pData);                /* uidlin.c */
 SHORT   UifDiaNoPerson(UIFDIADATA *pData);              /* uidper.c */
 VOID    UifDiaWaiterLock(VOID);                         /* uidwailk.c */
-SHORT   UifSupIntervent(VOID);                          /* uidspint.c */
+SUIFRSLT UifSupIntervent(VOID);                          /* uidspint.c */
 SHORT   UifCashPickup(KEYMSG *Data);                    /* uidspint.c */
 SHORT   UifDiaETK(UIFDIADATA *pData, USHORT usEcho);    /* uidetk.c */
 SHORT   UifDiaCP1(UIFDIADATA *pData);                   /* uidcp.c */
@@ -276,7 +276,7 @@ SHORT   UifDiaPrice(UIFDIADATA *pData);                 /* uidprc.c 2172 */
 SHORT   UifDiaDept(UIFDIADATA *pData);
 SHORT   UifDiaTare(UIFDIADATA *pData);                 /* uidprc.c 2172 */
 SHORT   UifDiaClear(VOID);                              /* uidclr.c 2172 */
-SHORT   UifDiaWICMod(VOID);                             /* uifdilog.c  */
+SUIFRSLT  UifDiaWICMod(VOID);                             /* uifdilog.c  */
 //SR 143 @/For Key cwunn ported the following from 2170GP
 SHORT UifRegWQtyCheck(KEYMSG *pData, UCHAR uchLen, UCHAR uchDec); /* uifrgcom.c */
 SHORT UifRegQtyCheck(KEYMSG *pData, UCHAR uchLen, UCHAR uchDec); /* uifrgcom.c */
