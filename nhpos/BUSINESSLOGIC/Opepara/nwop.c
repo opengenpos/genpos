@@ -91,6 +91,12 @@
 ** GenPOS
 * Jun-20-18 : 02.02.02 : R.Chambers : fix defect in OpRprtPluRead() with new function OpAssignRecPluToPifRepPlu().
 * Jun-20-18 : 02.02.02 : R.Chambers : fix defect in OpDeptPluRead() with new function OpAssignRecPluToPifDepPlu().
+*
+** OpenGenPOS
+* May-02-25 : 02.04.00 : R.Chambers : use local variable for file handle in OpDeptCreatFile().
+* May-02-25 : 02.04.00 : R.Chambers : use local variable for file handle in OpCpnCreatFile().
+* May-02-25 : 02.04.00 : R.Chambers : use local variable for file handle in OpCstrCreatFile().
+*
 \*=======================================================================*/
 /*=======================================================================*\
 :   PVCS ENTRY
@@ -121,18 +127,45 @@
 #include    "rfl.h"
 #include	<BlFWif.h>
 
+// Lock handle to provide database integrity during multiple changes of PLU and Dept
+// data files.
+// The client side functions OpLock() and OpUnLock() are also used by the server side
+// functions SerOpLock() and SerOpUnLock() which are also used on the ISP side.
+// See as well use of SerOpLock() and SerOpUnLock() in the Maint functionality.
+static USHORT  husOpLockHandle = 0;       // lock handle save area for PLU and Dept. see OpLock() and Op_LockCheck().
+
 PifSemHandle  husOpSem = PIF_SEM_INVALID_HANDLE;
-USHORT  husOpLockHandle;
-SHORT   hsOpPluFileHandle;
-SHORT   hsOpDeptFileHandle;
+PifFileHandle   hsOpPluFileHandle = PIF_FILE_INVALID_HANDLE;
+PifFileHandle   hsOpDeptFileHandle = PIF_FILE_INVALID_HANDLE;
 /* Add 2172 Rel 1.0 */
-SHORT   hsOpOepFileHandle;
-SHORT   hsOpCpnFileHandle;
-SHORT   hsOpCstrFileHandle;
+PifFileHandle   hsOpOepFileHandle = PIF_FILE_INVALID_HANDLE;
+PifFileHandle   hsOpCpnFileHandle = PIF_FILE_INVALID_HANDLE;
+PifFileHandle   hsOpCstrFileHandle = PIF_FILE_INVALID_HANDLE;
 /* === Add PPI (Promotional Pricing Item) File (Release 3.1) BEGIN === */
-SHORT   hsOpPpiFileHandle;
+PifFileHandle   hsOpPpiFileHandle = PIF_FILE_INVALID_HANDLE;
 /* === Add PPI (Promotional Pricing Item) File (Release 3.1) END === */
-SHORT   hsOpMldFileHandle;  /* V3.3 */
+PifFileHandle   hsOpMldFileHandle = PIF_FILE_INVALID_HANDLE;  /* V3.3 */
+
+//  File mode processing to convert from PIF string format to Windows API
+//  file open mask is done in static function dfckmd() in file piffile.c.
+// 
+//  Here's a synopsis from the function's source code
+//  File open options:
+//   'r': FLREAD - open file for reading. Same as RMT_READ for remote file access through ISP subsystem.
+//   'w': FLWRITE - open file for writing. Same as RMT_WRITE for remote file access through ISP subsystem.
+//   'o': FLOLD - open file if exists otherwise error. Same as RMT_OLD for remote file access through ISP subsystem.
+//   'n': FLNEW - create the file if doesn't exist otherwise error. Same as RMT_NEW for remote file access through ISP subsystem.
+//   'x': FLRECREATE - Create the file if new or truncate old file.
+//   '-': FLDENYSHARE - lock file and deny sharing
+//  File location indicators:
+//   't': FLTMP - temporary files folder.  RMT_TEMP for remote file access through ISP subsystem.
+//   'f': FLFLASH - Database files folder with immediate write. RMT_FLASH for remote file access through ISP subsystem.
+//   's': FLSAVTTL - save total folder in the Database folder used for save totals files. RMT_SAVTTL for remote file access.
+//   'i': FLICON - icon files folder.  RMT_ICON for remote file access through ISP subsystem.
+//   'b': FLIMAGESFOLDER - image files folder, images (bitmap, png, jpeg, etc.) used for purposes such as Suggestive Selling.
+//   'p': FLPRINT - print files folder, Amtrak.  RMT_PRINTFILES for remote file access through ISP subsystem.
+//   'c': FLCONFIG - configuration files folder, Amtrak.  RMT_CONFIG for remote file access through ISP subsystem.
+//   'h': FLHISFOLDER - historial and reports files folder.  RMT_HISFOLDER for remote file access through ISP subsystem.
 
 
 UCHAR CONST auchNEW_FILE_WRITE[] = "nw";
@@ -297,7 +330,7 @@ static VOID OpAssignPifPluToRecPlu (RECPLU *pRecPlu, PLUIF *pPif)
 //    pRecPlu->uchAdjective             = 1;  /* always adjective code is 1 on PLU record */
 //    RflConv3bto4b(pRecPlu->ulUnitPrice[0], pPif->ParaPlu.auchPrice);
 
-	_tcsncpy(pRecPlu->aucPluNumber, pPif->auchPluNo, PLU_NUMBER_LEN);
+    AUCPLUNO(pRecPlu->aucPluNumber) = AUCPLUNO(pPif->auchPluNo);
     pRecPlu->usDeptNumber             = pPif->ParaPlu.ContPlu.usDept;
     pRecPlu->uchPriceMulWeight        = pPif->ParaPlu.uchPriceMulWeight;
     _tcsncpy(pRecPlu->aucMnemonic, pPif->ParaPlu.auchPluName, PLU_MNEMONIC_LEN);
@@ -333,7 +366,7 @@ static VOID OpAssignRecPluToPifPlu (PLUIF *pPif, RECPLU *pRecPlu)
 //    pPif->uchPluAdj = 1;  /* always adjective code is 1 on PLU record */
 //    RflConv4bto3b(pPif->ParaPlu.auchPrice, pRecPlu->ulUnitPrice[0]);
 
-	_tcsncpy(pPif->auchPluNo, pRecPlu->aucPluNumber, PLU_NUMBER_LEN);
+    AUCPLUNO(pPif->auchPluNo) = AUCPLUNO(pRecPlu->aucPluNumber);
     pPif->ParaPlu.ContPlu.usDept      = pRecPlu->usDeptNumber;
     pPif->ParaPlu.uchPriceMulWeight   = pRecPlu->uchPriceMulWeight;
     _tcsncpy(pPif->ParaPlu.auchPluName, pRecPlu->aucMnemonic, STD_PLU_MNEMONIC_LEN);
@@ -369,7 +402,7 @@ static VOID OpAssignRecPluToPifRepPlu (PLUIF_REP *pPif, RECPLU *pRecPlu)
 //    pPif->uchPluAdj = 1;  /* always adjective code is 1 on PLU record */
 //    RflConv4bto3b(pPif->ParaPlu.auchPrice, pRecPlu->ulUnitPrice[0]);
 
-	_tcsncpy(pPif->auchPluNo, pRecPlu->aucPluNumber, PLU_NUMBER_LEN);
+    AUCPLUNO(pPif->auchPluNo) = AUCPLUNO(pRecPlu->aucPluNumber);
     pPif->ParaPlu.ContPlu.usDept      = pRecPlu->usDeptNumber;
     pPif->ParaPlu.uchPriceMulWeight   = pRecPlu->uchPriceMulWeight;
     _tcsncpy(pPif->ParaPlu.auchPluName, pRecPlu->aucMnemonic, STD_PLU_MNEMONIC_LEN);
@@ -405,7 +438,7 @@ static VOID OpAssignRecPluToPifDepPlu (PLUIF_DEP *pPif, RECPLU *pRecPlu)
 //    pPif->uchPluAdj = 1;  /* always adjective code is 1 on PLU record */
 //    RflConv4bto3b(pPif->ParaPlu.auchPrice, pRecPlu->ulUnitPrice[0]);
 
-	_tcsncpy(pPif->auchPluNo, pRecPlu->aucPluNumber, PLU_NUMBER_LEN);
+    AUCPLUNO(pPif->auchPluNo) = AUCPLUNO(pRecPlu->aucPluNumber);
     pPif->ParaPlu.ContPlu.usDept      = pRecPlu->usDeptNumber;
     pPif->ParaPlu.uchPriceMulWeight   = pRecPlu->uchPriceMulWeight;
     _tcsncpy(pPif->ParaPlu.auchPluName, pRecPlu->aucMnemonic, STD_PLU_MNEMONIC_LEN);
@@ -975,9 +1008,10 @@ SHORT   OpPluCreatFile(ULONG ulNumberOfPlu, USHORT usLockHnd)
 
 SHORT   OpDeptCreatFile(USHORT usNumberOfDept, USHORT usLockHnd)
 {
-    OPDEPT_FILEHED DeptFileHed;
-    ULONG         ulActualPosition;
-    UCHAR         auchParaEmpTable[OPDEPT_PARA_EMPTY_TABLE_SIZE];
+    OPDEPT_FILEHED  DeptFileHed = { 0 };
+    PifFileHandle   hsFileHandle;
+    ULONG           ulActualPosition;
+    UCHAR           auchParaEmpTable[OPDEPT_PARA_EMPTY_TABLE_SIZE];
 
     PifRequestSem(husOpSem);
 
@@ -992,7 +1026,7 @@ SHORT   OpDeptCreatFile(USHORT usNumberOfDept, USHORT usLockHnd)
         return (OP_PERFORM);
     }
 
-    if ((hsOpDeptFileHandle = PifOpenFile(auchOP_DEPT, auchNEW_FILE_WRITE)) < 0x0000) {  /* Don't occured error */
+    if ((hsFileHandle = PifOpenFile(auchOP_DEPT, auchNEW_FILE_WRITE)) < 0x0000) {  /* Don't occured error */
         PifAbort(MODULE_OP_DEPT, FAULT_ERROR_FILE_OPEN);
     }
 
@@ -1003,24 +1037,33 @@ SHORT   OpDeptCreatFile(USHORT usNumberOfDept, USHORT usLockHnd)
     DeptFileHed.offulOfIndexTblBlk = DeptFileHed.offulOfIndexTbl + (usNumberOfDept * sizeof(OPDEPT_INDEXENTRY));
     DeptFileHed.offulOfParaEmpTbl =  DeptFileHed.offulOfIndexTblBlk + (usNumberOfDept * OP_DEPT_INDEXBLK_SIZE);
     DeptFileHed.offulOfParaTbl = DeptFileHed.offulOfParaEmpTbl + OPDEPT_PARA_EMPTY_TABLE_SIZE;
-    DeptFileHed.offulOfWork   = DeptFileHed.offulOfParaTbl + (ULONG)(((ULONG)usNumberOfDept) * sizeof(OPDEPT_PARAENTRY) );
+    DeptFileHed.offulOfWork   = DeptFileHed.offulOfParaTbl + (((ULONG)usNumberOfDept) * sizeof(OPDEPT_PARAENTRY) );
     DeptFileHed.ulDeptFileSize = DeptFileHed.offulOfWork + usNumberOfDept;
 
     /* Check file size and creat file */
-    if (PifSeekFile(hsOpDeptFileHandle, DeptFileHed.ulDeptFileSize, &ulActualPosition) < 0) { /* PIF_ERROR_DISK_FULL */
-        PifCloseFile(hsOpDeptFileHandle);
+    if (PifSeekFile(hsFileHandle, DeptFileHed.ulDeptFileSize, &ulActualPosition) < 0) { /* PIF_ERROR_DISK_FULL */
+        PifCloseFile(hsFileHandle);
         PifDeleteFile(auchOP_DEPT);          /* Can't make file then delete file */
         PifReleaseSem(husOpSem);
         return (OP_NO_MAKE_FILE);
     }
 
     /* Write File Header */
-    Op_WriteDeptFile(OP_FILE_HEAD_POSITION, &DeptFileHed, sizeof(DeptFileHed));
+    if (PifSeekFile(hsFileHandle, OP_FILE_HEAD_POSITION, &ulActualPosition) < 0)
+        PifAbort(MODULE_OP_DEPT, FAULT_ERROR_FILE_SEEK);
+    else
+        PifWriteFile(hsFileHandle, &DeptFileHed, sizeof(DeptFileHed));
 
     /* Clear and Write Empty table */
     memset(auchParaEmpTable, 0x00, OPDEPT_PARA_EMPTY_TABLE_SIZE);
-    Op_WriteDeptFile((ULONG)DeptFileHed.offulOfParaEmpTbl, auchParaEmpTable, OPDEPT_PARA_EMPTY_TABLE_SIZE);
-    Op_CloseDeptFileReleaseSem();
+    if (PifSeekFile(hsFileHandle, DeptFileHed.offulOfParaEmpTbl, &ulActualPosition) < 0)
+        PifAbort(MODULE_OP_DEPT, FAULT_ERROR_FILE_SEEK);
+    else
+        PifWriteFile(hsFileHandle, auchParaEmpTable, OPDEPT_PARA_EMPTY_TABLE_SIZE);
+
+    PifCloseFile(hsFileHandle);
+
+    PifReleaseSem(husOpSem);
     return (OP_PERFORM);
 }
 
@@ -1043,10 +1086,10 @@ SHORT   OpDeptCreatFile(USHORT usNumberOfDept, USHORT usLockHnd)
 */
 SHORT   OpCpnCreatFile(USHORT usNumberOfCpn, USHORT usLockHnd)
 {
-    OPCPN_FILEHED  *pCpnFileHead;
+    PifFileHandle  hsFileHandle;
     ULONG          ulActualPosition;
     ULONG          ulFilePos;
-    UCHAR          auchCpnFileHead[sizeof(OPCPN_FILEHED)];
+    OPCPN_FILEHED  auchCpnFileHead = { 0 };
     UCHAR          auchCpnFile[sizeof(COMCOUPONPARA) * OP_CPN_NUMBER_OF_MAX / 10];
     USHORT         usLoop,usLoopMod;
 
@@ -1064,24 +1107,27 @@ SHORT   OpCpnCreatFile(USHORT usNumberOfCpn, USHORT usLockHnd)
     }
 
     /* Creat Cpn File */
-    if ((hsOpCpnFileHandle = PifOpenFile(auchOP_CPN, auchNEW_FILE_WRITE)) < 0) {
+    if ((hsFileHandle = PifOpenFile(auchOP_CPN, auchNEW_FILE_WRITE)) < 0) {
         PifAbort(MODULE_OP_CPN, FAULT_ERROR_FILE_OPEN);
     }
 
     /* Check file size and creat file */
-    if (PifSeekFile(hsOpCpnFileHandle, (ULONG)(sizeof(OPCPN_FILEHED) + usNumberOfCpn * sizeof(COMCOUPONPARA)), &ulActualPosition) < 0) {  /* PIF_ERROR_DISK_FULL */
-        PifCloseFile(hsOpCpnFileHandle);
+    if (PifSeekFile(hsFileHandle, (sizeof(OPCPN_FILEHED) + usNumberOfCpn * sizeof(COMCOUPONPARA)), &ulActualPosition) < 0) {  /* PIF_ERROR_DISK_FULL */
+        PifCloseFile(hsFileHandle);
         PifDeleteFile(auchOP_CPN);
         PifReleaseSem(husOpSem);
         return (OP_NO_MAKE_FILE);
     }
 
     /* Make Header File */
-    pCpnFileHead = (OPCPN_FILEHED *)auchCpnFileHead;
-    pCpnFileHead->usNumberOfCpn = usNumberOfCpn;
+    auchCpnFileHead.usNumberOfCpn = usNumberOfCpn;
 
     /* Write Header File */
-    Op_WriteCpnFile(OP_FILE_HEAD_POSITION, auchCpnFileHead, (USHORT)sizeof(OPCPN_FILEHED)); /* if error, let system error */
+    if (PifSeekFile(hsFileHandle, OP_FILE_HEAD_POSITION, &ulActualPosition) < 0)
+        PifAbort(MODULE_OP_CPN, FAULT_ERROR_FILE_SEEK);
+    else
+        PifWriteFile(hsFileHandle, &auchCpnFileHead, sizeof(OPCPN_FILEHED));
+
     /* Clear Contents of File */
 
     memset(&auchCpnFile[0], 0x00, sizeof(auchCpnFile));
@@ -1089,15 +1135,15 @@ SHORT   OpCpnCreatFile(USHORT usNumberOfCpn, USHORT usLockHnd)
     usLoop = usNumberOfCpn / 10;
     usLoopMod = usNumberOfCpn % 10;
     for(;usLoop != 0;usLoop--){
-        /* Write File */
-        Op_WriteCpnFile(ulFilePos, auchCpnFile, (USHORT)(sizeof(auchCpnFile))); /* if error, let system error */
+        PifWriteFile(hsFileHandle, auchCpnFile, sizeof(auchCpnFile));
         ulFilePos += sizeof(auchCpnFile);
     }
     if(usLoopMod){
-        Op_WriteCpnFile(ulFilePos, auchCpnFile, (USHORT)(usLoopMod * sizeof(COMCOUPONPARA))); /* if error, let system error */
+        PifWriteFile(hsFileHandle, auchCpnFile, usLoopMod * sizeof(COMCOUPONPARA));
     }
 
-    Op_CloseCpnFileReleaseSem();
+    PifCloseFile(hsFileHandle);
+    PifReleaseSem(husOpSem);
     return (OP_PERFORM);
 }
 
@@ -1120,9 +1166,10 @@ SHORT   OpCpnCreatFile(USHORT usNumberOfCpn, USHORT usLockHnd)
 */
 SHORT   OpCstrCreatFile(USHORT usNumberOfCstr, USHORT usLockHnd)
 {
-    OPCSTR_FILEHED  CstrFileHed;
-    ULONG         ulActualPosition;
-    OPCSTR_INDEXENTRY ausIndexTable[OP_CSTR_INDEX_SIZE];
+    OPCSTR_FILEHED  CstrFileHed = { 0 };
+    PifFileHandle   hsFileHandle;
+    ULONG           ulActualPosition;
+    OPCSTR_INDEXENTRY ausIndexTable[OP_CSTR_INDEX_SIZE] = { 0 };
 
     PifRequestSem(husOpSem);
 
@@ -1137,7 +1184,7 @@ SHORT   OpCstrCreatFile(USHORT usNumberOfCstr, USHORT usLockHnd)
         return (OP_PERFORM);
     }
 
-    if ((hsOpCstrFileHandle = PifOpenFile(auchOP_CSTR, auchNEW_FILE_WRITE)) < 0x0000) {  /* Don't occured error */
+    if ((hsFileHandle = PifOpenFile(auchOP_CSTR, auchNEW_FILE_WRITE)) < 0x0000) {  /* Don't occured error */
         Op_PluAbort(FAULT_ERROR_FILE_OPEN);
     }
 
@@ -1146,7 +1193,7 @@ SHORT   OpCstrCreatFile(USHORT usNumberOfCstr, USHORT usLockHnd)
     CstrFileHed.usOffsetOfTransCstr = 0x00;
 
     /* Check file size and creat file */
-    if (PifSeekFile(hsOpCstrFileHandle, (ULONG)(sizeof(OPCSTR_FILEHED) + sizeof(ausIndexTable) + (usNumberOfCstr * sizeof(OPCSTR_PARAENTRY))), &ulActualPosition) < 0) {  /* PIF_ERROR_DISK_FULL */
+    if (PifSeekFile(hsFileHandle, (sizeof(OPCSTR_FILEHED) + sizeof(ausIndexTable) + (usNumberOfCstr * sizeof(OPCSTR_PARAENTRY))), &ulActualPosition) < 0) {  /* PIF_ERROR_DISK_FULL */
         PifCloseFile(hsOpCstrFileHandle);
         PifDeleteFile(auchOP_CSTR);
         PifReleaseSem(husOpSem);
@@ -1154,12 +1201,17 @@ SHORT   OpCstrCreatFile(USHORT usNumberOfCstr, USHORT usLockHnd)
     }
 
     /* Write File Header */
-    Op_WriteCstrFile(OP_FILE_HEAD_POSITION, &CstrFileHed, sizeof(CstrFileHed));
+    if (PifSeekFile(hsFileHandle, OP_FILE_HEAD_POSITION, &ulActualPosition) < 0)
+        PifAbort(MODULE_OP_CSTR, FAULT_ERROR_FILE_SEEK);
+    else
+        PifWriteFile(hsFileHandle, &CstrFileHed, sizeof(CstrFileHed));
 
     /* Clear and Write Index table */
     memset(ausIndexTable, 0x00, sizeof(ausIndexTable));
-    Op_WriteCstrFile((ULONG)(sizeof(CstrFileHed)), ausIndexTable, sizeof(ausIndexTable));
-    Op_CloseCstrFileReleaseSem();
+    PifWriteFile(hsFileHandle, ausIndexTable, sizeof(ausIndexTable));
+
+    PifCloseFile(hsFileHandle);
+    PifReleaseSem(husOpSem);
     return (OP_PERFORM);
 }
 
@@ -1276,15 +1328,19 @@ SHORT   OpPluCheckAndDeleteFile(ULONG ulNumberOfPlu, USHORT usLockHnd)
 */
 SHORT   OpDeptCheckAndCreatFile(USHORT usNumberOfDept, USHORT usLockHnd)
 {
-    SHORT   sStatus;
+    SHORT   sStatus = OP_PERFORM;
 
     if ((Op_DeptOpenFile()) < 0) {
+        // if file not opened then create it if possible.
         sStatus = OpDeptCreatFile(usNumberOfDept, usLockHnd);
-        return(sStatus);
+    }
+    else {
+        // if file opened it exists so close the handle and move on.
+        PifCloseFile(hsOpDeptFileHandle);  hsOpDeptFileHandle = PIF_FILE_INVALID_HANDLE;
+        sStatus = OP_PERFORM;
     }
 
-    PifCloseFile(hsOpDeptFileHandle);
-    return (OP_PERFORM);
+    return(sStatus);
 }
 
 /*
@@ -1345,15 +1401,19 @@ SHORT   OpDeptCheckAndDeleteFile(USHORT usNumberOfDept, USHORT usLockHnd)
 */
 SHORT   OpCpnCheckAndCreatFile(USHORT usNumberOfCpn, USHORT usLockHnd)
 {
-    SHORT   sStatus;
+    SHORT   sStatus = OP_PERFORM;
 
     if ((Op_CpnOpenFile()) < 0) {
+        // if file not opened then create it if possible.
         sStatus = OpCpnCreatFile(usNumberOfCpn, usLockHnd);
-        return(sStatus);
+    }
+    else {
+        // if file opened it exists so close the handle and move on.
+        PifCloseFile(hsOpCpnFileHandle);  hsOpCpnFileHandle = PIF_FILE_INVALID_HANDLE;
+        sStatus = OP_PERFORM;
     }
 
-    PifCloseFile(hsOpCpnFileHandle);
-    return (OP_PERFORM);
+    return(sStatus);
 }
 
 /*
@@ -2121,8 +2181,8 @@ SHORT   OpPluFileUpdate(USHORT usLockHnd)
         return OpConvertPluError(usResult);
     }
 
-    tcharnset(pEcmRange->itemFrom.aucPluNumber, _T('0'), PLU_NUMBER_LEN);
-    tcharnset(pEcmRange->itemTo.aucPluNumber, _T('9'), PLU_NUMBER_LEN);
+    AUCPLUNO(pEcmRange->itemFrom.aucPluNumber) = AUCPLUNO(MLD_ZERO_PLU);
+    AUCPLUNO(pEcmRange->itemTo.aucPluNumber) = AUCPLUNO(MLD_NINES_PLU);
     pEcmRange->fsOption = REPORT_ACTIVE | REPORT_INACTIVE;
     pEcmRange->usReserve = 0;
 
@@ -2257,7 +2317,7 @@ SHORT   OpPluIndRead(PLUIF *pPif, USHORT usLockHnd)
         return OpConvertPluError(usResult);
     }
 
-    _tcsncpy(pItemNumber->aucPluNumber,pPif->auchPluNo, PLU_NUMBER_LEN);
+    AUCPLUNO(pItemNumber->aucPluNumber) = AUCPLUNO(pPif->auchPluNo);
     usResult = PluReadRecord(FILE_PLU, pItemNumber, 1, pRecPlu, &usRecPluLen);
     if(!usResult)
     {
@@ -2660,9 +2720,9 @@ SHORT   OpPluAllRead(PLUIF *pPif, USHORT usLockHnd)
 	// On first access pPif->ulCounter will be 0, and this if statement will be entered
 	if(!pPif->ulCounter)
 	{	
-		tcharnset(pEcmRange->itemFrom.aucPluNumber, _T('0'), PLU_NUMBER_LEN);
-		tcharnset(pEcmRange->itemTo.aucPluNumber, _T('9'), PLU_NUMBER_LEN);
-		pEcmRange->fsOption = REPORT_ACTIVE | REPORT_INACTIVE;
+        AUCPLUNO(pEcmRange->itemFrom.aucPluNumber) = AUCPLUNO(MLD_ZERO_PLU);
+        AUCPLUNO(pEcmRange->itemTo.aucPluNumber) = AUCPLUNO(MLD_NINES_PLU);
+        pEcmRange->fsOption = REPORT_ACTIVE | REPORT_INACTIVE;
 		pEcmRange->usReserve = 0;
 		
 		usResult = PluEnterCritMode(FILE_PLU, FUNC_REPORT_RANGE, &husHandle, pEcmRange);
@@ -2680,7 +2740,7 @@ SHORT   OpPluAllRead(PLUIF *pPif, USHORT usLockHnd)
 
     if (pPif->usAdjCo)
     {
-        _tcsncpy(pItemNumber->aucPluNumber,pPif->auchPluNo,PLU_NUMBER_LEN);
+        AUCPLUNO(pItemNumber->aucPluNumber) = AUCPLUNO(pPif->auchPluNo);
         pPif->usAdjCo++;
         usResult = PluReadRecord(FILE_PLU, pItemNumber, 1, (VOID*)pRecPlu, &usRecLen);
         if(usResult)
@@ -2795,8 +2855,8 @@ SHORT   OpRprtPluRead(PLUIF_REP *pPrp, USHORT usLockHnd)
         if(pPrp->culCounter == 0)
             bCnt = TRUE;
 
-        tcharnset(ecmrange.itemFrom.aucPluNumber, _T('0'), PLU_NUMBER_LEN);
-        tcharnset(ecmrange.itemTo.aucPluNumber, _T('9'), PLU_NUMBER_LEN);
+        AUCPLUNO(ecmrange.itemFrom.aucPluNumber) = AUCPLUNO(MLD_ZERO_PLU);
+        AUCPLUNO(ecmrange.itemTo.aucPluNumber) = AUCPLUNO(MLD_NINES_PLU);
         ecmrange.fsOption = REPORT_ACTIVE | REPORT_INACTIVE;
 
         usResult = PluEnterCritMode(FILE_PLU, FUNC_REPORT_RANGE, &husHandle, &ecmrange);
@@ -2819,7 +2879,7 @@ SHORT   OpRprtPluRead(PLUIF_REP *pPrp, USHORT usLockHnd)
 		USHORT  usRecLen;
 		ITEMNO  itemno = {0};
 
-        _tcsncpy(itemno.aucPluNumber, pPrp->auchPluNo, PLU_NUMBER_LEN);
+        AUCPLUNO(itemno.aucPluNumber) = AUCPLUNO(pPrp->auchPluNo);
         pPrp->usAdjCo++;
 		/* adjective is always 1 on PLU record */
         usResult = PluReadRecord(FILE_PLU, &itemno, 1, &recplu, &usRecLen);
@@ -2958,8 +3018,8 @@ SHORT   OpDeptPluRead(PLUIF_DEP *pDp, USHORT usLockHnd)
 		ECMRANGE  ecmrange = {0};
 		USHORT    husHandle = 0;
 
-        tcharnset(ecmrange.itemFrom.aucPluNumber, _T('0'), PLU_NUMBER_LEN);
-        tcharnset(ecmrange.itemTo.aucPluNumber, _T('9'), PLU_NUMBER_LEN);
+        AUCPLUNO(ecmrange.itemFrom.aucPluNumber) = AUCPLUNO(MLD_ZERO_PLU);
+        AUCPLUNO(ecmrange.itemTo.aucPluNumber) = AUCPLUNO(MLD_NINES_PLU);
         ecmrange.fsOption = REPORT_ACTIVE | REPORT_INACTIVE;
 
         usResult = PluEnterCritMode(FILE_PLU, FUNC_REPORT_RANGE, &husHandle, &ecmrange);
@@ -2984,7 +3044,7 @@ SHORT   OpDeptPluRead(PLUIF_DEP *pDp, USHORT usLockHnd)
 		ITEMNO  itemno = {0};
 		USHORT  usRecLen;
 
-        _tcsncpy(itemno.aucPluNumber, pDp->auchPluNo, PLU_NUMBER_LEN);
+        AUCPLUNO(itemno.aucPluNumber) = AUCPLUNO(pDp->auchPluNo);
         pDp->usAdjCo++;
 		/* adjective is always 1 on PLU record */
         usResult = PluReadRecord(FILE_PLU, &itemno, 1, &recplu, &usRecLen);
@@ -3222,8 +3282,24 @@ SHORT   OpPluAbort(USHORT husHandle, USHORT usLockHnd)
 *     Normal End:  value of lock handle
 *   Abnormal End:  OP_LOCK
 *
-**  Description: Get Lonk handle and Lock
-*                   (All function in Thie module is locked)
+**  Description: Get Lock handle and Lock if not locked. Return OP_LOCK otherwise.
+*                   (All function in This module is locked)
+* 
+*                Save the lock handle returned to use with Op_LockCheck().
+* 
+*                See also use within SerOpLock() in Server subsystem as well
+*                as use of SerOpLock() in the ISP subsystem.
+*
+*                NOTE: this appears to be from the old NCR 2170 software to
+*                      implement a mutex enforcing only a single
+*                      thread being able to do operations on the PLU and Dept
+*                      data files. There are other parts of the source code body
+*                      that have something similar though many of those use a
+*                      resource identifer such as a terminal number or cashier ID.
+*
+*                WARNING: It appears the PLU functions in this Opepara subsystem
+*                         use the lock handle to include flags in the most significant
+*                         byte.
 *==========================================================================
 */
 SHORT   OpLock(VOID)
@@ -3232,7 +3308,7 @@ SHORT   OpLock(VOID)
 
     PifRequestSem(husOpSem);
     if (husOpLockHandle == 0x00){
-		hmyLockHandle = husOpLockHandle = 0x1F;
+		hmyLockHandle = husOpLockHandle = 0x1F;    // some PLU functionality may place flags in upper byte of lock handle
     }
 
     PifReleaseSem(husOpSem);
@@ -3248,7 +3324,17 @@ SHORT   OpLock(VOID)
 *
 **  Return    :   Nothing
 *
-**  Description:  UnLock (All function in Thie module is locked)
+**  Description:  UnLock (All function in This module is locked)
+* 
+*                See also use within SerOpUnLock() in Server subsystem as well
+*                as use of SerOpUnLock() in the ISP subsystem.
+*
+*                NOTE: this appears to be from the old NCR 2170 software to
+*                      implement a mutex enforcing only a single
+*                      thread being able to do operations on the PLU and Dept
+*                      data files. There are other parts of the source code body
+*                      that have something similar though many of those use a
+*                      resource identifer such as a terminal number or cashier ID.
 *==========================================================================
 */
 VOID   OpUnLock(VOID)
@@ -3257,6 +3343,48 @@ VOID   OpUnLock(VOID)
     husOpLockHandle = 0x00;
     PifReleaseSem(husOpSem);
 }
+
+/*
+*==========================================================================
+**    Synopsis:    SHORT   Op_LockCheck(USHORT usLockHnd)
+*
+*       Input:  usLockHnd    Lock handle that is getted by OpLock().
+*      Output:  Nothing
+*       InOut:  Nothing
+*
+**  Return    : OP_PERFORM
+*               OP_LOCK
+*
+**  Description: Check that the lock variable is either 0 or the same
+*                value as provided. Unlike OpLock() and OpUnLock(), this
+*                function is only used within the Opepara subsystem.
+*
+*                To obtain a lock handle use OpLock() and to free the lock
+*                use OpUnLOck().
+*
+*                NOTE: this appears to be from the old NCR 2170 software to
+*                      implement a mutex enforcing only a single
+*                      thread being able to do operations on the PLU and Dept
+*                      data files. There are other parts of the source code body
+*                      that have something similar though many of those use a
+*                      resource identifer such as a terminal number or cashier ID.
+*
+*                WARNING: This check is normally done after obtaining the semaphore
+*                         PifRequestSem(husOpSem); to prevent a race condition.
+* 
+*                WARNING: It appears the PLU functions in this Opepara subsystem
+*                         use the lock handle to include flags in the most significant
+*                         byte.
+*==========================================================================
+*/
+SHORT   Op_LockCheck(USHORT usLockHnd)
+{
+    if ((husOpLockHandle == 0x0000) || (husOpLockHandle == usLockHnd)) {
+        return(OP_PERFORM);
+    }
+    return(OP_LOCK);
+}
+
 
 /** ---------------------------------------------------------------------
 	The following functions are used as part of blocking and unblocking
@@ -4409,8 +4537,8 @@ SHORT   OpResBackUp(UCHAR  *puchRcvData,
 *===========================================================================
 */
 #if defined(OpConvertError)
-USHORT   OpConvertError_Special(SHORT sError);
-USHORT   OpConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo)
+USLDTERR   OpConvertError_Special(SHORT sError);
+USLDTERR   OpConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo)
 {
 	int iLen = 0;
 	char  xBuffer[256];
@@ -4428,16 +4556,16 @@ USHORT   OpConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo)
 	return OpConvertError_Special(sError);
 }
 
-USHORT   OpConvertError_Special(SHORT sError)
+USLDTERR   OpConvertError_Special(SHORT sError)
 #else
-USHORT   OpConvertError(SHORT sError)
+USLDTERR   OpConvertError(SHORT sError)
 #endif
 {
     USHORT  usLeadthruNo;
 
     switch ( sError ) {
     case  OP_PERFORM :         /* Success    */
-        usLeadthruNo = 0;
+        usLeadthruNo = SUCCESS;
         break;
 
     case  OP_FILE_NOT_FOUND :  /* Error   -1  */
@@ -5217,12 +5345,9 @@ SHORT   OpPluOepRead(OPPLUOEPPLUNO *pPluNo, OPPLUOEPPLUNAME *pPluName, USHORT us
     USHORT usResult, i;
     USHORT usRecPluLen;
     RECPLU recplu;
-    PRECPLU pRecPlu;
+    PRECPLU pRecPlu = &recplu;
     ITEMNO itemno;
-    PITEMNO pItemNumber;
-
-    pRecPlu = &recplu;
-    pItemNumber = &itemno;
+    PITEMNO pItemNumber = &itemno;
 
     PifRequestSem(husOpSem);
 
@@ -5245,7 +5370,7 @@ SHORT   OpPluOepRead(OPPLUOEPPLUNO *pPluNo, OPPLUOEPPLUNAME *pPluName, USHORT us
 
 		memset(&pPluName->auchPluName[i][0], 0, STD_PLU_MNEMONIC_LEN * sizeof(TCHAR));
 		if (pPluNo->auchPluNo[i][0]) {
-    		_tcsncpy(pItemNumber->aucPluNumber,&pPluNo->auchPluNo[i][0],PLU_NUMBER_LEN);
+            AUCPLUNO(pItemNumber->aucPluNumber) = AUCPLUNO(pPluNo->auchPluNo[i]);
 
 		    usResult = PluReadRecord(FILE_PLU, pItemNumber, 1, pRecPlu, &usRecPluLen);
 		    if(usResult == 0)

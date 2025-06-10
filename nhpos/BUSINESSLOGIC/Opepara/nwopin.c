@@ -129,28 +129,6 @@ static UCHAR FARCONST auchFlexMem[] =    {FLEX_DEPT_ADR,
 
 /*
 *==========================================================================
-**    Synopsis:    SHORT   Op_LockCheck(USHORT usLockHnd)
-*
-*       Input:  usLockHnd    Lock handle that is getted by OpLock().
-*      Output:  Nothing
-*       InOut:  Nothing
-*
-**  Return    : OP_PERFORM
-*               OP_LOCK
-*
-**  Description: Lock Check. 
-*==========================================================================
-*/
-SHORT   Op_LockCheck(USHORT usLockHnd)
-{
-    if (( husOpLockHandle == 0x0000 ) || ( husOpLockHandle == usLockHnd )) {
-         return(OP_PERFORM);
-    }
-    return(OP_LOCK);
-}
-
-/*
-*==========================================================================
 **    Synopsis:    VOID    Op_WriteOepFile(ULONG  offulFileSeek, 
 *                                          VOID   *pTableHeadAddress, 
 *                                          USHORT usSizeofWrite)
@@ -3096,7 +3074,7 @@ SHORT   OpReqFileTransfer (USHORT usFcCode, TCHAR CONST *ptcsFileName, UCHAR uch
         Op_Backup.ulSeqNo++;
 
 		PifSeekFile (hsBiometricsFile, pOp_BackupRcv->offulFilePosition,  &ulActualPosition);
-		PifWriteFile (hsBiometricsFile, &auchRcvBuf[sizeof(OP_BACKUP)], (USHORT)(usRcvLen - sizeof(OP_BACKUP)));
+		PifWriteFile (hsBiometricsFile, &auchRcvBuf[sizeof(OP_BACKUP)], (usRcvLen - sizeof(OP_BACKUP)));
 
         if (pOp_BackupRcv->uchStatus == OP_END) {        /* Last Message */
             break;
@@ -3194,7 +3172,7 @@ static SHORT   OpResFileTransfer (UCHAR  *puchRcvData,
 		pOp_BackUpSnd->usRecordNo = (pOp_BackUpSnd->offulFilePosition & sizeof(OP_BACKUP)) + 1;  // ignored in OpReqFileTransfer().
 
 		PifSeekFile (hsBiometricsFile, pOp_BackUpRcv->offulFilePosition,  &ulActualPosition);
-		PifReadFile (hsBiometricsFile, puchSndData + sizeof(OP_BACKUP), (USHORT)(*pusSndLen - sizeof(OP_BACKUP)), &ulBytesRead);
+		PifReadFile (hsBiometricsFile, puchSndData + sizeof(OP_BACKUP), (*pusSndLen - sizeof(OP_BACKUP)), &ulBytesRead);
 	} else {
 		PifLog (MODULE_OP_PLU, LOG_EVENT_OP_REQPARA_COMM_ERROR);
 		PifLog (MODULE_LINE_NO(MODULE_OP_PLU), (USHORT)__LINE__);
@@ -3581,7 +3559,8 @@ SHORT   OpReqFile(TCHAR *pszFileName, USHORT usLockHnd)
 {
     LONG    lRmtRead;               /* read length */
 	ULONG	ulFilePos=0;
-	SHORT	sStatus, sLocalFile;
+    SHORT	sStatus;
+    PifFileHandle	sLocalFile;
     UCHAR   auchRcvBuf[OP_BROADCAST_SIZE];
 
 
@@ -3615,7 +3594,7 @@ SHORT   OpReqFile(TCHAR *pszFileName, USHORT usLockHnd)
 			lRmtRead = CstReqReadFile(pszFileName, "or", auchRcvBuf, OP_BROADCAST_SIZE, ulFilePos);
 
 			if(lRmtRead > 0) {
-				PifWriteFile ((USHORT)sLocalFile, auchRcvBuf, lRmtRead);
+				PifWriteFile (sLocalFile, auchRcvBuf, lRmtRead);
 				ulFilePos += lRmtRead;
 
 				// If we don't have a full buffer then we know that
@@ -3667,9 +3646,8 @@ SHORT   OpReqFile(TCHAR *pszFileName, USHORT usLockHnd)
 */ //ESMITH LAYOUT
 SHORT   OpTransferFile(USHORT usTerminalPosition, TCHAR *pszLocalFileName, TCHAR *pszRemoteFileName, USHORT usLockHnd)
 {
-    LONG    lRmtRead;               /* read length */
 	ULONG	ulFilePos=0;
-	SHORT	sStatus, sLocalFile;
+    SHORT	sStatus;
     UCHAR   auchRcvBuf[OP_BROADCAST_SIZE];
 
 	{
@@ -3688,6 +3666,8 @@ SHORT   OpTransferFile(USHORT usTerminalPosition, TCHAR *pszLocalFileName, TCHAR
 	((CLIREQREAD*)auchRcvBuf)->ulPosition = ulFilePos;
 
 	for (;;) { 
+        PifFileHandle  sLocalFile = -1;
+
 		/*  File Open */
 		if((sLocalFile = PifOpenFile(pszLocalFileName,"nw")) < 0) {
 			sStatus = (OP_FILE_NOT_FOUND);
@@ -3715,10 +3695,12 @@ SHORT   OpTransferFile(USHORT usTerminalPosition, TCHAR *pszLocalFileName, TCHAR
 		}
 
 		for(;;) {
+            LONG    lRmtRead;               /* read length */
+
 			lRmtRead = CstReqTransferFile(usTerminalPosition, pszRemoteFileName, "or", auchRcvBuf, OP_BROADCAST_SIZE, ulFilePos);
 
 			if(lRmtRead > 0) {
-				PifWriteFile ((USHORT)sLocalFile, auchRcvBuf, lRmtRead);
+				PifWriteFile (sLocalFile, auchRcvBuf, lRmtRead);
 				ulFilePos += lRmtRead;
 
 				// If we don't have a full buffer then we know that

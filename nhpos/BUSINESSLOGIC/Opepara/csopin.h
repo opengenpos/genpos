@@ -198,11 +198,6 @@ typedef  struct {
    USHORT   offusOffsetOfParaTbl;
 } OPDEPT_FILEHED_THO;
 
-/*
-typedef  struct {
-   USHORT   usNumberOfDept;   
-} OPDEPT_FILEHED;
-*/
 
 typedef  struct {
    USHORT   usNumberOfCpn;   
@@ -318,7 +313,6 @@ typedef struct {
 ===========================================================================
 */
 
-SHORT   Op_LockCheck(USHORT usLockHnd);
 VOID    Op_ClosePluFileReleaseSem(VOID);
 /* Add 2172 Rel 1.0 */
 VOID    Op_CloseOepFileReleaseSem(VOID);
@@ -459,19 +453,18 @@ SHORT   OpResHostsIP(UCHAR  *puchRcvData,
     MEMORY
 ===========================================================================
 */
-extern USHORT  husOpSem;           /* Semaphore for Operational Paramater */
-extern USHORT  husOpLockHandle;    /* Lock Handle save area */
-extern SHORT   hsOpPluFileHandle;  /* for plu file handle */
-extern SHORT   hsOpDeptFileHandle; /* for dept file handle */
+extern PifSemHandle    husOpSem;           /* Semaphore for Operational Paramater */
+extern PifFileHandle   hsOpPluFileHandle;  /* for plu file handle */
+extern PifFileHandle   hsOpDeptFileHandle; /* for dept file handle */
 /* Add 2172 Rel 1.0 */
-extern SHORT   hsOpOepFileHandle;/* for oep file handle */
-extern SHORT   hsOpCpnFileHandle;  /* for Combination Coupon file handle */
-extern SHORT   hsOpCstrFileHandle; /* for Control String file handle */
+extern PifFileHandle   hsOpOepFileHandle;/* for oep file handle */
+extern PifFileHandle   hsOpCpnFileHandle;  /* for Combination Coupon file handle */
+extern PifFileHandle   hsOpCstrFileHandle; /* for Control String file handle */
 /* === Add PPI (Promotional Pricing Item) File (Release 3.1) BEGIN === */
-extern SHORT   hsOpPpiFileHandle; /* for PPI file handle */
+extern PifFileHandle   hsOpPpiFileHandle; /* for PPI file handle */
 /* === Add PPI (Promotional Pricing Item) File (Release 3.1) END === */
 /* MLD Mnemonics File, V3.3 */
-extern SHORT   hsOpMldFileHandle; /* for MLD Mnemonics file handle */
+extern PifFileHandle   hsOpMldFileHandle; /* for MLD Mnemonics file handle */
 
 /*-----------------------------------------------
      File Names for the Database folder files.
