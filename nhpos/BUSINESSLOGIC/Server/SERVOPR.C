@@ -65,6 +65,8 @@
 #include    <cscas.h>
 #include    <maint.h>
 
+#include	<ConnEngineObjectIf.h>
+
 //-------------------  Helper functions
 //
 
@@ -821,7 +823,7 @@ VOID    SerRecvOpr(VOID)
             husIspMasHand  = PluIf_Dep.husHandle;       /* saratoga */
             fsIspLockedFC |= ISP_LOCK_MASSMEMORY;   /* Set MASSMEMORY */
         }
-        memcpy(pPluIf_Dep++, &PluIf_Dep, sizeof(PLUIF_DEP));
+		*pPluIf_Dep = PluIf_Dep;  pPluIf_Dep++; // insert the department data into the output message buffer
         SerResp.pSavBuff->usDataLen += sizeof(PLUIF_DEP); /* */
         
 		sSerSendStatus = SerSendMultiple((CLIRESCOM *)&ResMsgH, sizeof(CLIRESOPPARA));
@@ -857,7 +859,7 @@ VOID    SerRecvOpr(VOID)
             husIspMasHand  = PluIf_Rep.husHandle;       /* saratoga */
             fsIspLockedFC |= ISP_LOCK_MASSMEMORY;   /* Set MASSMEMORY */
         }
-        memcpy(pPluIf_Rep++, &PluIf_Rep, sizeof(PLUIF_REP));
+		*pPluIf_Rep = PluIf_Rep; pPluIf_Rep++;
         SerResp.pSavBuff->usDataLen += sizeof(PLUIF_REP); /* */
         
         sSerSendStatus = SerSendMultiple((CLIRESCOM *)&ResMsgH, sizeof(CLIRESOPPARA));
@@ -933,10 +935,10 @@ VOID    SerRecvOpr(VOID)
 
 				// Transfer the data in the temporary file created by the Connection Engine Interface
 				// to the standard Server Temp file so that it can be processed properly.
-				sTempFileHandle = PifOpenFile (_T("OBJTEMP"), "tnw");
+				sTempFileHandle = PifOpenFile (auchConnEngineTempFile, auchTEMP_NEW_FILE_WRITE);
 				if (sTempFileHandle < 0) {
-					PifDeleteFile (_T("OBJTEMP"));
-					sTempFileHandle = PifOpenFile (_T("OBJTEMP"), "tnw");
+					PifDeleteFile (auchConnEngineTempFile);
+					sTempFileHandle = PifOpenFile (auchConnEngineTempFile, auchTEMP_NEW_FILE_WRITE);
 					if (sTempFileHandle < 0) {
 						char  xBuff[128];
 						sprintf (xBuff, "CLI_FCCOPONNENGINEMSGFH OBJTEMP file open error %d", sTempFileHandle);
