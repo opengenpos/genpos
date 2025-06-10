@@ -405,8 +405,8 @@ ISPLOGONVERSION  IspRecvLogonVersion (ISPLOGONVERSION *pVersion);
 SHORT   IspIamMaster(VOID);                  /* Check am I Master    */
 SHORT   IspIamBMaster(VOID);                 /* Check am I B-Master  */
 SHORT   IspIamSatellite(VOID);               /* Check am I Satellite */
-VOID    IspSendResponse(CLIRESCOM *pResMsgH, ULONG ulResMsgHLen, UCHAR  *puchReqData, ULONG ulReqLen); /* Send response */
-VOID    IspSendError(SHORT sError);          /* Send error response */
+SHORT   IspSendResponse(CLIRESCOM *pResMsgH, ULONG ulResMsgHLen, UCHAR  *puchReqData, ULONG ulReqLen); /* Send response */
+SHORT   IspSendError(SHORT sError);          /* Send error response */
 
 VOID    IspChangeStatus(USHORT usStatus);    /* Change state control */
 USHORT  IspComReadStatus(VOID);              /* Get terminal status */

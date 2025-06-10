@@ -248,12 +248,12 @@ SHORT   IspIamSatellite(VOID)
 ** Description: This function sends response.
 *===========================================================================
 */
-VOID    IspSendResponse(CLIRESCOM   *pResMsgH,
+SHORT   IspSendResponse(CLIRESCOM   *pResMsgH,
                         ULONG       ulResMsgHLen,
                         UCHAR       *puchReqData,
                         ULONG       ulReqLen)
 {
-    ULONG  ulSendLen;
+    ULONG  ulSendLen = 0;
 
     // fill in the XGRAM header indicating receiver of the message we are building.
     IspSndBuf.xgHeader = IspRcvBuf.xgHeader;
@@ -271,7 +271,7 @@ VOID    IspSendResponse(CLIRESCOM   *pResMsgH,
         ulSendLen += ulReqLen + sizeof(pSend->usDataLen);      /* Add data length size */
     }
                                                /*=== SEND RESPONSE ===*/
-    IspNetSend(ulSendLen);
+    return IspNetSend(ulSendLen);
 }
 
 
@@ -287,7 +287,7 @@ VOID    IspSendResponse(CLIRESCOM   *pResMsgH,
 ** Description: This function sends error response.
 *===========================================================================
 */
-VOID    IspSendError(SHORT sError)
+SHORT   IspSendError(SHORT sError)
 {
     CLIREQCOM   *pReqMsgH = (CLIREQCOM *)IspRcvBuf.auchData;
     CLIRESCOM   *pResMsgH = (CLIRESCOM *)IspSndBuf.auchData;
@@ -303,7 +303,7 @@ VOID    IspSendError(SHORT sError)
     pResMsgH->sReturn   = 0;                     /* Set success */
 
                                                  /*=== SEND RESPONSE ===*/
-    IspNetSend(sizeof(XGHEADER) + sizeof(CLIRESCOM));
+    return IspNetSend(sizeof(XGHEADER) + sizeof(CLIRESCOM));
 }
 
 /*
