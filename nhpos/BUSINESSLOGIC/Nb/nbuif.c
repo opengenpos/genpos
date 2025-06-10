@@ -13,10 +13,6 @@
 * Category    : Notice Board, NCR 2170 US Hospitality Application         
 * Program Name: NBUIF.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Midium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstruct: The provided function names are as follows:  
 *
 *               NbInit()          : Initialize NB Thread
@@ -49,6 +45,7 @@
 */
 #include	<tchar.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <ecr.h>
 #include <pif.h>
@@ -334,6 +331,12 @@ SHORT  NbStartAsMaster(USHORT fsFlag)
 
     NbDispWithoutBoard(usTemp);                /* Display desc. without a board */
 
+    {
+        char  xBuff[128];
+        sprintf(xBuff, "==NOTE: NbStartAsMaster() fsFlag=0x%x  usTemp=0x%x", fsFlag, usTemp);
+        NHPOS_NONASSERT_TEXT(xBuff);
+    }
+
     return (NB_SUCCESS);
 }
 
@@ -372,6 +375,12 @@ SHORT  NbStartOnline(USHORT fsFlag)
     PifReleaseSem(husNbSemHand);               /* Release semaphore            */
 
     NbDispWithoutBoard(usTemp);                /* Display desc. without a board */
+
+    {
+        char  xBuff[128];
+        sprintf(xBuff, "==NOTE: NbStartOnline() fsFlag=0x%x  usTemp=0x%x", fsFlag, usTemp);
+        NHPOS_NONASSERT_TEXT(xBuff);
+    }
 
     return (NB_SUCCESS);
 }
