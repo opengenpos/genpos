@@ -110,7 +110,7 @@
 /* Add 2172 Rel 1.0 */
 #define  OP_OEP_FULL           OP_PLU_FULL
 #define  OP_NOT_IN_FILE        (-3)
-#define  OP_LOCK               (-5)
+#define  OP_LOCK               (-5)        // used with the various OpLock functions: SerOpLock(), OpLock(), etc.
 #define  OP_NO_MAKE_FILE       (-6)
 #define  OP_ABNORMAL_DEPT      (-7)
 #define  OP_ABNORMAL_CPN       (-8)
@@ -580,6 +580,7 @@ SHORT   OpCstrDelete(CSTRIF *pCstr, USHORT usLockHnd);
 SHORT   OpCstrIndRead(CSTRIF *pCstr, USHORT usLockHnd);
 SHORT   OpLock(VOID);
 VOID    OpUnLock(VOID);
+SHORT   Op_LockCheck(USHORT usLockHnd);
 
 SHORT   OpSignInBlockOn (VOID);
 SHORT   OpSignInBlockOff (VOID);
@@ -653,9 +654,9 @@ SHORT   OpResBackUp(UCHAR  *puchRcvData,
 // generate a warning so this place is easy to find from a compiler warning.
 #pragma message("  ====++++====   OpConvertError_Debug() is ENABLED   \z   ====++++====")
 #define OpConvertError(sError) OpConvertError_Debug(sError, __FILE__, __LINE__)
-USHORT  OpConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo);               /* Convert error code  */
+USLDTERR  OpConvertError_Debug(SHORT sError, char *aszFilePath, int nLineNo);               /* Convert error code  */
 #else
-USHORT   OpConvertError(SHORT sError);
+USLDTERR   OpConvertError(SHORT sError);
 #endif
 
 /* Add 2172 Rel 1.0 */
