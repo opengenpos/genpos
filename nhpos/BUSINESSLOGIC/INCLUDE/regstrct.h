@@ -1548,7 +1548,7 @@
 typedef struct {
     USHORT   uchPPICode; //ESMITH
 	//UCHAR   uchPPICode;
-    LONG    lPPIPrice;
+    DCURRENCY lPPIPrice;
     SHORT   sPPIQty;
 } PPIDATA;
 typedef struct {
@@ -1559,7 +1559,7 @@ typedef struct {
 typedef struct {
     TCHAR   auchPLUNo[STD_PLU_NUMBER_LEN+1];
     UCHAR   uchAdjective;
-    LONG    lPMPrice;
+    DCURRENCY  lPMPrice;
     SHORT   sPMQty;
 } PMDATA;
 typedef struct {
