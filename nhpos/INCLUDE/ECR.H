@@ -183,7 +183,7 @@ extern "C"{
 #define ARRAYSIZEOF(x)  (sizeof(x)/sizeof((x)[0]))
 
 // Determine offset in bytes of a member of a struct.
-#define OFFSET(STRUCTURE, MEMBER)		&(((STRUCTURE *)NULL)->MEMBER)
+#define OFFSET(STRUCTURE, MEMBER)		(USHORT)(&(((STRUCTURE *)NULL)->MEMBER))
 
 
 #ifndef FARCONST
@@ -569,9 +569,10 @@ extern "C"{
 // so those error code values unique to a specific error code type should use values
 // outside of the range of -1 through -20.
 // 
-// Most of the error code types adopt the following conventions:
-//  - a positive, a value of zero or greater, error code value indicates success
-//  - non-zero error code values provide some additional information such as number of bytes read
+// Most of the return code types adopt the following conventions:
+//  - a positive, a value of zero or greater, return code value indicates success
+//  - non-zero return code values provide some additional information such as number of bytes read
+//  - non-zero positive return code that is a lead thru mnemonic address
 //  - a negative error code value indicates a failure with different values providing the reason
 // 
 // In most cases a success return code is a value of zero with definitions such as:
@@ -606,7 +607,10 @@ extern "C"{
 // Lead Thru code to inform the operator of an error condition.
 //   - USLDTERR: lead thru codes that result in an error message displayed to the user. see LDT_FLFUL_ADR, etc.
 //   - SLDTITM:  may be lead thru address (positive and non-zero) or event indication (zero or negative) ITM_CANCEL, etc.
-
+//
+// There are several functions that convert from a set of function library specific return code values and an
+// appropriate lead thru mnemonic value to inform the operator of an error condition. They all have "ConvertError"
+// in the name. See TtlConvertError(), GusConvertError(), CstConvertError(), OpConvertError(), etc.
 
 //  Defines for Return Value and Status
 //  The following defines are being used to standardize function
