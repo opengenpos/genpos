@@ -277,7 +277,7 @@ SHORT UieAddToEndMacro(VOID)
 	}
 
 	/*----- Pause Control String -----*/
-	sStatus = UifRegPauseString(&usSize, 0x0001);   // keep any pause strings that have already been processed.
+	sStatus = UifRegPauseString(&usSize, UIE_PAUSE_FLAG_NOCLEAR);   // keep any pause strings that have already been processed.
 	if (sStatus == -1) {
 		ItemOtherClear();
 		UifRegWorkClear();
@@ -991,8 +991,7 @@ SHORT UieCheckKeyData(USHORT usType, FSCTBL Fsc, KEYMSG *pMsg)
     struct _INPUT   *pKey = &pMsg->SEL.INPUT;
 
     if (usType == UIE_AN_KEY) {             /* alpha/numeric key   */
-        if (UieWriteANKey(Fsc.uchMajor,     /* error occured       */
-                          pMsg) == UIE_SUCCESS) {
+        if (UieWriteANKey(Fsc.uchMajor, pMsg) == UIE_SUCCESS) {      /* error occured       */
             return (UIE_SUCCESS);           /* exit ...            */
         }
 
@@ -1041,8 +1040,7 @@ SHORT UieCheckKeyData(USHORT usType, FSCTBL Fsc, KEYMSG *pMsg)
                 /* break */                 /* not use             */
 
             default:
-                if (UieWriteANKey('.',      /* error occured       */
-                                  pMsg) == UIE_SUCCESS) {
+                if (UieWriteANKey('.', pMsg) == UIE_SUCCESS) {      /* error occured       */
                     return (UIE_SUCCESS);   /* exit ...            */
                 }
                 break;

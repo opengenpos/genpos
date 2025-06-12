@@ -346,6 +346,13 @@ typedef struct _UIEDESCRLCD {
 #define UIEGETMESSAGE_FLAG_EMPTYRINGBUF  0x0004     // when used with UieGetMessage() clears ring buffer
 #define UIEGETMESSAGE_FLAG_MACROPAUSE    0x0008     // when used with UieGetMessage() pauses control string until input complete
 
+// ----------------------
+// following defines used with function UifRegPauseString() as a second argument for optional behavior.
+// see the function definition for a detailed explanation of these flags.
+#define UIE_PAUSE_NOFLAGS          0x0000    // place holder for call to UifRegPauseString() with no flags
+#define UIE_PAUSE_FLAG_NOCLEAR     0x0001    // don't clear the Pause message data storage before processing the Pause message
+
+
 /*
 *===========================================================================
 *   User Interface Message

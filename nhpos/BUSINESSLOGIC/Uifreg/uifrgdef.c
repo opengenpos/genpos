@@ -70,7 +70,7 @@
 
 
 
-UIMENU FARCONST aChildRegDiaAlphaName[] = {{UifDiaAlphaNameEntry, CID_DIAALPHAENTRY},
+static UIMENU const aChildRegDiaAlphaName[] = {{UifDiaAlphaNameEntry, CID_DIAALPHAENTRY},
                                           {NULL, 0}};
 #if 0
 // removed this as used only for the old style Check No Purchase, MDC_CHK_NO_PURCH,
@@ -679,7 +679,7 @@ USLDTERR  UifRegString(const KEYMSG *pData)
 #endif
 
     /*----- Pause Control String -----*/
-    sStatus = UifRegPauseString(&usSize, 0);
+    sStatus = UifRegPauseString(&usSize, UIE_PAUSE_NOFLAGS);
     if (sStatus == -1) {
         ItemOtherClear();
         UifRegWorkClear();
@@ -771,16 +771,16 @@ USHORT  UifRegPauseStringNumber = 0;
 
 SHORT   UifRegPauseString(USHORT *pusSize, ULONG  ulFlags)  // FSC_PAUSE, handle pause key data entry
 {
-	static TCHAR   auchWork[20][(UIFREG_MAX_DIGIT25*2)+1];  // 20 Possible Pause Strings, Each one can have 25 values. Each value has a major and minor class
-	static USHORT  ausSize[20];			 
-    static CHAR    auchPause[20];
+	static TCHAR   auchWork[20][(UIFREG_MAX_DIGIT25*2)+1] = { 0 };  // 20 Possible Pause Strings, Each one can have 25 values. Each value has a major and minor class
+	static USHORT  ausSize[20] = { 0 };
+    static CHAR    auchPause[20] = { 0 };
 	extern USHORT  UifRegPauseStringNumber;
     UCHAR   *puchPtr;
     SHORT   i = 0, j = 0, sStatus;			 
 	SHORT   sDiaStatus;
 	USHORT  usSize;			 
 
-	if ((ulFlags & 0x0001) == 0) {
+	if ((ulFlags & UIE_PAUSE_FLAG_NOCLEAR) == 0) {
 		// clear the pause message working data so that only new
 		// data will be used in the control string.
 		memset(auchWork, 0, sizeof(auchWork));
@@ -792,7 +792,7 @@ SHORT   UifRegPauseString(USHORT *pusSize, ULONG  ulFlags)  // FSC_PAUSE, handle
 
     for (;;) {
         if ((sStatus = UifRegSearchKey(auchUifString, FSC_PAUSE, *pusSize)) >= 0) {
-			REGDISPMSG      DispMsg;
+            REGDISPMSG      DispMsg = { 0 };
 
             if ((puchPtr = strchr(auchPause, auchUifString[sStatus + 1])) == 0L) {
 				UIFDIADATA  WorkUI = { 0 };
