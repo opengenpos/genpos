@@ -3,6 +3,10 @@
 
 #include "stdafx.h"
 #include "afxconv.h"
+
+#include    <ecr.h>
+#include    <pif.h>
+#include    <bl.h>
 #include "ServerProc.h"
 #include "httpserver.h"
 
@@ -76,8 +80,13 @@ END_MESSAGE_MAP()
 // CHttpserverApp construction
 
 CHttpserverApp::CHttpserverApp() :
+	m_RequestType(HttpRequestType::RequestUnknown),
+	m_ucharBufferPayLoad(nullptr),
+	m_nBytesRead(0),
 	m_nBytesCount(0),
-	fpFileStream(NULL)
+	m_nHeaderCount(0),
+	fpFileStream(NULL),
+	sContentType(BL_DATAQUERY_CONTENT_UNKNOWN)
 {
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
@@ -164,7 +173,7 @@ int CHttpserverApp::csIssueRequest ()
 	char *myTextLineFileNotFound = "<html><head><title>404 File not found</title></head><body><h1>404 File not found</h1</body></html>";
 	CString csFileName;
 
-	if (m_RequestType == RequestGet)
+	if (m_RequestType == HttpRequestType::RequestGet)
 	{
 		if (_tcsstr (m_csGetFileName, _T(".sys")) == 0 &&
 			_tcsstr (m_csGetFileName, _T(".xml")) == 0 &&
@@ -295,7 +304,7 @@ int CHttpserverApp::csIssueRequest ()
 			casInUse.Send ((UCHAR *)myTextLineFileNotFound, strlen(myTextLineFileNotFound));
 		}
 	}
-	else if (m_RequestType == RequestPost)
+	else if (m_RequestType == HttpRequestType::RequestPost)
 	{
 		if (m_nBytesCount > 0)
 		{
@@ -390,7 +399,7 @@ int CHttpserverApp::csReadRequest ()
 
 	m_csGetFileName[0] = 0;
 	m_csGetContentType[0] = 0;
-	m_RequestType = RequestUnknown;
+	m_RequestType = HttpRequestType::RequestUnknown;
 	if (m_nBytesCount < 1) {
 		return 1;
 	}
@@ -468,7 +477,7 @@ int CHttpserverApp::csReadRequest ()
 			m_csGetFileName [ijk] = aszBuffer[ijk];
 		}
 
-		m_RequestType = RequestGet;
+		m_RequestType = HttpRequestType::RequestGet;
 	}
 	else if (memcmp (m_ucharBuffer, "PUT", 3) == 0)
 	{
@@ -483,7 +492,7 @@ int CHttpserverApp::csReadRequest ()
 			m_csGetFileName [ijk] = aszBuffer[ijk];
 		}
 
-		m_RequestType = RequestPut;
+		m_RequestType = HttpRequestType::RequestPut;
 	}
 	else if (memcmp (m_ucharBuffer, "POST", 4) == 0)
 	{
@@ -536,7 +545,7 @@ int CHttpserverApp::csReadRequest ()
 					m_ucharBufferPostValue[nPostCount][ijk] = 0;
 			}
 		}
-		m_RequestType = RequestPost;
+		m_RequestType = HttpRequestType::RequestPost;
 	}
 
 	return 0;
@@ -644,7 +653,7 @@ __declspec(dllexport) int  ReadRequest (ServerProcInterface *pMyProcInterface)
 	pMyProcInterface->m_ucharBufferPayLoad = myhttp->m_ucharBufferPayLoad;
 	pMyProcInterface->m_ucharBuffer = myhttp->m_ucharBuffer;
 	pMyProcInterface->m_nBytesCount = myhttp->m_nBytesCount;
-	pMyProcInterface->m_nRequestType = myhttp->m_RequestType;
+	pMyProcInterface->m_nRequestType = static_cast<int>(myhttp->m_RequestType);
 	pMyProcInterface->m_tcharFileName = myhttp->m_csGetFileName;
 	pMyProcInterface->m_ucharBufferHeaderLine = myhttp->m_ucharBufferHeaderLine;
 	pMyProcInterface->m_ucharBufferPostLineKeyword = myhttp->m_ucharBufferPostKeyword;
@@ -654,8 +663,8 @@ __declspec(dllexport) int  ReadRequest (ServerProcInterface *pMyProcInterface)
 
 __declspec(dllexport) int  ParsePayLoadXML (ServerProcInterface *pMyProcInterface)
 {
-	TCHAR   tcReqBuffer[4096];
-	TCHAR   tcRespBuffer[4096];
+	TCHAR   tcReqBuffer[4096] = { 0 };
+	TCHAR   tcRespBuffer[4096] = { 0 };
 	TCHAR   *pReqBuff = tcReqBuffer, *pRespBuffer = tcRespBuffer;
 	int     nRespBuffSize = sizeof(tcRespBuffer);
 	int     nLen = 0;

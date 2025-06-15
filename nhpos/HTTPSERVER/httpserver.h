@@ -51,7 +51,7 @@ public:
 	static CHttpserverApp * GetServerObject();
 
 	// attributes for the class
-	typedef enum {RequestUnknown = SERVERPROC_REQUEST_UNKNOWN, RequestGet = SERVERPROC_REQUEST_GET, RequestPost=SERVERPROC_REQUEST_POST, RequestPut=SERVERPROC_REQUEST_PUT} HttpRequestType;
+	enum class HttpRequestType {RequestUnknown = SERVERPROC_REQUEST_UNKNOWN, RequestGet = SERVERPROC_REQUEST_GET, RequestPost=SERVERPROC_REQUEST_POST, RequestPut=SERVERPROC_REQUEST_PUT};
 
 	CSocket casInUse;
 
