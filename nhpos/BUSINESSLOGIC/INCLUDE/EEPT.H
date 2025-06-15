@@ -241,8 +241,8 @@ typedef struct {
 	USHORT  usCheckTenderId;                // Unique tender id for split checks identifying specific tender
 	USHORT  usReturnType;                   // the return type indicating Return, Exchange, Refund.
 	UCHAR	auchPaymentType;				//used for determining a swipe or contactless transactions
-	UCHAR   uchUniqueIdentifier[24];		// Unique identifer for returns as digits, binary coded decimal
-	UCHAR	uchUniqueIdentifierReturn[24];  // Unique identifer for transaction being returned as digits, binary coded decimal
+	UCHAR   uchUniqueIdentifier[NUM_BARCODE_LEN];		// Unique identifer for returns as digits, binary coded decimal
+	UCHAR	uchUniqueIdentifierReturn[NUM_BARCODE_LEN];  // Unique identifer for transaction being returned as digits, binary coded decimal
 	TCHAR	aszCardHolder[NUM_CPRSPTEXT];   // card holder name
 	TCHAR	aszCardLabel[NUM_CPRSPTEXT];    // 28:number, see also TRN_DSI_CARDTYPE and EEPTRSPDATA.aszCardLabel
 	UCHAR   aszStoredRefNum[24];            // pseudo ref number for Stored credit tender transactions for Amtrak
@@ -259,9 +259,9 @@ typedef struct {
 	ITEMDISC		      TranChargeTips;
 	ITEMTENDERCHARGETIPS  ReturnsTenderChargeTips;
 	UCHAR   uchSpecialProcessingFlags;      // indicates if special process is needed or can be done.
-	UCHAR   uchUniqueIdentifier[24];		// Unique identifer for returns as digits, binary coded decimal
-	UCHAR	uchUniqueIdentifierReturn[24];  // Unique identifer for transaction being returned as digits, binary coded decimal
-	UCHAR   aszStoredRefNum[24];            // pseudo ref number for Stored credit tender transactions for Amtrak
+	UCHAR   uchUniqueIdentifier[NUM_BARCODE_LEN];		// Unique identifer for returns as digits, binary coded decimal
+	UCHAR	uchUniqueIdentifierReturn[NUM_BARCODE_LEN];  // Unique identifer for transaction being returned as digits, binary coded decimal
+	UCHAR   aszStoredRefNum[NUM_BARCODE_LEN];            // pseudo ref number for Stored credit tender transactions for Amtrak
 } EEPTREQSTRUCT;
 
 #define  EEPTREQUNIONTYPE_REQDATA     1
@@ -454,8 +454,8 @@ typedef struct{
 		UCHAR           auchAuthorize[10];
         UCHAR			aszPostTransNo[NUM_POSTTRAN];   /* 68:posted transaction number */
 		UCHAR			auchAcqRefData[NUM_ACQREFDATA];	// XEPT Acquirer Reference Number - used for pre-authorization
-		UCHAR			uchUniqueIdentifier[24];        // Unique identifer for returns as digits, binary coded decimal
-		UCHAR			uchUniqueIdentifierReturn[24];  // Unique identifer for transaction being returned as digits, binary coded decimal
+		UCHAR			uchUniqueIdentifier[NUM_BARCODE_LEN];        // Unique identifer for returns as digits, binary coded decimal
+		UCHAR			uchUniqueIdentifierReturn[NUM_BARCODE_LEN];  // Unique identifer for transaction being returned as digits, binary coded decimal
 		USHORT			usCheckTenderId;                // Unique tender id for split checks identifying specific tender
 		USHORT          usReturnType;
 		USHORT			usTranType;                     // Transaction Type (Credit, Debit, EBT, etc)

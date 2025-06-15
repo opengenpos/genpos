@@ -1170,6 +1170,7 @@
 #define     NUM_ETK_NAME        (STD_ETK_NAME_LEN+1)       // ETK Name,   R3.1 */
 #define     NUM_SCAN_NUMBER     13                       // Account Number,  V3.3 */
 #define     NUM_ACCT_NUMBER     10                       // Account Number,  V3.3 */
+#define     NUM_BARCODE_LEN     24                       // maximum number of digits for bar code for unique identifier
 #define     NUM_BIRTYHDAY         6                      // birthday entry, 2172  */
 #define     NUM_PLU_LEN         STD_PLU_NUMBER_LEN       // STD_PLU_NUMBER_LEN
 //#define       NUM_PLU_BCD_LEN     7                    // length of PLU by BCD, 2172
@@ -2281,8 +2282,8 @@ typedef struct {
 		USHORT      usEeptreqdata_Flag;
 		LONG        lRawError;                      // lError value (EEPTINTERFACE_SOCK_ERROR) from InterpretXML() in CDsiClient::ForwardStoredTransactions()
 		SHORT       sTranStatus;                    // transaction status such as EEPT_DECLINED, EEPT_NOW_PROCESSED, or EEPT_ERROR_DONOTHING
-		UCHAR		uchUniqueIdentifier[24];        // Unique identifer for returns as digits, binary coded decimal
-		UCHAR		uchUniqueIdentifierReturn[24];  // Unique identifer for transaction being returned as digits, binary coded decimal
+		UCHAR		uchUniqueIdentifier[NUM_BARCODE_LEN];        // Unique identifer for returns as digits, binary coded decimal
+		UCHAR		uchUniqueIdentifierReturn[NUM_BARCODE_LEN];  // Unique identifer for transaction being returned as digits, binary coded decimal
 		UCHAR	    uchPaymentType;					    //used for contactless or swipe types of transactions
 		USHORT      usCheckTenderId;                // Unique tender id for split checks identifying specific tender
 		USHORT		usTranType;                     // Transaction Type (Credit, Debit, EBT, etc)
@@ -2367,7 +2368,7 @@ typedef struct {
         TCHAR   aszNumber[NUM_NUMBER];          // 28:number
         TCHAR   auchExpiraDate[NUM_EXPIRA];     /* 316:expiration date */
         TCHAR   auchMSRData[NUM_MSRDATA_PADDED];       /* 327:MSR data */
-		UCHAR   uchUniqueIdentifier[24];    // Unique identifer for returns as digits, binary coded decimal
+		UCHAR   uchUniqueIdentifier[NUM_BARCODE_LEN];    // Unique identifer for returns as digits, binary coded decimal
 		ITEMTENDERAUTHCODE  authcode;               // XEPT authorization Code - from DSI Client XML.
 		ITEMTENDERREFNO     refno;		            // XEPT Reference Number generated for processor of transaction for EEPT
 		ITEMTENDERINVNO     invno;                  // XEPT Invoice number generated for processor of transaction for EEPT
@@ -2519,7 +2520,7 @@ typedef struct {
         TCHAR   auchApproval[NUM_APPROVAL];     /* 304:approval code *add EPT*/
 		ITEMTENDERAUTHCODE  authcode;           // XEPT authorization Code - from DSI Client XML.
 		ITEMTENDERREFNO     refno;		        // XEPT Reference Number generated for processor of transaction for EEPT
-		UCHAR   uchUniqueIdentifier[24];        // Transaction Unique Identifier to print as bar code if trailer
+		UCHAR   uchUniqueIdentifier[NUM_BARCODE_LEN];        // Transaction Unique Identifier to print as bar code if trailer
     }ITEMPRINT;
 
 

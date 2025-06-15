@@ -477,7 +477,7 @@
         TCHAR       auchApproval[NUM_APPROVAL]; /* 304:approval code *add EPT*/
 		ITEMTENDERAUTHCODE  authcode;               // XEPT authorization Code - from DSI Client XML.
 		ITEMTENDERREFNO     refno;		            // XEPT Reference Number generated for processor of transaction for EEPT
-		UCHAR       uchUniqueIdentifier[24];    // Transaction Unique Identifier to print as bar code if trailer
+		UCHAR       uchUniqueIdentifier[NUM_BARCODE_LEN];    // Transaction Unique Identifier to print as bar code if trailer
     }TRANSTORAGEPRINT;
 
 

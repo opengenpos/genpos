@@ -273,8 +273,8 @@ typedef signed short   STRNRSLT;      // result variable containing one of the T
 		USHORT	sItemCount;					/* Retains Item count in guest check - Justin Mason 4/10/07*/
         UCHAR   auchCheckOpen[6];           /* time (HH:MM:SS) and date (YY/MM/DD) check open */
         UCHAR   auchCheckHashKey[6];        /* date and time as mm.dd.hh.mm.ss.0, */
-		UCHAR   uchUniqueIdentifier[24];    // Unique identifer for returns as digits, binary coded decimal
-		UCHAR   uchUniqueIdentifierReturn[24];    // Unique identifer of original transaction for returns as digits, binary coded decimal
+		UCHAR   uchUniqueIdentifier[NUM_BARCODE_LEN];    // Unique identifer for returns as digits, binary coded decimal
+		UCHAR   uchUniqueIdentifierReturn[NUM_BARCODE_LEN];    // Unique identifer of original transaction for returns as digits, binary coded decimal
 		USHORT  usPreauthItemNumber;              // the item number in the Preauth batch file if this is a Preauth Batch transaction, zero otherwise.
 		USHORT  usCheckTenderId;                  // Save area for unique tender id for split checks identifying specific tender
 		ULONG	ulStoredBlockOffset;
