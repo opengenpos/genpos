@@ -135,7 +135,7 @@ DEVICEIO_API
 DWORD WINAPI Close(HANDLE hDevice)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-    if(!DevCheckPrtHandle((SHORT)hDevice)){
+    if(!DevCheckPrtHandle(hDevice)){
         return DEVICEIO_E_ILLEGAL;
     }
 	DevPmgClose();
@@ -169,7 +169,7 @@ DWORD WINAPI Write(
 
 	PDEVICEIO_PRINTER_WRITE	pPrinterWrite;
 
-    if(!DevCheckPrtHandle((SHORT)hDevice)){
+    if(!DevCheckPrtHandle(hDevice)){
         return DEVICEIO_E_ILLEGAL;
     }
 
@@ -238,7 +238,7 @@ DWORD WINAPI IoControl(
 
 	DWORD	dwResult;
 
-    if(!DevCheckPrtHandle((SHORT)hDevice)){
+    if(!DevCheckPrtHandle(hDevice)){
         return DEVICEIO_E_ILLEGAL;
     }
 

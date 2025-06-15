@@ -2166,9 +2166,9 @@ HANDLE  DevGetPrtHandle()
         return (HANDLE)pPrtCtrl.hPort;
     }
 }
-BOOL    DevCheckPrtHandle(SHORT handle)
+BOOL    DevCheckPrtHandle(HANDLE handle)
 {
-    if((handle != pPrtCtrl.hPort)||(handle < 0)){
+    if(((SHORT)handle != pPrtCtrl.hPort)||(handle < 0)){
         return FALSE; 
     }else{
         return TRUE;

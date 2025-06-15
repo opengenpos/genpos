@@ -44,6 +44,6 @@ VOID    DevPmgSetValWaitCount( USHORT );
 VOID    DevPmgSetCallBack( PCALL_BACK );
 
 HANDLE  DevGetPrtHandle();
-BOOL    DevCheckPrtHandle(SHORT handle);
+BOOL    DevCheckPrtHandle(HANDLE handle);
 
 /***    End of PMG.H    ***/
