@@ -1483,8 +1483,8 @@ typedef struct {
 typedef struct {
     UCHAR   uchSumcheck;
     UCHAR   auchReserved_A[15];
-    UCHAR   szSystemId[18];
-    UCHAR   szRSystemId[18];
+    UCHAR   szSystemId[PIF_LEN_SOFTWARE_ID+1];
+    UCHAR   szRSystemId[PIF_LEN_SOFTWARE_ID+1];
     UCHAR   auchReserved_B[6];
 } PIF_SYSTEM_HEADER;
 
