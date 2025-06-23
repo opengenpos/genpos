@@ -92,7 +92,7 @@ _int64 UieGetCurrentTimeMilli (void)
 	union {
 		_int64       u64TimeInSeconds;
 		FILETIME     fileTime;
-	} myFileTime;
+	} myFileTime = { 0 };
 	_int64       u64ConvertFactor = 10000;  // SystemTimeToFileTime() returns to nearest 100 nanosecond
 
 	GetSystemTime (&mySystemTime);
@@ -260,7 +260,7 @@ VOID UifRegCheckDrawerLimit(USHORT status)
 {
 	PARAMISCPARA	ParaMiscPara = { 0 };
 	DCURRENCY		lAmountOnHand = 0;
-	STANZA          Stanza[10];
+	STANZA          Stanza[10] = { 0 };
 	SHORT			i;
 	static ULONG    ulCasID;           /* Handle Area */
 	TTLCASTENDER    CastTtl = { 0 };
@@ -463,9 +463,9 @@ SHORT UifRegCloseDrawerWarning (int iDelayOverride)
 	SHORT           sRetStatus;     // indicate if there are drawers that we need to report
 	_int64          u64StartTime, u64CurrentTime, u64TimeDelay = 12000;
 	ULONG			ulLong[2];
-	PARAMISCPARA	ParaMiscPara;
+	PARAMISCPARA	ParaMiscPara = { 0 };
 	BOOL            bPlayOpenDrawerStanza = 1;
-	STANZA          myStanza[21];
+	STANZA          myStanza[21] = { 0 };
 
 	/* Read the parameter information for CashDrawerLimit option, this effects printing
 	out the correct mnemonic on the reset display, if it is on, we will read from one
@@ -477,11 +477,11 @@ SHORT UifRegCloseDrawerWarning (int iDelayOverride)
 	UifCashDrawerMakeStanza (myStanza, sizeof(myStanza)/sizeof(myStanza[0]));
 
 	{
-		UCHAR               MDCTime;
+		USHORT     MDCTime = 0;
 
 		MDCTime = CliParaMDCCheckField(MDC_DRAWEROPEN_TIME, MDC_PARAM_BYTE);
 		if (MDCTime > 0) {
-			u64TimeDelay = MDCTime * 1000;
+			u64TimeDelay = (long long)MDCTime * 1000;
 		} else {
 			bPlayOpenDrawerStanza = 0;
 			u64TimeDelay = 12000;
@@ -489,7 +489,7 @@ SHORT UifRegCloseDrawerWarning (int iDelayOverride)
 	}
 
 	if (iDelayOverride > 0) {
-		u64TimeDelay = iDelayOverride * 1000;
+		u64TimeDelay = (long long)iDelayOverride * 1000;
 	} else if (iDelayOverride < 0) {
 		u64TimeDelay = 0;
 	}
