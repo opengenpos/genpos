@@ -34,22 +34,28 @@
 #include "printercaps.h"
 #include "piflocal.h"
 
-#define MAX_DEVICE 4
 
-SYSCONFIG   SysConfig;
+SYSCONFIG   SysConfig;    // memory resident operational data storage, mostly read only once setup
 
-PIF_FAULT_LOG       FaultLog;
-PIF_KEY_TRACK       KeyTrack;
-PIF_FUNC_TRACK      FuncTrack;
-PIF_ERROR_TRACK     ErrorTrack;
-PIF_EXCEPTION_LOG   ExceptionLog;
-PIF_UNIQUE_INFO     UniqueInfo;              /* add for 2170 R3 */
-PIF_RESOURCE        Resource;
-PIF_SYSTEM_HEADER   SystemHeader;
-PIF_SOFT_INFO       SoftInfo;
-UCHAR               aTallyRJ[32];
-UCHAR               aTallySlip[32];
-TCHAR               auchModemStrings[PIF_LEN_M0DEM_STR+1];
+// following structs are used to contain various SysConfig
+// data. The addresses of these various structs are assigned to
+// various pointer members of SysConfig and are accessed through those
+// pointers.
+// 
+// NOTE: Not all of these are actually being used.
+//
+static PIF_FAULT_LOG       FaultLog;
+static PIF_KEY_TRACK       KeyTrack;
+static PIF_FUNC_TRACK      FuncTrack;
+static PIF_ERROR_TRACK     ErrorTrack;
+static PIF_EXCEPTION_LOG   ExceptionLog;
+static PIF_UNIQUE_INFO     UniqueInfo;         /* add for 2170 R3, storage area for SysConfig.pUniqueInfo */
+static PIF_RESOURCE        Resource;
+static PIF_SYSTEM_HEADER   SystemHeader;
+static PIF_SOFT_INFO       SoftInfo;
+static UCHAR               aTallyRJ[32];       // storage area for SysConfig.pTallyRJ
+static UCHAR               aTallySlip[32];     // storage area for SysConfig.pTallySlip
+static TCHAR               auchModemStrings[PIF_LEN_M0DEM_STR+1];   // storage area for SysConfig.pModemStrings
 
 extern TCHAR wszPifPathName[MAX_PATH];
 
@@ -78,13 +84,11 @@ VOID PifSetSysConfig(VOID)
     UCHAR   *puchWork;
     TCHAR   *pDeviceName;
     TCHAR   *pDllName;
-    DWORD   dwData, dwBytes;
     DWORD   dwCount;
     DWORD   dwDisposition, dwType;
     DWORD   dwRet;
     LONG    lRet;
     HKEY    hKey;
-    USHORT  usLength;
     UCHAR   uchWork;
     TCHAR   atchDeviceName[SCF_USER_BUFFER] = {0};
     TCHAR   atchDllName[SCF_USER_BUFFER] = {0};
@@ -296,8 +300,7 @@ VOID PifSetSysConfig(VOID)
 	dwCount = 0;
     dwRet = ScfGetActiveDevice(SCF_TYPENAME_BEVERAGE, &dwCount, pDeviceName, pDllName);
     if ((dwRet == SCF_SUCCESS) && (dwCount)) {
-		DWORD  i;
-        for (i=0; i<dwCount; i++) {
+        for (DWORD i=0; i<dwCount; i++) {
             PifGetSerialConfig(pDeviceName, DEVICE_BEVERAGE, FALSE);
             // move pointer
             pDeviceName += wcslen(pDeviceName) + 1;
@@ -310,8 +313,7 @@ VOID PifSetSysConfig(VOID)
 	dwCount = 0;
     dwRet = ScfGetActiveDevice(SCF_TYPENAME_KITCHEN_CRT, &dwCount, pDeviceName, pDllName);
     if ((dwRet == SCF_SUCCESS) && (dwCount)) {
-		DWORD  i;
-        for (i=0; i<dwCount; i++) {
+        for (DWORD i=0; i<dwCount; i++) {
             PifGetSerialConfig(pDeviceName, DEVICE_KITCHEN_CRT, FALSE);
             // move pointer
             pDeviceName += wcslen(pDeviceName) + 1;
@@ -324,8 +326,7 @@ VOID PifSetSysConfig(VOID)
 	dwCount = 0;
     dwRet = ScfGetActiveDevice(SCF_TYPENAME_KITCHEN_PRINTER, &dwCount, pDeviceName, pDllName);
     if ((dwRet == SCF_SUCCESS) && (dwCount)) {
-		DWORD  i;
-        for (i=0; i<dwCount; i++) {
+        for (DWORD i=0; i<dwCount; i++) {
             PifGetSerialConfig(pDeviceName, DEVICE_KITCHEN_PRINTER, TRUE);
             // move pointer
             pDeviceName += wcslen(pDeviceName) + 1;
@@ -355,8 +356,7 @@ VOID PifSetSysConfig(VOID)
 	dwCount = 0;
     dwRet = ScfGetActiveDevice(SCF_TYPENAME_PRINTER, &dwCount, pDeviceName, pDllName);
     if ((dwRet == SCF_SUCCESS) && (dwCount)) {
-		DWORD  i;
-        for (i=0; i<dwCount; i++) {
+        for (DWORD i=0; i<dwCount; i++) {
             PifGetSerialConfig(pDeviceName, DEVICE_THERMAL_PRINTER, FALSE);
             // move pointer
             pDeviceName += wcslen(pDeviceName) + 1;
@@ -370,8 +370,7 @@ VOID PifSetSysConfig(VOID)
 	dwCount = 0;
     dwRet = ScfGetActiveDevice(SCF_TYPENAME_SCALE, &dwCount, pDeviceName, pDllName);  // removed RJC 12/12/2016
     if ((dwRet == SCF_SUCCESS) && (dwCount)) {
-		DWORD  i;
-        for (i=0; i<dwCount; i++) {
+        for (DWORD i=0; i<dwCount; i++) {
             PifGetSerialConfig(pDeviceName, DEVICE_SCALE, TRUE);
             // move pointer
             pDeviceName += wcslen(pDeviceName) + 1;
@@ -385,8 +384,7 @@ VOID PifSetSysConfig(VOID)
 	dwCount = 0;
     dwRet = ScfGetActiveDevice(SCF_TYPENAME_COIN, &dwCount, pDeviceName, pDllName);
     if ((dwRet == SCF_SUCCESS) && (dwCount)) {
-		DWORD  i;
-        for (i=0; i<dwCount; i++) {
+        for (DWORD i=0; i<dwCount; i++) {
             PifGetSerialConfig(pDeviceName, DEVICE_COIN_DISPENSER, TRUE);
             // move pointer
             pDeviceName += wcslen(pDeviceName) + 1;
@@ -406,8 +404,7 @@ VOID PifSetSysConfig(VOID)
 			SysConfig.usInterfaceDetect |= SYSCONFIG_IF_WEDGE_ON;
 		}
 		else {
-			DWORD  i;
-			for (i=0; i<dwCount; i++) {
+			for (DWORD i=0; i<dwCount; i++) {
 				PifGetSerialConfig(pDeviceName, DEVICE_SCANNER, TRUE);
 				// move pointer
 				pDeviceName += wcslen(pDeviceName) + 1;
@@ -430,9 +427,9 @@ VOID PifSetSysConfig(VOID)
     wsprintf(wszKey, TEXT("%s\\%s"), PIFROOTKEY, OPTIONKEY);
     lRet = RegCreateKeyEx(HKEY_CURRENT_USER, wszKey, 0, _T(""), REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwDisposition);
     if (lRet == ERROR_SUCCESS) {
-        /* power down option */
-        dwBytes = sizeof(dwData);
+        DWORD   dwData = 0, dwBytes = sizeof(dwData);
 
+        /* power down option */
         lRet = RegQueryValueEx(hKey, OPTION7, 0, &dwType, (UCHAR *)&dwData, &dwBytes);
         if (lRet == ERROR_SUCCESS) {
             SysConfig.ausOption[UIE_POWER_OPTION7] = (USHORT)dwData;
@@ -482,13 +479,13 @@ VOID PifSetSysConfig(VOID)
 	memset(auchModemStrings, 0, sizeof(auchModemStrings));
     SysConfig.pModemStrings = auchModemStrings;
 	_tcsncpy(auchModemStrings, auchInitialModemStrings, PIF_LEN_M0DEM_STR);
+    auchModemStrings[PIF_LEN_M0DEM_STR] = 0;    // ensure zero termination.
 
 	wsprintf(wszKey, TEXT("%s\\%s"), PIFROOTKEY, NETWORKKEY);
     lRet = RegCreateKeyEx(HKEY_CURRENT_USER, wszKey, 0, _T(""), REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwDisposition);
     if (lRet == ERROR_SUCCESS) {
-		TCHAR   wszData[(sizeof(auchModemStrings)/sizeof(auchModemStrings[0]))];
-
-        memset(wszData, 0, sizeof(wszData));
+        TCHAR   wszData[(sizeof(auchModemStrings) / sizeof(auchModemStrings[0]))] = { 0 };
+        DWORD   dwBytes;
 
         dwBytes = sizeof(wszData);
         lRet = RegQueryValueEx(hKey, MODEMSTRINGS, 0, &dwType, (UCHAR *)&wszData[0], &dwBytes);
@@ -528,13 +525,12 @@ VOID PifSetSysConfig(VOID)
 
     /* unique information   */
 	{
-		int i = 0;
 		TCHAR  szData[32] = {0};
 		PifGetSystemVersion(szData);
-		for (i = 0; i < PIF_LEN_SOFTWARE_ID; i++) {
+		for (int i = 0; i < PIF_LEN_SOFTWARE_ID; i++) {
 			SystemHeader.szSystemId[i] = (UCHAR)szData[i];
 		}
-		SystemHeader.szSystemId[i] = 0;
+		SystemHeader.szSystemId[PIF_LEN_SOFTWARE_ID] = 0;
 	}
 
     UniqueInfo.pResource = &Resource;
@@ -548,7 +544,7 @@ VOID PifSetSysConfig(VOID)
     /* set sumcheck data */
     puchWork = (UCHAR *)&SoftInfo;
     uchWork = 0x00;
-    for (usLength=0; usLength<sizeof(PIF_SOFT_INFO); usLength++) {
+    for (USHORT usLength=0; usLength<sizeof(PIF_SOFT_INFO); usLength++) {
         uchWork ^= *puchWork++;
     }
     SoftInfo.uchSumCheck = uchWork;
@@ -562,13 +558,12 @@ VOID PifSetSysConfig(VOID)
     PifSaveRegistry();
 }
 
+// convert IPv4 text string into IPv4 octets, "192.168.0.1" to 4 bytes, 192, 168, 0, 1.
 static UCHAR * RflStr2IpAddr (UCHAR *auchIpAddr, TCHAR *aszSource)
 {
-	int iNdx = 0;
-
 	auchIpAddr[0] = auchIpAddr[1] = auchIpAddr[2] = auchIpAddr[3] = 0;
 
-	for (iNdx = 0; iNdx < 4 && *aszSource; iNdx++) {
+	for (int iNdx = 0; iNdx < 4 && *aszSource; iNdx++) {
 		USHORT  ipAddr = 0;
 		while (*aszSource >= '0' && *aszSource <= '9') {
 			ipAddr = ipAddr * 10 + *aszSource - '0';
@@ -602,7 +597,7 @@ static USHORT PifGetSerialConfig(TCHAR *pachDevice, UCHAR uchDeviceId, USHORT us
 	TCHAR   atchPort[SCF_USER_BUFFER] = {0};
     UCHAR   uchPort=0;
 
-    if (PifGetParameter(pachDevice, _T("Port"), &dwDataType, (LPVOID)atchPort, sizeof(atchPort), &dwNoBytesRead) != SCF_SUCCESS)
+    if (PifGetParameter(pachDevice, SCF_DATANAME_PORT, &dwDataType, (LPVOID)atchPort, sizeof(atchPort), &dwNoBytesRead) != SCF_SUCCESS)
     {
         return FALSE;
     }
@@ -680,7 +675,7 @@ static USHORT PifGetSerialConfig(TCHAR *pachDevice, UCHAR uchDeviceId, USHORT us
         SysConfig.ausComBaud[uchPort] = 57600;
         break;
     case SCF_CAPS_BAUD_115200:
-		// transform this to 57600 since anything larger will not fit in a UCHAR.
+		// transform this to 57600 since anything larger will not fit in a USHORT.
         SysConfig.ausComBaud[uchPort] = 57600;
 		{
 			char  xBuff[128];
@@ -832,12 +827,11 @@ static USHORT PifGetLanConfig(TCHAR *pachDevice, UCHAR uchDeviceId, USHORT usDef
 
     if (PifGetParameter(pachDevice, _T("IPaddr"), &dwDataType, (LPVOID)atchPort, sizeof(atchPort), &dwDummy) == SCF_SUCCESS)
     {
-		int     i = 0;
 		// convert the IP address to binary.
 		// We assume it is in some kind of nnn.nnn.nnn.nnn format
 		// first of all set to all binary zeros
 		pNxt = atchPort - 1;
-		for (i = 0; pNxt && i < 4; i++) {
+		for (int i = 0; pNxt && i < 4; i++) {
 			pNxt++;
 			ucIP[i] = _ttoi (pNxt);
 			pNxt = _tcschr (pNxt, _T('.'));
@@ -871,12 +865,10 @@ static DWORD PifGetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
                                 LPDWORD lpNumberOfBytesRead)
 {
     DWORD   dwResult;
-    BOOL    bConverted;
+    BOOL    bConverted = FALSE;
 	TCHAR   atchBuffer[SCF_USER_BUFFER] = {0};
 
     UNREFERENCED_PARAMETER(dwNumberOfBytesToRead);
-
-    bConverted = FALSE;
 
     dwResult = ScfGetParameter(lpszDeviceName, lpszDataName, lpDataType, (LPVOID)atchBuffer, sizeof(atchBuffer), lpNumberOfBytesRead);
     if (dwResult != SCF_SUCCESS)
@@ -922,7 +914,7 @@ SHORT  PIFENTRY PifSetModemStrings(CONST TCHAR FAR *pszModemString)
     HKEY   hKey;
     DWORD  dwDisposition;
     SHORT  sReturn = PIF_ERROR_SYSTEM;
-    TCHAR  wszKey[128];
+    TCHAR  wszKey[128] = { 0 };
 
     wsprintf(wszKey, TEXT("%s\\%s"), PIFROOTKEY, NETWORKKEY);
     lRet = RegCreateKeyEx(HKEY_CURRENT_USER, wszKey, 0, _T(""), REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwDisposition);
@@ -931,9 +923,10 @@ SHORT  PIFENTRY PifSetModemStrings(CONST TCHAR FAR *pszModemString)
 		TCHAR  wszData[PIF_LEN_M0DEM_STR + 1] = {0};
 
 		_tcsncpy(wszData, pszModemString, PIF_LEN_M0DEM_STR);
+        wszData[PIF_LEN_M0DEM_STR] = 0;
         dwBytes = ((wcslen(wszData)+1) * sizeof(wszData[0]));    // include end of string terminator in data stored.
 
-        lRet = RegSetValueEx(hKey, MODEMSTRINGS, 0, REG_SZ, (const UCHAR *)&wszData[0], dwBytes);
+        lRet = RegSetValueEx(hKey, MODEMSTRINGS, 0, REG_SZ, (UCHAR *)&wszData[0], dwBytes);
 
         RegCloseKey(hKey);
     }
@@ -998,7 +991,6 @@ static  CHAR  szPifOverrideHostName[32] = {0};
 
 SHORT  PIFENTRY PifOverrideHostName(TCHAR *pszHostName)
 {
-	int    i;
 	SHORT  sRetStatus = (szPifOverrideHostName[0]) ? 1 : 0;
 
 	memset (szPifOverrideHostName, 0, sizeof(szPifOverrideHostName));
@@ -1006,7 +998,7 @@ SHORT  PIFENTRY PifOverrideHostName(TCHAR *pszHostName)
 		// if new name specified then use it otherwise calling PifOverrideHostName()
 		// with a NULL pointer will just clear the current Override Host Name if any.
 		NHPOS_NONASSERT_NOTE("==STATUS", "==STATUS: PifOverrideHostName() called.");
-		for (i = 0; i < 30; i++) {
+		for (int i = 0; i < 30; i++) {
 			szPifOverrideHostName[i] = pszHostName[i];
 			if (!pszHostName[i]) { break; }
 		}
@@ -1092,8 +1084,8 @@ SHORT  PIFENTRY PifGetHostsAddress(CONST TCHAR *pszHostName, CHAR *pszIPAddress)
     LONG   lRet;
     HKEY hKey;
 //    HANDLE hKey;
-    TCHAR  wszKey[256];
-    CHAR  szData[8];
+    TCHAR  wszKey[256] = { 0 };
+    CHAR  szData[8] = { 0 };
     DWORD  dwDisposition, dwBytes, dwType;
     SHORT  sReturn = PIF_ERROR_SYSTEM;
 
@@ -1139,8 +1131,8 @@ SHORT  PIFENTRY PifSetHostsAddress(CONST TCHAR *pszHostName, CONST CHAR *pszIPAd
     LONG   lRet;
     HKEY hKey;
 //    HANDLE hKey;
-    TCHAR  wszKey[256];
-    CHAR   szData[8];
+    TCHAR  wszKey[256] = { 0 };
+    CHAR   szData[8] = { 0 };
     DWORD  dwDisposition, dwBytes;
     SHORT  sReturn = PIF_ERROR_SYSTEM;
 
@@ -1153,7 +1145,7 @@ SHORT  PIFENTRY PifSetHostsAddress(CONST TCHAR *pszHostName, CONST CHAR *pszIPAd
 
     if (lRet == ERROR_SUCCESS) {
         dwBytes = PIF_LEN_IP;
-        lRet = RegSetValueEx(hKey, IPADDRESS, 0, REG_BINARY, (const UCHAR*)pszIPAddress, dwBytes);
+        lRet = RegSetValueEx(hKey, IPADDRESS, 0, REG_BINARY, (UCHAR*)pszIPAddress, dwBytes);
 
         dwBytes = sizeof(WORD);
 
@@ -1161,7 +1153,7 @@ SHORT  PIFENTRY PifSetHostsAddress(CONST TCHAR *pszHostName, CONST CHAR *pszIPAd
             sReturn = PIF_OK;
         }
         memset(szData, 0, sizeof(szData));
-        lRet = RegSetValueEx(hKey, ALIASES, 0, REG_SZ, (const UCHAR*)&szData[0], dwBytes);
+        lRet = RegSetValueEx(hKey, ALIASES, 0, REG_SZ, (UCHAR*)&szData[0], dwBytes);
 
         RegCloseKey(hKey);
         /* V1.0.04, for ip broadcast */
@@ -1187,7 +1179,7 @@ fhfh*/
 VOID  PIFENTRY PifRemoveHostsAddress(CONST TCHAR FAR *pszHostName)
 {
     LONG   lRet;
-    TCHAR  wszKey[256];
+    TCHAR  wszKey[256] = { 0 };
 
     if (pszHostName == NULL) {
         return;
@@ -1219,8 +1211,8 @@ SHORT  PIFENTRY PifSetServicesPortNo(USHORT usPortNo)
     LONG   lRet;
     HKEY hKey;
 //    HANDLE hKey;
-    TCHAR  wszKey[256];
-    TCHAR  wszData[8];
+    TCHAR  wszKey[256] = { 0 };
+    TCHAR  wszData[8] = { 0 };
     DWORD  dwDisposition, dwBytes;
     SHORT  sReturn = PIF_ERROR_SYSTEM;
 
@@ -1304,10 +1296,8 @@ SHORT PIFENTRY PifGetActiveDevice(
     DWORD  dwCount = 0, dwRet, dwDataType, dwDummy;
     SHORT  sReturn = PIF_ERROR_SYSTEM;
     TCHAR  wszScfDeviceName[SCF_USER_BUFFER] = {0};
-    TCHAR  wszDeviceName[SCF_USER_BUFFER] = {0}, *pDeviceName;
+    TCHAR  wszDeviceName[SCF_USER_BUFFER] = {0};
 	TCHAR  wszDllName[SCF_USER_BUFFER] = {0};
-    TCHAR   atchPort[SCF_USER_BUFFER] = {0};
-    UCHAR   uchPort=0;
 
 	for (pDevTabl = stagDeviceTable; pDevTabl->usDevice != DEVICE_NONE; pDevTabl++) {
 		if (pDevTabl->usDevice == usDeviceId)
@@ -1318,18 +1308,17 @@ SHORT PIFENTRY PifGetActiveDevice(
 		return sReturn;
 
 	wsprintf(wszScfDeviceName, pDevTabl->szRegSymbol);
-
-	memset(wszDeviceName, 0, sizeof(wszDeviceName));
     dwRet = ScfGetActiveDevice(wszScfDeviceName, &dwCount, wszDeviceName, wszDllName);
 
-    pDeviceName = &wszDeviceName[0];
-
     if ((dwRet == SCF_SUCCESS) && (dwCount)) {
-		DWORD i;
-        for (i=0; i<dwCount; i++) {
-            if (PifGetParameter(pDeviceName, _T("Port"), &dwDataType, (LPVOID)atchPort, sizeof(atchPort), &dwDummy) == SCF_SUCCESS)
+        TCHAR *pDeviceName = wszDeviceName;
+
+        for (DWORD i=0; i<dwCount; i++) {
+            TCHAR   atchPort[SCF_USER_BUFFER] = {0};
+
+            if (PifGetParameter(pDeviceName, SCF_DATANAME_PORT, &dwDataType, (LPVOID)atchPort, sizeof(atchPort), &dwDummy) == SCF_SUCCESS)
             {
-				uchPort = _ttoi (atchPort);
+                UCHAR   uchPort = _ttoi (atchPort);
                 if (uchPort == usPortNo) {
 					wcsncpy(pszDeviceName, pDeviceName, SCF_MAX_NAME);
 					wcsncpy(pszDllFileName, wszDllName, SCF_MAX_NAME);
@@ -1478,22 +1467,16 @@ fhfh*/
 SHORT PIFENTRY PifGetVersion(TCHAR  *pInfoBuffer)
 {
     SHORT sReturn = PIF_ERROR_SYSTEM;
-	DWORD dwHandle;
 	DWORD viSize = 0;
-	TCHAR infobuffer [1028];
 	//TCHAR			infoBuffer2[1028];
-	VS_FIXEDFILEINFO *lpBuf;
 	unsigned int puLen;
 	WIN32_FIND_DATA myFoundFile;
 	HANDLE fileSearch;
 	BOOL doit = TRUE;
-	TCHAR		versionNumber[40];
 
 	//this is the first type of file that we are
 	//looking for, executables.
 	TCHAR *myFileName = _T("*.exe");
-	memset(&infobuffer, 0x00, sizeof(infobuffer));
-	memset(versionNumber, 0x00, sizeof(versionNumber));
 
 	//we need to change to this directory to look for the files
 	_tchdir(STD_FOLDER_PROGRAMFILES);
@@ -1503,13 +1486,16 @@ SHORT PIFENTRY PifGetVersion(TCHAR  *pInfoBuffer)
 	//this while loop will continue as long as there are .exe in the directory
 	while (doit && fileSearch != INVALID_HANDLE_VALUE)
 	{
-		//clean the buffer so we dont get erroneous data
-		memset(&versionNumber, 0x00, sizeof(versionNumber));
+        TCHAR infobuffer[1028] = { 0 };
+	    VS_FIXEDFILEINFO *lpBuf = NULL;
+		DWORD   dwHandle = 0;
+		TCHAR   versionNumber[40] = { 0 };
+
 		//the next two functions get the file name, we must call the first one
 		// in order to get the name, i dunno why, ask MSDN.
 		viSize = GetFileVersionInfoSize (myFoundFile.cFileName, &dwHandle);
 		GetFileVersionInfo (myFoundFile.cFileName, dwHandle, sizeof (infobuffer), infobuffer);
-		VerQueryValue (infobuffer, _T("\\"), (void **)&lpBuf, &puLen);
+		VerQueryValue (infobuffer, _T("\\"), &lpBuf, &puLen);
 
 		if(!_tcscmp(myFoundFile.cFileName, _T("Framework.exe")))
 		{
