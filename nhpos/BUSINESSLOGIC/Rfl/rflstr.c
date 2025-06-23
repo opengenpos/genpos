@@ -180,39 +180,33 @@ USHORT  RflSPrintf(TCHAR *pszDest, USHORT usDestLen, const TCHAR FAR *pszFormat,
 fh**/
 USHORT  RflStrAdjust(TCHAR *pszDest,  USHORT usDestLen, TCHAR *pszSource, USHORT uchMaxColumn, BOOL fAutoFeed)
 {
-    TCHAR  *puchRead;         /* Source buffer read pointer */
-    TCHAR  *puchWrite;        /* Destination buffer write pointer */
-    USHORT uchColPos;         /* Current Column position */
-    TCHAR  *puchWork;         /* Work Area */
-    TCHAR  auchTabString[80]; /* Tab stirng buffer  */
-    TCHAR  *puchTabWrt;       /* Tab stirng buffer write pointer */
-    TCHAR  uchTabChar;        /* Tab string character counter */
-    USHORT uchWrtCount;       /* Tab string write counter */
+    TCHAR  *puchRead = pszSource;     /* Source buffer read pointer */
+    TCHAR  *puchWrite = pszDest;      /* Destination buffer write pointer */
+    USHORT uchColPos = 0;             /* Current Column position */
 	USHORT usChineseFlag = 0;
 
 	NHPOS_ASSERT(usDestLen < MAX_COUNT_ASSERT);
 
     /* --- initialize ---*/
-    tcharnset(pszDest, RFL_SPACE, usDestLen);
-    puchRead   = pszSource;
-    puchWrite  = pszDest;
-    uchColPos  = 0;
+    tcharnset(pszDest, _T(' '), usDestLen);
+	// copy characters from source to destination until we have either
+	// reached end of source or destination is full.
+    while ( puchRead != NULL && *puchRead != _T('\0') && puchWrite < (pszDest+usDestLen - 1) ) {  /* until destination buffer end */
 
-    while ( (*puchRead != _T('\0'))                         /* until string end */
-          && (puchWrite < (pszDest+usDestLen - 1)) ) {  /* until destination buffer end */
-
-/*---------------------------------*\
-       --- Tab management ---
-\*---------------------------------*/
         if (*puchRead == _T('\t')) {
+			/*---------------------------------*\
+				   --- Tab management ---
+			\*---------------------------------*/
+			USHORT uchWrtCount = 0;   /* Tab string write counter */
+			TCHAR  uchTabChar = 0;    /* Tab string character counter */
+			TCHAR  auchTabString[80]; /* Tab stirng buffer  */
+			TCHAR  *puchTabWrt;       /* Tab stirng buffer write pointer */
         
             /* --- initialize --- */
-            tcharnset(auchTabString, RFL_SPACE, 80);
-            //memset(auchTabString, RFL_SPACE, sizeof(auchTabString));
-            uchTabChar = 0;                          /* Num. of written character */
-            puchRead++;                              /* for character '\t' */
+            tcharnset(auchTabString, _T(' '), 80);
             puchTabWrt  = auchTabString;
 
+            puchRead++;                              /* for character '\t' */
             while ( (*puchRead != _T('\t')) && (*puchRead != _T('\n')) && (*puchRead != _T('\0')) ) {
                 *puchTabWrt++ = *puchRead++;
                 uchTabChar++;
@@ -257,28 +251,27 @@ USHORT  RflStrAdjust(TCHAR *pszDest,  USHORT usDestLen, TCHAR *pszSource, USHORT
 			them, and therefore need to push the pointer 2 spaces to acccomdaete for this.*/
 			if( usChineseFlag)
 			{
-				puchWrite += uchWrtCount + (UCHAR)2;
+				puchWrite += uchWrtCount + 2;
 				usChineseFlag = 0;
 			}
 			else
 			{
-				puchWrite += uchWrtCount + (UCHAR)1;
+				puchWrite += uchWrtCount + 1;
 			}
-
-/*---------------------------------*\
-  --- Carrige return management ---
-\*---------------------------------*/
         } else if (*puchRead == _T('\n')) {
+			/*---------------------------------*\
+			  --- Carrige return management ---
+			\*---------------------------------*/
                                  
             *puchWrite++ = *puchRead++;        /* write data, increment read & write point */
             uchColPos = 0;                     /* column position initialize */
-/*---------------------------------*\
-  --- other character management ---
-\*---------------------------------*/
         } else {
+			/*---------------------------------*\
+			  --- other character management ---
+			\*---------------------------------*/
 
             /* when cureent column is max - 1column and going to write double wide character */                  
-            if ( uchColPos == (uchMaxColumn - (UCHAR)1) && (UCHAR)*puchRead == (UCHAR)(RFL_DOUBLE) ) {
+            if ( uchColPos == (uchMaxColumn - (UCHAR)1) && (UCHAR)*puchRead == RFL_DOUBLE ) {
 
                 if (fAutoFeed == RFL_FEED_ON) {
 
@@ -314,6 +307,8 @@ USHORT  RflStrAdjust(TCHAR *pszDest,  USHORT usDestLen, TCHAR *pszSource, USHORT
                     *puchWrite++ = _T('\n');
                     uchColPos = 0;              /* initialize column position */
                 } else {
+					TCHAR  *puchWork;         /* Work Area */
+
                     /* -- move Readpoint(puchRead) to next '\t','\n' or '\0' -- */
                     /* - get '\t'  point - */
                     puchWork  = _tcschr(puchRead, _T('\t'));       
@@ -324,6 +319,7 @@ USHORT  RflStrAdjust(TCHAR *pszDest,  USHORT usDestLen, TCHAR *pszSource, USHORT
                     if ( (puchRead==NULL) && (puchWork!=NULL) ) {
                         puchRead = puchWork;
                     } else if ( puchRead == puchWork ) {
+						// this is really a check on both pointers being NULL
                         /* - move readpoint to string end - */
                         puchRead = _tcschr(pszDest, _T('\0'));     
                     } else if ( (puchRead > puchWork) && (puchWork != NULL) ) {
@@ -462,7 +458,7 @@ LONG RflConvertCharFieldToLongCurrency (CHAR *auchCurrency, int iMaxChars)
 {
 	LONG     lCurrencyTtl = 0;
 	int      i, x;
-	CHAR    temp[28];
+	CHAR    temp[28] = { 0 };
 
 	if (iMaxChars >= sizeof(temp)) {
 		iMaxChars = sizeof(temp) - 1;
@@ -533,7 +529,7 @@ CHAR *RflConvertLongCurrencyToCharField (LONG lCurrency, CHAR *auchCurrency, int
 /*
 	_RflStrncpyUchar2Tchar - copy UCHAR string to a TCHAR string buffer with max number specified
  */
-void _RflStrncpyUchar2Tchar (TCHAR *aszDest, UCHAR *aszSource, USHORT usMaxChars)
+void _RflStrncpyUchar2Tchar (TCHAR *aszDest, const UCHAR *aszSource, USHORT usMaxChars)
 {
 	NHPOS_ASSERT(usMaxChars < MAX_COUNT_ASSERT);
 
@@ -543,7 +539,7 @@ void _RflStrncpyUchar2Tchar (TCHAR *aszDest, UCHAR *aszSource, USHORT usMaxChars
 /*
 	_RflStrcpyTchar2Uchar - copy TCHAR string to a UCHAR string buffer
  */
-void _RflStrcpyTchar2Uchar (UCHAR *aszDest, TCHAR *aszSource)
+void _RflStrcpyTchar2Uchar (UCHAR *aszDest, const TCHAR *aszSource)
 {
 #if defined(DEBUG) || defined(_DEBUG)
 	int count = 0;
@@ -560,7 +556,7 @@ void _RflStrcpyTchar2Uchar (UCHAR *aszDest, TCHAR *aszSource)
 /*
 	_RflStrncpyTchar2Uchar - copy TCHAR string to a UCHAR string buffer with max number specified
  */
-void _RflStrncpyTchar2Uchar (UCHAR *aszDest, TCHAR *aszSource, USHORT usMaxChars)
+void _RflStrncpyTchar2Uchar (UCHAR *aszDest, const TCHAR *aszSource, USHORT usMaxChars)
 {
 	NHPOS_ASSERT(usMaxChars < MAX_COUNT_ASSERT);
 
@@ -571,7 +567,7 @@ void _RflStrncpyTchar2Uchar (UCHAR *aszDest, TCHAR *aszSource, USHORT usMaxChars
 	_RflMemcpyTchar2Uchar - copy TCHAR string to a UCHAR string buffer with mandatory number specified
 		This replaces memcpy when source string is a TCHAR and the destination string is a UCHAR.
  */
-void _RflMemcpyTchar2Uchar (UCHAR *aszDest, TCHAR *aszSource, USHORT usNoChars)
+void _RflMemcpyTchar2Uchar (UCHAR *aszDest, const TCHAR *aszSource, USHORT usNoChars)
 {
 	NHPOS_ASSERT(usNoChars < MAX_COUNT_ASSERT);
 
@@ -585,7 +581,7 @@ void _RflMemcpyTchar2Uchar (UCHAR *aszDest, TCHAR *aszSource, USHORT usNoChars)
 	_RflMemcpyUchar2Tchar - copy UCHAR string to a TCHAR string buffer with mandatory number specified
 		This replaces memcpy when source string is a UCHAR and the destination string is a TCHAR.
  */
-void _RflMemcpyUchar2Tchar (TCHAR *aszDest, UCHAR *aszSource, USHORT usNoChars)
+void _RflMemcpyUchar2Tchar (TCHAR *aszDest, const UCHAR *aszSource, USHORT usNoChars)
 {
 	NHPOS_ASSERT(usNoChars < MAX_COUNT_ASSERT);
 
