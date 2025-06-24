@@ -236,8 +236,8 @@
 #define     PRT_TAX_MASK   0x001E     
 
 #define     PRT_SINGLE           0      /*  single  character */
-#define     PRT_DOUBLE      0x0012      /*  double character */
-#define     PRT_SDOUBLE     0x0013      /*  square double character */
+#define     PRT_DOUBLE      0x0012      /*  double character. See also FSC_DOUBLE_WIDE and KPS_DOUBLE and RFL_DOUBLE. See also PMG_CHARX2 */
+#define     PRT_SDOUBLE     0x0013      /*  square double character. See also PMG_CHARX4 */
 #define		PRT_LOGO		0x0014		/* Print Logo*/
 #define		PRT_CENTERED	0x0015		/* print centered on line	*/
 #define		PRT_TRANS_BGN	0x0016		/* Begin transaction call for shared printing*/
@@ -630,7 +630,7 @@ USHORT  PmgPrint_Debug(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen, char *asz
 USHORT   PmgPrint( USHORT, TCHAR *, USHORT);
 #endif
 USHORT  PmgDblShrdPrint( USHORT, TCHAR *, USHORT);
-USHORT  PmgPrintf( USHORT, const TCHAR FARCONST *, ...);
+USHORT  PmgPrintf( USHORT, const TCHAR *, ...);
 VOID    PmgStartReceipt ( VOID );
 VOID    PmgEndReceipt ( VOID );
 VOID    PmgWait( VOID );

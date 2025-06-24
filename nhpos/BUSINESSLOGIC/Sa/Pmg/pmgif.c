@@ -482,7 +482,7 @@ USHORT  PmgDblShrdPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
 *
 **************************************************************************
 */
-USHORT PmgPrintf(USHORT usPrtType, const TCHAR FARCONST *pszFormat, ...)
+USHORT PmgPrintf(USHORT usPrtType, const TCHAR *pszFormat, ...)
 {
 	USHORT  usLen = 0;
 	USHORT usFunc = 0;

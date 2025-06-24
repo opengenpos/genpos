@@ -222,14 +222,14 @@ extern "C"{
 #define SCF_DATANAME_STOPBIT        _T("StopBit")
 #define SCF_DATANAME_HANDSHAKE      _T("HandShake")
 
-#define SCF_DATANAME_PORT			_T("Port")
+#define SCF_DATANAME_PORT			_T("Port")       // may be used with COM port or network port
 #define SCF_DEFAULTDATA_PORT        _T("0000")
 #define SCF_DATANAME_DLLNAME		_T("DLLName")
 #define SCF_DATANAME_TYPENAME		_T("TypeName")
 #define SCF_DATANAME_USES			_T("Uses")
 
 // Standard Credit/Debit Server
-#define SCF_DATANAME_IPADDR			_T("IPAddr")
+#define SCF_DATANAME_IPADDR			_T("IPAddr")     // WARNING: it appears in some places "IPaddr" is hard coded rather than "IPAddr".
 #define SCF_DATANAME_IPADDR2		_T("IPAddr2")
 //GiftCard Server
 #define SCF_DATANAME_IPADDR3		_T("IPAddr3")
