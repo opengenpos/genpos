@@ -34,6 +34,9 @@
 :    $Author$
 :    $Log$
 \*-----------------------------------------------------------------------*/
+
+#if defined(POSSIBLE_DEAD_CODE)
+
 /*
 ===========================================================================
     DEFINE
@@ -71,4 +74,4 @@ SHORT   EJCheckSpace(VOID);
 SHORT   EJLock( VOID );
 SHORT   EJUnLock( VOID );
 
-
+#endif
