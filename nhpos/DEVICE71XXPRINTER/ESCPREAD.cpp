@@ -53,16 +53,15 @@
 *                ESC v, generates PIP response message and returns it.
 *===========================================================================
 */
-SHORT EscpReadCom(SHORT sDummy, VOID FAR *pBuff, SHORT sCount)
+SHORT EscpReadCom(SHORT sDummy, VOID  *pBuff, SHORT sCount)
 {
-    ESCP *pEscp;
+    ESCP *pEscp = &Escp[0];
+    ESCP_RESPONSE  *pResp = (ESCP_RESPONSE  *)pBuff;
     UCHAR uchError;
     UCHAR uchStatus;
     SHORT sSeqNo;
-    ESCP_RESPONSE FAR *pResp;
     SHORT sResult=PIF_OK;
 
-    pEscp = &Escp[0];
     if (!pEscp->chOpen || sCount < sizeof(ESCP_RESPONSE)) {
                                         /* see if opened and enough buffer */
         return (PIF_ERROR_SYSTEM);
@@ -101,8 +100,6 @@ SHORT EscpReadCom(SHORT sDummy, VOID FAR *pBuff, SHORT sCount)
 
     /* Now, generate a response message */
 
-    pResp = (ESCP_RESPONSE FAR *)pBuff;
-//    _RflFMemSet(pResp, 0, sizeof(*pResp));
     memset(pResp, 0, sizeof(*pResp));
     pResp->uchSeqNo = (UCHAR)sSeqNo;    /* Sequence # */
     pResp->uchStatus = uchStatus;       /* Status of the printer */

@@ -49,10 +49,10 @@
 **  Description: This sends out print data.
 *===========================================================================
 */
-SHORT EscpWriteCom(SHORT sDummy, VOID FAR *pBuff, SHORT sCount)
+SHORT EscpWriteCom(SHORT sDummy, VOID  *pBuff, SHORT sCount)
 {
-    ESCP *pEscp;
-    ESCP_REQUEST FAR *pReq;
+    ESCP *pEscp = &Escp[0];
+    ESCP_REQUEST  *pReq = (ESCP_REQUEST  *)pBuff;
     SHORT sLength;
     SHORT sResult;
     SHORT sStatus;
@@ -60,7 +60,7 @@ SHORT EscpWriteCom(SHORT sDummy, VOID FAR *pBuff, SHORT sCount)
 //    CHAR achTemp[8];
     CHAR  Escv[] = "\x1bv";
 //    CHAR  Escv[] = "\x1d\x05";
-    pEscp = &Escp[0];
+
     sLength = sCount - (sizeof(*pReq)-sizeof(pReq->auchData));
     if (!pEscp->chOpen || sLength < 0) { /* see if opened and enough buffer */
         return (PIF_ERROR_SYSTEM);
@@ -71,7 +71,6 @@ SHORT EscpWriteCom(SHORT sDummy, VOID FAR *pBuff, SHORT sCount)
     }
     
     sResult = sCount;
-    pReq = (ESCP_REQUEST FAR *)pBuff;
     PifRequestSem(pEscp->sSem);                   /* 222task switch off */
 #ifdef DEBUG
     if(strstr((const char *)&pReq->auchData,"VAL    L")){

@@ -47,7 +47,7 @@ typedef struct _ScData
 	TCHAR*	pchName;
 } ScData, *PScData;
 
-ScData s_scTable[] = {	{ 1,	_T("Port")           },
+ScData s_scTable[] = {	{ 1,	SCF_DATANAME_PORT    },
 						{ 2,	SCF_DATANAME_BAUD    },
 						{ 3,	SCF_DATANAME_CHARBIT },
 						{ 4,	SCF_DATANAME_PARITY  },
@@ -162,14 +162,12 @@ typedef struct _InfSetParameter
 //
 /////////////////////////////////////////////////////////////////////////////
 
-CDevice::CDevice()
+CDevice::CDevice() : m_bInitialized(FALSE), m_bOpened(FALSE), m_hDone(0), m_pThread(nullptr), m_hScale(0), m_pScale(nullptr), m_pUser(nullptr)
 {
 	// initialize
 
-	m_bInitialized = m_bOpened = FALSE;
-
-	m_sName[0].LoadString(IDS_DEVICENAME1);
-
+	int iLoad = m_sName[0].LoadString(IDS_DEVICENAME1);
+	ASSERT(iLoad > 0);
 	m_Caps[0].dwDeviceType = SCF_TYPE_SCALE;
 	m_Caps[0].dwPortType   = SCF_PORT_SERIAL;
 	m_Caps[0].dwSize       = sizeof(DEVICE_CAPS);
@@ -198,24 +196,33 @@ CDevice::CDevice()
 	// create event signals (auto reset & non-signaled initially)
 
 	m_hDone = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+	ASSERT(m_hDone != 0);
 
-	// create a device thread
+	if (m_hDone != 0) {
+		// create a device thread
+		m_pThread = AfxBeginThread(DoDeviceThread, this);
+		ASSERT(m_pThread != NULL);
 
-	m_pThread = AfxBeginThread(DoDeviceThread, this);
+		if (m_pThread) {
+			// set his priority higher a little bit
+			m_pThread->SetThreadPriority(THREAD_PRIORITY_HIGHEST);
 
-	// set his priority higher a little bit
+			// do not delete automatically, I'll take care !
+			m_pThread->m_bAutoDelete = FALSE;
 
-	m_pThread->SetThreadPriority(THREAD_PRIORITY_HIGHEST);
-
-	// do not delete automatically, I'll take care !
-
-	m_pThread->m_bAutoDelete = FALSE;
-
-	// wait for a done signal
-
-	::WaitForSingleObject(m_hDone, INFINITE);
-	::ResetEvent(m_hDone);
+			// wait for a done signal indicating initialization is complete.
+			::WaitForSingleObject(m_hDone, INFINITE);
+			::ResetEvent(m_hDone);
+		}
+		else {
+			// if the thread creation did not work then close out the event since
+			// we won't be needing it and destructor doesn't expect to destroy it.
+			::CloseHandle(m_hDone);
+			m_hDone = 0;
+		}
+	}
 }
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -231,50 +238,55 @@ CDevice::CDevice()
 
 CDevice::~CDevice()
 {
-	CPacket		pktMessage(CMD_QUIT);
-
 	// quit our job !
 
-	pktMessage.Post(m_pThread->m_nThreadID);// post a message
-	pktMessage.WaitForReturn();				// wait for return
+	if (m_pThread != nullptr) {
+		CPacket		pktMessage(CMD_QUIT);
 
-	// wait the thread to the end
+		pktMessage.Post(m_pThread->m_nThreadID);// post a message
+		pktMessage.WaitForReturn();				// wait for return
+
+		// wait the thread to the end
 
 #if	defined(_WIN32_WCE)
-	DWORD		dwMilliseconds;
+		DWORD		dwMilliseconds;
 
 #if	!defined(_WIN32_WCE_EMULATION)
-	dwMilliseconds = INFINITE;
+		dwMilliseconds = INFINITE;
 #else
-	// The thread terminate event does not notify correctly
-	// on Windows CE 2.0 emulation environment.
-	// Change the time-out interval value.
-	dwMilliseconds = 100;
+		// The thread terminate event does not notify correctly
+		// on Windows CE 2.0 emulation environment.
+		// Change the time-out interval value.
+		dwMilliseconds = 100;
 #endif
-	::WaitForSingleObject(m_hDone, INFINITE);
-	::WaitForSingleObject(m_pThread->m_hThread, dwMilliseconds);
+		::WaitForSingleObject(m_hDone, INFINITE);
+		::WaitForSingleObject(m_pThread->m_hThread, dwMilliseconds);
 #else	// Win32
-	DWORD	dwExitCode = STILL_ACTIVE;
-	BOOL	fWatch     = TRUE;
-	int		nRetry     = 5;
+		DWORD	dwExitCode = STILL_ACTIVE;
+		BOOL	fWatch     = TRUE;
+		int		nRetry     = 5;
 
-    while ((dwExitCode == STILL_ACTIVE) && fWatch) // watch the thread
-    {
-        fWatch = ::GetExitCodeThread(m_pThread->m_hThread, &dwExitCode);
-        ASSERT(fWatch);     // just a debug
-        Sleep(100);         // pass a control to the others
-
-		// W2K Support Modification
-		if (-nRetry < 0)
+		while ((dwExitCode == STILL_ACTIVE) && fWatch) // watch the thread
 		{
-			break;
+			fWatch = ::GetExitCodeThread(m_pThread->m_hThread, &dwExitCode);
+			ASSERT(fWatch);     // just a debug
+			Sleep(100);         // pass a control to the others
+
+			// W2K Support Modification
+			if (-nRetry < 0)
+			{
+				break;
+			}
 		}
-    }
 #endif
 
-	delete m_pThread;						// Add V1.2
+		delete m_pThread;						// Add V1.2
 
-	::CloseHandle(m_hDone);
+		::CloseHandle(m_hDone);
+
+		m_pThread = nullptr;
+		m_hDone = 0;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -295,7 +307,9 @@ CDevice::~CDevice()
 
 HANDLE CDevice::Open(LPCTSTR lpszDeviceName)
 {
-	InfOpen		infPacket;
+	if (m_pThread == nullptr) return (HANDLE)DEVICEIO_E_FAILURE;
+
+	InfOpen		infPacket = { 0 };
 	CPacket		pktMessage(CMD_OPEN, &infPacket);
 
 	// make up command data
@@ -310,8 +324,6 @@ HANDLE CDevice::Open(LPCTSTR lpszDeviceName)
 
 	pktMessage.Post(m_pThread->m_nThreadID);
 	pktMessage.WaitForReturn();
-
-	// exit ...
 
 	return (HANDLE)pktMessage.m_nStatus;
 }
@@ -330,7 +342,9 @@ HANDLE CDevice::Open(LPCTSTR lpszDeviceName)
 
 DWORD CDevice::Close(HANDLE hDevice)
 {
-	InfClose	infPacket;
+	if (m_pThread == nullptr) return DEVICEIO_E_FAILURE;
+
+	InfClose	infPacket = { 0 };
 	CPacket		pktMessage(CMD_CLOSE, &infPacket);
 
 	// make up command data
@@ -345,8 +359,6 @@ DWORD CDevice::Close(HANDLE hDevice)
 
 	pktMessage.Post(m_pThread->m_nThreadID);
 	pktMessage.WaitForReturn();
-
-	// exit ...
 
 	return pktMessage.m_nStatus;
 }
@@ -369,7 +381,9 @@ DWORD CDevice::Close(HANDLE hDevice)
 DWORD CDevice::Write(HANDLE hDevice, LPVOID lpBuffer,
 	DWORD dwNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten)
 {
-	InfWrite	infPacket;
+	if (m_pThread == nullptr) return DEVICEIO_E_FAILURE;
+
+	InfWrite	infPacket = { 0 };
 	CPacket		pktMessage(CMD_WRITE, &infPacket);
 
 	// make up command data
@@ -387,8 +401,6 @@ DWORD CDevice::Write(HANDLE hDevice, LPVOID lpBuffer,
 
 	pktMessage.Post(m_pThread->m_nThreadID);
 	pktMessage.WaitForReturn();
-
-	// exit ...
 
 	return pktMessage.m_nStatus;
 }
@@ -411,7 +423,9 @@ DWORD CDevice::Write(HANDLE hDevice, LPVOID lpBuffer,
 DWORD CDevice::Read(HANDLE hDevice, LPVOID lpBuffer,
 	DWORD dwNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead)
 {
-	InfRead	infPacket;
+	if (m_pThread == nullptr) return DEVICEIO_E_FAILURE;
+
+	InfRead	infPacket = { 0 };
 	CPacket		pktMessage(CMD_READ, &infPacket);
 
 	// make up command data
@@ -429,8 +443,6 @@ DWORD CDevice::Read(HANDLE hDevice, LPVOID lpBuffer,
 
 	pktMessage.Post(m_pThread->m_nThreadID);
 	pktMessage.WaitForReturn();
-
-	// exit ...
 
 	return pktMessage.m_nStatus;
 }
@@ -461,7 +473,9 @@ DWORD CDevice::IoControl(HANDLE hDevice, DWORD dwIoControlCode,
     LPVOID lpOutBuffer, DWORD dwOutBufferSize,
     LPDWORD lpBytesReturned)
 {
-	InfIoControl	infPacket;
+	if (m_pThread == nullptr) return DEVICEIO_E_FAILURE;
+
+	InfIoControl	infPacket = { 0 };
 	CPacket			pktMessage(CMD_IOCONTROL, &infPacket);
 
 	// make up command data
@@ -483,8 +497,6 @@ DWORD CDevice::IoControl(HANDLE hDevice, DWORD dwIoControlCode,
 	pktMessage.Post(m_pThread->m_nThreadID);
 	pktMessage.WaitForReturn();
 
-	// exit ...
-
 	return pktMessage.m_nStatus;
 }
 
@@ -503,7 +515,9 @@ DWORD CDevice::IoControl(HANDLE hDevice, DWORD dwIoControlCode,
 
 DWORD CDevice::GetDeviceName(LPDWORD lpDeviceCount, LPTSTR lpszDeviceName)
 {
-	InfGetDeviceName	infPacket;
+	if (m_pThread == nullptr) return DEVICEIO_E_FAILURE;
+
+	InfGetDeviceName	infPacket = { 0 };
 	CPacket				pktMessage(CMD_GETDEVICENAME, &infPacket);
 
 	// make up command data
@@ -519,8 +533,6 @@ DWORD CDevice::GetDeviceName(LPDWORD lpDeviceCount, LPTSTR lpszDeviceName)
 
 	pktMessage.Post(m_pThread->m_nThreadID);
 	pktMessage.WaitForReturn();
-
-	// exit ...
 
 	return pktMessage.m_nStatus;
 }
@@ -544,7 +556,9 @@ DWORD CDevice::GetDeviceName(LPDWORD lpDeviceCount, LPTSTR lpszDeviceName)
 DWORD CDevice::GetDeviceCapability(LPCTSTR lpszDeviceName, DWORD dwFunc,
 	DWORD dwType, LPVOID lpCapsData)
 {
-	InfGetDeviceCapa	infPacket;
+	if (m_pThread == nullptr) return DEVICEIO_E_FAILURE;
+
+	InfGetDeviceCapa	infPacket = { 0 };
 	CPacket				pktMessage(CMD_GETDEVICECAPA, &infPacket);
 
 	// make up command data
@@ -562,8 +576,6 @@ DWORD CDevice::GetDeviceCapability(LPCTSTR lpszDeviceName, DWORD dwFunc,
 
 	pktMessage.Post(m_pThread->m_nThreadID);
 	pktMessage.WaitForReturn();
-
-	// exit ...
 
 	return pktMessage.m_nStatus;
 }
@@ -591,7 +603,9 @@ DWORD CDevice::GetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
 	LPDWORD lpDataType, LPVOID lpData, DWORD dwNumberOfBytesToRead,
 	LPDWORD lpNumberOfBytesRead)
 {
-	InfGetParameter	infPacket;
+	if (m_pThread == nullptr) return DEVICEIO_E_FAILURE;
+
+	InfGetParameter	infPacket = { 0 };
 	CPacket			pktMessage(CMD_GETPARAMETER, &infPacket);
 
 	// make up command data
@@ -611,8 +625,6 @@ DWORD CDevice::GetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
 
 	pktMessage.Post(m_pThread->m_nThreadID);
 	pktMessage.WaitForReturn();
-
-	// exit ...
 
 	return pktMessage.m_nStatus;
 }
@@ -640,7 +652,9 @@ DWORD CDevice::SetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
 	DWORD dwDataType, LPVOID lpData, DWORD dwNumberOfBytesToWrite,
 	LPDWORD lpNumberOfBytesWritten)
 {
-	InfSetParameter	infPacket;
+	if (m_pThread == nullptr) return DEVICEIO_E_FAILURE;
+
+	InfSetParameter	infPacket = { 0 };
 	CPacket			pktMessage(CMD_SETPARAMETER, &infPacket);
 
 	// make up command data
@@ -660,8 +674,6 @@ DWORD CDevice::SetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
 
 	pktMessage.Post(m_pThread->m_nThreadID);
 	pktMessage.WaitForReturn();
-
-	// exit ...
 
 	return pktMessage.m_nStatus;
 }
@@ -701,20 +713,11 @@ UINT CDevice::DoDeviceThread(LPVOID lpvData)
 
 UINT CDevice::DeviceThread()
 {
-	DWORD		nStatus;
 	BOOL		bDoMyJob = TRUE;
 
-#if defined(_WIN32_WCE)
-	MSG			msg;
-
-	// issue a dummy call to create a message queue for my thread
-
-	::PeekMessage(&msg, NULL, WM_USER, WM_USER, PM_NOREMOVE);
-#else
 	// create a message queue for my thread
 
 	::GetQueueStatus(QS_ALLEVENTS);
-#endif
 
 	// initialize a device
 
@@ -728,14 +731,14 @@ UINT CDevice::DeviceThread()
 
 	while (bDoMyJob)						// do my job forever
 	{
+		DWORD		nStatus = 0;
 		DWORD		dwEvent;						// event type
-		CPacket *	pPacket;						// ptr. to a packet
-		LONG		nCommand;						// command code
+		CPacket *	pPacket = nullptr;						// ptr. to a packet
+		LONG		nCommand = 0;						// command code
 
 		// wait for an event
 
 		dwEvent  = OnWaitForEvent(TRUE);
-		nCommand = 0;
 
 		// is user message ?
 
@@ -763,29 +766,27 @@ UINT CDevice::DeviceThread()
 		case EVENT_TICK_TIMER:				// timer event ?
 			break;
 		case EVENT_USER_PACKET + CMD_OPEN:
-			nStatus = (LONG)OnOpen(
-						((PInfOpen)(pPacket->m_pvData))->lpszDeviceName);
+			if (pPacket) nStatus = (LONG)OnOpen(((PInfOpen)(pPacket->m_pvData))->lpszDeviceName);
 			break;
 		case EVENT_USER_PACKET + CMD_CLOSE:
-			nStatus = OnClose(
-						((PInfClose)(pPacket->m_pvData))->hDevice);
+			if (pPacket) nStatus = OnClose(((PInfClose)(pPacket->m_pvData))->hDevice);
 			break;
 		case EVENT_USER_PACKET + CMD_WRITE:
-			nStatus = OnWrite(
+			if (pPacket) nStatus = OnWrite(
 						((PInfWrite)(pPacket->m_pvData))->hDevice,
 						((PInfWrite)(pPacket->m_pvData))->lpBuffer,
 						((PInfWrite)(pPacket->m_pvData))->dwNumberOfBytesToWrite,
 						((PInfWrite)(pPacket->m_pvData))->lpNumberOfBytesWritten);
 			break;
 		case EVENT_USER_PACKET + CMD_READ:
-			nStatus = OnRead(
+			if (pPacket) nStatus = OnRead(
 						((PInfRead)(pPacket->m_pvData))->hDevice,
 						((PInfRead)(pPacket->m_pvData))->lpBuffer,
 						((PInfRead)(pPacket->m_pvData))->dwNumberOfBytesToRead,
 						((PInfRead)(pPacket->m_pvData))->lpNumberOfBytesRead);
 			break;
 		case EVENT_USER_PACKET + CMD_IOCONTROL:
-			nStatus = OnIoControl(
+			if (pPacket) nStatus = OnIoControl(
 						((PInfIoControl)(pPacket->m_pvData))->hDevice,
 						((PInfIoControl)(pPacket->m_pvData))->dwIoControlCode,
 						((PInfIoControl)(pPacket->m_pvData))->lpInBuffer,
@@ -795,19 +796,19 @@ UINT CDevice::DeviceThread()
 						((PInfIoControl)(pPacket->m_pvData))->lpBytesReturned);
 			break;
 		case EVENT_USER_PACKET + CMD_GETDEVICENAME:
-			nStatus = OnGetDeviceName(
+			if (pPacket) nStatus = OnGetDeviceName(
 						((PInfGetDeviceName)(pPacket->m_pvData))->lpDeviceCount,
 						((PInfGetDeviceName)(pPacket->m_pvData))->lpszDeviceName);
 			break;
 		case EVENT_USER_PACKET + CMD_GETDEVICECAPA:
-			nStatus = OnGetDeviceCapability(
+			if (pPacket) nStatus = OnGetDeviceCapability(
 						((PInfGetDeviceCapa)(pPacket->m_pvData))->lpszDeviceName,
 						((PInfGetDeviceCapa)(pPacket->m_pvData))->dwFunc,
 						((PInfGetDeviceCapa)(pPacket->m_pvData))->dwType,
 						((PInfGetDeviceCapa)(pPacket->m_pvData))->lpCapsData);
 			break;
 		case EVENT_USER_PACKET + CMD_GETPARAMETER:
-			nStatus = OnGetParameter(
+			if (pPacket) nStatus = OnGetParameter(
 						((PInfGetParameter)(pPacket->m_pvData))->lpszDeviceName,
 						((PInfGetParameter)(pPacket->m_pvData))->lpszDataName,
 						((PInfGetParameter)(pPacket->m_pvData))->lpDataType,
@@ -816,7 +817,7 @@ UINT CDevice::DeviceThread()
 						((PInfGetParameter)(pPacket->m_pvData))->lpNumberOfBytesRead);
 			break;
 		case EVENT_USER_PACKET + CMD_SETPARAMETER:
-			nStatus = OnSetParameter(
+			if (pPacket) nStatus = OnSetParameter(
 						((PInfSetParameter)(pPacket->m_pvData))->lpszDeviceName,
 						((PInfSetParameter)(pPacket->m_pvData))->lpszDataName,
 						((PInfSetParameter)(pPacket->m_pvData))->dwDataType,
@@ -835,7 +836,7 @@ UINT CDevice::DeviceThread()
 
 		// done user message ?
 
-		if (dwEvent == EVENT_USER_PACKET)
+		if (pPacket && dwEvent == EVENT_USER_PACKET)
 		{
 			// dispose the message
 
@@ -848,11 +849,7 @@ UINT CDevice::DeviceThread()
 
 	OnFinalize();
 
-	//
-
 	::SetEvent(m_hDone);
-
-	// exit ...
 
 	return 0;
 }
@@ -884,8 +881,6 @@ BOOL CDevice::OnInitialize()
 
 	m_pUser        = NULL;
 	m_bInitialized = TRUE;
-
-	// exit ...
 
 	return TRUE;
 }
@@ -996,8 +991,6 @@ HANDLE CDevice::OnOpen(LPCTSTR lpszDeviceName)
 
 DWORD CDevice::OnClose(HANDLE hDevice)
 {
-	BOOL	bResult;
-
 	// not open ?
 
 	if (! m_bOpened)
@@ -1012,7 +1005,7 @@ DWORD CDevice::OnClose(HANDLE hDevice)
 
 	// terminate the scale thread
 
-	bResult = UieScaleTerm();
+	BOOL	bResult = UieScaleTerm();
 
 	// is available scale user ?
 
@@ -1028,8 +1021,6 @@ DWORD CDevice::OnClose(HANDLE hDevice)
 
 	m_pUser   = NULL;
 	m_bOpened = FALSE;
-
-	// exit ...
 
 	return DEVICEIO_SUCCESS;
 }
@@ -1105,7 +1096,7 @@ DWORD CDevice::OnIoControl(HANDLE hDevice, DWORD dwIoControlCode,
 	LPVOID lpOutBuffer, DWORD dwOutBufferSize,
 	LPDWORD lpBytesReturned)
 {
-	DWORD	dwResult;
+	DWORD	dwResult = DEVICEIO_E_ILLEGAL;
 
 	switch (dwIoControlCode)
 	{
@@ -1124,8 +1115,6 @@ DWORD CDevice::OnIoControl(HANDLE hDevice, DWORD dwIoControlCode,
 		dwResult = DEVICEIO_E_ILLEGAL;
 		break;
 	}
-
-	// exit ...
 
 	return dwResult;
 }
@@ -1155,12 +1144,10 @@ DWORD CDevice::OnIoControlReadWeight(HANDLE hDevice, DWORD dwIoControlCode,
 	LPVOID lpOutBuffer, DWORD dwOutBufferSize,
 	LPDWORD lpBytesReturned)
 {
-	PDEVICEIO_SCALE_DATA	pScale;
-	UIE_SCALE				Driver;
-	SHORT					sResult;
+
+	*lpBytesReturned = 0;    // initialize to known value of zero
 
 	// opened ?
-
 	if (! m_bOpened)
 	{
 		return DEVICEIO_E_ILLEGAL;
@@ -1182,18 +1169,19 @@ DWORD CDevice::OnIoControlReadWeight(HANDLE hDevice, DWORD dwIoControlCode,
 
 	// read weight, sync. operation
 
-	sResult = UieReadScale(&Driver);
+	UIE_SCALE				Driver = { 0 };
+
+	SHORT	sResult = UieReadScale(&Driver);
 
 	// make up response data
 
-	pScale          = (PDEVICEIO_SCALE_DATA)lpOutBuffer;
+	PDEVICEIO_SCALE_DATA	pScale  = (PDEVICEIO_SCALE_DATA)lpOutBuffer;
+
 	pScale->sStatus = sResult;
 	pScale->uchUnit = Driver.uchUnit;
 	pScale->uchDec  = Driver.uchDec;
 	pScale->ulData  = Driver.ulData;
 	*lpBytesReturned = sizeof(DEVICEIO_SCALE_DATA);
-
-	// exit ...
 
 	return DEVICEIO_SUCCESS;
 }
@@ -1213,8 +1201,6 @@ DWORD CDevice::OnIoControlReadWeight(HANDLE hDevice, DWORD dwIoControlCode,
 
 DWORD CDevice::OnGetDeviceName(LPDWORD lpDeviceCount, LPTSTR lpszDeviceName)
 {
-	CString		sName;
-
 	// check parameters
 
 	if (lpDeviceCount == NULL || lpszDeviceName == NULL)
@@ -1226,10 +1212,12 @@ DWORD CDevice::OnGetDeviceName(LPDWORD lpDeviceCount, LPTSTR lpszDeviceName)
 
 	*lpDeviceCount = NUMBER_OF_DEVICE;
 
-	sName.LoadString(IDS_DEVICENAME1);
-	_tcscpy(lpszDeviceName, sName);
+	CString		sName;
 
-	// exit ...
+	int iLoad = sName.LoadString(IDS_DEVICENAME1);
+	ASSERT(iLoad > 0);
+
+	_tcscpy(lpszDeviceName, sName);
 
 	return DEVICEIO_SUCCESS;
 }
@@ -1254,9 +1242,6 @@ DWORD CDevice::OnGetDeviceCapability(LPCTSTR lpszDeviceName, DWORD dwFunc,
 	DWORD dwType, LPVOID lpCapsData)
 {
 	DWORD				dwResult = DEVICEIO_E_ILLEGAL;
-	int					nIndex;
-	PDEVICE_CAPS		pCaps;
-	PDEVICE_CAPS_SERIAL	pSerial;
 
 	// check parameters
 
@@ -1267,16 +1252,18 @@ DWORD CDevice::OnGetDeviceCapability(LPCTSTR lpszDeviceName, DWORD dwFunc,
 
 	// search device
 
-	for (nIndex = 0; nIndex < NUMBER_OF_DEVICE; nIndex++)
+	for (int nIndex = 0; nIndex < NUMBER_OF_DEVICE; nIndex++)
 	{
 		if (m_sName[nIndex].CompareNoCase(lpszDeviceName) == 0)
 		{
+			PDEVICE_CAPS		pCaps = (PDEVICE_CAPS)lpCapsData;
+			PDEVICE_CAPS_SERIAL	pSerial = (PDEVICE_CAPS_SERIAL)lpCapsData;
+
 			// which function ?
 
 			switch (dwFunc)
 			{
 			case SCF_CAPS_SUMMARY:
-				pCaps = (PDEVICE_CAPS)lpCapsData;
 				if (pCaps->dwSize == m_Caps[nIndex].dwSize)
 				{
 					*pCaps   = m_Caps[nIndex];
@@ -1284,7 +1271,6 @@ DWORD CDevice::OnGetDeviceCapability(LPCTSTR lpszDeviceName, DWORD dwFunc,
 				}
 				break;
 			case SCF_CAPS_HWPORT:
-				pSerial = (PDEVICE_CAPS_SERIAL)lpCapsData;
 				if (pSerial->dwSize == m_CapsSerial[nIndex].dwSize)
 				{
 					*pSerial = m_CapsSerial[nIndex];
@@ -1296,13 +1282,9 @@ DWORD CDevice::OnGetDeviceCapability(LPCTSTR lpszDeviceName, DWORD dwFunc,
 				break;
 			}
 
-			// exit loop ...
-
 			break;
 		}
 	}
-
-	// exit ...
 
 	return dwResult;
 }
@@ -1332,8 +1314,9 @@ DWORD CDevice::OnGetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
 {
 	DWORD	dwResult;
 	BOOL	bResult;
-	int		nIndex;
-	TCHAR	achBuffer[SCF_MAX_DATA];
+	TCHAR	achBuffer[SCF_MAX_DATA] = { 0 };
+
+	if (lpNumberOfBytesRead != NULL) *lpNumberOfBytesRead = 0;    // initialize with zero bytes in case of errors
 
 	// check parameters
 
@@ -1348,9 +1331,7 @@ DWORD CDevice::OnGetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
 
 	// valid device name ?
 
-	nIndex = GetDeviceIndex(lpszDeviceName);
-
-	if (nIndex < 0)
+	if (GetDeviceIndex(lpszDeviceName) < 0)
 	{
 		return DEVICEIO_E_ILLEGAL;			// exit ...
 	}
@@ -1380,10 +1361,7 @@ DWORD CDevice::OnGetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
 
 	if (*lpDataType == SCF_DATA_STRING)
 	{
-		bResult = ScfConvertString2Bit(
-					lpszDataName,
-					(LPDWORD)lpData,
-					achBuffer);
+		bResult = ScfConvertString2Bit(lpszDataName, (LPDWORD)lpData, achBuffer);
 	}
 
 	if (bResult)
@@ -1395,8 +1373,6 @@ DWORD CDevice::OnGetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
 	{
 		memcpy(lpData, achBuffer, *lpNumberOfBytesRead);
 	}
-
-	// exit ...
 
 	return DEVICEIO_SUCCESS;
 }
@@ -1424,74 +1400,48 @@ DWORD CDevice::OnSetParameter(LPCTSTR lpszDeviceName, LPCTSTR lpszDataName,
 	DWORD dwDataType, LPVOID lpData, DWORD dwNumberOfBytesToWrite,
 	LPDWORD lpNumberOfBytesWritten)
 {
-	DWORD	dwResult;
-	BOOL	bResult;
-	int		nIndex;
-	TCHAR	achBuffer[SCF_MAX_DATA];
+	DWORD	dwResult = DEVICEIO_E_ILLEGAL;
+	TCHAR	achBuffer[SCF_MAX_DATA] = { 0 };
+
+	if (lpNumberOfBytesWritten != NULL) *lpNumberOfBytesWritten = 0;    // set to known value of zero.
 
 	// check parameters
-
 	if (lpszDeviceName         == NULL ||
 		lpszDataName           == NULL ||
 		lpData                 == NULL ||
 		dwNumberOfBytesToWrite == 0 ||
 		lpNumberOfBytesWritten == NULL)
 	{
-		return DEVICEIO_E_ILLEGAL;			// exit ...
+		return DEVICEIO_E_ILLEGAL;
 	}
 
 	// valid device name ?
-
-	nIndex = GetDeviceIndex(lpszDeviceName);
-
-	if (nIndex < 0)
+	if (GetDeviceIndex(lpszDeviceName) < 0)
 	{
-		return DEVICEIO_E_ILLEGAL;			// exit ...
+		return DEVICEIO_E_ILLEGAL;
 	}
 
 	// binary data ?
-
+	BOOL	bResult = FALSE;
 	if (dwDataType == SCF_DATA_BINARY)
 	{
-		bResult = ScfConvertBit2String(
-					lpszDataName,
-					achBuffer,
-					*(LPDWORD)lpData);
+		bResult = ScfConvertBit2String(lpszDataName, achBuffer, *(LPDWORD)lpData);
+	}
+
+	if (bResult) {
+		dwResult = ScfSetParameter(lpszDeviceName, lpszDataName, SCF_DATA_STRING, achBuffer, (_tcslen(achBuffer) + 1) * sizeof(TCHAR), lpNumberOfBytesWritten);
 	}
 	else
 	{
-		bResult = FALSE;
-	}
-
-	if (bResult)
-	{
-		dwResult = ScfSetParameter(
-					lpszDeviceName,
-					lpszDataName,
-					SCF_DATA_STRING,
-					achBuffer,
-					(_tcslen(achBuffer) + 1) * sizeof(TCHAR),
-					lpNumberOfBytesWritten);
-	} 
-	else 
-	{
-		dwResult = ScfSetParameter(
-					lpszDeviceName,
-					lpszDataName,
-					dwDataType,
-					lpData,
-					dwNumberOfBytesToWrite,
-					lpNumberOfBytesWritten);
+		dwResult = ScfSetParameter(lpszDeviceName, lpszDataName, dwDataType, lpData, dwNumberOfBytesToWrite, lpNumberOfBytesWritten);
 	}
 
 	if (dwResult != SCF_SUCCESS)
 	{
-		return DEVICEIO_E_FAILURE;			// exit ...
+		return DEVICEIO_E_FAILURE;
 	}
 
 	*lpNumberOfBytesWritten = dwNumberOfBytesToWrite;
-
-	// exit ...
 
 	return DEVICEIO_SUCCESS;
 }
@@ -1530,12 +1480,8 @@ DWORD CDevice::OnScaleEvent()
 DWORD CDevice::OnWaitForEvent(BOOL bPacket)
 {
     DWORD		dwResult, dwMasks, dwEvent, dwCounts, dwMilliseconds;
-	HANDLE		ahEvents[1];
-	LPHANDLE	lphEvents;
-
-	// make up event array to be concerned
-
-	ahEvents[0] = m_hScale;
+	HANDLE		ahEvents[] = {m_hScale};	// make up event array to be concerned
+	LPHANDLE	lphEvents = nullptr;
 
 	// needs to wait for packet message ?
 
@@ -1544,24 +1490,13 @@ DWORD CDevice::OnWaitForEvent(BOOL bPacket)
 
 	// by the way, completed to initialized the device ?
 
-	lphEvents = m_bOpened ?                 ahEvents : NULL;
+	lphEvents = m_bOpened ? ahEvents : nullptr;
 	dwCounts  = m_bOpened ? ARRAYS(ahEvents, HANDLE) :    0;
 
-#if	defined(_WIN32_WCE)
-	// The MsgWaitForMultipleObjects() function does not work correctly
-	// on Windows CE 2.0 and emulation environment.
-	dwMilliseconds = 500;
-#else
 	dwMilliseconds = INFINITE;
-#endif
 
 	// wait for an event
-	
-	dwResult = ::MsgWaitForMultipleObjects(dwCounts,	// wait for an event
-										   lphEvents,		// ptr. to event object
-										   FALSE,			// one of the events
-										   dwMilliseconds,	// wait forever
-										   dwMasks);		// input options
+	dwResult = ::MsgWaitForMultipleObjects(dwCounts, lphEvents, FALSE, dwMilliseconds, dwMasks);
 
 	// user request event ?
 	// Caution: This should be evaluated at the beginning !
@@ -1570,34 +1505,19 @@ DWORD CDevice::OnWaitForEvent(BOOL bPacket)
 	{
 		dwEvent = EVENT_USER_PACKET;
 	}
-
-	// else, scale data event ?
-
 	else if (dwResult == (WAIT_OBJECT_0 + 0))
 	{
+		// else, scale data event ?
 		dwEvent = EVENT_SCALE_DATA;
 		::ResetEvent(m_hScale);
 	}
-	
-#if	defined(_WIN32_WCE)
-	// else, timeout ?
-
-	else if (dwResult == WAIT_TIMEOUT)
-	{
-		dwEvent = EVENT_USER_PACKET;		// maybe user packet ...
-	}
-#endif
-
-	// else, unexpected events ...
-
 	else
 	{
+		// else, unexpected events ...
 		dwEvent = 0;
 	
 		ASSERT(FALSE);
 	}
-
-	// exit ...
 
 	return dwEvent;
 }
@@ -1616,19 +1536,15 @@ DWORD CDevice::OnWaitForEvent(BOOL bPacket)
 
 int CDevice::GetDeviceIndex(LPCTSTR lpszDeviceName)
 {
-	int		nIndex;
-
 	// search device name
 
-	for (nIndex = 0; nIndex < NUMBER_OF_DEVICE; nIndex++)
+	for (int nIndex = 0; nIndex < NUMBER_OF_DEVICE; nIndex++)
 	{
 		if (m_sName[nIndex].CompareNoCase(lpszDeviceName) == 0)
 		{
 			return nIndex;					// exit ...
 		}
 	}
-
-	// exit ...
 
 	return -1;
 }
@@ -1647,12 +1563,6 @@ int CDevice::GetDeviceIndex(LPCTSTR lpszDeviceName)
 
 BOOL CDevice::ReadParameter(int nIndex)
 {
-	DWORD	dwResult;
-	PScData	pSc;
-	DWORD	dwDataType;
-	TCHAR	auchData[16];
-	DWORD	dwBytesRead;
-
 	// invalid index ?
 
 	if (nIndex < 0)
@@ -1662,8 +1572,13 @@ BOOL CDevice::ReadParameter(int nIndex)
 
 	// get my parameters
 
-	for (pSc = s_scTable; pSc->dwId; pSc++)
+	for (PScData pSc = s_scTable; pSc->dwId; pSc++)
 	{
+		DWORD	dwResult;
+		DWORD	dwDataType;
+		TCHAR	auchData[16] = { 0 };
+		DWORD	dwBytesRead = 0;
+
 		dwResult = OnGetParameter(
 					m_sName[nIndex], 
 					pSc->pchName, 
@@ -1697,8 +1612,6 @@ BOOL CDevice::ReadParameter(int nIndex)
 		}
 	}
 
-	// exit ...
-
 	return TRUE;
 }
 
@@ -1718,12 +1631,12 @@ USHORT CDevice::GetPort(int nIndex)
 {
 	int		nPort = 0;
 
-	if (! m_sPort[nIndex].IsEmpty())
+	if (!m_sPort[nIndex].IsEmpty())
 	{
-		_stscanf(m_sPort[nIndex], _T("%d"), &nPort);
-	}
+		int nItems = _stscanf(m_sPort[nIndex], _T("%d"), &nPort);
 
-	// exit ...
+		ASSERT(nItems > 0);
+	}
 
 	return (USHORT)nPort;
 }
@@ -1742,7 +1655,7 @@ USHORT CDevice::GetPort(int nIndex)
 
 ULONG CDevice::GetBaud(int nIndex)
 {
-	ULONG	ulBaud;
+	ULONG	ulBaud = 9600;
 
 	switch (m_CapsSerial[nIndex].dwBaud)
 	{
@@ -1758,8 +1671,6 @@ ULONG CDevice::GetBaud(int nIndex)
 	case SCF_CAPS_BAUD_115200:	ulBaud = 115200; break;
 	default:					ulBaud = 9600;	break;
 	}
-
-	// exit ...
 
 	return ulBaud;
 }
@@ -1782,27 +1693,25 @@ UCHAR CDevice::GetSerialFormat(int nIndex)
 
 	switch (m_Serial[nIndex].dwByteSize)
 	{
-	case SCF_CAPS_CHAR_8:		uchFormat |= 0x03;	break;
-	case SCF_CAPS_CHAR_7:		uchFormat |= 0x02;	break;
+	case SCF_CAPS_CHAR_8:		uchFormat |= COM_BYTE_8_BITS_DATA;	break;
+	case SCF_CAPS_CHAR_7:		uchFormat |= COM_BYTE_7_BITS_DATA;	break;
 	default:										break;
 	}
 
 	switch (m_Serial[nIndex].dwParity)
 	{
 	case SCF_CAPS_PARITY_NONE:	uchFormat |= 0x00;	break;
-	case SCF_CAPS_PARITY_EVEN:	uchFormat |= 0x18;	break;
-	case SCF_CAPS_PARITY_ODD:	uchFormat |= 0x08;	break;
+	case SCF_CAPS_PARITY_EVEN:	uchFormat |= COM_BYTE_EVEN_PARITY;	break;
+	case SCF_CAPS_PARITY_ODD:	uchFormat |= COM_BYTE_ODD_PARITY;	break;
 	default:										break;
 	}
 
 	switch (m_Serial[nIndex].dwStopBit)
 	{
 	case SCF_CAPS_STOP_1:		uchFormat |= 0x00;	break;
-	case SCF_CAPS_STOP_2:		uchFormat |= 0x04;	break;
+	case SCF_CAPS_STOP_2:		uchFormat |= COM_BYTE_2_STOP_BITS;	break;
 	default:										break;
 	}
-
-	// exit ...
 
 	return uchFormat;
 }

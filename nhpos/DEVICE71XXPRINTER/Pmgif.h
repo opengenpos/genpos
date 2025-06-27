@@ -69,8 +69,8 @@
 #define PMG_SET_LF          30          /* set feed length for font B       */
 #endif
 
-#define PMG_CHARX2          0x12        /* double width                     */
-#define PMG_CHARX4          0x13        /* double width * double hight      */
+#define PMG_CHARX2          0x12        /* double width, See also FSC_DOUBLE_WIDE and KPS_DOUBLE and RFL_DOUBLE and PRT_DOUBLE  */
+#define PMG_CHARX4          0x13        /* double width * double hight, PRT_SDOUBLE   */
 #define PMG_ESC_CHARX2      0x20        /* double width                     */
 #define PMG_ESC_CHARX4      0x30        /* double width * double hight      */
 
@@ -270,8 +270,8 @@ VOID    PmgInsSpoolData( USHORT , UCHAR *, USHORT , BOOL);
 VOID    PmgSetSpoolData( USHORT , PSPOOLCNT , UCHAR *, USHORT , UCHAR , BOOL);
 USHORT  PmgChkConfig( USHORT );
 SHORT   PmgOpenCom( USHORT );
-USHORT  PmgFeed2( USHORT, USHORT , UCHAR *);
-USHORT PmgReadStatus(USHORT usPrtType, UCHAR *pfbStatus);
+SHORT   PmgFeed2( USHORT, USHORT , UCHAR *);
+SHORT   PmgReadStatus(USHORT usPrtType, UCHAR *pfbStatus);
 #ifdef TPOS
 USHORT  PmgKanjiAdjust( UCHAR *, UCHAR *, SHORT );
 VOID    PmgSjisToJis( UCHAR *, UCHAR *);

@@ -1021,10 +1021,9 @@ VOID PmgReOpenPrt(USHORT usPrtType)
 USHORT  PmgResetPrt(USHORT usPrtType)
 {
     SHORT   sRc;
-    USHORT  hPort;
-    PRT_SNDMSG      aResetData;
-    PRT_RESPONCE    pPrtResponce;
     USHORT          usOffset;
+    PRT_SNDMSG      aResetData = { 0 };
+    PRT_RESPONCE    pPrtResponce = { 0 };
 
     ESC2BYTE    EscReset = {ESC, '@'};               /* initialize printer */
 
@@ -1067,12 +1066,12 @@ USHORT  PmgResetPrt(USHORT usPrtType)
         CHAR  DleEnq[] = "\x10\x05\x02";    /* initialize printer (as if powered on) */
 #endif
 #endif
-        SHORT sLength;                      /* length of command buffer to transmit */
+        USHORT usLength;                      /* length of command buffer to transmit */
 
         /* issue the realtime command 'Recover and clear buffers' */
-        sLength = strlen(DleEnq);
-        sRc = PifWriteCom(pPrtCtrl.hPort, DleEnq, sLength);
-        if (sRc != sLength) {
+        usLength = strlen(DleEnq);
+        sRc = PifWriteCom(pPrtCtrl.hPort, DleEnq, usLength);
+        if (sRc < 0 || sRc != usLength) {
             return FALSE;
         }
 
@@ -1148,18 +1147,13 @@ USHORT  PmgResetPrt(USHORT usPrtType)
     if (sRc < 0) return(FALSE);
 
     pPrtCtrl.ucRcvSeqNo = pPrtCtrl.ucSndSeqNo = 0;
-    usOffset += (USHORT)OFFSET(PRT_SNDMSG, aucPrtMsg[0]);
+    usOffset += OFFSET(PRT_SNDMSG, aucPrtMsg[0]);
     sRc = EscpWriteCom(pPrtCtrl.hPort, &aResetData, usOffset);
-    sRc = EscpReadCom(pPrtCtrl.hPort,
-                     &pPrtResponce,
-                     sizeof(pPrtResponce));
+    sRc = EscpReadCom(pPrtCtrl.hPort, &pPrtResponce, sizeof(pPrtResponce));
     pPrtCtrl.ucRcvSeqNo = pPrtCtrl.ucSndSeqNo;
-    hPort = pPrtCtrl.hPort;
 
     while ((sRc > 0) && (pPrtResponce.ucSeqNo != 0)) {
-        sRc = EscpReadCom(hPort,
-                         &pPrtResponce,
-                         sizeof(pPrtResponce));
+        sRc = EscpReadCom(pPrtCtrl.hPort, &pPrtResponce, sizeof(pPrtResponce));
         
     }
 
@@ -1190,13 +1184,12 @@ USHORT  PmgResetPrt(USHORT usPrtType)
 SHORT PmgWriteCom(USHORT usPrtType, CONST VOID  *pBuffer, USHORT usBytes)
 {
     SHORT   sRc;                /* return status            */
-    SHORT   sErrLoop;           /* loop counter             */
-    SHORT   sBusyLoop;          /* loop counter             */
 
 
-    for (sErrLoop = 0; sErrLoop < 5; sErrLoop++) {
-        for (sRc = sBusyLoop = 0; sRc == 0; sBusyLoop++) {
-            sRc = EscpWriteCom(pPrtCtrl.hPort, (VOID FAR *)pBuffer, usBytes);
+    for (SHORT sErrLoop = 0; sErrLoop < 5; sErrLoop++) {
+        sRc = 0;
+        for (SHORT sBusyLoop = 0; sRc == 0; sBusyLoop++) {
+            sRc = EscpWriteCom(pPrtCtrl.hPort, (VOID  *)pBuffer, usBytes);
 
             if (sRc == 0) PifSleep(50);
 
@@ -1232,12 +1225,11 @@ SHORT PmgWriteCom(USHORT usPrtType, CONST VOID  *pBuffer, USHORT usBytes)
 SHORT PmgReadCom(USHORT usPrtType, VOID FAR *pBuffer, USHORT usBytes)
 {
     SHORT   sRc;                /* return status            */
-    SHORT   sErrLoop;           /* loop counter             */
-    SHORT   sBusyLoop;          /* loop counter             */
 
 
-    for (sErrLoop = 0; sErrLoop < 3; sErrLoop++) {
-        for (sRc = sBusyLoop = 0; sRc == 0; sBusyLoop++) {
+    for (SHORT sErrLoop = 0; sErrLoop < 3; sErrLoop++) {
+        sRc = 0;
+        for (SHORT sBusyLoop = 0; sRc == 0; sBusyLoop++) {
             sRc = EscpReadCom(pPrtCtrl.hPort, pBuffer, usBytes);
 
             if (sBusyLoop >= 10) sRc = PIF_ERROR_COM_TIMEOUT;
@@ -1298,8 +1290,8 @@ BOOL PmgGetSerialConfig(PSERIAL_CONFIG pSerialConf)
 {
     DWORD   dwCount;
     DWORD   dwData, dwDataType, dwDummy;
-    TCHAR   atchName[SCF_USER_BUFFER];
-    TCHAR   atchPort[SCF_USER_BUFFER];
+    TCHAR   atchName[SCF_USER_BUFFER] = { 0 };
+    TCHAR   atchPort[SCF_USER_BUFFER] = { 0 };
 
     GetDeviceName(&dwCount, atchName);
 
@@ -1314,24 +1306,13 @@ BOOL PmgGetSerialConfig(PSERIAL_CONFIG pSerialConf)
 
     if (dwCount)
     {
-        if (GetParameter(   atchName, 
-                            _T("Port"), 
-                            &dwDataType, 
-                            (LPVOID)atchPort, 
-                            sizeof(atchPort), 
-                            &dwDummy) != SCF_SUCCESS)
+        if (GetParameter(atchName, SCF_DATANAME_PORT, &dwDataType, atchPort, sizeof(atchPort), &dwDummy) != SCF_SUCCESS)
         {
             return FALSE;
         }
         pSerialConf->uchComPort = (UCHAR)(*((WORD *)atchPort)-*((WORD *)_T("0")));
 
-
-        if (GetParameter(   atchName, 
-                            SCF_DATANAME_BAUD, 
-                            &dwDataType, 
-                            (LPVOID)&dwData, 
-                            sizeof(dwData), 
-                            &dwDummy) != SCF_SUCCESS)
+        if (GetParameter(atchName, SCF_DATANAME_BAUD, &dwDataType, &dwData, sizeof(dwData), &dwDummy) != SCF_SUCCESS)
         {
             return FALSE;
         }
@@ -1374,12 +1355,7 @@ BOOL PmgGetSerialConfig(PSERIAL_CONFIG pSerialConf)
         }
 
 
-        if (GetParameter(   atchName, 
-                            SCF_DATANAME_CHARBIT, 
-                            &dwDataType, 
-                            (LPVOID)&dwData, 
-                            sizeof(dwData), 
-                            &dwDummy) != SCF_SUCCESS)
+        if (GetParameter(atchName, SCF_DATANAME_CHARBIT, &dwDataType, &dwData, sizeof(dwData), &dwDummy) != SCF_SUCCESS)
         {
             return FALSE;
         }
@@ -1398,12 +1374,7 @@ BOOL PmgGetSerialConfig(PSERIAL_CONFIG pSerialConf)
         }
 
 
-        if (GetParameter(   atchName, 
-                            SCF_DATANAME_PARITY, 
-                            &dwDataType, 
-                            (LPVOID)&dwData, 
-                            sizeof(dwData), 
-                            &dwDummy) != SCF_SUCCESS)
+        if (GetParameter(atchName, SCF_DATANAME_PARITY, &dwDataType, &dwData, sizeof(dwData), &dwDummy) != SCF_SUCCESS)
         {
             return FALSE;
         }
@@ -1424,12 +1395,7 @@ BOOL PmgGetSerialConfig(PSERIAL_CONFIG pSerialConf)
         }
 
 
-        if (GetParameter(   atchName, 
-                            SCF_DATANAME_STOPBIT, 
-                            &dwDataType, 
-                            (LPVOID)&dwData, 
-                            sizeof(dwData), 
-                            &dwDummy) != SCF_SUCCESS)
+        if (GetParameter(atchName, SCF_DATANAME_STOPBIT, &dwDataType, &dwData, sizeof(dwData), &dwDummy) != SCF_SUCCESS)
         {
             return FALSE;
         }

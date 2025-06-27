@@ -106,6 +106,11 @@ typedef struct {
 #define ESCP_NOT_ERROR  0x04        /* Not error                        */
 #define ESCP_INIT       0x20        /* Initialize complete              */
 
+#if defined(POSSIBLE_DEAD_CODE)
+
+// following I/O control function indicators replaced by the
+// ones in pif.h
+
 /*-------------------------------------------------------------------------
 *   I/O Control Functions
 *--------------------------------------------------------------------------
@@ -115,6 +120,7 @@ typedef struct {
 #define ESCP_READ_CONF      3       /* returns printer configuration    */
 #define ESCP_CLEAR_SEQ      4       /* synchronizes sequence #          */
 #define ESCP_DIRECT_WRITE   5       /* outputs data without ESC v       */
+#endif
 
 typedef struct {
     CHAR    achIdent[3];            /* Not used                         */
@@ -123,11 +129,11 @@ typedef struct {
 } ESCP_CONF_HEADER;
 
 
-SHORT EscpReadStatus(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen);
-SHORT EscpLoopTest(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen);
-SHORT EscpReadConf(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen);
+SHORT EscpReadStatus(ESCP *pEscp, UCHAR  *puchBuff, SHORT sLen);
+SHORT EscpLoopTest(ESCP *pEscp, UCHAR  *puchBuff, SHORT sLen);
+SHORT EscpReadConf(ESCP *pEscp, UCHAR  *puchBuff, SHORT sLen);
 SHORT EscpClearSeq(ESCP *pEscp);
-SHORT EscpDirectWrite(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen);
+SHORT EscpDirectWrite(ESCP *pEscp, UCHAR  *puchBuff, SHORT sLen);
 
 
 /*-------------------------------------------------------------------------
@@ -336,8 +342,8 @@ SHORT EscpCloseCom(SHORT sDummy);
 SHORT EscpControlCom(SHORT sDummy, SHORT sFunc, ...);
 SHORT EscpInitCom(VOID);
 SHORT EscpOpenCom(USHORT usPortId, PROTOCOL *pProtocol);
-SHORT EscpReadCom(SHORT sDummy, VOID FAR *pBuff, SHORT sCount);
-SHORT EscpWriteCom(SHORT sDummy, VOID FAR *pBuff, SHORT sCount);
+SHORT EscpReadCom(SHORT sDummy, VOID  *pBuff, SHORT sCount);
+SHORT EscpWriteCom(SHORT sDummy, VOID  *pBuff, SHORT sCount);
 
 SHORT EscpReadPrinterStatus(UCHAR *puchStat, UCHAR *puchError);
 

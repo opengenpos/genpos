@@ -43,7 +43,7 @@
 *
 *       sFunc       one of the following function codes:
 *
-*   1) ESCP_STATUS_READ  : returns printer status
+*   1) PIF_PIP_GET_STATUS  : returns printer status
 *
 *       The following argument required in addition:
 *
@@ -53,7 +53,7 @@
 *       Return > 0              length of status, alway 1 byte
 *              = SYSERR         if not opened or invalid handle
 *
-*   2) ESCP_LOOP_TEST    : no operation
+*   2) PIF_PIP_LOOP_TEST    : no operation
 *
 *       The following argument required in addition:
 *
@@ -64,7 +64,7 @@
 *              = SYSERR     if not opened or invalid handle
 *              = Others     Serial I/O port error
 *
-*   3) ESCP_READ_CONF    : returns printer configuration
+*   3) PIF_PIP_GET_CONFIG    : returns printer configuration
 *
 *       The following argument required in addition:
 *
@@ -77,14 +77,14 @@
 *
 *       This copys printer configuration info. to pchBuff.
 *
-*   4) ESCP_CLEAR_SEQ    : synchronizes sequence #
+*   4) PIF_PIP_RESET_SEQ    : synchronizes sequence #
 *
 *       Return = OK
 *              = SYSERR     if not opened or invalid handle
 *
 *       This sweeps excessive characters in the serial I/O receive buffer. 
 *
-*   5) ESCP_DIRECT_WRITE : outputs data without ESC v
+*   5) PIF_PIP_DIRECT_WRITE : outputs data without ESC v
 *
 *       The following argument required in addition:
 *
@@ -102,39 +102,38 @@
 */
 SHORT EscpControlCom(SHORT sDummy, SHORT sFunc, ...)
 {
-    ESCP *pEscp;
+    ESCP *pEscp = &Escp[0];
 	va_list		marker;
-	UCHAR FAR	*puchBuff;
+	UCHAR       *puchBuff;
 	SHORT		sLen;
 //    struct arg {
 //        CHAR FAR *puchBuff;
 //        SHORT sLen;
 //    } *pArg = (struct arg *)(((int *)&sFunc)+1);
 
-    pEscp = &Escp[0];
-
 	va_start(marker, sFunc);
-	puchBuff = va_arg(marker, UCHAR FAR *);
+	puchBuff = va_arg(marker, UCHAR  *);
 	sLen     = va_arg(marker, SHORT);
 	va_end(marker);
     
 	if (!pEscp->chOpen) {               /* see if opened */
         return (PIF_ERROR_SYSTEM);
     }
+
     switch (sFunc) {
-    case ESCP_STATUS_READ:          /* returns printer status           */
+    case PIF_PIP_GET_STATUS:           /* returns printer status           */
         return (EscpReadStatus(pEscp, puchBuff, sLen));
 
-    case ESCP_LOOP_TEST:            /* loop test performs no operation  */
+    case PIF_PIP_LOOP_TEST:            /* loop test performs no operation  */
         return (EscpLoopTest(pEscp, puchBuff, sLen));
 
-    case ESCP_READ_CONF:            /* returns printer configuration    */
+    case PIF_PIP_GET_CONFIG:           /* returns printer configuration    */
         return (EscpReadConf(pEscp, puchBuff, sLen));
 
-    case ESCP_CLEAR_SEQ:            /* synchronizes sequence #          */
+    case PIF_PIP_RESET_SEQ:            /* synchronizes sequence #          */
         return (EscpClearSeq(pEscp));
 
-    case ESCP_DIRECT_WRITE:         /* outputs data without ESC v       */
+    case PIF_PIP_DIRECT_WRITE:         /* outputs data without ESC v       */
         return (EscpDirectWrite(pEscp, puchBuff, sLen));
 
     default:
@@ -146,7 +145,7 @@ SHORT EscpControlCom(SHORT sDummy, SHORT sFunc, ...)
 
 /*
 *===========================================================================
-**  Synopsis:   SHORT EscpReadStatus(ESCP *pEscp, UCHAR FAR *puchBuff,
+**  Synopsis:   SHORT EscpReadStatus(ESCP *pEscp, UCHAR  *puchBuff,
 *                                    SHORT sLen)
 *
 *       pEscp       pointer to ESC/POS control block
@@ -158,12 +157,11 @@ SHORT EscpControlCom(SHORT sDummy, SHORT sFunc, ...)
 **  Description: This returns printer status.
 *===========================================================================
 */
-SHORT EscpReadStatus(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
+SHORT EscpReadStatus(ESCP *pEscp, UCHAR  *puchBuff, SHORT sLen)
 {
 //    *puchBuff   = pEscp->uchStatus & (UCHAR )ESCP_NEAR_END ;  /* Status of the printer */    
     *puchBuff   = pEscp->uchStatus;  /* Status of the printer */    
-    *puchBuff |=  ( ESCP_NOT_ERROR | ESCP_INIT );
-                                /* set  Not error & Initialize complete */
+    *puchBuff |=  ( ESCP_NOT_ERROR | ESCP_INIT );    /* set  Not error & Initialize complete */
 
     return (sizeof(*puchBuff));
     sLen = sLen;
@@ -171,7 +169,7 @@ SHORT EscpReadStatus(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
 
 /*
 *===========================================================================
-**  Synopsis:   SHORT EscpLoopTest(ESCP *pEscp, UCHAR FAR *puchBuff,
+**  Synopsis:   SHORT EscpLoopTest(ESCP *pEscp, UCHAR  *puchBuff,
 *                                    SHORT sLen)
 *
 *       pEscp       pointer to ESC/POS control block
@@ -184,7 +182,7 @@ SHORT EscpReadStatus(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
 **  Description: This performs no operation.
 *===========================================================================
 */
-SHORT EscpLoopTest(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
+SHORT EscpLoopTest(ESCP *pEscp, UCHAR  *puchBuff, SHORT sLen)
 {
     SHORT sStatus;
     UCHAR uchStatus;
@@ -213,7 +211,7 @@ SHORT EscpLoopTest(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
 
 /*
 *===========================================================================
-**  Synopsis:   SHORT EscpReadConf(ESCP *pEscp, UCHAR FAR *puchBuff,
+**  Synopsis:   SHORT EscpReadConf(ESCP *pEscp, UCHAR  *puchBuff,
 *                                    SHORT sLen)
 *
 *       pEscp       pointer to ESC/POS control block
@@ -227,7 +225,7 @@ SHORT EscpLoopTest(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
 *===========================================================================
 */
 /* returns printer configuration    */
-SHORT EscpReadConf(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
+SHORT EscpReadConf(ESCP *pEscp, UCHAR  *puchBuff, SHORT sLen)
 {
     CHAR    EscpConf[] = "ESC/POS Printer";
 
@@ -235,16 +233,13 @@ SHORT EscpReadConf(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
         return(0);
     }
 
-//    _RflFMemSet(puchBuff, 0, sizeof(ESCP_CONF_HEADER));
     memset(puchBuff, 0, sizeof(ESCP_CONF_HEADER));
-    ((ESCP_CONF_HEADER FAR *)(puchBuff))->auchPrtConf =  ESCP_CONF_CUTTER;
+    ((ESCP_CONF_HEADER  *)(puchBuff))->auchPrtConf =  ESCP_CONF_CUTTER;
                                 /* Printer Config. = Printer has cutter. */
-    strncpy((CHAR *)puchBuff + sizeof(ESCP_CONF_HEADER),
-            EscpConf, sLen - LEN_NULL - sizeof(ESCP_CONF_HEADER) );
+    strncpy((CHAR *)puchBuff + sizeof(ESCP_CONF_HEADER), EscpConf, sLen - LEN_NULL - sizeof(ESCP_CONF_HEADER) );
     *( puchBuff + ( sLen - LEN_NULL ) ) = '\0';    /* set end of string mark */
-    return( sizeof(ESCP_CONF_HEADER) 
-          + strlen((const CHAR *)puchBuff + sizeof(ESCP_CONF_HEADER))
-          + LEN_NULL );
+
+    return( sizeof(ESCP_CONF_HEADER) + strlen((CHAR *)puchBuff + sizeof(ESCP_CONF_HEADER)) + LEN_NULL );
     pEscp = pEscp;      /* pEscp isn't used */
  }
 
@@ -262,11 +257,11 @@ SHORT EscpReadConf(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
 */
 SHORT EscpClearSeq(ESCP *pEscp)
 {
-    CHAR achTemp[8];
-    SHORT sStatus;
-
     /* if sequence queue is empty, then clear BIOS ring buffer  */
     if ( (pEscp->Fifo).uchCount == 0) {
+        CHAR achTemp[8] = { 0 };
+        SHORT sStatus;
+
 		do {
 			sStatus = PifReadCom(pEscp->sSio, achTemp, sizeof(achTemp));
 			if (sStatus == PIF_ERROR_COM_POWER_FAILURE) {
@@ -282,7 +277,7 @@ SHORT EscpClearSeq(ESCP *pEscp)
 
 /*
 *===========================================================================
-**  Synopsis:   SHORT EscpDirectWrite(ESCP *pEscp, UCHAR FAR *puchBuff,
+**  Synopsis:   SHORT EscpDirectWrite(ESCP *pEscp, UCHAR  *puchBuff,
 *                                    SHORT sLen)
 *
 *       pEscp       pointer to ESC/POS control block
@@ -296,7 +291,7 @@ SHORT EscpClearSeq(ESCP *pEscp)
 *                without ESC v control.
 *===========================================================================
 */
-SHORT EscpDirectWrite(ESCP *pEscp, UCHAR FAR *puchBuff, SHORT sLen)
+SHORT EscpDirectWrite(ESCP *pEscp, UCHAR  *puchBuff, SHORT sLen)
 {
     return (PifWriteCom(pEscp->sSio, puchBuff, sLen));
 }

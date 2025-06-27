@@ -653,13 +653,8 @@ SHORT SndPrintRJ(USHORT usPrtType, SPOOLDAT *pSpoolBuf)
     usSendLen += pSpoolBuf->aDataCtrl.ucVLI-sizeof(DATACTRL);
 
     /*--- set IDENT = 0 ---*/
-    aSendBuff.auchIDENT[0]
-        = aSendBuff.auchIDENT[1]
-        = aSendBuff.auchIDENT[2]
-        = 0;
-    pSpoolBuf->aDataCtrl.ucCommSeqNo
-        = aSendBuff.ucSeqNo
-        = pPrtCtrl.ucSndSeqNo;
+    aSendBuff.auchIDENT[0] = aSendBuff.auchIDENT[1] = aSendBuff.auchIDENT[2] = 0;
+    pSpoolBuf->aDataCtrl.ucCommSeqNo = aSendBuff.ucSeqNo = pPrtCtrl.ucSndSeqNo;
 
     /*--- increment print tally ---*/
     SndPrtTally(PMG_PRT_RECEIPT, pSpoolBuf);
@@ -669,7 +664,7 @@ SHORT SndPrintRJ(USHORT usPrtType, SPOOLDAT *pSpoolBuf)
 
     PmgReleaseSemRJ();
 
-    sRc = PmgWriteCom((USHORT)PMG_PRT_RCT_JNL, (VOID FAR *)&aSendBuff, (USHORT)(4+usSendLen));
+    sRc = PmgWriteCom(PMG_PRT_RCT_JNL, &aSendBuff, (USHORT)(4+usSendLen));
 
     PmgRequestSemRJ();
 
@@ -724,10 +719,7 @@ SHORT SndBeginValidation(USHORT usPrtType)
 #if 1
                 sRc = PmgReadStatus(usPrtType,&pfbStatus);
 #else
-                sRc = EscpControlCom(pPrtCtrl.hPort,
-                                    PIF_PIP_GET_STATUS,
-                                    (UCHAR FAR *)&pfbStatus,
-                                    sizeof(pfbStatus));
+                sRc = EscpControlCom(pPrtCtrl.hPort, PIF_PIP_GET_STATUS, (UCHAR  *)&pfbStatus, sizeof(pfbStatus));
 #endif
             } else {
 #if defined (STATION_RECEIPT) || defined (STATION_JOURNAL) || defined (STATION_VALIDATION)
@@ -742,10 +734,7 @@ SHORT SndBeginValidation(USHORT usPrtType)
 #if 1
                 sRc = PmgReadStatus(usPrtType,&pfbStatus);
 #else
-                sRc = EscpControlCom(pPrtCtrl.hPort,
-                                    PIF_PIP_GET_STATUS,
-                                    (UCHAR FAR *)&pfbStatus,
-                                    sizeof(pfbStatus));
+                sRc = EscpControlCom(pPrtCtrl.hPort, PIF_PIP_GET_STATUS, (UCHAR  *)&pfbStatus, sizeof(pfbStatus));
 #endif
             }
             if (sRc == PIF_ERROR_COM_POWER_FAILURE) break;

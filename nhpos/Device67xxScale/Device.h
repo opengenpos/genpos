@@ -49,7 +49,7 @@ public:
 	CDevice();
 	virtual ~CDevice();
 
-// public functions
+	// public functions
 public:
 	HANDLE	Open(LPCTSTR lpszDeviceName);
 	DWORD	Close(HANDLE hDevice);

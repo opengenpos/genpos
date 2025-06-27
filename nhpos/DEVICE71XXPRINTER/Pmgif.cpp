@@ -1211,7 +1211,7 @@ static bool IsEscCodeType(UCHAR *pucBuff, PrinterEscCode escCode)
 
 static USHORT PmgEditOposEsc(PmgEditBuff *pBuff)
 {
-    UCHAR* pX, *pY;
+    UCHAR *pX, *pY;
 
     for (pX = pBuff->pucBuffSrc, pY = pBuff->pucBuffDest; pX < pBuff->pucBuffStart + pBuff->usBuffLen; ) {
 
@@ -1361,15 +1361,15 @@ VOID PmgInsSpoolID(USHORT usPrtType, UCHAR ucDataID)
 {
     PRTCTRL     *pPrintCtrl;
     SPOOLCNT    *pSpoolCnt;
-    DATACTRL    *pSpoolBuff;
-    UCHAR       *pSpoolNext;
+    DATACTRL    *pSpoolBuff = NULL;
     USHORT      usStat = FALSE;
 
 
     PmgGetCtrl(usPrtType, &pPrintCtrl, &pSpoolCnt);
 
     while (usStat == FALSE) {
-        pSpoolNext = pSpoolCnt->pucWrite + sizeof(DATACTRL)*2;
+        UCHAR  *pSpoolNext = pSpoolCnt->pucWrite + sizeof(DATACTRL)*2;
+
         if (pSpoolNext > pSpoolCnt->pucEnd) {
             /*--- if bottom of spool buffer ---*/
             if ((pSpoolCnt->pucValidation > pSpoolCnt->pucWrite)
@@ -1408,36 +1408,39 @@ VOID PmgInsSpoolID(USHORT usPrtType, UCHAR ucDataID)
         }
     }
 
-    if (usStat == LOOP) {
-        /*--- insert end of spool block ---*/
+    ASSERT(pSpoolBuff);
+
+    if (pSpoolBuff) {
+        if (usStat == LOOP) {
+            /*--- insert end of spool block ---*/
+            pSpoolBuff->ucVLI = sizeof(DATACTRL);
+            pSpoolBuff->ucDataID = SPBID_END_SPOOL;
+            pSpoolBuff->ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
+            pSpoolBuff->fbPrtMode = 0;
+            pSpoolBuff->ucCommSeqNo = 0;
+
+            pSpoolBuff = (DATACTRL*)pSpoolCnt->pucStart;
+        }
+        /*--- insert special data block ---*/
         pSpoolBuff->ucVLI = sizeof(DATACTRL);
-        pSpoolBuff->ucDataID = SPBID_END_SPOOL;
+        pSpoolBuff->ucDataID = ucDataID;
         pSpoolBuff->ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
         pSpoolBuff->fbPrtMode = 0;
         pSpoolBuff->ucCommSeqNo = 0;
 
-        pSpoolBuff = (DATACTRL *)pSpoolCnt->pucStart;
+        /*--- insert end of data block ---*/
+        pSpoolBuff++;
+        pSpoolBuff->ucVLI = sizeof(DATACTRL);
+        pSpoolBuff->ucDataID = SPBID_END_DATA;
+        pSpoolBuff->ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
+        pSpoolBuff->fbPrtMode = 0;
+        pSpoolBuff->ucCommSeqNo = 0;
+
+        pSpoolCnt->pucWrite = (UCHAR*)pSpoolBuff;
+        pPrintCtrl->ucInputSeqNo++;
+
+        PmgWakeUp(ID_SEND);
     }
-    /*--- insert special data block ---*/
-    pSpoolBuff->ucVLI = sizeof(DATACTRL);
-    pSpoolBuff->ucDataID = ucDataID;
-    pSpoolBuff->ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
-    pSpoolBuff->fbPrtMode = 0;
-    pSpoolBuff->ucCommSeqNo = 0;
-
-    /*--- insert end of data block ---*/
-    pSpoolBuff++;
-    pSpoolBuff->ucVLI = sizeof(DATACTRL);
-    pSpoolBuff->ucDataID = SPBID_END_DATA;
-    pSpoolBuff->ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
-    pSpoolBuff->fbPrtMode = 0;
-    pSpoolBuff->ucCommSeqNo = 0;
-
-    pSpoolCnt->pucWrite = (UCHAR *)pSpoolBuff;
-    pPrintCtrl->ucInputSeqNo++;
-
-    PmgWakeUp(ID_SEND);
-
 }
 
 
@@ -1461,7 +1464,7 @@ VOID PmgInsSpoolData(USHORT usPrtType, UCHAR *pucData, USHORT usLen, BOOL fFlag)
 {
     PRTCTRL     *pPrintCtrl;
     SPOOLCNT    *pSpoolCnt;
-    SPOOLDAT    *pSpoolBuff;
+    SPOOLDAT    *pSpoolBuff = NULL;
     USHORT      usStat = FALSE;
 
 
@@ -1505,51 +1508,55 @@ VOID PmgInsSpoolData(USHORT usPrtType, UCHAR *pucData, USHORT usLen, BOOL fFlag)
         }
     }
 
-    if (usStat == LOOP) {
-        /*--- insert end of spool block ---*/
-        pSpoolBuff->aDataCtrl.ucVLI = sizeof(DATACTRL);
-        pSpoolBuff->aDataCtrl.ucDataID = SPBID_END_SPOOL;
+    ASSERT(pSpoolBuff);
+
+    if (pSpoolBuff) {
+        if (usStat == LOOP) {
+            /*--- insert end of spool block ---*/
+            pSpoolBuff->aDataCtrl.ucVLI = sizeof(DATACTRL);
+            pSpoolBuff->aDataCtrl.ucDataID = SPBID_END_SPOOL;
+            pSpoolBuff->aDataCtrl.ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
+            pSpoolBuff->aDataCtrl.fbPrtMode = 0;
+            pSpoolBuff = (SPOOLDAT *)pSpoolCnt->pucStart;
+        }
+        /*--- insert data block ---*/
+        pSpoolBuff->aDataCtrl.ucVLI = (UCHAR)(usLen + sizeof(DATACTRL));
         pSpoolBuff->aDataCtrl.ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
         pSpoolBuff->aDataCtrl.fbPrtMode = 0;
-        pSpoolBuff = (SPOOLDAT *)pSpoolCnt->pucStart;
-    }
-    /*--- insert data block ---*/
-    pSpoolBuff->aDataCtrl.ucVLI = (UCHAR)(usLen + sizeof(DATACTRL));
-    pSpoolBuff->aDataCtrl.ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
-    pSpoolBuff->aDataCtrl.fbPrtMode = 0;
-    pSpoolBuff->aDataCtrl.ucCommSeqNo = 0;
-    if (usPrtType == PMG_PRT_RCT_JNL) {
-        if (fFlag == TRUE){
-            /*--- continue to the next ---*/
-            pSpoolBuff->aDataCtrl.ucDataID = SPBID_PRINT_DATA_RJ_C;
+        pSpoolBuff->aDataCtrl.ucCommSeqNo = 0;
+        if (usPrtType == PMG_PRT_RCT_JNL) {
+            if (fFlag == TRUE){
+                /*--- continue to the next ---*/
+                pSpoolBuff->aDataCtrl.ucDataID = SPBID_PRINT_DATA_RJ_C;
+            } else {
+                /*--- end of data --*/
+                pSpoolBuff->aDataCtrl.ucDataID = SPBID_PRINT_DATA_RJ_E;
+            }
         } else {
-            /*--- end of data --*/
-            pSpoolBuff->aDataCtrl.ucDataID = SPBID_PRINT_DATA_RJ_E;
+            if (fFlag == TRUE){
+                /*--- continue to the next ---*/
+                pSpoolBuff->aDataCtrl.ucDataID = SPBID_PRINT_DATA_C;
+            } else {
+                /*--- end of data --*/
+                pSpoolBuff->aDataCtrl.ucDataID = SPBID_PRINT_DATA_E;
+            }
         }
-    } else {
-        if (fFlag == TRUE){
-            /*--- continue to the next ---*/
-            pSpoolBuff->aDataCtrl.ucDataID = SPBID_PRINT_DATA_C;
-        } else {
-            /*--- end of data --*/
-            pSpoolBuff->aDataCtrl.ucDataID = SPBID_PRINT_DATA_E;
-        }
+
+        memcpy(&pSpoolBuff->ucPrtData, pucData, usLen);
+
+        /*--- insert end of data block ---*/
+        pSpoolBuff = (SPOOLDAT *)((UCHAR *)pSpoolBuff + usLen + sizeof(DATACTRL));
+        pSpoolBuff->aDataCtrl.ucVLI = sizeof(DATACTRL);
+        pSpoolBuff->aDataCtrl.ucDataID = SPBID_END_DATA;
+        pSpoolBuff->aDataCtrl.ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
+        pSpoolBuff->aDataCtrl.fbPrtMode = 0;
+        pSpoolBuff->aDataCtrl.ucCommSeqNo = 0;
+
+        pSpoolCnt->pucWrite = (UCHAR *)pSpoolBuff;
+        pPrintCtrl->ucInputSeqNo++;
+
+        PmgWakeUp(ID_SEND);
     }
-
-    memcpy(&pSpoolBuff->ucPrtData, pucData, usLen);
-
-    /*--- insert end of data block ---*/
-    pSpoolBuff = (SPOOLDAT *)((UCHAR *)pSpoolBuff + usLen + sizeof(DATACTRL));
-    pSpoolBuff->aDataCtrl.ucVLI = sizeof(DATACTRL);
-    pSpoolBuff->aDataCtrl.ucDataID = SPBID_END_DATA;
-    pSpoolBuff->aDataCtrl.ucInputSeqNo = pPrintCtrl->ucInputSeqNo;
-    pSpoolBuff->aDataCtrl.fbPrtMode = 0;
-    pSpoolBuff->aDataCtrl.ucCommSeqNo = 0;
-
-    pSpoolCnt->pucWrite = (UCHAR *)pSpoolBuff;
-    pPrintCtrl->ucInputSeqNo++;
-
-    PmgWakeUp(ID_SEND);
 }
 
 
@@ -1571,14 +1578,11 @@ VOID PmgInsSpoolData(USHORT usPrtType, UCHAR *pucData, USHORT usLen, BOOL fFlag)
 
 static USHORT PmgWideAdjust(USHORT usPrtType, UCHAR *pucDest, UCHAR *pucSrc, SHORT sLen)
 {
-    SHORT   sRetLen;
-    USHORT  fWidth;
+    SHORT   sRetLen = 0;
+    USHORT  fWidth = TRUE;
     UCHAR   ucFontType;
     UCHAR   ucDW, ucDHDW, ucNHNW;
 
-
-    sRetLen = 0;
-    fWidth = TRUE;
 
     if (usPrtType == PMG_PRT_SLIP) {
         ucDW = PMG_ESC_CHARX2;
@@ -1831,12 +1835,12 @@ SHORT PmgOpenCom(USHORT usPrtType)
 **************************************************************************
 */
 
-USHORT PmgFeed2(USHORT usPrtType, USHORT usLine, UCHAR *pfbStatus)
+SHORT PmgFeed2(USHORT usPrtType, USHORT usLine, UCHAR *pfbStatus)
 {
-    PRT_SNDMSG      aFeedData;
+    PRT_SNDMSG      aFeedData = { 0 };
+    PRT_RESPONCE    aPrtResponce = { 0 };
     USHORT          usOffset;
     SHORT           sRc;
-    PRT_RESPONCE    aPrtResponce;
     
     ESC4BYTE    EscStation   = {ESC, 'c', '0', 1};    /* select stesion */
     ESC3BYTE    EscSamePrint = {ESC, 'z', 0};         /* same print */
@@ -1883,7 +1887,7 @@ USHORT PmgFeed2(USHORT usPrtType, USHORT usLine, UCHAR *pfbStatus)
 
     pPrtCtrl.pPrtTally->usFeedLine += usLine;
 
-    usOffset += (USHORT)OFFSET(PRT_SNDMSG, aucPrtMsg[0]);
+    usOffset += OFFSET(PRT_SNDMSG, aucPrtMsg[0]);
 
     sRc = PmgWriteCom(usPrtType, &aFeedData, usOffset);
 
@@ -1891,11 +1895,8 @@ USHORT PmgFeed2(USHORT usPrtType, USHORT usLine, UCHAR *pfbStatus)
     if (sRc <= 0) return(sRc);
 
     do {
-        sRc = EscpReadCom(pPrtCtrl.hPort,
-                            &aPrtResponce,
-                            sizeof(aPrtResponce));
+        sRc = EscpReadCom(pPrtCtrl.hPort, &aPrtResponce, sizeof(aPrtResponce));
         if (sRc <= 0) break;
-
     } while (aPrtResponce.ucSeqNo != pPrtCtrl.ucRcvSeqNo);
 
     pPrtCtrl.ucRcvSeqNo++;
@@ -1945,6 +1946,8 @@ VOID DevPmgSetCallBack(PCALL_BACK pCallBack)
     pPmgCallBack = pCallBack;
 }   
 
+#if defined(POSSIBLE_DEAD_CODE)
+
 /**fh
 ;=============================================================
 ;
@@ -1963,40 +1966,32 @@ VOID DevPmgSetCallBack(PCALL_BACK pCallBack)
 ;
 ;   synopis  : This function formats string with MaxColumn 
 ;
+;              See also RflStrAdjust().
 ;
 ;==============================================================
 fh**/
 static UCHAR  PmgStrAdjust(UCHAR *pszDest,  USHORT usDestLen, UCHAR *pszSource, UCHAR uchMaxColumn, BOOL fAutoFeed)
 {
-    UCHAR *puchRead;         /* Source buffer read pointer */
-    UCHAR *puchWrite;        /* Destination buffer write pointer */
-    UCHAR uchColPos;         /* Current Column position */
-    UCHAR *puchWork;         /* Work Area */
-    UCHAR auchTabString[80]; /* Tab stirng buffer  */
-    UCHAR *puchTabWrt;       /* Tab stirng buffer write pointer */
+    UCHAR *puchRead = pszSource;         /* Source buffer read pointer */
+    UCHAR *puchWrite = pszDest;        /* Destination buffer write pointer */
+    UCHAR uchColPos = 0;         /* Current Column position */
    
     /* --- initialize ---*/
     memset(pszDest, ' ', usDestLen);
-    puchRead   = pszSource;
-    puchWrite  = pszDest;
-    uchColPos  = 0;
 
-
-    while ( (*puchRead != '\0')                         /* until string end */
-          && (puchWrite < (pszDest+usDestLen - 1)) ) {  /* until destination buffer end */
+    while ( (*puchRead != '\0') && (puchWrite < (pszDest+usDestLen - 1)) ) {  /* until string end, until destination buffer end */
 
 		/*---------------------------------*\
 			   --- Tab management ---
 		\*---------------------------------*/
         if (*puchRead == '\t') {
-			UCHAR uchTabChar = 0;        /* Tab string character counter */
+            UCHAR auchTabString[80] = { 0 };              /* Tab string buffer  */
+            UCHAR *puchTabWrt  = auchTabString;   /* Tab string buffer write pointer */
+			UCHAR uchTabChar = 0;        /* Tab string character counter, Num. of written character */
 			UCHAR uchWrtCount = 0;       /* Tab string write counter */
         
             /* --- initialize --- */
-            memset(auchTabString, ' ', sizeof(auchTabString));
-            uchTabChar = 0;                          /* Num. of written character */
             puchRead++;                              /* for character '\t' */
-            puchTabWrt  = auchTabString;
 
             while ( (*puchRead != '\t') && (*puchRead != '\n') && (*puchRead != '\0') ) {
                 *puchTabWrt++ = *puchRead++;
@@ -2045,7 +2040,7 @@ static UCHAR  PmgStrAdjust(UCHAR *pszDest,  USHORT usDestLen, UCHAR *pszSource, 
 
             /* when cureent column is max - 1column and going to write double wide character */                  
             if ( uchColPos == (uchMaxColumn - (UCHAR)1)   
-                  && (UCHAR)*puchRead == (UCHAR)(0x12) ) {  /* 0x12: DOUBLE WIDE CHARACTER, RFL_DOUBLE */
+                  && *puchRead == (UCHAR)(RFL_DOUBLE) ) {  /* 0x12: DOUBLE WIDE CHARACTER, RFL_DOUBLE */
 
                 if (fAutoFeed == RFL_FEED_ON) {
 
@@ -2081,18 +2076,20 @@ static UCHAR  PmgStrAdjust(UCHAR *pszDest,  USHORT usDestLen, UCHAR *pszSource, 
                     *puchWrite++ = '\n';
                     uchColPos = 0;              /* initialize column position */
                 } else {
+                    UCHAR *puchWork;         /* Work Area */
+
                     /* -- move Readpoint(puchRead) to next '\t','\n' or '\0' -- */
                     /* - get '\t'  point - */
-                    puchWork  = (unsigned char *)strchr((const char *)puchRead, '\t');       
+                    puchWork  = (unsigned char *)strchr((char *)puchRead, '\t');       
 
                     /* - move readpoint to next '\n' - */
-                    puchRead  = (unsigned char *)strchr((const char *)puchRead, '\n');
+                    puchRead  = (unsigned char *)strchr((char *)puchRead, '\n');
 
                     if ( (puchRead==NULL) && (puchWork!=NULL) ) {
                         puchRead = puchWork;
                     } else if ( puchRead == puchWork ) {
                         /* - move readpoint to string end - */
-                        puchRead = (unsigned char *)strchr((const char *)pszDest, '\0');     
+                        puchRead = (unsigned char *)strchr((char *)pszDest, '\0');     
                     } else if ( (puchRead > puchWork) && (puchWork != NULL) ) {
                         /* - move readpoint to next '\t' - */
                         puchRead = puchWork;
@@ -2111,6 +2108,7 @@ static UCHAR  PmgStrAdjust(UCHAR *pszDest,  USHORT usDestLen, UCHAR *pszSource, 
     return((UCHAR)(puchWrite - pszDest));       /* return written length */
 
 }
+#endif
 
 /*
 **************************************************************************
@@ -2125,39 +2123,31 @@ static UCHAR  PmgStrAdjust(UCHAR *pszDest,  USHORT usDestLen, UCHAR *pszSource, 
 *
 **************************************************************************
 */
-USHORT PmgReadStatus(USHORT usPrtType, UCHAR *pfbStatus)
+SHORT PmgReadStatus(USHORT usPrtType, UCHAR *pfbStatus)
 {
-    UCHAR   aucSend[4];/*+sizeof(Escv)];*/
-    SHORT           sRc;
-    PRT_RESPONCE    aPrtResponce;
-    SHORT       hPort;
+    UCHAR   aucSend[4] = { 0 };/*+sizeof(Escv)];*/
+    SHORT   sRc;
    
-    memset(aucSend,0,sizeof(aucSend));
     aucSend[3] = pPrtCtrl.ucSndSeqNo++;
 
     sRc = PmgWriteCom(usPrtType, &aucSend, sizeof(aucSend));
     /*--- if error then return with error code ---*/
     if (sRc > 0){
+        PRT_RESPONCE    aPrtResponce = { 0 };
 
         do {
-            sRc = EscpReadCom(pPrtCtrl.hPort,
-                                &aPrtResponce,
-                                sizeof(aPrtResponce));
+            sRc = EscpReadCom(pPrtCtrl.hPort, &aPrtResponce, sizeof(aPrtResponce));
             if (sRc <= 0) break;
-
         } while (aPrtResponce.ucSeqNo != pPrtCtrl.ucRcvSeqNo);
 
         pPrtCtrl.ucRcvSeqNo++;
     }
 
-     hPort = pPrtCtrl.hPort;
-     EscpControlCom(hPort,
-                        PIF_PIP_GET_STATUS,
-                        (UCHAR FAR *)pfbStatus,
-                        sizeof(pfbStatus));
+     EscpControlCom(pPrtCtrl.hPort, PIF_PIP_GET_STATUS, pfbStatus, sizeof(pfbStatus));
      if(sRc > 0)    return PIF_OK;
      return sRc;
 }
+
 HANDLE  DevGetPrtHandle()
 {
     if(pPrtCtrl.hPort < 0){
@@ -2166,9 +2156,10 @@ HANDLE  DevGetPrtHandle()
         return (HANDLE)pPrtCtrl.hPort;
     }
 }
+
 BOOL    DevCheckPrtHandle(HANDLE handle)
 {
-    if(((SHORT)handle != pPrtCtrl.hPort)||(handle < 0)){
+    if(((SHORT)handle < 0) || ((SHORT)handle != pPrtCtrl.hPort)){
         return FALSE; 
     }else{
         return TRUE;

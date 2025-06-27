@@ -7,6 +7,7 @@
 #include "Device71xxPrinter.h"
 #include "DeviceCaps.h"
 #include "DevPmg.h"
+#include <pmg.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -179,9 +180,9 @@ DWORD WINAPI Write(
 		DWORD	dwResult;
 		CHAR    lineReset[] = "\x1b|1C";
 
-		dwResult = DevPmgPrint((USHORT)1, (UCHAR *)lineReset, strlen(lineReset));
+		dwResult = DevPmgPrint(PMG_PRT_RECEIPT, (UCHAR *)lineReset, strlen(lineReset));
 	}
-	dwResult = DevPmgPrint( (USHORT)1, (UCHAR *)lpBuffer, (USHORT)dwNumberOfBytesToWrite);
+	dwResult = DevPmgPrint(PMG_PRT_RECEIPT, (UCHAR *)lpBuffer, (USHORT)dwNumberOfBytesToWrite);
 
 	return dwResult;
 
