@@ -378,7 +378,7 @@ DWORD CActiveDevice::Get(LPCTSTR lpszDeviceType, LPDWORD lpDeviceCount, LPTSTR l
 		{
 			CString	 sPort;
 
-			if (reg.ReadString(_T("Port"), sPort))
+			if (reg.ReadString(SCF_DATANAME_PORT, sPort))
 			{
 				dwPort = (DWORD)_ttol(sPort);
 			}

@@ -1842,7 +1842,7 @@ void CDeviceConfigDlg::OnOK()	//this isn't the internal OK buttons but the final
 	dwRet = ScfResetActiveDeviceAll(SCF_TYPENAME_HTTPSERVER);
 	dwRet = ScfGetActiveDevice(SCF_TYPENAME_HTTPSERVER, &dwCount, atchDeviceTemp, atchDllName);
 	if (m_bHttpServerEnabled) {
-		atchDeviceName = _T("Port");
+		atchDeviceName = SCF_DATANAME_PORT;
 		atchPortSettings = _T("8080");
 		dwRet = ScfSetActiveDevice(SCF_TYPENAME_HTTPSERVER, atchDeviceName, atchPortSettings);
 	}
