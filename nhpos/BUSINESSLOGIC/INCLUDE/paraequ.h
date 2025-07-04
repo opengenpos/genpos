@@ -1909,355 +1909,357 @@ UCHAR   CliParaMDCCheckField(USHORT address, UCHAR field);
 *	see ParaTransMnemo in UNINIRAM UNINT Para and CLASS_PARATRANSMNEMO with CliParaAllRead()
 \*------------------------------------------------------------------------*/
 
-#define TRN_PFROM_ADR           1        /* Period From */
-#define TRN_PTO_ADR             2        /* Period To */
-#define TRN_CURGGT_ADR          3        /* Current Gross Group Total */
-#define TRN_TXBL1_ADR           4        /* Taxable #1 Total */
-#define TRN_TX1_ADR             5        /* Tax #1 Total */
-#define TRN_TXEXM1_ADR          6        /* Tax Exempt #1 Total */
-#define TRN_TXBL2_ADR           7        /* Taxable #2 Total */
-#define TRN_TX2_ADR             8        /* Tax #2 Total */
-#define TRN_TXEXM2_ADR          9        /* Tax Exempt #2 Total */
-#define TRN_TXBL3_ADR          10        /* Taxable #3 Total */
-#define TRN_TX3_ADR            11        /* Tax #3 Total */
-#define TRN_TXEXM3_ADR         12        /* Tax Exempt #3 Total */
-#define TRN_TXBL4_ADR          13        /* Taxable #4 Total */
-#define TRN_TX4_ADR            14        /* Tax #4 Total */
-#define TRN_TXEXM4_ADR         15        /* Tax Exempt #4 Total */
-#define TRN_PST_ADR            16        /* PST All Tax */
-#define TRN_CONSTX_ADR         17        /* Consolidation Tax */
-#define TRN_NONTX_ADR          18        /* Non Taxable Total */
-#define TRN_TRNGGT_ADR         19        /* Training Gross Group Total */
-#define TRN_DECTIP_ADR         20        /* Declared Tips */
-#define TRN_DAIGGT_ADR         21        /* Daily Gross Group Total */
-#define TRN_PLUSVD_ADR         22        /* Plus Void */
-#define TRN_PSELVD_ADR         23        /* Preselect Void */
-#define TRN_CONSCPN_ADR        24        /* Consolidated Coupon */
-#define TRN_ITMDISC_ADR        25        /* Item Discount */
-#define TRN_MODID_ADR          26        /* Modified Item Discount */
-#define TRN_RDISC1_ADR         27        /* Regular Discount #1 */
-#define TRN_RDISC2_ADR         28        /* Regular Discount #2 */
-#define TRN_PO_ADR             29        /* Paid Out */
-#define TRN_RA_ADR             30        /* Received On Account */
-#define TRN_TIPPO_ADR          31        /* Tips Paid Out */
-#define TRN_TEND1_ADR          32        /* Tender #1 */
-#define TRN_TEND2_ADR          33        /* Tender #2 */
-#define TRN_TEND3_ADR          34        /* Tender #3 */
-#define TRN_TEND4_ADR          35        /* Tender #4 */
-#define TRN_TEND5_ADR          36        /* Tender #5 */
-#define TRN_TEND6_ADR          37        /* Tender #6 */
-#define TRN_TEND7_ADR          38        /* Tender #7 */
-#define TRN_TEND8_ADR          39        /* Tender #8 */
-#define TRN_FT1_ADR            40        /* Foreign Total #1 */
-#define TRN_FT2_ADR            41        /* Foreign Total #2 */
-#define TRN_TTL1_ADR           42        /* Total #1, hard coded as Sub Total */
-#define TRN_TTL2_ADR           43        /* Total #2, hard coded as Check Total */
-#define TRN_TTL3_ADR           44        /* Total #3, programmable total */
-#define TRN_TTL4_ADR           45        /* Total #4, programmable total */
-#define TRN_TTL5_ADR           46        /* Total #5, programmable total */
-#define TRN_TTL6_ADR           47        /* Total #6, programmable total */
-#define TRN_TTL7_ADR           48        /* Total #7, programmable total */
-#define TRN_TTL8_ADR           49        /* Total #8, programmable total */
-#define TRN_SERV1_ADR          50        /* Serveice Total #1 */
-#define TRN_SERV2_ADR          51        /* Serveice Total #2 */
-#define TRN_SERV3_ADR          52        /* Serveice Total #3 */
-#define TRN_ADCK1_ADR          53        /* Add Check Total #1 */
-#define TRN_ADCK2_ADR          54        /* Add Check Total #2 */
-#define TRN_ADCK3_ADR          55        /* Add Check Total #3 */
-#define TRN_CHRGTIP_ADR        56        /* Charge Tips */
-#define TRN_TRACAN_ADR         57        /* Transaction Cancel */
-#define TRN_CANCEL_ADR         58        /* Cancel Total */
-#define TRN_MVD_ADR            59        /* Misc Void */
-#define TRN_AUD_ADR            60        /* Audaction */
-#define TRN_NOSALE_ADR         61        /* No Sale Counter */
-#define TRN_ITMPROCO_ADR       62        /* Item Productivity Counter */
-#define TRN_PSN_ADR            63        /* Number of Person Counter */
-#define TRN_CHKOPN_ADR         64        /* Number of Checks Opened */
-#define TRN_CHKCLS_ADR         65        /* Number of Checks Closed */
-#define TRN_CUST_ADR           66        /* Customer Counter */
-#define TRN_HASHDEPT_ADR       67        /* Hash Department */
-#define TRN_BNS1_ADR           68        /* Bonus #1 */
-#define TRN_BNS2_ADR           69        /* Bonus #2 */
-#define TRN_BNS3_ADR           70        /* Bonus #3 */
-#define TRN_BNS4_ADR           71        /* Bonus #4 */
-#define TRN_BNS5_ADR           72        /* Bonus #5 */
-#define TRN_BNS6_ADR           73        /* Bonus #6 */
-#define TRN_BNS7_ADR           74        /* Bonus #7 */
-#define TRN_BNS8_ADR           75        /* Bonus #8 */
-#define TRN_TTLR_ADR           76        /* Total for Report */
-#define TRN_STTLR_ADR          77        /* Sub Total for Report */
-#define TRN_OTSTN_ADR          78        /* Outstanding for Report */
-#define TRN_ADD_ADR            79        /* Additon */
-#define TRN_DEL_ADR            80        /* Deletion */
-#define TRN_CHNG_ADR           81        /* Change */
-#define TRN_NETSP_ADR          82        /* Net Sales/Person */
-#define TRN_ABORT_ADR          83        /* Abort */
-#define TRN_AMTTL_ADR          84        /* Amount Total */
-#define TRN_DEMAND_ADR         85        /* Print on Demand */
-#define TRN_GCNO_ADR           86        /* Guest Check No. */
-#define TRN_PB_ADR             87        /* Previous Balance */
-#define TRN_CKPD_ADR           88        /* Check Paid */
-#define TRN_EC_ADR             89        /* Error Correct */
-#define TRN_NUM_ADR            90        /* Number(#) */
-#define TRN_ORDNO_ADR          91        /* Order No. Entry */
-#define TRN_TXSUM_ADR          92        /* Tax Sum */
-#define TRN_CKSUM_ADR          93        /* Check Sum */
-#define TRN_GCFFL_ADR          94        /* Guest Check File is Full */
-#define TRN_TOPEN_ADR          95        /* Time Opened */
-#define TRN_ELPT_ADR           96        /* Elapsed Time */
-#define TRN_CURB_ADR           97        /* Current Balance */
-#define TRN_TRNSB_ADR          98        /* Transferred Balance */
-#define TRN_OLDWT_ADR          99        /* Old Waiter No. */
-#define TRN_CKTO_ADR          100        /* Checks Transferred To */
-#define TRN_CKFRM_ADR         101        /* Checks Transferred From Others */
-#define TRN_WTTL_ADR          102        /* Waiter Total */
-#define TRN_CALC_ADR          103        /* Caluculate Tips */
-#define TRN_QTY_ADR           104        /* Quantity */
-#define TRN_DBLRID_ADR        105        /* Double Receipt ID */
-#define TRN_REGCHG_ADR        106        /* Change Amount for Reg. */
-#define TRN_MTTLR_ADR         107        /* Minus Total for PLU/DEPT Report */
-#define TRN_GTTLR_ADR         108        /* Grand Total for PLU/DEPT Report */
-#define TRN_HTTLR_ADR         109        /* Hash Total for PLU/DEPT Report */
-#define TRN_MSCALE_ADR        110        /* Manual(Scale Operation) */
-#define TRN_TRAYCO_ADR        111        /* Tray Counter */
-#define TRN_ETKIN_ADR         112        /* Etk Time in */
-#define TRN_ETKOUT_ADR        113        /* Etk Time Out */
-#define TRN_POST_ADR          114        /* Post receipt mnemonic if PRT_POST_RECEIPT set */
-#define TRN_TEND9_ADR         115        /* Tender #9 */
-#define TRN_TEND10_ADR        116        /* Tender #10 */
-#define TRN_TEND11_ADR        117        /* Tender #11 */
-#define TRN_OFFTEND_ADR       118        /* Off Line Tender #1 */
-#define TRN_OFFTNDCHG_ADR     119        /* Off Line Tender for Charge Posting */
-#define TRN_OFFTNDAUT_ADR     120        /* Off Line Tender for Auth. */
-#define TRN_PREAUTHTTL_ADR    121        /* Pre-Authorization Total  */
-#define TRN_COMBCPN_ADR       122        /* Combination Coupon       */
-#define TRN_PARKING_ADR       123        /* Parking Receipt          */
-#define TRN_PAIDRECALL_ADR    124        /* Paid Order Recall        */
-#define TRN_RDISC3_ADR        125        /* Regular Discount #3 */
-#define TRN_RDISC4_ADR        126        /* Regular Discount #4 */
-#define TRN_RDISC5_ADR        127        /* Regular Discount #5 */
-#define TRN_RDISC6_ADR        128        /* Regular Discount #6 */
-#define TRN_NETTTL_ADR        129        /* Net Sales Total */
-#define TRN_SPLIT_ADR         130        /* Split Key */
-#define TRN_LABORTTL_ADR      131        /* Labor Cost Total */
-#define TRN_LABORPERCENT_ADR  132        /* Labor Cost % */
-#define TRN_CASINT_ADR        133        /* Cashier Interrupt, V3.2 */
-#define TRN_CHRGTIP2_ADR      134        /* Charge Tips #2, V3.3 */
-#define TRN_CHRGTIP3_ADR      135        /* Charge Tips #3, V3.3 */
-#define TRN_WAITING_ADR       136        /* Waiting Message, V3.3 */
-#define TRN_CONTINUE_ADR      137        /* Continue Message, for OEP dialog, MldUpdatePopUp() V3.3 */
-#define TRN_MNEMONIC_ADR      138        /* Mnemonic, V3.3 */
-#define TRN_TAX_RATE_ADR      139        /* Tax Rate, V3.3 */
-#define TRN_TAX_ADR           140        /* Tax, V3.3 */
-#define TRN_JOB_ADR           141        /* Job, V3.3 */
-#define TRN_BLOCK_ADR         142        /* Block, V3.3 */
-#define TRN_DATE_ADR          143        /* Date, V3.3 */
-#define TRN_FT3_ADR           144        /* Foreign Total #3, 2172 */
-#define TRN_FT4_ADR           145        /* Foreign Total #4, 2172 */
-#define TRN_FT5_ADR           146        /* Foreign Total #5, 2172 */
-#define TRN_FT6_ADR           147        /* Foreign Total #6, 2172 */
-#define TRN_FT7_ADR           148        /* Foreign Total #7, 2172 */
-#define TRN_FT8_ADR           149        /* Foreign Total #8, 2172 */
-#define TRN_LOAN_ADR          150        /* Loan, 2172 */
-#define TRN_PICKUP_ADR        151        /* Pick-Up, 2172 */
-#define TRN_ONHAND_ADR        152        /* Money On Hand Total, 2172 */
-#define TRN_OVRSHRT_ADR       153        /* Over/Short, 2172 */
-#define TRN_CONSNO_ADR        154        /* Consumer Number, 2172 */
-#define TRN_PLUBLD_ADR        155        /* PLU Building, 2172 */
-#define TRN_SKUNO_ADR         156        /* SKU Number, 2172 */
-#define TRN_POWER_DOWN_ADR    157        /* Power Down Log, Saratoga */
-#define TRN_FSTL_ADR          158        /* Food Stamp Total */
-#define TRN_TTL9_ADR          159        /* Total #9, hard coded as Food Stamp Total */
-#define TRN_FSCHNG_ADR        160        /* Food Stamp Change */
-#define TRN_FSCRD_ADR         161        /* Food Stamp Credit */
-#define TRN_FSTXEXM1_ADR      162        /* FS Tax Exempt #1 Total */
-#define TRN_FSTXEXM2_ADR      163        /* FS Tax Exempt #2 Total */
-#define TRN_FSTXEXM3_ADR      164        /* FS Tax Exempt #3 Total */
-#define TRN_VCPN_ADR          165        /* UPC Coupon */
-#define TRN_FOR_ADR	          166        /* @/For key (SR 143 cwunn) */
-#define TRN_HALO_ADR		  167		 /* HALO Override key (SR 143 cwunn) */
-#define TRN_PCKUP_REQ		  168		 /* Cash Drawer Over Limit (SR 155 JHHJ)*/
-#define TRN_TENDER12_ADR      169		 /* Tender 12 */
-#define TRN_TENDER13_ADR      170		 /* Tender 13 */
-#define TRN_TENDER14_ADR      171		 /* Tender 14 */
-#define TRN_TENDER15_ADR      172		 /* Tender 15 */
-#define TRN_TENDER16_ADR      173		 /* Tender 16 */
-#define TRN_TENDER17_ADR      174		 /* Tender 17 */
-#define TRN_TENDER18_ADR      175		 /* Tender 18 */
-#define TRN_TENDER19_ADR      176		 /* Tender 19 */
-#define TRN_TENDER20_ADR      177		 /* Tender 20 */
-#define TRN_TOTAL10_ADR		  178		 /* Total 10, programmable total */
-#define TRN_TOTAL11_ADR		  179		 /* Total 11, programmable total */
-#define TRN_TOTAL12_ADR		  180		 /* Total 12, programmable total */
-#define TRN_TOTAL13_ADR		  181		 /* Total 13, programmable total */
-#define TRN_TOTAL14_ADR		  182		 /* Total 14, programmable total */
-#define TRN_TOTAL15_ADR		  183		 /* Total 15, programmable total */
-#define TRN_TOTAL16_ADR		  184		 /* Total 16, programmable total */
-#define TRN_TOTAL17_ADR		  185		 /* Total 17, programmable total */
-#define TRN_TOTAL18_ADR		  186		 /* Total 18, programmable total */
-#define TRN_TOTAL19_ADR		  187		 /* Total 19, programmable total */
-#define TRN_TOTAL20_ADR		  188		 /* Total 20, programmable total */
-#define	TRN_PRICE_ADR		  189		 /* PRICE	 */ //SR281
-#define TRN_NONE_DONE_ADR	  190		// Mnemonic for NONE/DONE for OEP dialog, MldUpdatePopUp()
-#define TRN_BACK_OEP_ADR	  191		// Mnemonic for BACK for OEP dialog, MldUpdatePopUp()
-#define TRN_ITEMCOUNT_ADR	  192		//  Item Count Summary SR217 JHHJ
-#define TRN_MERC_CPY_ADR	  193		// Merchant Copy mnemonic for receipt EPT if CURQUAL_MERCH_DUP set
-#define TRN_CUST_CPY_ADR	  194		// Customer Copy mnemonic for receipt EPT if CURQUAL_CUST_DUP set
-#define TRN_TIP_LINE_ADR	  195		// Tip Line for receipt EPT
-#define TRN_TTL_LINE_ADR	  196		// Total Line for receipt EPT
-#define TRN_GIFT_RECEIPT_ADR  197		// Gift Receipt mnemonic, if PRT_GIFT_RECEIPT set
-#define TRN_OPTIMIZE_FILE_ADR 198		// Optimize File JHH*/
-#define TRN_ITMDISC_ADR_3	  199		// Item Discount 3
-#define TRN_ITMDISC_ADR_4	  200		// Item Discount 4
-#define TRN_ITMDISC_ADR_5	  201		// Item Discount 5
-#define TRN_ITMDISC_ADR_6	  202		// Item Discount 6
-#define TRN_BNS_9_ADR		  203		// Bonus Total # 9
-#define TRN_BNS_10_ADR		  204		// Bonus Total # 10
-#define TRN_BNS_11_ADR		  205		// Bonus Total # 11
-#define TRN_BNS_12_ADR		  206		// Bonus Total # 12
-#define TRN_BNS_13_ADR		  207		// Bonus Total # 13
-#define TRN_BNS_14_ADR		  208		// Bonus Total # 14
-#define TRN_BNS_15_ADR		  209		// Bonus Total # 15
-#define TRN_BNS_16_ADR		  210		// Bonus Total # 16
-#define TRN_BNS_17_ADR		  211		// Bonus Total # 17
-#define TRN_BNS_18_ADR		  212		// Bonus Total # 18
-#define TRN_BNS_19_ADR		  213		// Bonus Total # 19
-#define TRN_BNS_20_ADR		  214		// Bonus Total # 20
-#define TRN_BNS_21_ADR		  215		// Bonus Total # 21
-#define TRN_BNS_22_ADR		  216		// Bonus Total # 22
-#define TRN_BNS_23_ADR		  217		// Bonus Total # 23
-#define TRN_BNS_24_ADR		  218		// Bonus Total # 24
-#define TRN_BNS_25_ADR		  219		// Bonus Total # 25
-#define TRN_BNS_26_ADR		  220		// Bonus Total # 26
-#define TRN_BNS_27_ADR		  221		// Bonus Total # 27
-#define TRN_BNS_28_ADR		  222		// Bonus Total # 28
-#define TRN_BNS_29_ADR		  223		// Bonus Total # 29
-#define TRN_BNS_30_ADR		  224		// Bonus Total # 30
-#define TRN_BNS_31_ADR		  225		// Bonus Total # 31
-#define TRN_BNS_32_ADR		  226		// Bonus Total # 32
-#define TRN_BNS_33_ADR		  227		// Bonus Total # 33
-#define TRN_BNS_34_ADR		  228		// Bonus Total # 34
-#define TRN_BNS_35_ADR		  229		// Bonus Total # 35
-#define TRN_BNS_36_ADR		  230		// Bonus Total # 36
-#define TRN_BNS_37_ADR		  231		// Bonus Total # 37
-#define TRN_BNS_38_ADR		  232		// Bonus Total # 38
-#define TRN_BNS_39_ADR		  233		// Bonus Total # 39
-#define TRN_BNS_40_ADR		  234		// Bonus Total # 40
-#define TRN_BNS_41_ADR		  235		// Bonus Total # 41
-#define TRN_BNS_42_ADR		  236		// Bonus Total # 42
-#define TRN_BNS_43_ADR		  237		// Bonus Total # 43
-#define TRN_BNS_44_ADR		  238		// Bonus Total # 44
-#define TRN_BNS_45_ADR		  239		// Bonus Total # 45
-#define TRN_BNS_46_ADR		  240		// Bonus Total # 46
-#define TRN_BNS_47_ADR		  241		// Bonus Total # 47
-#define TRN_BNS_48_ADR		  242		// Bonus Total # 48
-#define TRN_BNS_49_ADR		  243		// Bonus Total # 49
-#define TRN_BNS_50_ADR		  244		// Bonus Total # 50
-#define TRN_BNS_51_ADR		  245		// Bonus Total # 51
-#define TRN_BNS_52_ADR		  246		// Bonus Total # 52
-#define TRN_BNS_53_ADR		  247		// Bonus Total # 53
-#define TRN_BNS_54_ADR		  248		// Bonus Total # 54
-#define TRN_BNS_55_ADR		  249		// Bonus Total # 55
-#define TRN_BNS_56_ADR		  250		// Bonus Total # 56
-#define TRN_BNS_57_ADR		  251		// Bonus Total # 57
-#define TRN_BNS_58_ADR		  252		// Bonus Total # 58
-#define TRN_BNS_59_ADR		  253		// Bonus Total # 59
-#define TRN_BNS_60_ADR		  254		// Bonus Total # 60
-#define TRN_BNS_61_ADR		  255		// Bonus Total # 61
-#define TRN_BNS_62_ADR		  256		// Bonus Total # 62
-#define TRN_BNS_63_ADR		  257		// Bonus Total # 63
-#define TRN_BNS_64_ADR		  258		// Bonus Total # 64
-#define TRN_BNS_65_ADR		  259		// Bonus Total # 65
-#define TRN_BNS_66_ADR		  260		// Bonus Total # 66
-#define TRN_BNS_67_ADR		  261		// Bonus Total # 67
-#define TRN_BNS_68_ADR		  262		// Bonus Total # 68
-#define TRN_BNS_69_ADR		  263		// Bonus Total # 69
-#define TRN_BNS_70_ADR		  264		// Bonus Total # 70
-#define TRN_BNS_71_ADR		  265		// Bonus Total # 71
-#define TRN_BNS_72_ADR		  266		// Bonus Total # 72
-#define TRN_BNS_73_ADR		  267		// Bonus Total # 73
-#define TRN_BNS_74_ADR		  268		// Bonus Total # 74
-#define TRN_BNS_75_ADR		  269		// Bonus Total # 75
-#define TRN_BNS_76_ADR		  270		// Bonus Total # 76
-#define TRN_BNS_77_ADR		  271		// Bonus Total # 77
-#define TRN_BNS_78_ADR		  272		// Bonus Total # 78
-#define TRN_BNS_79_ADR		  273		// Bonus Total # 79
-#define TRN_BNS_80_ADR		  274		// Bonus Total # 80
-#define TRN_BNS_81_ADR		  275		// Bonus Total # 81
-#define TRN_BNS_82_ADR		  276		// Bonus Total # 82
-#define TRN_BNS_83_ADR		  277		// Bonus Total # 83
-#define TRN_BNS_84_ADR		  278		// Bonus Total # 84
-#define TRN_BNS_85_ADR		  279		// Bonus Total # 85
-#define TRN_BNS_86_ADR		  280		// Bonus Total # 86
-#define TRN_BNS_87_ADR		  281		// Bonus Total # 87
-#define TRN_BNS_88_ADR		  282		// Bonus Total # 88
-#define TRN_BNS_89_ADR		  283		// Bonus Total # 89
-#define TRN_BNS_90_ADR		  284		// Bonus Total # 90
-#define TRN_BNS_91_ADR		  285		// Bonus Total # 91
-#define TRN_BNS_92_ADR		  286		// Bonus Total # 92
-#define TRN_BNS_93_ADR		  287		// Bonus Total # 93
-#define TRN_BNS_94_ADR		  288		// Bonus Total # 94
-#define TRN_BNS_95_ADR		  289		// Bonus Total # 95
-#define TRN_BNS_96_ADR		  290		// Bonus Total # 96
-#define TRN_BNS_97_ADR		  291		// Bonus Total # 97
-#define TRN_BNS_98_ADR		  292		// Bonus Total # 98
-#define TRN_BNS_99_ADR		  293		// Bonus Total # 99
-#define TRN_BNS_100_ADR		  294		// Bonus Total # 100
-#define	TRN_PPI_ADD_SETTING	  295		// PPI Addititional Settings
-#define	TRN_PPI_ADD_VALUE	  296		// PPI Additional Setting Value
-#define TRN_PPI_BEFORE_QTY	  297
-#define	TRN_PPI_AFTER_QTY	  298
-#define TRN_PPI_MINSALE		  299
-#define TRN_TENT			  300		// Receipt ID ***PDINU
-#define TRN_ORDER_DEC_OFFSET  300       // add order declaration fsc to this value to get mnemonic
-#define TRN_ORDER_DEC1		  301
-#define TRN_ORDER_DEC2		  302
-#define TRN_ORDER_DEC3		  303
-#define TRN_ORDER_DEC4		  304
-#define TRN_ORDER_DEC5		  305
-#define TRN_TOTAL21_ADR		  311		 /* Total 21 */
-#define TRN_TOTAL22_ADR		  312		 /* Total 22 */
-#define TRN_TOTAL23_ADR		  313		 /* Total 23 */
-#define TRN_TOTAL24_ADR		  314		 /* Total 24 */
-#define TRN_TOTAL25_ADR		  315		 /* Total 25 */
-#define TRN_TOTAL26_ADR		  316		 /* Total 26 */
-#define TRN_TOTAL27_ADR		  317		 /* Total 27 */
-#define TRN_TOTAL28_ADR		  318		 /* Total 28 */
-#define TRN_TOTAL29_ADR		  319		 /* Total 39 */
-#define TRN_TOTAL30_ADR		  320		 /* Total 30 */
-#define TRN_TENDER21_ADR      321		 /* Tender 21 */
-#define TRN_TENDER22_ADR      322		 /* Tender 22 */
-#define TRN_TENDER23_ADR      323		 /* Tender 23 */
-#define TRN_TENDER24_ADR      324		 /* Tender 24 */
-#define TRN_TENDER25_ADR      325		 /* Tender 25 */
-#define TRN_TENDER26_ADR      326		 /* Tender 26 */
-#define TRN_TENDER27_ADR      327		 /* Tender 27 */
-#define TRN_TENDER28_ADR      328		 /* Tender 28 */
-#define TRN_TENDER29_ADR      329		 /* Tender 29 */
-#define TRN_TENDER30_ADR      330		 /* Tender 30 */
-#define TRN_SIGNIN_ADR        331        /* Operator Sign in */
-#define TRN_SIGNOUT_ADR       332        /* Operator Sign Out */
-#define TRN_TRETURN1_ADR      333        /* Transaction return #1 mnemonic, report MDC_RPTFIN46_ADR and MDC_RPTCAS50_ADR */
-#define TRN_TRETURN2_ADR      334        /* Transaction return #2 mnemonic, report MDC_RPTFIN46_ADR and MDC_RPTCAS50_ADR */
-#define TRN_TRETURN3_ADR      335        /* Transaction return #3 mnemonic, report MDC_RPTFIN46_ADR and MDC_RPTCAS50_ADR */
-#define TRN_PRETURN1_ADR      336        /* Transaction return mnemonic for creating a Transaction Return by entering items */
-#define TRN_PRETURN2_ADR      337        /* Transaction return mnemonic for creating a Transaction Return by entering items */
-#define TRN_PRETURN3_ADR      338        /* Transaction return mnemonic for creating a Transaction Return by entering items */
-#define TRN_FT_EQUIVALENT     339        /* Tender amount equivalent mnemonic for specifing local currency equivalent to foreign currency */
-#define TRN_GCNO_RETURNS      340        // lead thru mnemonic for guest check for Ask #6, Returns
-#define TRN_DSI_CARDTYPE      341        // CARD TYPE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_CARDNUM       342        // CARD #, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_CARDEXP       343        // EXP. DATE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_AUTHCODE      344        // AUTH CODE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_REFNUM        345        // REF NUM, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_AUTHORIZE     346        // AUTHORIZE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_BALANCE       347        // BALANCE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_METHOD        348        // METHOD, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_TERMINAL      349        // TERMINAL ID, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_TRANSTYPE     350        // TRANSACTION TYPE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_DSI_TRANSSALE     351        // SALE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
-#define TRN_EJ_PODREPRINT     352        // Print on Demand #5 Electronic Journal mnemonic if PRT_DEMAND set 
-#define TRN_TNDR_PRT_DUP_COPY 353        // Print on a duplicate receipt the mnemonic for Duplicate Copy
+typedef unsigned short  USTRNADRS;       // variable contains address of transaction mnemonic 
+
+#define TRN_PFROM_ADR           (USTRNADRS)1        /* Period From */
+#define TRN_PTO_ADR             (USTRNADRS)2        /* Period To */
+#define TRN_CURGGT_ADR          (USTRNADRS)3        /* Current Gross Group Total */
+#define TRN_TXBL1_ADR           (USTRNADRS)4        /* Taxable #1 Total */
+#define TRN_TX1_ADR             (USTRNADRS)5        /* Tax #1 Total */
+#define TRN_TXEXM1_ADR          (USTRNADRS)6        /* Tax Exempt #1 Total */
+#define TRN_TXBL2_ADR           (USTRNADRS)7        /* Taxable #2 Total */
+#define TRN_TX2_ADR             (USTRNADRS)8        /* Tax #2 Total */
+#define TRN_TXEXM2_ADR          (USTRNADRS)9        /* Tax Exempt #2 Total */
+#define TRN_TXBL3_ADR          (USTRNADRS)10        /* Taxable #3 Total */
+#define TRN_TX3_ADR            (USTRNADRS)11        /* Tax #3 Total */
+#define TRN_TXEXM3_ADR         (USTRNADRS)12        /* Tax Exempt #3 Total */
+#define TRN_TXBL4_ADR          (USTRNADRS)13        /* Taxable #4 Total */
+#define TRN_TX4_ADR            (USTRNADRS)14        /* Tax #4 Total */
+#define TRN_TXEXM4_ADR         (USTRNADRS)15        /* Tax Exempt #4 Total */
+#define TRN_PST_ADR            (USTRNADRS)16        /* PST All Tax */
+#define TRN_CONSTX_ADR         (USTRNADRS)17        /* Consolidation Tax */
+#define TRN_NONTX_ADR          (USTRNADRS)18        /* Non Taxable Total */
+#define TRN_TRNGGT_ADR         (USTRNADRS)19        /* Training Gross Group Total */
+#define TRN_DECTIP_ADR         (USTRNADRS)20        /* Declared Tips */
+#define TRN_DAIGGT_ADR         (USTRNADRS)21        /* Daily Gross Group Total */
+#define TRN_PLUSVD_ADR         (USTRNADRS)22        /* Plus Void */
+#define TRN_PSELVD_ADR         (USTRNADRS)23        /* Preselect Void */
+#define TRN_CONSCPN_ADR        (USTRNADRS)24        /* Consolidated Coupon */
+#define TRN_ITMDISC_ADR        (USTRNADRS)25        /* Item Discount */
+#define TRN_MODID_ADR          (USTRNADRS)26        /* Modified Item Discount */
+#define TRN_RDISC1_ADR         (USTRNADRS)27        /* Regular Discount #1 */
+#define TRN_RDISC2_ADR         (USTRNADRS)28        /* Regular Discount #2 */
+#define TRN_PO_ADR             (USTRNADRS)29        /* Paid Out */
+#define TRN_RA_ADR             (USTRNADRS)30        /* Received On Account */
+#define TRN_TIPPO_ADR          (USTRNADRS)31        /* Tips Paid Out */
+#define TRN_TEND1_ADR          (USTRNADRS)32        /* Tender #1 */
+#define TRN_TEND2_ADR          (USTRNADRS)33        /* Tender #2 */
+#define TRN_TEND3_ADR          (USTRNADRS)34        /* Tender #3 */
+#define TRN_TEND4_ADR          (USTRNADRS)35        /* Tender #4 */
+#define TRN_TEND5_ADR          (USTRNADRS)36        /* Tender #5 */
+#define TRN_TEND6_ADR          (USTRNADRS)37        /* Tender #6 */
+#define TRN_TEND7_ADR          (USTRNADRS)38        /* Tender #7 */
+#define TRN_TEND8_ADR          (USTRNADRS)39        /* Tender #8 */
+#define TRN_FT1_ADR            (USTRNADRS)40        /* Foreign Total #1 */
+#define TRN_FT2_ADR            (USTRNADRS)41        /* Foreign Total #2 */
+#define TRN_TTL1_ADR           (USTRNADRS)42        /* Total #1, hard coded as Sub Total */
+#define TRN_TTL2_ADR           (USTRNADRS)43        /* Total #2, hard coded as Check Total */
+#define TRN_TTL3_ADR           (USTRNADRS)44        /* Total #3, programmable total */
+#define TRN_TTL4_ADR           (USTRNADRS)45        /* Total #4, programmable total */
+#define TRN_TTL5_ADR           (USTRNADRS)46        /* Total #5, programmable total */
+#define TRN_TTL6_ADR           (USTRNADRS)47        /* Total #6, programmable total */
+#define TRN_TTL7_ADR           (USTRNADRS)48        /* Total #7, programmable total */
+#define TRN_TTL8_ADR           (USTRNADRS)49        /* Total #8, programmable total */
+#define TRN_SERV1_ADR          (USTRNADRS)50        /* Serveice Total #1 */
+#define TRN_SERV2_ADR          (USTRNADRS)51        /* Serveice Total #2 */
+#define TRN_SERV3_ADR          (USTRNADRS)52        /* Serveice Total #3 */
+#define TRN_ADCK1_ADR          (USTRNADRS)53        /* Add Check Total #1 */
+#define TRN_ADCK2_ADR          (USTRNADRS)54        /* Add Check Total #2 */
+#define TRN_ADCK3_ADR          (USTRNADRS)55        /* Add Check Total #3 */
+#define TRN_CHRGTIP_ADR        (USTRNADRS)56        /* Charge Tips */
+#define TRN_TRACAN_ADR         (USTRNADRS)57        /* Transaction Cancel */
+#define TRN_CANCEL_ADR         (USTRNADRS)58        /* Cancel Total */
+#define TRN_MVD_ADR            (USTRNADRS)59        /* Misc Void */
+#define TRN_AUD_ADR            (USTRNADRS)60        /* Audaction */
+#define TRN_NOSALE_ADR         (USTRNADRS)61        /* No Sale Counter */
+#define TRN_ITMPROCO_ADR       (USTRNADRS)62        /* Item Productivity Counter */
+#define TRN_PSN_ADR            (USTRNADRS)63        /* Number of Person Counter */
+#define TRN_CHKOPN_ADR         (USTRNADRS)64        /* Number of Checks Opened */
+#define TRN_CHKCLS_ADR         (USTRNADRS)65        /* Number of Checks Closed */
+#define TRN_CUST_ADR           (USTRNADRS)66        /* Customer Counter */
+#define TRN_HASHDEPT_ADR       (USTRNADRS)67        /* Hash Department */
+#define TRN_BNS1_ADR           (USTRNADRS)68        /* Bonus #1 */
+#define TRN_BNS2_ADR           (USTRNADRS)69        /* Bonus #2 */
+#define TRN_BNS3_ADR           (USTRNADRS)70        /* Bonus #3 */
+#define TRN_BNS4_ADR           (USTRNADRS)71        /* Bonus #4 */
+#define TRN_BNS5_ADR           (USTRNADRS)72        /* Bonus #5 */
+#define TRN_BNS6_ADR           (USTRNADRS)73        /* Bonus #6 */
+#define TRN_BNS7_ADR           (USTRNADRS)74        /* Bonus #7 */
+#define TRN_BNS8_ADR           (USTRNADRS)75        /* Bonus #8 */
+#define TRN_TTLR_ADR           (USTRNADRS)76        /* Total for Report */
+#define TRN_STTLR_ADR          (USTRNADRS)77        /* Sub Total for Report */
+#define TRN_OTSTN_ADR          (USTRNADRS)78        /* Outstanding for Report */
+#define TRN_ADD_ADR            (USTRNADRS)79        /* Additon */
+#define TRN_DEL_ADR            (USTRNADRS)80        /* Deletion */
+#define TRN_CHNG_ADR           (USTRNADRS)81        /* Change */
+#define TRN_NETSP_ADR          (USTRNADRS)82        /* Net Sales/Person */
+#define TRN_ABORT_ADR          (USTRNADRS)83        /* Abort */
+#define TRN_AMTTL_ADR          (USTRNADRS)84        /* Amount Total */
+#define TRN_DEMAND_ADR         (USTRNADRS)85        /* Print on Demand */
+#define TRN_GCNO_ADR           (USTRNADRS)86        /* Guest Check No. */
+#define TRN_PB_ADR             (USTRNADRS)87        /* Previous Balance */
+#define TRN_CKPD_ADR           (USTRNADRS)88        /* Check Paid */
+#define TRN_EC_ADR             (USTRNADRS)89        /* Error Correct */
+#define TRN_NUM_ADR            (USTRNADRS)90        /* Number(#) */
+#define TRN_ORDNO_ADR          (USTRNADRS)91        /* Order No. Entry */
+#define TRN_TXSUM_ADR          (USTRNADRS)92        /* Tax Sum */
+#define TRN_CKSUM_ADR          (USTRNADRS)93        /* Check Sum */
+#define TRN_GCFFL_ADR          (USTRNADRS)94        /* Guest Check File is Full */
+#define TRN_TOPEN_ADR          (USTRNADRS)95        /* Time Opened */
+#define TRN_ELPT_ADR           (USTRNADRS)96        /* Elapsed Time */
+#define TRN_CURB_ADR           (USTRNADRS)97        /* Current Balance */
+#define TRN_TRNSB_ADR          (USTRNADRS)98        /* Transferred Balance */
+#define TRN_OLDWT_ADR          (USTRNADRS)99        /* Old Waiter No. */
+#define TRN_CKTO_ADR          (USTRNADRS)100        /* Checks Transferred To */
+#define TRN_CKFRM_ADR         (USTRNADRS)101        /* Checks Transferred From Others */
+#define TRN_WTTL_ADR          (USTRNADRS)102        /* Waiter Total */
+#define TRN_CALC_ADR          (USTRNADRS)103        /* Caluculate Tips */
+#define TRN_QTY_ADR           (USTRNADRS)104        /* Quantity */
+#define TRN_DBLRID_ADR        (USTRNADRS)105        /* Double Receipt ID */
+#define TRN_REGCHG_ADR        (USTRNADRS)106        /* Change Amount for Reg. */
+#define TRN_MTTLR_ADR         (USTRNADRS)107        /* Minus Total for PLU/DEPT Report */
+#define TRN_GTTLR_ADR         (USTRNADRS)108        /* Grand Total for PLU/DEPT Report */
+#define TRN_HTTLR_ADR         (USTRNADRS)109        /* Hash Total for PLU/DEPT Report */
+#define TRN_MSCALE_ADR        (USTRNADRS)110        /* Manual(Scale Operation) */
+#define TRN_TRAYCO_ADR        (USTRNADRS)111        /* Tray Counter */
+#define TRN_ETKIN_ADR         (USTRNADRS)112        /* Etk Time in */
+#define TRN_ETKOUT_ADR        (USTRNADRS)113        /* Etk Time Out */
+#define TRN_POST_ADR          (USTRNADRS)114        /* Post receipt mnemonic if PRT_POST_RECEIPT set */
+#define TRN_TEND9_ADR         (USTRNADRS)115        /* Tender #9 */
+#define TRN_TEND10_ADR        (USTRNADRS)116        /* Tender #10 */
+#define TRN_TEND11_ADR        (USTRNADRS)117        /* Tender #11 */
+#define TRN_OFFTEND_ADR       (USTRNADRS)118        /* Off Line Tender #1 */
+#define TRN_OFFTNDCHG_ADR     (USTRNADRS)119        /* Off Line Tender for Charge Posting */
+#define TRN_OFFTNDAUT_ADR     (USTRNADRS)120        /* Off Line Tender for Auth. */
+#define TRN_PREAUTHTTL_ADR    (USTRNADRS)121        /* Pre-Authorization Total  */
+#define TRN_COMBCPN_ADR       (USTRNADRS)122        /* Combination Coupon       */
+#define TRN_PARKING_ADR       (USTRNADRS)123        /* Parking Receipt          */
+#define TRN_PAIDRECALL_ADR    (USTRNADRS)124        /* Paid Order Recall        */
+#define TRN_RDISC3_ADR        (USTRNADRS)125        /* Regular Discount #3 */
+#define TRN_RDISC4_ADR        (USTRNADRS)126        /* Regular Discount #4 */
+#define TRN_RDISC5_ADR        (USTRNADRS)127        /* Regular Discount #5 */
+#define TRN_RDISC6_ADR        (USTRNADRS)128        /* Regular Discount #6 */
+#define TRN_NETTTL_ADR        (USTRNADRS)129        /* Net Sales Total */
+#define TRN_SPLIT_ADR         (USTRNADRS)130        /* Split Key */
+#define TRN_LABORTTL_ADR      (USTRNADRS)131        /* Labor Cost Total */
+#define TRN_LABORPERCENT_ADR  (USTRNADRS)132        /* Labor Cost % */
+#define TRN_CASINT_ADR        (USTRNADRS)133        /* Cashier Interrupt, V3.2 */
+#define TRN_CHRGTIP2_ADR      (USTRNADRS)134        /* Charge Tips #2, V3.3 */
+#define TRN_CHRGTIP3_ADR      (USTRNADRS)135        /* Charge Tips #3, V3.3 */
+#define TRN_WAITING_ADR       (USTRNADRS)136        /* Waiting Message, V3.3 */
+#define TRN_CONTINUE_ADR      (USTRNADRS)137        /* Continue Message, for OEP dialog, MldUpdatePopUp() V3.3 */
+#define TRN_MNEMONIC_ADR      (USTRNADRS)138        /* Mnemonic, V3.3 */
+#define TRN_TAX_RATE_ADR      (USTRNADRS)139        /* Tax Rate, V3.3 */
+#define TRN_TAX_ADR           (USTRNADRS)140        /* Tax, V3.3 */
+#define TRN_JOB_ADR           (USTRNADRS)141        /* Job, V3.3 */
+#define TRN_BLOCK_ADR         (USTRNADRS)142        /* Block, V3.3 */
+#define TRN_DATE_ADR          (USTRNADRS)143        /* Date, V3.3 */
+#define TRN_FT3_ADR           (USTRNADRS)144        /* Foreign Total #3, 2172 */
+#define TRN_FT4_ADR           (USTRNADRS)145        /* Foreign Total #4, 2172 */
+#define TRN_FT5_ADR           (USTRNADRS)146        /* Foreign Total #5, 2172 */
+#define TRN_FT6_ADR           (USTRNADRS)147        /* Foreign Total #6, 2172 */
+#define TRN_FT7_ADR           (USTRNADRS)148        /* Foreign Total #7, 2172 */
+#define TRN_FT8_ADR           (USTRNADRS)149        /* Foreign Total #8, 2172 */
+#define TRN_LOAN_ADR          (USTRNADRS)150        /* Loan, 2172 */
+#define TRN_PICKUP_ADR        (USTRNADRS)151        /* Pick-Up, 2172 */
+#define TRN_ONHAND_ADR        (USTRNADRS)152        /* Money On Hand Total, 2172 */
+#define TRN_OVRSHRT_ADR       (USTRNADRS)153        /* Over/Short, 2172 */
+#define TRN_CONSNO_ADR        (USTRNADRS)154        /* Consumer Number, 2172 */
+#define TRN_PLUBLD_ADR        (USTRNADRS)155        /* PLU Building, 2172 */
+#define TRN_SKUNO_ADR         (USTRNADRS)156        /* SKU Number, 2172 */
+#define TRN_POWER_DOWN_ADR    (USTRNADRS)157        /* Power Down Log, Saratoga */
+#define TRN_FSTL_ADR          (USTRNADRS)158        /* Food Stamp Total */
+#define TRN_TTL9_ADR          (USTRNADRS)159        /* Total #9, hard coded as Food Stamp Total */
+#define TRN_FSCHNG_ADR        (USTRNADRS)160        /* Food Stamp Change */
+#define TRN_FSCRD_ADR         (USTRNADRS)161        /* Food Stamp Credit */
+#define TRN_FSTXEXM1_ADR      (USTRNADRS)162        /* FS Tax Exempt #1 Total */
+#define TRN_FSTXEXM2_ADR      (USTRNADRS)163        /* FS Tax Exempt #2 Total */
+#define TRN_FSTXEXM3_ADR      (USTRNADRS)164        /* FS Tax Exempt #3 Total */
+#define TRN_VCPN_ADR          (USTRNADRS)165        /* UPC Coupon */
+#define TRN_FOR_ADR	          (USTRNADRS)166        /* @/For key (SR 143 cwunn) */
+#define TRN_HALO_ADR		  (USTRNADRS)167		 /* HALO Override key (SR 143 cwunn) */
+#define TRN_PCKUP_REQ		  (USTRNADRS)168		 /* Cash Drawer Over Limit (SR 155 JHHJ)*/
+#define TRN_TENDER12_ADR      (USTRNADRS)169		 /* Tender 12 */
+#define TRN_TENDER13_ADR      (USTRNADRS)170		 /* Tender 13 */
+#define TRN_TENDER14_ADR      (USTRNADRS)171		 /* Tender 14 */
+#define TRN_TENDER15_ADR      (USTRNADRS)172		 /* Tender 15 */
+#define TRN_TENDER16_ADR      (USTRNADRS)173		 /* Tender 16 */
+#define TRN_TENDER17_ADR      (USTRNADRS)174		 /* Tender 17 */
+#define TRN_TENDER18_ADR      (USTRNADRS)175		 /* Tender 18 */
+#define TRN_TENDER19_ADR      (USTRNADRS)176		 /* Tender 19 */
+#define TRN_TENDER20_ADR      (USTRNADRS)177		 /* Tender 20 */
+#define TRN_TOTAL10_ADR		  (USTRNADRS)178		 /* Total 10, programmable total */
+#define TRN_TOTAL11_ADR		  (USTRNADRS)179		 /* Total 11, programmable total */
+#define TRN_TOTAL12_ADR		  (USTRNADRS)180		 /* Total 12, programmable total */
+#define TRN_TOTAL13_ADR		  (USTRNADRS)181		 /* Total 13, programmable total */
+#define TRN_TOTAL14_ADR		  (USTRNADRS)182		 /* Total 14, programmable total */
+#define TRN_TOTAL15_ADR		  (USTRNADRS)183		 /* Total 15, programmable total */
+#define TRN_TOTAL16_ADR		  (USTRNADRS)184		 /* Total 16, programmable total */
+#define TRN_TOTAL17_ADR		  (USTRNADRS)185		 /* Total 17, programmable total */
+#define TRN_TOTAL18_ADR		  (USTRNADRS)186		 /* Total 18, programmable total */
+#define TRN_TOTAL19_ADR		  (USTRNADRS)187		 /* Total 19, programmable total */
+#define TRN_TOTAL20_ADR		  (USTRNADRS)188		 /* Total 20, programmable total */
+#define	TRN_PRICE_ADR		  (USTRNADRS)189		 /* PRICE	 */ //SR281
+#define TRN_NONE_DONE_ADR	  (USTRNADRS)190		// Mnemonic for NONE/DONE for OEP dialog, MldUpdatePopUp()
+#define TRN_BACK_OEP_ADR	  (USTRNADRS)191		// Mnemonic for BACK for OEP dialog, MldUpdatePopUp()
+#define TRN_ITEMCOUNT_ADR	  (USTRNADRS)192		//  Item Count Summary SR217 JHHJ
+#define TRN_MERC_CPY_ADR	  (USTRNADRS)193		// Merchant Copy mnemonic for receipt EPT if CURQUAL_MERCH_DUP set
+#define TRN_CUST_CPY_ADR	  (USTRNADRS)194		// Customer Copy mnemonic for receipt EPT if CURQUAL_CUST_DUP set
+#define TRN_TIP_LINE_ADR	  (USTRNADRS)195		// Tip Line for receipt EPT
+#define TRN_TTL_LINE_ADR	  (USTRNADRS)196		// Total Line for receipt EPT
+#define TRN_GIFT_RECEIPT_ADR  (USTRNADRS)197		// Gift Receipt mnemonic, if PRT_GIFT_RECEIPT set
+#define TRN_OPTIMIZE_FILE_ADR (USTRNADRS)198		// Optimize File JHH*/
+#define TRN_ITMDISC_ADR_3	  (USTRNADRS)199		// Item Discount 3
+#define TRN_ITMDISC_ADR_4	  (USTRNADRS)200		// Item Discount 4
+#define TRN_ITMDISC_ADR_5	  (USTRNADRS)201		// Item Discount 5
+#define TRN_ITMDISC_ADR_6	  (USTRNADRS)202		// Item Discount 6
+#define TRN_BNS_9_ADR		  (USTRNADRS)203		// Bonus Total # 9
+#define TRN_BNS_10_ADR		  (USTRNADRS)204		// Bonus Total # 10
+#define TRN_BNS_11_ADR		  (USTRNADRS)205		// Bonus Total # 11
+#define TRN_BNS_12_ADR		  (USTRNADRS)206		// Bonus Total # 12
+#define TRN_BNS_13_ADR		  (USTRNADRS)207		// Bonus Total # 13
+#define TRN_BNS_14_ADR		  (USTRNADRS)208		// Bonus Total # 14
+#define TRN_BNS_15_ADR		  (USTRNADRS)209		// Bonus Total # 15
+#define TRN_BNS_16_ADR		  (USTRNADRS)210		// Bonus Total # 16
+#define TRN_BNS_17_ADR		  (USTRNADRS)211		// Bonus Total # 17
+#define TRN_BNS_18_ADR		  (USTRNADRS)212		// Bonus Total # 18
+#define TRN_BNS_19_ADR		  (USTRNADRS)213		// Bonus Total # 19
+#define TRN_BNS_20_ADR		  (USTRNADRS)214		// Bonus Total # 20
+#define TRN_BNS_21_ADR		  (USTRNADRS)215		// Bonus Total # 21
+#define TRN_BNS_22_ADR		  (USTRNADRS)216		// Bonus Total # 22
+#define TRN_BNS_23_ADR		  (USTRNADRS)217		// Bonus Total # 23
+#define TRN_BNS_24_ADR		  (USTRNADRS)218		// Bonus Total # 24
+#define TRN_BNS_25_ADR		  (USTRNADRS)219		// Bonus Total # 25
+#define TRN_BNS_26_ADR		  (USTRNADRS)220		// Bonus Total # 26
+#define TRN_BNS_27_ADR		  (USTRNADRS)221		// Bonus Total # 27
+#define TRN_BNS_28_ADR		  (USTRNADRS)222		// Bonus Total # 28
+#define TRN_BNS_29_ADR		  (USTRNADRS)223		// Bonus Total # 29
+#define TRN_BNS_30_ADR		  (USTRNADRS)224		// Bonus Total # 30
+#define TRN_BNS_31_ADR		  (USTRNADRS)225		// Bonus Total # 31
+#define TRN_BNS_32_ADR		  (USTRNADRS)226		// Bonus Total # 32
+#define TRN_BNS_33_ADR		  (USTRNADRS)227		// Bonus Total # 33
+#define TRN_BNS_34_ADR		  (USTRNADRS)228		// Bonus Total # 34
+#define TRN_BNS_35_ADR		  (USTRNADRS)229		// Bonus Total # 35
+#define TRN_BNS_36_ADR		  (USTRNADRS)230		// Bonus Total # 36
+#define TRN_BNS_37_ADR		  (USTRNADRS)231		// Bonus Total # 37
+#define TRN_BNS_38_ADR		  (USTRNADRS)232		// Bonus Total # 38
+#define TRN_BNS_39_ADR		  (USTRNADRS)233		// Bonus Total # 39
+#define TRN_BNS_40_ADR		  (USTRNADRS)234		// Bonus Total # 40
+#define TRN_BNS_41_ADR		  (USTRNADRS)235		// Bonus Total # 41
+#define TRN_BNS_42_ADR		  (USTRNADRS)236		// Bonus Total # 42
+#define TRN_BNS_43_ADR		  (USTRNADRS)237		// Bonus Total # 43
+#define TRN_BNS_44_ADR		  (USTRNADRS)238		// Bonus Total # 44
+#define TRN_BNS_45_ADR		  (USTRNADRS)239		// Bonus Total # 45
+#define TRN_BNS_46_ADR		  (USTRNADRS)240		// Bonus Total # 46
+#define TRN_BNS_47_ADR		  (USTRNADRS)241		// Bonus Total # 47
+#define TRN_BNS_48_ADR		  (USTRNADRS)242		// Bonus Total # 48
+#define TRN_BNS_49_ADR		  (USTRNADRS)243		// Bonus Total # 49
+#define TRN_BNS_50_ADR		  (USTRNADRS)244		// Bonus Total # 50
+#define TRN_BNS_51_ADR		  (USTRNADRS)245		// Bonus Total # 51
+#define TRN_BNS_52_ADR		  (USTRNADRS)246		// Bonus Total # 52
+#define TRN_BNS_53_ADR		  (USTRNADRS)247		// Bonus Total # 53
+#define TRN_BNS_54_ADR		  (USTRNADRS)248		// Bonus Total # 54
+#define TRN_BNS_55_ADR		  (USTRNADRS)249		// Bonus Total # 55
+#define TRN_BNS_56_ADR		  (USTRNADRS)250		// Bonus Total # 56
+#define TRN_BNS_57_ADR		  (USTRNADRS)251		// Bonus Total # 57
+#define TRN_BNS_58_ADR		  (USTRNADRS)252		// Bonus Total # 58
+#define TRN_BNS_59_ADR		  (USTRNADRS)253		// Bonus Total # 59
+#define TRN_BNS_60_ADR		  (USTRNADRS)254		// Bonus Total # 60
+#define TRN_BNS_61_ADR		  (USTRNADRS)255		// Bonus Total # 61
+#define TRN_BNS_62_ADR		  (USTRNADRS)256		// Bonus Total # 62
+#define TRN_BNS_63_ADR		  (USTRNADRS)257		// Bonus Total # 63
+#define TRN_BNS_64_ADR		  (USTRNADRS)258		// Bonus Total # 64
+#define TRN_BNS_65_ADR		  (USTRNADRS)259		// Bonus Total # 65
+#define TRN_BNS_66_ADR		  (USTRNADRS)260		// Bonus Total # 66
+#define TRN_BNS_67_ADR		  (USTRNADRS)261		// Bonus Total # 67
+#define TRN_BNS_68_ADR		  (USTRNADRS)262		// Bonus Total # 68
+#define TRN_BNS_69_ADR		  (USTRNADRS)263		// Bonus Total # 69
+#define TRN_BNS_70_ADR		  (USTRNADRS)264		// Bonus Total # 70
+#define TRN_BNS_71_ADR		  (USTRNADRS)265		// Bonus Total # 71
+#define TRN_BNS_72_ADR		  (USTRNADRS)266		// Bonus Total # 72
+#define TRN_BNS_73_ADR		  (USTRNADRS)267		// Bonus Total # 73
+#define TRN_BNS_74_ADR		  (USTRNADRS)268		// Bonus Total # 74
+#define TRN_BNS_75_ADR		  (USTRNADRS)269		// Bonus Total # 75
+#define TRN_BNS_76_ADR		  (USTRNADRS)270		// Bonus Total # 76
+#define TRN_BNS_77_ADR		  (USTRNADRS)271		// Bonus Total # 77
+#define TRN_BNS_78_ADR		  (USTRNADRS)272		// Bonus Total # 78
+#define TRN_BNS_79_ADR		  (USTRNADRS)273		// Bonus Total # 79
+#define TRN_BNS_80_ADR		  (USTRNADRS)274		// Bonus Total # 80
+#define TRN_BNS_81_ADR		  (USTRNADRS)275		// Bonus Total # 81
+#define TRN_BNS_82_ADR		  (USTRNADRS)276		// Bonus Total # 82
+#define TRN_BNS_83_ADR		  (USTRNADRS)277		// Bonus Total # 83
+#define TRN_BNS_84_ADR		  (USTRNADRS)278		// Bonus Total # 84
+#define TRN_BNS_85_ADR		  (USTRNADRS)279		// Bonus Total # 85
+#define TRN_BNS_86_ADR		  (USTRNADRS)280		// Bonus Total # 86
+#define TRN_BNS_87_ADR		  (USTRNADRS)281		// Bonus Total # 87
+#define TRN_BNS_88_ADR		  (USTRNADRS)282		// Bonus Total # 88
+#define TRN_BNS_89_ADR		  (USTRNADRS)283		// Bonus Total # 89
+#define TRN_BNS_90_ADR		  (USTRNADRS)284		// Bonus Total # 90
+#define TRN_BNS_91_ADR		  (USTRNADRS)285		// Bonus Total # 91
+#define TRN_BNS_92_ADR		  (USTRNADRS)286		// Bonus Total # 92
+#define TRN_BNS_93_ADR		  (USTRNADRS)287		// Bonus Total # 93
+#define TRN_BNS_94_ADR		  (USTRNADRS)288		// Bonus Total # 94
+#define TRN_BNS_95_ADR		  (USTRNADRS)289		// Bonus Total # 95
+#define TRN_BNS_96_ADR		  (USTRNADRS)290		// Bonus Total # 96
+#define TRN_BNS_97_ADR		  (USTRNADRS)291		// Bonus Total # 97
+#define TRN_BNS_98_ADR		  (USTRNADRS)292		// Bonus Total # 98
+#define TRN_BNS_99_ADR		  (USTRNADRS)293		// Bonus Total # 99
+#define TRN_BNS_100_ADR		  (USTRNADRS)294		// Bonus Total # 100
+#define	TRN_PPI_ADD_SETTING	  (USTRNADRS)295		// PPI Addititional Settings
+#define	TRN_PPI_ADD_VALUE	  (USTRNADRS)296		// PPI Additional Setting Value
+#define TRN_PPI_BEFORE_QTY	  (USTRNADRS)297
+#define	TRN_PPI_AFTER_QTY	  (USTRNADRS)298
+#define TRN_PPI_MINSALE		  (USTRNADRS)299
+#define TRN_TENT			  (USTRNADRS)300		// Receipt ID ***PDINU
+#define TRN_ORDER_DEC_OFFSET  (USTRNADRS)300       // add order declaration fsc to this value to get mnemonic
+#define TRN_ORDER_DEC1		  (USTRNADRS)301
+#define TRN_ORDER_DEC2		  (USTRNADRS)302
+#define TRN_ORDER_DEC3		  (USTRNADRS)303
+#define TRN_ORDER_DEC4		  (USTRNADRS)304
+#define TRN_ORDER_DEC5		  (USTRNADRS)305
+#define TRN_TOTAL21_ADR		  (USTRNADRS)311		 /* Total 21 */
+#define TRN_TOTAL22_ADR		  (USTRNADRS)312		 /* Total 22 */
+#define TRN_TOTAL23_ADR		  (USTRNADRS)313		 /* Total 23 */
+#define TRN_TOTAL24_ADR		  (USTRNADRS)314		 /* Total 24 */
+#define TRN_TOTAL25_ADR		  (USTRNADRS)315		 /* Total 25 */
+#define TRN_TOTAL26_ADR		  (USTRNADRS)316		 /* Total 26 */
+#define TRN_TOTAL27_ADR		  (USTRNADRS)317		 /* Total 27 */
+#define TRN_TOTAL28_ADR		  (USTRNADRS)318		 /* Total 28 */
+#define TRN_TOTAL29_ADR		  (USTRNADRS)319		 /* Total 39 */
+#define TRN_TOTAL30_ADR		  (USTRNADRS)320		 /* Total 30 */
+#define TRN_TENDER21_ADR      (USTRNADRS)321		 /* Tender 21 */
+#define TRN_TENDER22_ADR      (USTRNADRS)322		 /* Tender 22 */
+#define TRN_TENDER23_ADR      (USTRNADRS)323		 /* Tender 23 */
+#define TRN_TENDER24_ADR      (USTRNADRS)324		 /* Tender 24 */
+#define TRN_TENDER25_ADR      (USTRNADRS)325		 /* Tender 25 */
+#define TRN_TENDER26_ADR      (USTRNADRS)326		 /* Tender 26 */
+#define TRN_TENDER27_ADR      (USTRNADRS)327		 /* Tender 27 */
+#define TRN_TENDER28_ADR      (USTRNADRS)328		 /* Tender 28 */
+#define TRN_TENDER29_ADR      (USTRNADRS)329		 /* Tender 29 */
+#define TRN_TENDER30_ADR      (USTRNADRS)330		 /* Tender 30 */
+#define TRN_SIGNIN_ADR        (USTRNADRS)331        /* Operator Sign in */
+#define TRN_SIGNOUT_ADR       (USTRNADRS)332        /* Operator Sign Out */
+#define TRN_TRETURN1_ADR      (USTRNADRS)333        /* Transaction return #1 mnemonic, report MDC_RPTFIN46_ADR and MDC_RPTCAS50_ADR */
+#define TRN_TRETURN2_ADR      (USTRNADRS)334        /* Transaction return #2 mnemonic, report MDC_RPTFIN46_ADR and MDC_RPTCAS50_ADR */
+#define TRN_TRETURN3_ADR      (USTRNADRS)335        /* Transaction return #3 mnemonic, report MDC_RPTFIN46_ADR and MDC_RPTCAS50_ADR */
+#define TRN_PRETURN1_ADR      (USTRNADRS)336        /* Transaction return mnemonic for creating a Transaction Return by entering items */
+#define TRN_PRETURN2_ADR      (USTRNADRS)337        /* Transaction return mnemonic for creating a Transaction Return by entering items */
+#define TRN_PRETURN3_ADR      (USTRNADRS)338        /* Transaction return mnemonic for creating a Transaction Return by entering items */
+#define TRN_FT_EQUIVALENT     (USTRNADRS)339        /* Tender amount equivalent mnemonic for specifing local currency equivalent to foreign currency */
+#define TRN_GCNO_RETURNS      (USTRNADRS)340        // lead thru mnemonic for guest check for Ask #6, Returns
+#define TRN_DSI_CARDTYPE      (USTRNADRS)341        // CARD TYPE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_CARDNUM       (USTRNADRS)342        // CARD #, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_CARDEXP       (USTRNADRS)343        // EXP. DATE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_AUTHCODE      (USTRNADRS)344        // AUTH CODE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_REFNUM        (USTRNADRS)345        // REF NUM, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_AUTHORIZE     (USTRNADRS)346        // AUTHORIZE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_BALANCE       (USTRNADRS)347        // BALANCE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_METHOD        (USTRNADRS)348        // METHOD, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_TERMINAL      (USTRNADRS)349        // TERMINAL ID, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_TRANSTYPE     (USTRNADRS)350        // TRANSACTION TYPE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_DSI_TRANSSALE     (USTRNADRS)351        // SALE, ItemEptMsgTextCopyReplace() DSI Client mnemonic using #P20.nnn replacement
+#define TRN_EJ_PODREPRINT     (USTRNADRS)352        // Print on Demand #5 Electronic Journal mnemonic if PRT_DEMAND set 
+#define TRN_TNDR_PRT_DUP_COPY (USTRNADRS)353        // Print on a duplicate receipt the mnemonic for Duplicate Copy
 
 /* Warning !!! You have to change this Define When Above Max. address is changed */
 
@@ -2539,6 +2541,8 @@ typedef          short  SLDTITM;   // signed variable containing either CLASS_PA
 *
 *	see ParaSpeMnemo in UNINIRAM UNINT Para and CLASS_PARASPECIALMNEMO with CliParaAllRead()
 \*------------------------------------------------------------------------*/
+
+typedef unsigned char  UCSPCADRS;       // variable contains address of special mnemonic 
 
 #define SPC_GC_ADR              1        /* Guest Check No. */
 #define SPC_CAS_ADR             2        /* Cashier ID */
@@ -3071,7 +3075,7 @@ typedef          short  SLDTITM;   // signed variable containing either CLASS_PA
 
 /* Warning !!! You have to change this Define When Above Max. address is changed */
 
-#define CTLPG_ADR_MAX          23        /* Max Address */
+#define CTLPG_ADR_MAX          MAX_PAGE_SIZE        /* Max Address */
 
 /*------------------------------------------------------------------------*\
 *   Define - Manual Alternative Kitchen Printer Assignment Address (A/C 6)
@@ -3328,7 +3332,7 @@ typedef          short  SLDTITM;   // signed variable containing either CLASS_PA
 #define RATE_FUTURE4_USE_ADR		120
 /* Warning !!! You have to change this Define When Above Max. address is changed */
 
-#define RATE_ADR_MAX            120        /* Max Address */
+#define RATE_ADR_MAX            MAX_DISCRATE_SIZE        /* Max Address */
 
 /*------------------------------------------------------------------------*\
 *   Define - Set Trailer Print for Soft Check Address (A/C 87)

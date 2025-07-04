@@ -4277,7 +4277,7 @@ TCHAR *RflGetMnemonicByClass (USHORT usClass, TCHAR *pszDest, USHORT usAddress)
 ** Synopsis: This function gets transaction  mnemonics.
 *===========================================================================
 */
-TCHAR *RflGetTranMnem(TCHAR *pszDest, USHORT usAddress)
+TCHAR *RflGetTranMnem(TCHAR *pszDest, USTRNADRS usAddress)
 {
 	return RflGetMnemonicByClass (CLASS_PARATRANSMNEMO, pszDest, usAddress);
 }
@@ -4345,7 +4345,7 @@ TCHAR *RflGetLead(TCHAR  *pszDest, USHORT usAddress)
 ** Synopsis: This function gets special mnemonics.
 *===========================================================================
 */
-TCHAR *RflGetSpecMnem(TCHAR *pszDest, USHORT usAddress)
+TCHAR *RflGetSpecMnem(TCHAR *pszDest, UCSPCADRS usAddress)
 {
 	return RflGetMnemonicByClass (CLASS_PARASPECIALMNEMO, pszDest, usAddress);
 }
@@ -4415,7 +4415,11 @@ RflMoneyMnem    RflGetMoneyMnem(UCHAR uchTendMinor)
 	}
 	else if (uchTendMinor >= CLASS_FOREIGN3 && uchTendMinor <= CLASS_FOREIGN8) {
 		myMnemo.usTran = (uchTendMinor - CLASS_FOREIGN3 + TRN_FT3_ADR);
-		myMnemo.usSym = (UCHAR)(uchTendMinor - CLASS_FOREIGN3 + SPC_CNSYMFC3_ADR);
+		myMnemo.usSym = (uchTendMinor - CLASS_FOREIGN3 + SPC_CNSYMFC3_ADR);
+	}
+	else if (uchTendMinor >= CLASS_FOREIGNTOTAL1 && uchTendMinor <= CLASS_FOREIGNTOTAL8) {
+		myMnemo.usTran = (uchTendMinor - CLASS_FOREIGNTOTAL1 + TRN_FT1_ADR);
+		myMnemo.usSym = (uchTendMinor - CLASS_FOREIGNTOTAL1 + SPC_CNSYMFC1_ADR);
 	}
 	else if (uchTendMinor >= CLASS_TENDER1 && uchTendMinor <= CLASS_TENDER8) {
 		myMnemo.usTran = (uchTendMinor - CLASS_TENDER1 + TRN_TEND1_ADR);
@@ -4425,10 +4429,6 @@ RflMoneyMnem    RflGetMoneyMnem(UCHAR uchTendMinor)
 	}
 	else if (uchTendMinor >= CLASS_TENDER12 && uchTendMinor <= CLASS_TENDER20) {
 		myMnemo.usTran = (uchTendMinor - CLASS_TENDER12 + TRN_TENDER12_ADR);
-	}
-	else if (uchTendMinor >= CLASS_FOREIGNTOTAL1 && uchTendMinor <= CLASS_FOREIGNTOTAL8) {
-		myMnemo.usTran = (uchTendMinor - CLASS_FOREIGNTOTAL1 + TRN_FT1_ADR);
-		myMnemo.usSym = (UCHAR)(uchTendMinor - CLASS_FOREIGNTOTAL1 + SPC_CNSYMFC1_ADR);
 	}
 	else {
 		NHPOS_ASSERT(uchTendMinor <= CLASS_TENDER20);

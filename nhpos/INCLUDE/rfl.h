@@ -82,6 +82,7 @@
 #define     RFL_RETURN                 0x0A        /* character return */
 #define     RFL_ESCAPE                 0x1B        /* character escape */
 #define     RFL_DOUBLE                 0x12        /* indicates next character is 'double wide character'. See also FSC_DOUBLE_WIDE and KPS_DOUBLE and PRT_DOUBLE */
+//#define     RFL_SDOUBLE                0x13        /*  square double character. indicates next character is 'double wide, double high character'.See also PRT_SDOUBLE and PMG_CHARX4 */
 
 
 // See function RflTax2() for AC 124 Tax Table calculation and how these constants
@@ -463,11 +464,11 @@ int   RflMatch(const wchar_t *regexp, const wchar_t *text);
 TCHAR *RflCleanupMnemonic (TCHAR *tcsmnemonic);
 TCHAR *RflCopyMnemonic (TCHAR *tcsDest, CONST TCHAR *tcsSource, int nMaxCharCount);
 TCHAR *RflGetMnemonicByClass (USHORT usClass, TCHAR *pszDest, USHORT usAddress);
-TCHAR *RflGetTranMnem (TCHAR *pszDest, USHORT usAddress);
+TCHAR *RflGetTranMnem (TCHAR *pszDest, USTRNADRS usAddress);
 TCHAR *RflGetReportMnem(TCHAR *pszDest, USHORT usAddress);
 TCHAR *RflGet24Mnem (TCHAR  *pszDest, USHORT usAddress);
 TCHAR *RflGetLead (TCHAR  *pszDest, USHORT usAddress);
-TCHAR *RflGetSpecMnem (TCHAR *pszDest, USHORT usAddress);
+TCHAR *RflGetSpecMnem (TCHAR *pszDest, UCSPCADRS usAddress);
 TCHAR *RflGetAdj (TCHAR *pszDest, USHORT usAdjective);
 TCHAR *RflGetMajorDeptMnem(TCHAR *pszDest, USHORT usAddress);
 RflMoneyMnem    RflGetMoneyMnem(UCHAR uchTendMinor);

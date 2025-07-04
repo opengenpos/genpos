@@ -190,8 +190,8 @@ SHORT   MldPrechkMoney(ITEMMISC *pItemMisc, USHORT usType, USHORT usScroll)
 	TCHAR   aszScrollBuff[15][MLD_PRECOLUMN1 + 1] = {0};
     LONG    alAttrib[15][MLD_PRECOLUMN1 + 1] = {0};
     USHORT  usScrollLine = 0;
-	USHORT  usTranAddr;
-	UCHAR   uchSymAddr;
+    USTRNADRS  usTranAddr;
+    UCSPCADRS  uchSymAddr;
 
     /* get foreign 1 or 2 mnemonic addresses */
 	MldGetMoneyMnem(pItemMisc->uchTendMinor, &usTranAddr, &uchSymAddr);
@@ -234,8 +234,8 @@ SHORT   MldDriveMoney(ITEMMISC *pItemMisc, USHORT usType, USHORT usScroll)
     TCHAR   aszScrollBuff[18][MLD_DR3COLUMN + 1] = {0};
     LONG    alAttrib[18][MLD_PRECOLUMN1 + 1] = {0};
     USHORT  usScrollLine = 0;
-	USHORT  usTranAddr;
-	UCHAR   uchSymAddr;
+    USTRNADRS  usTranAddr;
+    UCSPCADRS  uchSymAddr;
 
     /* get foreign 1 or 2 mnemonic addresses */
 	MldGetMoneyMnem(pItemMisc->uchTendMinor, &usTranAddr, &uchSymAddr);
@@ -296,8 +296,8 @@ SHORT   MldPrechkMoneyForeign(ITEMMISC  *pItemMisc, USHORT usType, USHORT usScro
 	TCHAR   aszScrollBuff[8][MLD_PRECOLUMN1 + 1] = {0};
     LONG    alAttrib[8][MLD_PRECOLUMN1 + 1] = {0};
     USHORT  usScrollLine = 0;
-	USHORT  usTranAddr;
-	UCHAR   uchSymAddr;
+    USTRNADRS  usTranAddr;
+    UCSPCADRS  uchSymAddr;
 
     /* get foreign 1 or 2 mnemonic addresses */
 	MldGetMoneyMnem(pItemMisc->uchTendMinor, &usTranAddr, &uchSymAddr);
@@ -336,8 +336,8 @@ SHORT   MldDriveMoneyForeign(ITEMMISC *pItemMisc, USHORT usType, USHORT usScroll
     TCHAR   aszScrollBuff[10][MLD_DR3COLUMN + 1] = {0};
 	LONG    alAttrib[10][MLD_PRECOLUMN1 + 1] = {0};
     USHORT  usScrollLine = 0;
-	USHORT  usTranAddr;
-	UCHAR   uchSymAddr;
+    USTRNADRS  usTranAddr;
+    UCSPCADRS  uchSymAddr;
 
     /* get foreign 1 or 2 mnemonic addresses */
 	MldGetMoneyMnem(pItemMisc->uchTendMinor, &usTranAddr, &uchSymAddr);

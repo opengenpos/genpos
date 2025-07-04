@@ -4403,9 +4403,9 @@ SHORT   ItemMiscMoneyIn( VOID )
 fhfh*/
 
 static struct {
-	USHORT  usTender;
-	USHORT  usMnemonicId;
-	USHORT  usDisplayClass;
+	USHORT     usTender;
+    USTRNADRS  usMnemonicId;
+	USHORT     usDisplayClass;
 } myMnemonicList [] = {
 	{CLASS_UIFOREIGN1, TRN_FT1_ADR,CLASS_UIFMONEY_FOREIGN},
 	{CLASS_UIFOREIGN2, TRN_FT2_ADR, CLASS_UIFMONEY_FOREIGN},
@@ -4458,8 +4458,7 @@ SHORT   ItemMiscMoney(UIFREGMISC *pMisc)
     TrnMisc.lAmount = pMisc->lQTY / 1000L * pMisc->lAmount;
 
     if (pMisc->fbModifier & VOID_MODIFIER) {
-		ITEMMISC   DummyMisc = {0};
-        ItemPreviousItem(&DummyMisc, 0);
+        ItemPreviousItem(NULL, 0);
 
         switch (pMisc->uchTendMinor) {
         case    CLASS_UIFOREIGN1:
@@ -4534,9 +4533,7 @@ SHORT   ItemMiscMoney(UIFREGMISC *pMisc)
 	// tender key.
     RegDisplay.uchMajorClass = CLASS_UIFREGMISC;
 	{
-		int     i;
-
-		for (i = 0; i < sizeof(myMnemonicList)/sizeof(myMnemonicList[0]); i++) {
+		for (int i = 0; i < sizeof(myMnemonicList)/sizeof(myMnemonicList[0]); i++) {
 			if (pMisc->uchTendMinor == myMnemonicList[i].usTender) {
 				RflGetTranMnem (RegDisplay.aszMnemonic, myMnemonicList[i].usMnemonicId);
 				RegDisplay.uchMinorClass = myMnemonicList[i].usDisplayClass;
@@ -4595,11 +4592,10 @@ SHORT   ItemMiscMoneyOut(VOID)
 {
     TRANCURQUAL     *pWorkCur = TrnGetCurQualPtr();
     REGDISPMSG      RegDisplay = {0};
-    ITEMMISC        DummyMisc = {0};
 	ITEMTRANSCLOSE  ItemTransClose = {0};
     SHORT           sStatus;
 
-    ItemPreviousItem(&DummyMisc, 0);
+    ItemPreviousItem(NULL, 0);
 
     RegDisplay.uchMajorClass = CLASS_UIFREGMISC;
     RegDisplay.uchMinorClass = CLASS_UIFMONEY_OUT;

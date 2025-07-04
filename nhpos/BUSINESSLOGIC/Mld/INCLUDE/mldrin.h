@@ -204,7 +204,7 @@ SHORT  MldDriveCancel(ITEMMISC  *pItem, USHORT usType, USHORT usScroll);
 SHORT  MldTender(ITEMTENDER *pItem, USHORT usType, USHORT usScroll);
 
 /* -- MLDFTND.c -- */
-VOID   MldGetMoneyMnem(UCHAR uchTendMinor, USHORT *pusTran, UCHAR *puchSym);
+VOID   MldGetMoneyMnem(UCHAR uchTendMinor, USTRNADRS *pusTran, UCSPCADRS *puchSym);
 SHORT  MldForeignTender(ITEMTENDER *pItem, USHORT usType, USHORT usScroll);
 SHORT  MldPrechkForeignTender(ITEMTENDER *pItem, USHORT usType, USHORT usScroll);
 SHORT  MldDriveForeignTender(ITEMTENDER *pItem, USHORT usType, USHORT usScroll);

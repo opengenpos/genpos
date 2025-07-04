@@ -307,8 +307,8 @@ SHORT   MaintLoanPickupErrorCorrect(MAINTLOANPICKUP *pData)
 *===========================================================================
 */
 struct _tagMAPTENDER2MNEMONIC {
-	UCHAR  uchMinorClass;
-	UCHAR  uchAddress;
+	UCHAR      uchMinorClass;
+    USTRNADRS  uchAddress;
 } myTender2MnemonicLookupTable [] = {
     {CLASS_MAINTTENDER1, TRN_TEND1_ADR},
     {CLASS_MAINTTENDER2, TRN_TEND2_ADR},
@@ -344,7 +344,7 @@ struct _tagMAPTENDER2MNEMONIC {
 VOID    MaintLoanPickupDisp(MAINTLOANPICKUP *pData)
 {
 	MAINTDSPLOANPICKUP MaintDspLoanPickup = {0};
-	USHORT             usTransAddress = 0;
+    USTRNADRS          usTransAddress = 0;
 
 	if (pData->uchLoanPickStatus & MAINT_DATA_INPUT_CE)
 		return;

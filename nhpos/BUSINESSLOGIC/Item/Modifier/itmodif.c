@@ -684,7 +684,7 @@ SHORT    ItemModTaxUS(CONST UIFREGMODIFIER *ItemModifier)
 {
     SHORT           sStatus;
 	REGDISPMSG      RegDispMsgD = {0};
-	USHORT          usSpecMnemonicAdrs = 0;
+    UCSPCADRS       usSpecMnemonicAdrs = 0;
 
     /* initialize */
     if ( (ItemModifier->uchMinorClass >= CLASS_UITAXMODIFIER4) &&
@@ -760,7 +760,7 @@ SHORT    ItemModTaxCanada(CONST UIFREGMODIFIER *ItemModifier)
 {
 	REGDISPMSG      RegDispMsgD = {0};
     SHORT           sStatus;
-	USHORT          usSpecMnemonicAdrs = 0;
+    UCSPCADRS       usSpecMnemonicAdrs = 0;
 
     /* check SPV */
     if ( ItemModifier->uchMinorClass == CLASS_UITAXEXEMPT1          /* tax exempt */

@@ -73,13 +73,21 @@
 *   InOut  : none
 ** Return  : none
 *            
-** Synopsis: This function displays received on acount
+** Synopsis: This function determines the Transaction mnemonic and the symbol mnemonic
+*            based on the tender type.
+*            This function also will handle a Foreign Total key press as well
+*            so long as CLASS_FOREIGNTOTAL1 is not in the same range as tender classes.
+*
+*            See also function PrtGetMoneyMnem() which does the same thing.
 *===========================================================================
 */
-VOID    MldGetMoneyMnem(UCHAR uchTendMinor, USHORT *pusTran, UCHAR *puchSym)
+VOID    MldGetMoneyMnem(UCHAR uchTendMinor, USTRNADRS *pusTran, UCSPCADRS *puchSym)
 {
-	*puchSym = 0;
-	*pusTran = 0;
+    RflMoneyMnem mm = RflGetMoneyMnem(uchTendMinor);
+
+    *puchSym = mm.usSym;
+    *pusTran = mm.usTran;
+#if 0
     if (uchTendMinor >= CLASS_FOREIGN1 && uchTendMinor <= CLASS_FOREIGN2) {
         *pusTran = (uchTendMinor - CLASS_FOREIGN1 + TRN_FT1_ADR);
         *puchSym  = (uchTendMinor - CLASS_FOREIGN1 + SPC_CNSYMFC1_ADR);
@@ -94,8 +102,8 @@ VOID    MldGetMoneyMnem(UCHAR uchTendMinor, USHORT *pusTran, UCHAR *puchSym)
         *pusTran = (uchTendMinor - CLASS_TENDER12 + TRN_TENDER12_ADR);
 	} else {
 		NHPOS_ASSERT(uchTendMinor <= CLASS_TENDER20);
-		return;
 	}
+#endif
 }
 
 /*
@@ -138,18 +146,16 @@ SHORT MldForeignTender(ITEMTENDER  *pItem, USHORT usType, USHORT usScroll)
 */
 SHORT MldPrechkForeignTender(ITEMTENDER  *pItem, USHORT usType, USHORT usScroll)
 {
-    TCHAR  aszScrollBuff[8][MLD_PRECOLUMN1 + 1]; /* print data save area */
+    TCHAR  aszScrollBuff[8][MLD_PRECOLUMN1 + 1] = { 0 }; /* print data save area */
     LONG   alAttrib[8][MLD_PRECOLUMN1 + 1];                 /* reverse video control flag area */
     USHORT  usScrollLine = 0;            /* number of lines to be printed */
-	USHORT  usTranAddr;
-	UCHAR   uchSymAddr;
+    USTRNADRS  usTranAddr;
+    UCSPCADRS  uchSymAddr;
 
     /* get foreign 1 or 2 mnemonic addresses */
 	MldGetMoneyMnem(pItem->uchMinorClass, &usTranAddr, &uchSymAddr);
 
     /* initialize the buffer */
-    memset(aszScrollBuff[0], '\0', sizeof(aszScrollBuff));
-
     if ((pItem->fbModifier & VOID_MODIFIER) && (MldCheckReverseVideo())) {
         /* --- reverse video if void operation ---- */
         memset(&alAttrib[0][0], MLD_ATTRIB_REV_VIDEO, sizeof(alAttrib));
@@ -200,18 +206,16 @@ SHORT MldPrechkForeignTender(ITEMTENDER  *pItem, USHORT usType, USHORT usScroll)
 */
 SHORT MldDriveForeignTender(ITEMTENDER  *pItem, USHORT usType, USHORT usScroll)
 {
-    TCHAR  aszScrollBuff[10][MLD_DR3COLUMN + 1]; /* print data save area */
+    TCHAR  aszScrollBuff[10][MLD_DR3COLUMN + 1] = { 0 }; /* print data save area */
     LONG   alAttrib[10][MLD_PRECOLUMN1 + 1];                /* reverse video control flag area */
     USHORT  usScrollLine = 0;            /* number of lines to be printed */
-	USHORT  usTranAddr;
-	UCHAR   uchSymAddr;
+    USTRNADRS  usTranAddr;
+    UCSPCADRS  uchSymAddr;
 
     /* get foreign 1 or 2 mnemonic addresses */
 	MldGetMoneyMnem(pItem->uchMinorClass, &usTranAddr, &uchSymAddr);
 
     /* initialize the buffer */
-    memset(aszScrollBuff[0], '\0', sizeof(aszScrollBuff));
-
     if ((pItem->fbModifier & VOID_MODIFIER) && (MldCheckReverseVideo())) {
         /* --- reverse video if void operation ---- */
         memset(&alAttrib[0][0], MLD_ATTRIB_REV_VIDEO, sizeof(alAttrib));
