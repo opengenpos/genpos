@@ -136,7 +136,7 @@ VOID DispSupMnemo20( VOID *pData )
         break;
 
     case CLASS_PARALEADTHRU:
-        usAddress = pParaLeadThru->uchAddress;          /* set Address */
+        usAddress = pParaLeadThru->usAddress;          /* set Address */
         usNoData = PG_LEAD_MNEMO;                       /* Set Program,A/C No. */
         _tcsncpy(aszBuffer, pParaLeadThru->aszMnemonics, PARA_LEADTHRU_LEN);  /* Set Mnemonics */
         DispSupSaveData.LeadThru = *pParaLeadThru;      /* Save Data for Redisplay if needed. */   

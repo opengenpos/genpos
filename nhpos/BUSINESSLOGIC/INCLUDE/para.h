@@ -487,7 +487,7 @@ typedef struct  {
 typedef struct  {
         UCHAR  uchMajorClass;         /* Major Class Data Definition, CLASS_PARALEADTHRU , RflGetLead()*/
         UCHAR  uchMinorClass;         /* Minor Class Data Definition */
-        UCHAR  uchAddress;            /* Address of Lead Through Data */
+        USHORT usAddress;             /* Address of Lead Through Data */
         WCHAR  aszMnemonics[PARA_LEADTHRU_LEN+1];      /* Lead Through Data */
         UCHAR  uchStatus;             /* 0=with data, 1=without data */
         USHORT usPrintControl;        /* Print Control */

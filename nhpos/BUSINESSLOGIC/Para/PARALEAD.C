@@ -55,9 +55,9 @@ VOID ParaLeadThruRead( PARALEADTHRU *pData )
 {
     USHORT    i;
 
-	NHPOS_ASSERT(pData->uchAddress > 0);
+	NHPOS_ASSERT(pData->usAddress > 0);
 
-    i = (USHORT)(pData->uchAddress - 1);   /* "-1" fits program address to RAM address */           
+    i = (USHORT)(pData->usAddress - 1);   /* "-1" fits program address to RAM address */           
 	if (i >= MAX_LEAD_NO ) {
 		memset(&pData->aszMnemonics[0], 0x00, PARA_LEADTHRU_LEN * sizeof(pData->aszMnemonics[0]));
 	}
@@ -84,9 +84,9 @@ VOID ParaLeadThruWrite( PARALEADTHRU *pData )
 {
     USHORT   i;
 
-	NHPOS_ASSERT(pData->uchAddress > 0);
+	NHPOS_ASSERT(pData->usAddress > 0);
 
-    i = ( USHORT)(pData->uchAddress - 1);   /* "-1" fits program address to RAM address */           
+    i = ( USHORT)(pData->usAddress - 1);   /* "-1" fits program address to RAM address */           
 	if (i < MAX_LEAD_NO) {
 		_tcsncpy(&Para.ParaLeadThru[i][0], &pData->aszMnemonics[0], PARA_LEADTHRU_LEN);
 	}

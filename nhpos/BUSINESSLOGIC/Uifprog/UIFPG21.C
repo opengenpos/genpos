@@ -30,6 +30,9 @@
 * Jun-30-92:00.00.01    :K.You      : initial                                   
 * Aug-11-95:03.00.04    :M.Ozawa    : Increment address digits to 3.
 *          :            :           :
+*
+*** OpenGenPOS ***
+* Jul-12-25:02.04.00    :R.Chambers : remove FARCONST, uchAddress now usAddress in PARALEADTHRU.
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -78,7 +81,7 @@
 
 /* Define Next Function at UIM_INIT */
 
-UIMENU FARCONST aChildPG21Init[] = {{UifPGShift, CID_PGSHIFT},
+static UIMENU  aChildPG21Init[] = {{UifPGShift, CID_PGSHIFT},
                                     {UifPG21EnterALPHA, CID_PG21ENTERALPHA},
                                     {UifPGChangeKB1, CID_PGCHANGEKB1},
                                     {NULL,           0              }};
@@ -86,20 +89,20 @@ UIMENU FARCONST aChildPG21Init[] = {{UifPGShift, CID_PGSHIFT},
 
 /* Define Next Function at UIM_ACCEPTED from CID_PGCHANGEKB1 */
 
-UIMENU FARCONST aChildPG21Accept1[] = {{UifPG21IssueRpt, CID_PG21ISSUERPT},
+static UIMENU  aChildPG21Accept1[] = {{UifPG21IssueRpt, CID_PG21ISSUERPT},
                                        {UifPG21EnterAddr, CID_PG21ENTERADDR},
                                        {NULL,             0                }};
 
 
 /* Define Next Function at UIM_ACCEPTED from CID_PGCHANGEKB2 */
 
-UIMENU FARCONST aChildPG21Accept2[] = {{UifPG21EnterAddr, CID_PG21ENTERADDR},
+static UIMENU  aChildPG21Accept2[] = {{UifPG21EnterAddr, CID_PG21ENTERADDR},
                                        {NULL,             0                }};
 
 
 /* Define Next Function at UIM_ACCEPTED from CID_PG21ENTERALPHA,CID_PG21ENTERADDR */
 
-UIMENU FARCONST aChildPG21Accept3[] = {{UifPGShift, CID_PGSHIFT},
+static UIMENU  aChildPG21Accept3[] = {{UifPGShift, CID_PGSHIFT},
                                        {UifPG21EnterALPHA, CID_PG21ENTERALPHA},
                                        {UifPGChangeKB2, CID_PGCHANGEKB2},
                                        {NULL,           0              }};
@@ -108,14 +111,14 @@ UIMENU FARCONST aChildPG21Accept3[] = {{UifPGShift, CID_PGSHIFT},
 
 SHORT UifPG21Function(KEYMSG *pKeyMsg) 
 {
-    PARALEADTHRU  LeadThruData;
+    PARALEADTHRU  LeadThruData = { 0 };
 
     switch (pKeyMsg->uchMsg) {
     case UIM_INIT:
         /* Display Address 1 of This Function */
-        LeadThruData.uchStatus = 0;                             /* Set W/ Amount Status */
-        LeadThruData.uchAddress = 1;                            /* Set Address 1 */
         LeadThruData.uchMajorClass = CLASS_PARALEADTHRU;        /* Set Major Class */
+        LeadThruData.uchStatus = 0;                             /* Set W/ Amount Status */
+        LeadThruData.usAddress = 1;                            /* Set Address 1 */
         MaintLeadThruRead(&LeadThruData);                       /* Execute Read Lead Through Mnemonics Procedure */
 
         UieNextMenu(aChildPG21Init);                            /* Open Next Function */
@@ -159,8 +162,8 @@ SHORT UifPG21Function(KEYMSG *pKeyMsg)
 */
 SHORT UifPG21EnterALPHA(KEYMSG *pKeyMsg) 
 {
-    SHORT           sError;
-    PARALEADTHRU    LeadThruData;   
+    SHORT           sError = SUCCESS;
+    PARALEADTHRU    LeadThruData = { 0 };
 
     switch(pKeyMsg->uchMsg) {
     case UIM_INIT:
@@ -174,21 +177,17 @@ SHORT UifPG21EnterALPHA(KEYMSG *pKeyMsg)
     case UIM_INPUT:
         switch (pKeyMsg->SEL.INPUT.uchMajor) {
         case FSC_P1:
+            LeadThruData.uchMajorClass = CLASS_PARALEADTHRU;        /* Set Major Class. */
             LeadThruData.uchStatus = 0;                             /* Set W/ Amount Status */
 
             if (!pKeyMsg->SEL.INPUT.uchLen) {                       /* W/o Amount Input Case */
                 LeadThruData.uchStatus |= MAINT_WITHOUT_DATA;       /* Set W/o Amount Status */
             } else {                                                /* W/ Amount Input Case */
-                memset(LeadThruData.aszMnemonics, '\0', (PARA_LEADTHRU_LEN+1) * sizeof(TCHAR));
-
                 _tcsncpy(LeadThruData.aszMnemonics, pKeyMsg->SEL.INPUT.aszKey, pKeyMsg->SEL.INPUT.uchLen); /* Copy Input Mnemonics to Own Buffer */
             }
 
             /* Execute Write Tansaction Mnemonic Procedure */
-            
-            /* LeadThruData.uchMajorClass = CLASS_PARALEADTHRU;         Set Major Class */
-
-            if ((sError = MaintLeadThruWrite(&LeadThruData)) == SUCCESS) {    
+            if ((sError = MaintLeadThruWrite(&LeadThruData)) == SUCCESS) {
                 UieAccept();                                        /* Return to UifPG21Function() */
             }
             return(sError);                                        
@@ -262,8 +261,8 @@ SHORT UifPG21IssueRpt(KEYMSG *pKeyMsg)
 */
 SHORT UifPG21EnterAddr(KEYMSG *pKeyMsg) 
 {
-    SHORT           sError;
-    PARALEADTHRU    LeadThruData;   
+    SHORT           sError = SUCCESS;
+    PARALEADTHRU    LeadThruData = { 0 };
                          
     switch(pKeyMsg->uchMsg) {
     case UIM_INIT:
@@ -277,17 +276,16 @@ SHORT UifPG21EnterAddr(KEYMSG *pKeyMsg)
             if (pKeyMsg->SEL.INPUT.uchLen > UIF_DIGIT3) {           /* Over Digit */
                 return(LDT_KEYOVER_ADR);
             }
+            LeadThruData.uchMajorClass = CLASS_PARALEADTHRU;        /* Set Major Class */
             LeadThruData.uchStatus = 0;                             /* Set W/ Amount Status */
 
             if (!pKeyMsg->SEL.INPUT.uchLen) {                       /* W/o Amount Input Case */
                 LeadThruData.uchStatus |= MAINT_WITHOUT_DATA;       /* Set W/o Amount Status */
             } else {                                                /* W/ Amount Input Case */
-                LeadThruData.uchAddress = ( UCHAR)pKeyMsg->SEL.INPUT.lData;
+                LeadThruData.usAddress = ( USHORT )pKeyMsg->SEL.INPUT.lData;
             }
 
             /* Execute Read Lead Through Mnemonics Procedure */
-            LeadThruData.uchMajorClass = CLASS_PARALEADTHRU;        /* Set Major Class */
-
             if ((sError = MaintLeadThruRead(&LeadThruData)) == SUCCESS) {    
                 UieAccept();                                        /* Return to UifPG21Function() */
             }

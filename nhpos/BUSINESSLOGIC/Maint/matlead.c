@@ -75,26 +75,26 @@
 */
 SHORT MaintLeadThruRead( PARALEADTHRU *pData )
 {
-    UCHAR uchAddress;
+    USHORT usAddress;
 
     /* check status */
     if(pData->uchStatus & MAINT_WITHOUT_DATA) {                 /* without data */
-        uchAddress = ++MaintWork.LeadThru.uchAddress;
+        usAddress = ++MaintWork.LeadThru.usAddress;
 
         /* check address */
-        if (uchAddress > MAX_LEAD_NO) {                         
-            uchAddress = 1;                                     /* initialize address */
+        if (usAddress > MAX_LEAD_NO) {                         
+            usAddress = 1;                                     /* initialize address */
         }
     } else {                                                    /* with data */
-        uchAddress = pData->uchAddress;
+        usAddress = pData->usAddress;
     }        
 
     /* check address */
-    if (uchAddress < 1 || MAX_LEAD_NO < uchAddress) {
+    if (usAddress < 1 || MAX_LEAD_NO < usAddress) {
         return(LDT_KEYOVER_ADR);                                /* wrong data */
     }
     MaintWork.LeadThru.uchMajorClass = pData->uchMajorClass;    /* copy major class */
-    MaintWork.LeadThru.uchAddress = uchAddress;
+    MaintWork.LeadThru.usAddress = usAddress;
     CliParaRead(&(MaintWork.LeadThru));                         /* call ParaLeadThruRead() */ 
     DispWrite(&(MaintWork.LeadThru));
     return(SUCCESS);
@@ -132,11 +132,11 @@ SHORT MaintLeadThruWrite( PARALEADTHRU *pData )
     PrtPrintItem(NULL, &(MaintWork.LeadThru));
 
     /* set address for Display next address */
-    MaintWork.LeadThru.uchAddress++;
+    MaintWork.LeadThru.usAddress++;
 
     /* check address */
-    if (MaintWork.LeadThru.uchAddress > MAX_LEAD_NO) {
-        MaintWork.LeadThru.uchAddress = 1;                      /* initialize address */
+    if (MaintWork.LeadThru.usAddress > MAX_LEAD_NO) {
+        MaintWork.LeadThru.usAddress = 1;                      /* initialize address */
     }
     MaintLeadThruRead(&(MaintWork.LeadThru));
     return(SUCCESS);
@@ -157,13 +157,11 @@ SHORT MaintLeadThruWrite( PARALEADTHRU *pData )
 */
 VOID MaintLeadThruReport( VOID )
 {
-    UCHAR         i;
-
     /* control header */
     MaintHeaderCtl(PG_LEAD_MNEMO, RPT_PRG_ADR);
 
     /* set data at every address */
-    for (i = 1; i <= MAX_LEAD_NO; i++) {
+    for (USHORT i = 1; i <= MAX_LEAD_NO; i++) {
 		PARALEADTHRU  ParaLeadThru = {0};
 
 		ParaLeadThru.uchMajorClass = CLASS_PARALEADTHRU;
@@ -174,7 +172,7 @@ VOID MaintLeadThruReport( VOID )
             MaintMakeAbortKey();
             break;
         }
-        ParaLeadThru.uchAddress = i;
+        ParaLeadThru.usAddress = i;
         CliParaRead(&ParaLeadThru);                             /* call ParaLeadThruRead() */
         PrtPrintItem(NULL, &ParaLeadThru);
     }

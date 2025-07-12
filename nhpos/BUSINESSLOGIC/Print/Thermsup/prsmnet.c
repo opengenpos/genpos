@@ -138,7 +138,7 @@ VOID PrtThrmSupMnemData( VOID *pData )
         break;
 
     case CLASS_PARALEADTHRU:
-        usAddress = pParaLeadThru->uchAddress;                              /* set address */
+        usAddress = pParaLeadThru->usAddress;                              /* set address */
         _tcsncpy(aszBuffer, pParaLeadThru->aszMnemonics, PARA_LEADTHRU_LEN);  /* set mnemonics */
         usPrtType = pParaLeadThru->usPrintControl;                          /* get printer control */
         break;

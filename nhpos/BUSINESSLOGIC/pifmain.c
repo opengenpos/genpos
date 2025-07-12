@@ -4174,7 +4174,7 @@ TCHAR *RflGetMnemonicByClass (USHORT usClass, TCHAR *pszDest, USHORT usAddress)
 						PARALEADTHRU   Mnemo = {0};
 
 						Mnemo.uchMajorClass = CLASS_PARALEADTHRU;
-						Mnemo.uchAddress    = usAddress;
+						Mnemo.usAddress    = usAddress;
 						ParaLeadThruRead (&Mnemo);
 						_tcsncpy(pszDest, Mnemo.aszMnemonics, PARA_LEADTHRU_LEN + 1);
 					}
