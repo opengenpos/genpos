@@ -692,7 +692,6 @@
     VOID    TrnItemRO( ITEMTRANSOPEN *ItemTransOpen );
     VOID    TrnItemSales( ITEMSALES *ItemSales );
     VOID    TrnSalesDept(CONST ITEMSALES *ItemSales );
-	VOID    TrnSalesAdjustItemizers ( ITEMGENERICHEADER *pItem );
     SHORT   TrnQTY( CONST ITEMSALES *ItemSales );
     VOID    TrnSalesPLU( ITEMSALES *ItemSales );
     VOID    TrnTaxable( ITEMSALES *ItemSales );

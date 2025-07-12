@@ -62,6 +62,22 @@
 #include	"rfl.h"	
 #include	<bl.h>	
 
+static VOID    ItemSalesAdjustItemizers(ITEMGENERICHEADER* pItem)
+{
+	if (pItem->uchMajorClass == CLASS_ITEMTENDER) {
+		DCURRENCY        lGratuitySave;
+		ITEMTENDER* pItemTender = (ITEMTENDER*)pItem;
+		ITEMCOMMONLOCAL* pItemCommonLocal = ItemCommonGetLocalPointer();
+
+		TrnInformation.TranItemizers.lMI += pItemTender->lGratuity;       /* main itemizer */
+		pItemCommonLocal->lChargeTip += pItemTender->lGratuity;
+		lGratuitySave = pItemCommonLocal->ReturnsTenderChargeTips.lGratuity;
+		pItemCommonLocal->ReturnsTenderChargeTips = ITEMTENDER_CHARGETIPS(pItemTender);
+		pItemCommonLocal->ReturnsTenderChargeTips.lGratuity += lGratuitySave;
+		memcpy(pItemCommonLocal->aszCardLabelReturnsTenderChargeTips, pItemTender->aszCPMsgText[NUM_CPRSPCO_CARDLABEL], sizeof(pItemCommonLocal->aszCardLabelReturnsTenderChargeTips));
+	}
+}
+
 /*
 *===========================================================================
 **Synopsis: SHORT   ItemSalesCursorVoid(ITEMDISC *pData);
@@ -361,7 +377,7 @@ SHORT   ItemSTenderCursorVoidReturns(ITEMTENDER *pItemTender)
 	}
 #endif
 
-	TrnSalesAdjustItemizers ((ITEMGENERICHEADER *)pItemTender);
+	ItemSalesAdjustItemizers ((ITEMGENERICHEADER *)pItemTender);
 	ItemCommonDispSubTotal(pItemTender);
 
 	MldScrollWrite(pItemTender, MLD_NEW_ITEMIZE);

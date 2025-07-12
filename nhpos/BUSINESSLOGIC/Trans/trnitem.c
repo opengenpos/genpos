@@ -80,7 +80,6 @@
 #include    "pif.h"
 #include    "csetk.h"
 #include    "uireg.h"
-#include    "../item/include/itmlocal.h"
 
 
 /*==========================================================================
@@ -327,22 +326,6 @@ VOID    TrnSalesDept(CONST ITEMSALES *ItemSales )
     }
 }
 
-VOID    TrnSalesAdjustItemizers ( ITEMGENERICHEADER *pItem )
-{
-	if (pItem->uchMajorClass == CLASS_ITEMTENDER) {
-		DCURRENCY        lGratuitySave;
-		ITEMTENDER       *pItemTender = (ITEMTENDER *)pItem;
-		ITEMCOMMONLOCAL  *pItemCommonLocal = ItemCommonGetLocalPointer();
-
-		TrnInformation.TranItemizers.lMI += pItemTender->lGratuity;       /* main itemizer */
-		pItemCommonLocal->lChargeTip += pItemTender->lGratuity;
-		lGratuitySave = pItemCommonLocal->ReturnsTenderChargeTips.lGratuity;
-		pItemCommonLocal->ReturnsTenderChargeTips = ITEMTENDER_CHARGETIPS(pItemTender);
-		pItemCommonLocal->ReturnsTenderChargeTips.lGratuity += lGratuitySave;
-		memcpy (pItemCommonLocal->aszCardLabelReturnsTenderChargeTips, pItemTender->aszCPMsgText[NUM_CPRSPCO_CARDLABEL], sizeof(pItemCommonLocal->aszCardLabelReturnsTenderChargeTips));
-	}
-}
-
 /*==========================================================================
 **   Synopsis:  SHORT   TrnQTY( ITEMSALES *ItemSales )
 *
@@ -374,7 +357,7 @@ SHORT    TrnQTY( CONST ITEMSALES *ItemSales )
             sCount = 1;                           /* scalable item */
         }
 	} else {
-		sCount = ( SHORT )( ItemSales->lQTY / ITM_SL_QTY );
+		sCount = ( SHORT )( ItemSales->lQTY / PLU_BASE_UNIT);
 	}
 
     return( sCount );
