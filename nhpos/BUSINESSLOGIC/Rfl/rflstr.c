@@ -383,6 +383,19 @@ TCHAR * tcharncpy (TCHAR *tcDest, CONST TCHAR *tcSource, size_t count)
 	return(start);
 }
 
+// truncate a TCHAR string after count number of characters.
+TCHAR* tcharntrunc(TCHAR* tcDest, size_t count)
+{
+	TCHAR* start = tcDest;
+
+	NHPOS_ASSERT(count < MAX_COUNT_ASSERT);
+
+	tcDest[count] = 0;
+
+	return(start);
+}
+
+
 USHORT tcharlen(CONST TCHAR *tcSource)
 {
 	CONST TCHAR *start = tcSource;

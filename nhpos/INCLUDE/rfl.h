@@ -378,13 +378,12 @@ USHORT RflSPrintf(TCHAR *pszDest, USHORT usDestLen, const TCHAR FAR *pszFormat, 
 #endif
 USHORT  RflStrAdjust(TCHAR *pszDest,  USHORT usDestLen, TCHAR *pszSource, USHORT usMaxColumn, BOOL fAutoFeed); /* adjust ASCII string :RflStr.c */
 
-// sets the first count TCHAR characters of string to be val.
-TCHAR * tcharnset(TCHAR* string, TCHAR val, size_t count);
-// copies count TCHAR characters from tcSource to tcDest ignoring any end of string characters.
-TCHAR * tcharncpy (TCHAR *tcDest, CONST TCHAR *tcSource, size_t count);
-USHORT tcharlen(CONST TCHAR *tcSource);
-TCHAR *tcharTrimLeading (TCHAR  *tcString);
-TCHAR *tcharTrimRight (TCHAR  *tcString);
+TCHAR * tcharnset(TCHAR* string, TCHAR val, size_t count);   // sets the first count TCHAR characters of string to be val. ignores end of string. doesn't terminate string.
+TCHAR * tcharncpy (TCHAR *tcDest, CONST TCHAR *tcSource, size_t count);   // copies count TCHAR characters from tcSource to tcDest ignoring any end of string characters. doesn't terminate string.
+USHORT tcharlen(CONST TCHAR *tcSource);             // count number of characters in the string from beginning to end of string.
+TCHAR *tcharTrimLeading (TCHAR  *tcString);         // remove leading blanks or space characters respecting end of string. if all spaces then empty string returned.
+TCHAR *tcharTrimRight (TCHAR  *tcString);           // trim trailing blanks or space characters respecting end of string.
+TCHAR* tcharntrunc(TCHAR* tcDest, size_t count);    // truncate string placing end of string at tcDest[count] keeping count characters. ignores end of string.
 
 VOID   RflConv3bto4b(ULONG *ulPrice, CONST UCHAR auchPrice[MAX_PLUPRICE_SIZE]);
 ULONG  RflFunc3bto4b(CONST UCHAR auchPrice[MAX_PLUPRICE_SIZE]);
@@ -398,15 +397,17 @@ USHORT RflGetScaleUnits(VOID);
 USHORT RflGetSetDecimalCommaType (VOID);
 USHORT RflGetNoTermsInCluster (VOID);
 RflStoreRegNo RflGetStoreRegisterNo(VOID);
+ULONG  RflCombineStoreRegisterNo(RflStoreRegNo StRegNoRcvBuff);
 UCHAR  RflGetMdcData(USHORT usAddr);
 int    RflIsSpecialPlu (CONST TCHAR *auchPLUNo, CONST TCHAR *auchMldSpecialPlu);
 TCHAR *RflCopyPlu (TCHAR *auchPluNoDest, CONST TCHAR *auchPluNoSrc);
 int    RflChkSpecialPluRange (CONST TCHAR *auchPLUNo, CONST TCHAR *auchMldSpecialPluLow, CONST TCHAR *auchMldSpecialPluHigh);
 int    RflChkIfNoDisplayRange (CONST TCHAR *auchPLUNo);
+int    RflChkIfDummyPlu(CONST TCHAR* auchPLUNo);
 USHORT RflGetStorageItemClassLen (CONST VOID *pItemData);               /* RflGetIt.c */
 USHORT RflGetStorageTranRecordItemClassLen (CONST VOID *pTranRecData);  /* RflGetIt.c */
 USHORT RflGetStorageTranRecordLen (CONST VOID *pTranRecData);           /* RflGetIt.c */
-USHORT RflGetStorageItem(VOID *pDest, CONST VOID *pSource, SHORT sType);      /* RflGetIt.c */
+USHORT RflGetStorageItem(VOID *pDest, CONST VOID *pSource, SHORT sType);      /* convert from compressed to uncompressed. pDest usually ITEMDATASIZEUNION. RflGetIt.c */
 USHORT RflGetStorageItemRequire(UCHAR uchMajorClass, VOID *pDest, CONST VOID *pSource, SHORT sType);
 TCHAR *RflD13ToDecimalStr(D13DIGITS *, TCHAR *);
 

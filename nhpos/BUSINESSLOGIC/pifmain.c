@@ -4039,6 +4039,10 @@ RflStoreRegNo RflGetStoreRegisterNo(VOID)
 	return myData;
 }
 
+ULONG  RflCombineStoreRegisterNo(RflStoreRegNo StRegNoRcvBuff)
+{
+	return (ULONG)StRegNoRcvBuff.usStoreNo * 1000L + (ULONG)StRegNoRcvBuff.usRegNo;
+}
 /*
 *===========================================================================
 ** Format  : UCHAR  RflGetMdcData (USHORT usAddr);

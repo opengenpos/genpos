@@ -210,6 +210,30 @@ int RflChkIfNoDisplayRange (CONST TCHAR *auchPLUNo)
 
 /*
 *===========================================================================
+** Format  : int  RflChkIfDummyPlu (TCHAR *auchPLUNo;
+*
+*   Output :
+*    Input : TCHAR    auchPLUNo              - 14 digit PLU number
+*    InOut : none
+** Return  : int       commparison result against MLD_NO_DISP_PLU_DUMMY
+*                      = 0 - auchPLUNo is not the auchDummy value so probably valid PLU Number
+*                      = 1 - auchPLUNo is the auchDummy value so end of the collection.
+*
+** Synopsis: Check that a PLU number is auchDummy or MLD_NO_DISP_PLU_DUMMY.
+*            A comparison of a PLU number against auchDummy is often used to
+*            to determine if iterating over a collection of PLU Numbers has
+*            reached the end of the collection or not. auchDummy is an invalid
+*            PLU Number value often used to mark the end of a collection.
+*===========================================================================
+*/
+int RflChkIfDummyPlu(CONST TCHAR* auchPLUNo)
+{
+	return (_tcsncmp(auchPLUNo, MLD_NO_DISP_PLU_DUMMY, NUM_PLU_LEN) == 0);
+}
+
+
+/*
+*===========================================================================
 ** Format  : VOID  RflGetPLUMnemo(UCHAR  *pszPLUMnem, USHORT  usPLUNo );
 *
 *   Output : UCHAR     *pszPLUMnem  -plu mnemonics
@@ -670,7 +694,7 @@ static VOID RflGetCouponItem( UCHAR *puchDest, CONST UCHAR *puchSource, SHORT sT
 *        WARNING: There are many places in the source code which assume that an ITEMSALES struct
 *                 is the largest, in terms of number of bytes of memory used, of any of the 
 *                 item type structs (ITEMSALES, ITEMTENDER, ITEMDISC, etc.) however this
-*                 may not always be the case.
+*                 may not always be the case. Use struct ITEMDATASIZEUNION instead.
 *===========================================================================
 */
 USHORT RflGetStorageItem(VOID *pDest, CONST VOID *pSource, SHORT sType)
