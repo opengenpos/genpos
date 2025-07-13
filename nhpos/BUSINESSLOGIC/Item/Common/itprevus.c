@@ -57,6 +57,7 @@
 
 static SHORT (*pComp)(VOID *pKey, VOID *pusHPoint) = ItemPModCompare;    /* Add R3.0 */
 
+static USLDTERR ItemSalesMoveCondiment(ITEMSALES* ItemSales, USHORT usCondNumber, USHORT usType); //SR 192 JHHJ
 
 /*
 *===========================================================================
@@ -80,6 +81,8 @@ static USHORT ItemSalesVoidCondiment(ITEMSALES *pItemSales, USHORT usCondNumber)
 		USHORT     usCount;
 		USHORT     usMaxChild = ( pItemSales->uchChildNo + pItemSales->uchCondNo + pItemSales->uchPrintModNo );
 		ITEMSALES  CondimentWorkArea = {0};
+
+		NHPOS_ASSERT(usMaxChild < STD_MAX_COND_NUM);
 
 		//Assign ItemSales so we can do some amount calculation
 		CondimentWorkArea.uchMajorClass = pItemSales->uchMajorClass;	
@@ -333,7 +336,7 @@ SHORT   ItemPreviousItemClearStore (SHORT bClearStore, VOID *pReceiveItem, USHOR
 	USHORT			usCondNumber = 0, usScroll = 0, usRetFlag = FALSE;
 
     /*----- POINTER OF CURRENT ITEM IS 0 (Total or Tender Key Used) -----*/
-    if (pCurrentItem == 0 || pCurrentItem->uchMajorClass == 0) {
+    if (pCurrentItem == 0 || usTempBuffSize == 0 || pCurrentItem->uchMajorClass == 0) {
 		return ItemPreviousItemItemCommonLocal (bClearStore);
 	}
     
@@ -1128,7 +1131,7 @@ SHORT   ItemPrevSendSales(VOID)
 			{
                 sQty = 1;
             } else {
-                sQty = (SHORT)(Sales.lQTY / 1000L);
+                sQty = (SHORT)(Sales.lQTY / PLU_BASE_UNIT);
             }
             Sales.fbModifier &= ~VOID_MODIFIER;
 
@@ -1826,7 +1829,7 @@ USHORT ItemPreviousCondiment(ITEMCOND *pCondimentData, USHORT usType)
 					{
 						sQty = 1;
 					} else {
-						sQty = (SHORT)(ItemSales.lQTY / 1000L);
+						sQty = (SHORT)(ItemSales.lQTY / PLU_BASE_UNIT);
 					}
 				}
 
@@ -1998,7 +2001,7 @@ USHORT ItemPreviousCondiment(ITEMCOND *pCondimentData, USHORT usType)
 *				and move the item that is currently in that one out of the way.
 *===========================================================================
 */
-static USHORT ItemSalesMoveCondiment(ITEMSALES *pItemSales,USHORT usCondNumber,USHORT usType)
+static USLDTERR ItemSalesMoveCondiment(ITEMSALES *pItemSales,USHORT usCondNumber,USHORT usType)
 {
 	ITEMCOND	CondimentHolder = {0};
 
@@ -2036,33 +2039,39 @@ static USHORT ItemSalesMoveCondiment(ITEMSALES *pItemSales,USHORT usCondNumber,U
 			}
 			break;
 		case MLD_CURSOR_CHANGE_DOWN:
-			if((usCondNumber <= STD_MAX_COND_NUM) &&(usCondNumber >= 1))
+			// if the condiment cursor is on the last item then no place to move it down.
+			if((usCondNumber < STD_MAX_COND_NUM) &&(usCondNumber >= 1))
 			{
+				//We are using a zero based array, so we subtract by one
+				usCondNumber--;
+
 				//check to see if there is any data below the condiment,
 				//if not, we return prohibited, because this is the last caondiment
-				if(pItemSales->Condiment[usCondNumber].auchPLUNo[0])
+				if(pItemSales->Condiment[usCondNumber + 1].auchPLUNo[0])
 				{
 
 					//move the condiment that is in the spot we want to move down into a holder
 					CondimentHolder = pItemSales->Condiment[usCondNumber];
-					//move the item we are asking to move up, into the appropriate location
-					pItemSales->Condiment[usCondNumber] = pItemSales->Condiment[usCondNumber-1];
+					//move the item below it to this location to provide a place for the swap
+					pItemSales->Condiment[usCondNumber] = pItemSales->Condiment[usCondNumber + 1];
 					//restore the condiment to its new location
-					pItemSales->Condiment[usCondNumber-1] = CondimentHolder;
+					pItemSales->Condiment[usCondNumber + 1] = CondimentHolder;
 
 					//Do the same thing for the ItemCommonLocal, which is the saved variable
 					//move the condiment that is in the spot we want to move down into a holder
 					CondimentHolder = ItemCommonLocal.ItemSales.Condiment[usCondNumber];
-					//move the item we are asking to move up, into the appropriate location
-					ItemCommonLocal.ItemSales.Condiment[usCondNumber] = ItemCommonLocal.ItemSales.Condiment[usCondNumber-1];
-					//restore the condiment to its new location
-					ItemCommonLocal.ItemSales.Condiment[usCondNumber-1] = CondimentHolder;
+					//move the item in the slot we want to use to this slot for the swap.
+					ItemCommonLocal.ItemSales.Condiment[usCondNumber] = ItemCommonLocal.ItemSales.Condiment[usCondNumber + 1];
+					//put the condiment to its new location
+					ItemCommonLocal.ItemSales.Condiment[usCondNumber + 1] = CondimentHolder;
 				} else
 				{
+					NHPOS_ASSERT_TEXT(0, "ItemSalesMoveCondiment(): No condiment below.");
 					return LDT_PROHBT_ADR;
 				}
 			} else
 			{
+				NHPOS_ASSERT_TEXT(0, "ItemSalesMoveCondiment(): Condiment Number out of range.");
 				return LDT_PROHBT_ADR;
 			}
 			break;
