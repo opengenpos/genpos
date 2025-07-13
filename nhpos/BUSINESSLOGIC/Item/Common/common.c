@@ -511,6 +511,7 @@ VOID    ItemCountCons( VOID )
 {
 	TRANGCFQUAL    *TranGCFQualWrk = TrnGetGCFQualPtr();
 	TRANCURQUAL    *pCurQualRcvBuff = TrnGetCurQualPtr();
+    RflStoreRegNo   StRegNoRcvBuff = RflGetStoreRegisterNo();
 
     if (ItemCommonLocal.fbCommonStatus & COMMON_CONSNO) {
 		NHPOS_ASSERT_TEXT((TranGCFQualWrk->usConsNo), "(ItemCommonLocal.fbCommonStatus & COMMON_CONSNO)");
@@ -519,16 +520,9 @@ VOID    ItemCountCons( VOID )
 
     /* check whether consectine No. already counted up or not */
     if (!(ItemCommonLocal.fbCommonStatus & COMMON_CONSNO)) {  /* consecutive No isn't counted up yet so we need to increment */
-		ULONG          ulStoreRegNo;
-		PARASTOREGNO   StRegNoRcvBuff; 
-		USHORT         usCounter = MaintIncreSpcCo(SPCO_CONSEC_ADR);         /* increment the consective No. and gets its new value */
+		ULONG          ulStoreRegNo = RflCombineStoreRegisterNo(StRegNoRcvBuff);
+        USHORT         usCounter = MaintIncreSpcCo(SPCO_CONSEC_ADR);         /* increment the consective No. and gets its new value */
 
-        StRegNoRcvBuff.uchMajorClass = CLASS_PARASTOREGNO;    /* get store/ reg No. */
-        StRegNoRcvBuff.uchAddress = SREG_NO_ADR;
-        CliParaRead(&StRegNoRcvBuff);
-        
-        ulStoreRegNo = (ULONG) StRegNoRcvBuff.usStoreNo * 1000L + (ULONG) StRegNoRcvBuff.usRegisterNo;
-        
         TranGCFQualWrk->usConsNo = pCurQualRcvBuff->usConsNo = usCounter;                /* set the consecutive No. in memory resident data */
         TranGCFQualWrk->ulStoreregNo = pCurQualRcvBuff->ulStoreregNo = ulStoreRegNo;     /* set store/ reg. No. in memory resident data */
 		TranGCFQualWrk->uchHourlyOffset = (UCHAR)ItemTendGetOffset();                    /* set the hourly total block offset for the guest check */
@@ -570,7 +564,7 @@ VOID    ItemCountCons( VOID )
 			//    5 digit compressed date
 			//    5 digit compressed time
 			//    2 digit tender id which is set to zero initially
-			sprintf (auchTempBuf, "%4.4d%3.3d%4.4d%5.5d%5.5d00", (StRegNoRcvBuff.usStoreNo % 10000), (StRegNoRcvBuff.usRegisterNo % 1000),
+			sprintf (auchTempBuf, "%4.4d%3.3d%4.4d%5.5d%5.5d00", (StRegNoRcvBuff.usStoreNo % 10000), (StRegNoRcvBuff.usRegNo % 1000),
 						(usCounter % 10000), ulCombinedDate, ulCombinedTime);
 
 			memset(TranGCFQualWrk->uchUniqueIdentifier, 0, sizeof(TranGCFQualWrk->uchUniqueIdentifier));
@@ -2987,7 +2981,7 @@ VOID    ItemCommonCheckEndorse(UCHAR uchMinorClass,
 *===========================================================================
 */
 
-SHORT ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmount)
+USLDTERR ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmount)
 {
     D13DIGITS d13Work;
     SHORT     fsReverse = 0;
@@ -3002,7 +2996,7 @@ SHORT ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmoun
         d13Work = lQty;
 		d13Work *= lUnitPrice;
 
-        if (lQty % 1000L) {
+        if (lQty % PLU_BASE_UNIT) {
             /* --- decimal point used --- */
             /* --- under 1 digits of decimal point for rounding --- */
             d13Work /= 100L;
@@ -3018,7 +3012,7 @@ SHORT ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmoun
              }
         } else {
             /* --- decimal point not used --- */
-            d13Work /= 1000L;
+            d13Work /= PLU_BASE_UNIT;
 
             /* --- check overflow --- */
 			if (d13Work > STD_MAX_TOTAL_AMT || d13Work < - STD_MAX_TOTAL_AMT) {    /* Change for R2.0 */   /* Added 97/5/22 by Y.Sakuma */
@@ -3031,15 +3025,15 @@ SHORT ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmoun
 		LONG       lQtyWork;
 		D13DIGITS  d13Pack;      /* --- Unit price x no. of pack --- */
 
-        lQtyWork = lQty / (usFor * 1000L);
-        lQty = lQty - (lQtyWork * usFor * 1000L);
+        lQtyWork = lQty / (usFor * PLU_BASE_UNIT);
+        lQty = lQty - (lQtyWork * usFor * PLU_BASE_UNIT);
 
         /* --- Unit price x no. of pack --- */
         d13Pack = lQtyWork;
 		d13Pack *= lUnitPrice;
 
         if (1 //CliParaMDCCheck(MDC_FOR_ADR, ODD_MDC_BIT2) //cwunn SR 143 @/For Key
-         || (lQty % 1000L)) {
+         || (lQty % PLU_BASE_UNIT)) {
             /* --- ROUNDING-UP PACKAGE PRICE --- */
             /* --- calcurate Unit Price x Qty / For --- */
             d13Work = lQty;
@@ -3048,7 +3042,7 @@ SHORT ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmoun
 
             /* --- rounding and adjust decimal point --- */
             d13Work += 500L; /*900L*/; //SR281 ESMITH
-            d13Work /= 1000L;
+            d13Work /= PLU_BASE_UNIT;
         } else {
 			D13DIGITS   d13Remain;
 
@@ -3056,8 +3050,8 @@ SHORT ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmoun
             d13Work = lQty;
 			d13Work *= lUnitPrice;
 			d13Remain = d13Work;
-            d13Work /= (D13DIGITS)usFor * 1000L;
-			d13Remain -= d13Work * (D13DIGITS)usFor * 1000L;
+            d13Work /= (D13DIGITS)usFor * PLU_BASE_UNIT;
+			d13Remain -= d13Work * (D13DIGITS)usFor * PLU_BASE_UNIT;
 
             if (d13Remain) {
 				LONG    lWork;
@@ -3071,7 +3065,7 @@ SHORT ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmoun
                 /* --- x  Qty  and adjust decimal point --- */
                 d13Work = lQty;
 				d13Work *= lWork;
-                d13Work /= 1000L;
+                d13Work /= PLU_BASE_UNIT;
             }
         }
 

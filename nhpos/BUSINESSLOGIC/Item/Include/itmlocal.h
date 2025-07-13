@@ -1459,7 +1459,7 @@ SHORT   ItemCommonCheckNonGCTrans( VOID );
 SHORT   ItemCommonCheckCashDrawerOpen (VOID);
 SHORT   ItemCommonCheckCloseCheck( VOID );
 VOID    ItemCommonCheckEndorse(UCHAR uchMinorClass, DCURRENCY lAmount, DCURRENCY lSalesAmount, SHORT *psFlag);    /* DTREE#2 */
-SHORT   ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmount); //SR 143 cwunn @/For key
+USLDTERR  ItemCalAmount(LONG lQty, USHORT usFor, LONG lUnitPrice, DCURRENCY *plAmount); //SR 143 cwunn @/For key
 
 SHORT   ItemCurTaxSpl(CONST UCHAR *puchTotal, ITEMCOMMONTAX *WorkTax);
 VOID    ItemCurTaxWorkSpl(CONST UCHAR *puchTotal, ITEMCOMMONTAX *WorkTax);
@@ -1531,7 +1531,6 @@ VOID   ItemMiscResetStatus( USHORT usStatusBit );
 VOID   ItemMiscSetNonGCStatus( VOID );
 
 USHORT ItemPreviousCondiment(ITEMCOND *CondimentData, USHORT usAffect); //SR 192 JHHJ
-USHORT ItemSalesMoveCondiment(ITEMSALES *ItemSales,USHORT usCondNumber,USHORT usType); //SR 192 JHHJ
 
 /*
 *===========================================================================
