@@ -105,13 +105,13 @@
 
 
 typedef struct {
-    UCHAR   uchSTX;
+    UCHAR   uchSTX;                 /* start of transmission character goes here. */
     TCHAR   aszVLI[3];
     TCHAR   aszLineNo[2];
     TCHAR   aszTermAdr[2];
     TCHAR   aszConsNo[4];
     UCHAR   auchItemType[2];
-    UCHAR   auchCRTNo[2];               /* R3.1 */
+    UCHAR   auchCRTNo[2];           /* R3.1, [0] hex digit representing CRT #1 - 4 mask, [1] hex digit representing CRT#5 - #8 mask */
     UCHAR   uchFrameType;
     UCHAR   uchDflMsgSeqNo;         /* DFL msg sequence #, add FVT R3.1 */
 } DFLINF;

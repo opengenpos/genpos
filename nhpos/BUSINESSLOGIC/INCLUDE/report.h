@@ -399,7 +399,7 @@ extern    UCHAR   uchRptOpeCount;
        UCHAR  uchMajorClass;                            /* Major Class Data Ddefinition */
        UCHAR  uchMinorClass;                            /* Minor Class Data Ddefinition */
        TCHAR  aszTransMnemo[PARA_TRANSMNEMO_LEN+1];     /* Transaction Mnemonics */
-       ULONG  ulCashierNumber;                          /* Cashier Number */
+       ULONG  ulCashierNumber;                          /* Cashier Number or Terminal Number if uchMinorClass == CLASS_RPTCASHIER_TERMINAL  */
        TCHAR  aszCashMnemo[PARA_CASHIER_LEN+1];         /* Cashier Mnemonics */
        N_DATE   Date;                                     /* Preiod Date */
        D13DIGITS Total13D;                              /* 13 Digit Total */

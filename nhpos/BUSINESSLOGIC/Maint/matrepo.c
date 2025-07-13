@@ -78,20 +78,16 @@
 
 SHORT MaintReportNameRead( PARAREPORTNAME *pData )
 {
-
     UCHAR uchAddress;
 
     /* initialize */
-
 /*    memset(MaintWork.ReportName.aszMnemonics, '\0', PARA_REPORTNAME_LEN+1); */
 
     /* check status */
-
     if(pData->uchStatus & MAINT_WITHOUT_DATA) {                 /* without data */
         uchAddress = ++MaintWork.ReportName.uchAddress;
 
         /* check address */
-
         if (uchAddress > RPT_ADR_MAX) {                   
             uchAddress = 1;                                     /* initialize address */
         }
@@ -100,7 +96,6 @@ SHORT MaintReportNameRead( PARAREPORTNAME *pData )
     }        
 
     /* check address */
-
     if (uchAddress < 1 || RPT_ADR_MAX < uchAddress) {
         return(LDT_KEYOVER_ADR);                                /* wrong data */
     }
@@ -128,32 +123,25 @@ SHORT MaintReportNameRead( PARAREPORTNAME *pData )
 
 SHORT MaintReportNameWrite( PARAREPORTNAME *pData )
 {
-
     /* check status */
-
     if (pData->uchStatus & MAINT_WITHOUT_DATA) {                /* without data */
         return(LDT_SEQERR_ADR);                                 /* sequence error */
     }
 
     _tcsncpy(MaintWork.ReportName.aszMnemonics, pData->aszMnemonics, PARA_REPORTNAME_LEN);
-    //memcpy(MaintWork.ReportName.aszMnemonics, pData->aszMnemonics, PARA_REPORTNAME_LEN);
     CliParaWrite(&(MaintWork.ReportName));                      /* call ParaReportNameWrite() */
 
     /* control header item */
-
     MaintHeaderCtl(PG_RPT_NAME, RPT_PRG_ADR);
 
     /* set journal bit & receipt bit */
-
     MaintWork.ReportName.usPrintControl = ( PRT_JOURNAL | PRT_RECEIPT );
     PrtPrintItem(NULL, &(MaintWork.ReportName));
 
     /* set address for Display next address */
-
     MaintWork.ReportName.uchAddress++;
 
     /* check address */
-
     if (MaintWork.ReportName.uchAddress > RPT_ADR_MAX) {
         MaintWork.ReportName.uchAddress = 1;                    /* initialize address */
     }
@@ -177,32 +165,20 @@ SHORT MaintReportNameWrite( PARAREPORTNAME *pData )
 
 VOID MaintReportNameReport( VOID )
 {
-
-    UCHAR           i;
-    PARAREPORTNAME  ParaReportName;
-
-    /* initialize */
-
-/*    memset(ParaReportName.aszMnemonics, '\0', PARA_REPORTNAME_LEN+1); */
+    PARAREPORTNAME  ParaReportName = { 0 };
 
     /* control header */
-
     MaintHeaderCtl(PG_RPT_NAME, RPT_PRG_ADR);
 
     /* set major class */
-
     ParaReportName.uchMajorClass = CLASS_PARAREPORTNAME;
 
     /* set journal bit & receipt bit */
-
     ParaReportName.usPrintControl = ( PRT_JOURNAL | PRT_RECEIPT );
 
     /* set data at every address */
-
-    for (i = 1; i <= RPT_ADR_MAX; i++) {
-
+    for (UCHAR i = 1; i <= RPT_ADR_MAX; i++) {
         /* check abort key */
-
         if (UieReadAbortKey() == UIE_ENABLE) {                  /* depress abort key */
             MaintMakeAbortKey();
             break;
@@ -213,6 +189,5 @@ VOID MaintReportNameReport( VOID )
     }
 
     /* make trailer */
-
     MaintMakeTrailer(CLASS_MAINTTRAILER_PRTPRG);
 }
