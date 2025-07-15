@@ -63,6 +63,11 @@
 
 #ifndef _INC_PARA
 #define _INC_PARA
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 #if     (defined(_WIN32_WCE) || defined(WIN32)) && _MSC_VER >= 800
 #pragma pack(push, 1)
 #else

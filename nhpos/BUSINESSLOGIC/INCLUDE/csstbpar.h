@@ -35,6 +35,16 @@
 :    $Log$
 \*-----------------------------------------------------------------------*/
 
+#if !defined(CSSTBPAR_H_INCLUDED)
+
+#define CSSTBPAR_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#include <para.h>
+
 /*
 ===========================================================================
     DEFINE
@@ -73,5 +83,7 @@ VOID    CliParaMenuPLUWrite(UCHAR type, PARAMENUPLUTBL *pData);
 VOID    CliParaOepRead( PARAOEPTBL *pData );
 VOID    CliParaOepWrite( PARAOEPTBL *pData );
 VOID	CliParaSaveFarData(VOID);
+
+#endif
 
 /*===== END OF DEFINITION =====*/

@@ -43,6 +43,12 @@
 #if !defined(CSSTBOPR_H_INCLUDED)
 #define  CSSTBOPR_H_INCLUDED
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#include <csop.h>     // provides definitions for data structs used in function prototypes below.
+
 /*
 ===========================================================================
     DEFINE

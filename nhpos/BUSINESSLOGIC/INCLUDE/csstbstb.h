@@ -46,7 +46,13 @@
 *--------------------------------------------------------------------------
 */
 #if !defined(CSSTBSTB_H_INCLUDED)
+
 #define CSSTBSTB_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 
 #include <paraequ.h>
 #include <para.h>

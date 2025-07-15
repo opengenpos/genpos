@@ -26,7 +26,15 @@
 */
 
 #if !defined(EEPT_H_INCLUDED)
+
 #define EEPT_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+
+#include "regstrct.h"
 
 /* tally required type,	Saratoga */
 #define EPT_TALLY_READ                  1       /* read tally */
@@ -154,8 +162,6 @@ extern "C"{
 #else
 #pragma pack(1)
 #endif
-
-#include "regstrct.h"
 
 #define EEPTREQDATA_FLAGS_RETURN        0x01
 #define EEPTREQDATA_FLAGS_VOIDRETURN    0x02

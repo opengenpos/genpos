@@ -32,21 +32,22 @@
 :    $Author$
 :    $Log$
 \*------------------------------------------------------------------------*/
-#if !defined(CSSTBFCC_INCLUDED)
+
+#if !defined(PARARAM_H_INCLUDED)
+
+#define PARARAM_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+
+#include <paraequ.h>
+#include <para.h>
 #include <csstbfcc.h>
-#endif
-
-#if !defined(CPM_INCLUDED)
 #include <cpm.h>
-#endif
-
-#if !defined(EPT_INCLUDED)
 #include <eept.h>
-#endif
-
-#if !defined(CSTTL_INCLUDED)
 #include <csttl.h>
-#endif
 
 /*------------------------------------------------------------------------*\
 
@@ -230,5 +231,7 @@ extern UNINIRAM UNINT ParaDefault;                          /* Default, initiali
 #define TtlUphDBdata      (Para.TtlUphDBdata)
 
 #define uchMaintDelayBalanceFlag (Para.uchMaintDelayBalanceFlag)
+
+#endif
 
 /****** End of Definition ******/

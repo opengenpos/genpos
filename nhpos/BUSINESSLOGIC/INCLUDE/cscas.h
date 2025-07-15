@@ -35,14 +35,22 @@
 :    $Log$
 \*-----------------------------------------------------------------------*/
 
+#if !defined(CSCAS_H_INCLUDED)
+
+#define CSCAS_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#include <paraequ.h>
+#include <para.h>
+
 /*
 ===========================================================================
     DEFINE
 ===========================================================================
 */
-
-#include <paraequ.h>
-#include <para.h>
 
 //  See also defines in file csstbfcc.h which defines CLI_ values
 #define CAS_NUMBER_OF_MAX_CASHIER  300          /* number of cashier (max) */
@@ -286,4 +294,5 @@ SHORT SerOpClearOperatorMessageStatusTable (ULONG ulIndicator);
 LONG SerOpSetOperatorMessageStatusTable (USHORT usTerminalNo, USHORT usFlags);
 LONG SerOpGetOperatorMessageStatusTable (USHORT usTerminalNo, ULONG *pulStatus);
 
+#endif
 /*======= End of Define ========*/

@@ -47,6 +47,16 @@
 :    $Author$
 :    $Log$
 \*------------------------------------------------------------------------*/
+
+#if !defined(REPORT_H_INCLUDED)
+
+#define REPORT_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+
 /**
 ==============================================================================
 ;                      I N C L U D E     F I L E s                         
@@ -830,4 +840,7 @@ SHORT RptServicePTDReset( UCHAR uchFunc);
 SHORT RptServiceReset( UCHAR uchMinorClass, UCHAR uchFunc);
 SHORT RptServiceLock( VOID );
 VOID  RptServiceUnLock( VOID );
+
+#endif
+
 /* --- End of Header File --- */

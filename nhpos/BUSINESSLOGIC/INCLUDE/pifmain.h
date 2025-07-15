@@ -39,6 +39,11 @@
 
 #define PIFMAIN_H_INCLUDED 1
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+
 #include    "uie.h"
 
 /*

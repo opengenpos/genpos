@@ -41,6 +41,24 @@
 #ifndef PRT_H_HEADER_INCLUDE
 #define PRT_H_HEADER_INCLUDE
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+
+#include <regstrct.h>
+#include <transact.h>
+
+#if defined PRINTER_RJ
+/* include for function name change for RJ */
+#include "PRTRJ.H"
+#endif
+
+#if defined PRINTER_THERMAL
+/* include for function name change for Thermal */
+#include "PRTTherm.H"   
+#endif
+
 /**
 ;========================================================================
             D E F I N E    D E C L A R A T I O N s                        
@@ -58,15 +76,6 @@
 ;+          P R O T O T Y P E    D E C L A R A T I O N s 
 ;========================================================================
 **/
-#if defined PRINTER_RJ
-/* include for function name change for RJ */
-#include "PRTRJ.H"
-#endif
-
-#if defined PRINTER_THERMAL
-/* include for function name change for Thermal */
-#include "PRTTherm.H"   
-#endif
 
 #if defined PRINTER_MAIN
 

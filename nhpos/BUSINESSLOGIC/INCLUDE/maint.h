@@ -90,6 +90,16 @@
 :    $Log$
 \*------------------------------------------------------------------------*/
 
+#if !defined(MAINT_H_INCLUDED)
+
+#define MAINT_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#include <paraequ.h>
+#include <para.h>
 #include <regstrct.h>
 
 #include "csetk.h"
@@ -1551,5 +1561,7 @@ SHORT maintCheckDataLength(PARAUNLOCKNO *UnlockInfo);
 SHORT   MaintOptimizePLUDB(VOID);
 
 SHORT   ItemMiscLoanPickup (MAINTLOANPICKUP  *pLoanPickupData);
+
+#endif
 
 /* --- End of Header --- */

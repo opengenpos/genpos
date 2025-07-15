@@ -35,6 +35,16 @@
 :    $Log$
 \*-----------------------------------------------------------------------*/
 
+#if !defined(CSSTBGCF_H_INCLUDED)
+
+#define CSSTBGCF_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#include "csgcs.h"
+
 /*
 ===========================================================================
     DEFINE
@@ -50,7 +60,6 @@
     PROTOTYPE
 ===========================================================================
 */
-#include "csgcs.h"
 
 typedef struct {
 	GCNUM    usGCNO;                 /* Guest Check No */
@@ -149,4 +158,5 @@ SHORT    SerGusAllIdReadBW(USHORT usType, ULONG  ulWaiterNo, USHORT *pusRcvBuffe
 SHORT	SerGusReadAllLockedGCN(USHORT *pusRcvBuffer, USHORT usSize);
 SHORT   SerGusResetDeliveryQueue(VOID);                          /* R3.0 */
 
+#endif
 /*===== END OF SOURCE =====*/
