@@ -50,24 +50,12 @@
 ;=============================================================================
 */
 #include	<tchar.h>
+
 #include <ecr.h>
 #include <uie.h>
-#include <paraequ.h>
-#include <para.h>
-#include <maint.h>
-#include <csstbpar.h>
-#include <regstrct.h>
-#include <transact.h>
-#include <csttl.h>
-#include <csop.h>
 #include <csstbopr.h>
-#include <report.h>
-#include <prt.h>
 #include <mld.h>
 #include <mldsup.h>
-#include <plu.h>
-#include <csstbfcc.h>
-#include <csstbept.h>
 #include <mldmenu.h>
 
 /*
@@ -101,7 +89,7 @@ SHORT MldDispItem(VOID *pItem, USHORT usStatus)
 {
     SHORT sReturn = MLD_SUCCESS;    /* aborted status in reporting */
 
-    switch ( ((MLDITEMDATA *)pItem)->uchMajorClass ) {
+    switch ( ((ITEMCLASSHEADER *)pItem)->uchMajorClass ) {
 
     case CLASS_MAINTHEADER:
         MldRptSupHeader(( MAINTHEADER *)pItem);
@@ -248,14 +236,16 @@ SHORT MldDispItem(VOID *pItem, USHORT usStatus)
 */
 UCHAR  UifACPGMLDDispCom(CONST MLDMENU * * pForm) 
 {
-    static TCHAR FAR    aszMldDispSup[] = {_T("%s\t%s")};
+    static CONST TCHAR  aszMldDispSup[] = {_T("%s\t%s")};
 
-    SHORT   i, sReturn;
-    MLDIF   MldIf;
+    USHORT  i;
      
     MldScrollClear(MLD_SCROLL_1);   /* Scroll Display Clear */
 
     for (i=0; pForm[i]->usAddress != 0; i++){
+        SHORT   sReturn;
+        MLDIF   MldIf = { 0 };
+
         /* get programmable mnemonics, V3.3 */
         MldIf.usAddress = pForm[i]->usAddress;
         sReturn = CliOpMldIndRead(&MldIf, 0);

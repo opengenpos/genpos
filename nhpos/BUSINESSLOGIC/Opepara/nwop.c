@@ -96,6 +96,7 @@
 * May-02-25 : 02.04.00 : R.Chambers : use local variable for file handle in OpDeptCreatFile().
 * May-02-25 : 02.04.00 : R.Chambers : use local variable for file handle in OpCpnCreatFile().
 * May-02-25 : 02.04.00 : R.Chambers : use local variable for file handle in OpCstrCreatFile().
+* Jul-15-25 : 02.04.00 :R.Chambers  : added TCHAR CONST auchOP_DFPR[]
 *
 \*=======================================================================*/
 /*=======================================================================*\
@@ -113,15 +114,12 @@
 
 #include    <ecr.h>
 #include    <pif.h>
+#include    <appllog.h>
 #include    <log.h>
-#include    <paraequ.h>
-#include    <para.h>
-#include    <plu.h>
 #include    <csop.h>
 #include    <csstbfcc.h>
 #include    <csstbstb.h>
 #include    <csstbpar.h>
-#include    <appllog.h>
 #include    <applini.h>
 #include    "csopin.h"
 #include    "rfl.h"
@@ -204,6 +202,7 @@ TCHAR CONST auchOP_OEP[]  = _T("PARAMOEP");   /* Add 2172 Rel 1.0 */
 TCHAR CONST auchOP_PPI[] = _T("PARAMPPI");    /* Add PPI (Promotional Pricing Item) File (Release 3.1) */
 TCHAR CONST auchOP_MLD[] = _T("PARAMMLD");    /* V3.3 */
 TCHAR CONST auchOP_RSN[] = _T("PARAMRSN");    /* Reason Code file for Rel 2.2.1 and Amtrak/VCS */
+TCHAR CONST auchOP_DFPR[] = _T("DFPR_DB");    /* DFPR_FNAME biometrics file for Rel 2.2.1 and Amtrak/VCS */
 
 TCHAR CONST *auchOP_OEP_TABLE[] = {
 	_T("PARAMOEP"),
@@ -4317,10 +4316,12 @@ SHORT   OpReqBackUp(USHORT usLockHnd)
 */
 SHORT   OpReqBackUpPara(USHORT usLockHnd)
 {
-    OP_BACKUP   Op_Backup, *pOp_BackupRcv;
     USHORT      usRcvLen, usReturnLen;
-    UCHAR       auchRcvBuf[OP_BACKUP_WORK_SIZE];
     SHORT       sStatus;
+    UCHAR       auchRcvBuf[OP_BACKUP_WORK_SIZE];
+    OP_BACKUP   * const pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;      // backup header
+    UCHAR       * const dataBuff = auchRcvBuf + sizeof(OP_BACKUP);    // backup data
+    OP_BACKUP   Op_Backup = { 0 };
 
     /*  LOCK CHECK */
 
@@ -4329,21 +4330,12 @@ SHORT   OpReqBackUpPara(USHORT usLockHnd)
     }
     Op_Backup.uchClass = CLASS_PARAFLEXMEM;
     Op_Backup.offulFilePosition = 0L;
-    pOp_BackupRcv = (OP_BACKUP *)auchRcvBuf;
     usRcvLen = OP_BACKUP_WORK_SIZE;
-    if  ((sStatus = SstReqBackUp(CLI_FCBAKOPPARA,
-                                (UCHAR *)&Op_Backup,
-                                sizeof(OP_BACKUP),
-                             auchRcvBuf, &usRcvLen)) < 0 ) {
+    if  ((sStatus = SstReqBackUp(CLI_FCBAKOPPARA, &Op_Backup, sizeof(OP_BACKUP), auchRcvBuf, &usRcvLen)) < 0 ) {
         return (sStatus);
     }
     if (pOp_BackupRcv->uchClass == CLASS_PARAFLEXMEM) {
-        CliParaAllWrite(CLASS_PARAFLEXMEM,
-                        &auchRcvBuf[sizeof(OP_BACKUP)],
-                        (USHORT)(usRcvLen - sizeof(OP_BACKUP)),
-                        (USHORT)Op_Backup.offulFilePosition,
-                        &usReturnLen
-                        );
+        CliParaAllWrite(CLASS_PARAFLEXMEM, dataBuff, (USHORT)(usRcvLen - sizeof(OP_BACKUP)), (USHORT)Op_Backup.offulFilePosition, &usReturnLen);
         if (pOp_BackupRcv->uchStatus != OP_END) {
             return OP_COMM_ERROR;
         }
@@ -4376,11 +4368,10 @@ SHORT   OpResBackUp(UCHAR  *puchRcvData,
                     USHORT *pusSndLen,
                     USHORT  usLockHnd)
 {
-    OP_BACKUP   *pOp_BackUpRcv, *pOp_BackUpSnd;
+    OP_BACKUP * const pOp_BackUpRcv = (OP_BACKUP *)puchRcvData;
+    OP_BACKUP * const pOp_BackUpSnd = (OP_BACKUP *)puchSndData;
     USHORT      usReturnLen, usSndLenBack,usSndLenWork;
 	SHORT       sRetStatus;
-
-    pOp_BackUpRcv = (OP_BACKUP *)puchRcvData;
 
     /* Hosts address boradcast, V1.0.04 */
     if (pOp_BackUpRcv->uchClass == OP_HOSTS_FILE) {
@@ -4501,7 +4492,8 @@ SHORT   OpResBackUp(UCHAR  *puchRcvData,
         PifReleaseSem(husOpSem);
         return (OP_COMM_ERROR);
     }
-    pOp_BackUpSnd = (OP_BACKUP *)puchSndData;
+
+
     if (OP_BACKUP_WORK_SIZE > *pusSndLen) {
         usSndLenWork = usSndLenBack = (*pusSndLen - sizeof(OP_BACKUP));
     } else {
@@ -4996,10 +4988,9 @@ SHORT   OpPpiAssign(PPIIF *pPif, USHORT usLockHnd)
 */
 SHORT   OpPpiDelete(PPIIF *pPif, USHORT usLockHnd)
 {
-    PPIIF   PpiIF;
+    PPIIF   PpiIF = { 0 };
     SHORT   sRetCode;
 
-    memset( &PpiIF, 0x00, sizeof( PPIIF ));
     PpiIF.uchPpiCode = pPif->uchPpiCode;
 
     sRetCode = OpPpiAssign( &PpiIF, usLockHnd );
@@ -5026,7 +5017,7 @@ SHORT   OpPpiDelete(PPIIF *pPif, USHORT usLockHnd)
 */
 SHORT   OpPpiIndRead(PPIIF *pPif, USHORT usLockHnd)
 {
-    OPPPI_FILEHED PpiFileHed;
+    OPPPI_FILEHED PpiFileHed = { 0 };
 
     PifRequestSem(husOpSem);
 
@@ -5079,7 +5070,7 @@ SHORT   OpPpiIndRead(PPIIF *pPif, USHORT usLockHnd)
 */
 SHORT   OpMldCreatFile(USHORT usNumberOfAddress, USHORT usLockHnd)
 {
-    OPMLD_FILEHED   MldFileHed;
+    OPMLD_FILEHED   MldFileHed = { 0 };
     ULONG           ulActualPosition;
     ULONG           ulNewSize;
     ULONG           ulWriteOffset;
@@ -5112,7 +5103,6 @@ SHORT   OpMldCreatFile(USHORT usNumberOfAddress, USHORT usLockHnd)
     }
 
     /* Make Header File */
-    memset( &MldFileHed, 0x00, sizeof( OPMLD_FILEHED ));
     MldFileHed.usNumberOfAddress = usNumberOfAddress;
 
     ulWriteOffset = OP_FILE_HEAD_POSITION;
@@ -5178,7 +5168,7 @@ SHORT   OpMldCheckAndCreatFile(USHORT usNumberOfAddress, USHORT usLockHnd)
 */
 SHORT   OpMldCheckAndDeleteFile(USHORT usNumberOfAddress, USHORT usLockHnd)
 {
-    OPMLD_FILEHED MldFileHed;
+    OPMLD_FILEHED MldFileHed = { 0 };
 
     Op_LockCheck(usLockHnd);
 
@@ -5224,7 +5214,7 @@ SHORT   OpMldCheckAndDeleteFile(USHORT usNumberOfAddress, USHORT usLockHnd)
 */
 SHORT   OpMldAssign(MLDIF *pMld, USHORT usLockHnd)
 {
-    OPMLD_FILEHED MldFileHed;
+    OPMLD_FILEHED MldFileHed = { 0 };
 
     /*  CHECK LOCK */
 	NHPOS_ASSERT(sizeof(TCHAR) == sizeof(pMld->aszMnemonics[0]));
@@ -5284,7 +5274,7 @@ SHORT   OpMldAssign(MLDIF *pMld, USHORT usLockHnd)
 */
 SHORT   OpMldIndRead(MLDIF *pMld, USHORT usLockHnd)
 {
-    OPMLD_FILEHED MldFileHed;
+    OPMLD_FILEHED MldFileHed = { 0 };
 
     memset(&pMld->aszMnemonics, 0, sizeof(pMld->aszMnemonics));
 
@@ -5341,13 +5331,9 @@ SHORT   OpMldIndRead(MLDIF *pMld, USHORT usLockHnd)
 */
 SHORT   OpPluOepRead(OPPLUOEPPLUNO *pPluNo, OPPLUOEPPLUNAME *pPluName, USHORT usLockHnd)
 {
-    MFINFO mfinfo;
-    USHORT usResult, i;
+    MFINFO mfinfo = { 0 };
+    USHORT usResult;
     USHORT usRecPluLen;
-    RECPLU recplu;
-    PRECPLU pRecPlu = &recplu;
-    ITEMNO itemno;
-    PITEMNO pItemNumber = &itemno;
 
     PifRequestSem(husOpSem);
 
@@ -5366,7 +5352,11 @@ SHORT   OpPluOepRead(OPPLUOEPPLUNO *pPluNo, OPPLUOEPPLUNAME *pPluName, USHORT us
         return OpConvertPluError(usResult);
     }
 
-	for (i=0; i < OP_OEP_PLU_SIZE; i++) {
+	for (USHORT i=0; i < OP_OEP_PLU_SIZE; i++) {
+        RECPLU recplu;
+        PRECPLU pRecPlu = &recplu;
+        ITEMNO itemno;
+        PITEMNO pItemNumber = &itemno;
 
 		memset(&pPluName->auchPluName[i][0], 0, STD_PLU_MNEMONIC_LEN * sizeof(TCHAR));
 		if (pPluNo->auchPluNo[i][0]) {
@@ -5459,7 +5449,6 @@ SHORT   OpReqPrinterLogos(USHORT usLockHnd)
 {
 	CHAR    xBuff[128];
     SHORT   sStatus;
-	int     i = 0;
 	TCHAR   *tcsLogoFileNames[] = {
 				_T("PARAMLID"),      // printer logo index file
 				_T("PARAMLO1"),      // printer logo file for logo # 1
@@ -5475,7 +5464,7 @@ SHORT   OpReqPrinterLogos(USHORT usLockHnd)
 				0
 			};
 
-	for (i = 0; tcsLogoFileNames[i]; i++) {
+	for (USHORT i = 0; tcsLogoFileNames[i]; i++) {
 		sStatus = OpReqFile(tcsLogoFileNames[i], usLockHnd);
 		sprintf (xBuff, "OpReqPrinterLogos(): OpReqFile() %S status = %d", tcsLogoFileNames[i], sStatus);
 		NHPOS_ASSERT_TEXT((sStatus != OP_PERFORM && sStatus != OP_FILE_NOT_FOUND), xBuff);
@@ -5500,14 +5489,13 @@ SHORT   OpReqAdditionalParams(USHORT usLockHnd)
 {
 	CHAR    xBuff[128];
     SHORT   sStatus;
-	int     i = 0;
 	TCHAR   *tcsParamFileNames[] = {
 				_T("PARAMINI"),      // parameter INI file with initialization data
 				_T("PARAMTDR"),      // tender parameter data file with tender rules
 				0
 			};
 
-	for (i = 0; tcsParamFileNames[i]; i++) {
+	for (USHORT i = 0; tcsParamFileNames[i]; i++) {
 		sStatus = OpReqFile(tcsParamFileNames[i], usLockHnd);
 		sprintf (xBuff, "OpReqAdditionalParams(): OpReqFile() %S status = %d", tcsParamFileNames[i], sStatus);
 		NHPOS_ASSERT_TEXT((sStatus != OP_PERFORM && sStatus != OP_FILE_NOT_FOUND), xBuff);

@@ -77,9 +77,9 @@
 */
 
 
-extern const TCHAR FARCONST auchTime[];
-extern const TCHAR FARCONST auchDate[];
-extern const TCHAR FARCONST auchAMPM[];
+extern const TCHAR  auchTime[];
+extern const TCHAR  auchDate[];
+extern const TCHAR  auchAMPM[];
 
 /*
 *===========================================================================

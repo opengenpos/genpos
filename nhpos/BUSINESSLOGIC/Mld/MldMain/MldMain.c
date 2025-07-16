@@ -359,10 +359,12 @@ SHORT   MldDispSeatNum(USHORT usScroll, MLDSEAT *pSeatNum) /* display seat# */
 {
         return MLDLCDMldDispSeatNum(usScroll, pSeatNum);  /* MldDispSeatNum  for lcd */
 }
+#if defined(POSSIBLE_DEAD_CODE)
 SHORT   MldCreatePopUp(VOID *pData)            /* show order prompt display */
 {
         return MLDLCDMldCreatePopUp(pData);  /* MldCreatePopUp  for lcd */
 }
+#endif
 SHORT   MldUpdatePopUp(VOID *pData)            /* change order prompt display */
 {
         return MLDLCDMldUpdatePopUp(pData);  /* MldUpdatePopUp  for lcd */

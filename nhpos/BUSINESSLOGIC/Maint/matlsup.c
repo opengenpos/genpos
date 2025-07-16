@@ -48,17 +48,14 @@
 #include <ecr.h>
 #include <nb.h>
 #include <csop.h>
-#include <plu.h>
 #include <csstbfcc.h>
 #include <csstbstb.h>
 #include <csstbopr.h>
-#include <paraequ.h>
-#include <para.h>
 #include <csstbpar.h>
 #include <maint.h>
-#include <regstrct.h>
 #include <transact.h>
 #include <prt.h>
+#include <rfl.h>
 
 #include "maintram.h"
 
@@ -77,19 +74,16 @@
 */
 SHORT MaintLoadSup( VOID )
 {
-    UCHAR           i;
     SHORT           sError;
     SHORT           sReturn = SUCCESS;
-    MAINTBCAS       MaintBcas;
-    MAINTERRORCODE  MaintErrCode;
-    PARASTOREGNO    ParaStoRegNo;
-    CLIOPBCAS       BcasRegNo[CLI_ALLTRANSNO];
+    MAINTBCAS       MaintBcas = { 0 };
+    MAINTERRORCODE  MaintErrCode = { 0 };
+    CLIOPBCAS       BcasRegNo[CLI_ALLTRANSNO] = { 0 };
 
     /* Make Header */
     MaintHeaderCtl(AC_SUP_DOWN, RPT_ACT_ADR);
 
     /* preset parameter for MaintBcas */
-	memset (&MaintBcas, 0, sizeof(MaintBcas));
     MaintBcas.uchMajorClass = CLASS_MAINTBCAS;
     MaintBcas.usPrtControl = ( PRT_JOURNAL | PRT_RECEIPT );
 
@@ -106,11 +100,10 @@ SHORT MaintLoadSup( VOID )
             MaintErrCode.sErrorCode = sReturn;
             PrtPrintItem(NULL, &MaintErrCode);
         } else {
+            RflStoreRegNo   StRg = RflGetStoreRegisterNo();
+
             MaintBcas.uchTermNo = CliReadUAddr();
-            ParaStoRegNo.uchMajorClass = CLASS_PARASTOREGNO;
-            ParaStoRegNo.uchAddress = SREG_NO_ADR;
-            CliParaRead(&ParaStoRegNo);
-            MaintBcas.usRegNo = ParaStoRegNo.usRegisterNo;
+            MaintBcas.usRegNo = StRg.usRegNo;
 			MaintBcas.uchBcasStatus = 1;      // the request worked so default to value of 1
             PrtPrintItem(NULL, &MaintBcas);
         }
@@ -123,7 +116,7 @@ SHORT MaintLoadSup( VOID )
             PrtPrintItem(NULL, &MaintErrCode);
         } else {
             /* set register number */
-            for ( i = 0; i< CLI_ALLTRANSNO; i++) {
+            for (UCHAR i = 0; i< CLI_ALLTRANSNO; i++) {
                 /* in case successful communication */
                 if (BcasRegNo[i].uchBcasStatus != 0) {
                     MaintBcas.uchTermNo =  ( UCHAR)(i + 1);

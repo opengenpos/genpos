@@ -19,6 +19,10 @@
 :    ** NCR2172 **     :          :              :                         :
 :                      : 99-10-05 : 01.00.00     : Initial (for Win32)     :
 :                      : 00-01-14 :              : function name change    :
+*
+** OpenGENPOS **
+*
+* Jul-05-23 : 02.04.00 : R.Chambers : using ITEMCLASSHEADER instead of MLDITEMDATA.
 \*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*\
 :   PVCS ENTRY
@@ -30,6 +34,11 @@
 
 #if !defined(MLDMENU_H_INCLUDED)
 #define MLDMENU_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 /**
 ;========================================================================
 ;+                  I N C L U D E     F I L E s                         +
@@ -46,22 +55,12 @@
 #endif
 
 
-typedef struct {
-    UCHAR uchMajorClass;
-    UCHAR uchMinorClass;
-}MLDITEMDATA;
-
 /* V3.3 */
 
 typedef struct _MLDMENU {
     USHORT  usAddress;                         /* address of PARAMLDMNEMO */
     TCHAR   *aszData;                         /* entry data mnemonics    */
 } MLDMENU;
-
-//extern CONST MLDMENU aszMldAC20[];
-//extern CONST MLDMENU aszMldAC63[];
-//extern CONST MLDMENU aszMldAC68[];
-extern CONST MLDMENU aszMldAC114[];
 
 #define PRT_MAX_PERCENT  60000  
 

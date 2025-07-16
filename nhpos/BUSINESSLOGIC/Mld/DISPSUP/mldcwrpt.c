@@ -55,13 +55,10 @@
 #include <rfl.h>
 #include <cswai.h>
 #include <maint.h> 
-#include <regstrct.h>
 #include <transact.h>
-#include <csttl.h>
 #include <csstbpar.h>
 #include <csop.h>
 #include <report.h>
-#include <pmg.h>
 #include <appllog.h>
 #include <mld.h>
 #include <mldsup.h>
@@ -110,16 +107,16 @@
 SHORT MldRptSupCashWaitFile( VOID *pData )  
 {
     /* define thermal print format */
-    static const TCHAR FARCONST auchMldRptSupCashWaitFile[] = _T("%6s%-10s%11s%8s     ");
-    static const TCHAR FARCONST auchMldRptSupEmployeeNo[] = _T("%6s%-16s%4s%8.8Mu");
-    static const TCHAR FARCONST auchNumber[] = _T("%8.8Mu");
-    static const TCHAR FARCONST auchNumber1[] = _T("%3u");
+    static const TCHAR  auchMldRptSupCashWaitFile[] = _T("%6s%-10s%11s%8s     ");
+    static const TCHAR  auchMldRptSupEmployeeNo[] = _T("%6s%-16s%4s%8.8Mu");
+    static const TCHAR  auchNumber[] = _T("%8.8Mu");
+    static const TCHAR  auchNumber1[] = _T("%3u");
 
 	/* See NHPOS_ASSERT() check on usRow value as well. */
 	TCHAR   aszString[3 * (MLD_SUPER_MODE_CLM_LEN+1)] = {0};           /* buffer for formatted data */
     TCHAR   aszPrtNull[1] = {'\0'};
 	TCHAR	aszNumb[8 + 1] = {0};
-    UCHAR   uchMajorClass = *(( UCHAR *)pData);
+    UCHAR   uchMajorClass = ITEMCLASSPTR(pData)->uchMajorClass;
     TCHAR   *uchMnemo;
     ULONG   ulNumber;
     TCHAR   *pszString;
@@ -127,36 +124,31 @@ SHORT MldRptSupCashWaitFile( VOID *pData )
 
     switch(uchMajorClass) {
     case CLASS_RPTCASHIER:  /* In case of CASHIER/EMPLOYEE */
-        ulNumber = (( RPTCASHIER *)pData)->ulCashierNumber;
-
-		if ((( RPTCASHIER *)pData)->uchMinorClass != CLASS_RPTCASHIER_TERMINAL)
+        ulNumber = (( RPTCASHIER *)pData)->ulCashierNumber;   // contains either Cashier Number or Terminal Number depending on minor class
+        if (((RPTCASHIER*)pData)->uchMinorClass == CLASS_RPTCASHIER_TERMINAL) {
+            // Print three digit terminal number
+			RflSPrintf(aszNumb, TCHARSIZEOF(aszNumb), auchNumber1, ulNumber);
+        }
+        else {
+            // Print Cashier Number, truncated if provisioned so.
 			ulNumber = RflTruncateEmployeeNumber (ulNumber);
+			RflSPrintf(aszNumb, TCHARSIZEOF(aszNumb), auchNumber, ulNumber);
+        }
 
         uchMnemo = (( RPTCASHIER *)pData)->aszCashMnemo;
+        usRow = MldSPrintf(aszString, MLD_SUPER_MODE_CLM_LEN, auchMldRptSupCashWaitFile, aszPrtNull, uchMnemo, aszPrtNull, aszNumb);
         break;
 
     case CLASS_RPTEMPLOYEENO:   /* In case of EMPLOYEE */                   
+        ulNumber = (( RPTEMPLOYEENO *)pData)->ulEmployeeNumber;
+        ulNumber = RflTruncateEmployeeNumber(ulNumber);
         uchMnemo = (( RPTEMPLOYEENO *)pData)->aszEmpMnemo;
+        usRow = MldSPrintf(aszString, MLD_SUPER_MODE_CLM_LEN, auchMldRptSupEmployeeNo, aszPrtNull, uchMnemo, aszPrtNull, ulNumber);
         break;
 
     default:
 /*        PifLog(MODULE_PRINT_SUPPRG_ID, LOG_ERROR_PRT_SUPPRG_ERROR); */
-        break;
-    }
-
-
-    if (uchMajorClass == CLASS_RPTEMPLOYEENO) {
-        /* print EMPLOYEE NAME/No. */
-        usRow = MldSPrintf(aszString, MLD_SUPER_MODE_CLM_LEN, auchMldRptSupEmployeeNo, aszPrtNull, uchMnemo, aszPrtNull, RflTruncateEmployeeNumber(((( RPTEMPLOYEENO *)pData)->ulEmployeeNumber)));
-    } else {
-        /* convert Cashier/Waiter No. to double wide */
-		if ((( RPTCASHIER *)pData)->uchMinorClass == CLASS_RPTCASHIER_TERMINAL)
-			RflSPrintf(aszNumb, TCHARSIZEOF(aszNumb), auchNumber1, ulNumber);
-		else
-			RflSPrintf(aszNumb, TCHARSIZEOF(aszNumb), auchNumber, ulNumber);
-       
-        /* print CASHIER/WAITER NAME/No. */
-        usRow = MldSPrintf(aszString, MLD_SUPER_MODE_CLM_LEN, auchMldRptSupCashWaitFile, aszPrtNull, uchMnemo, aszPrtNull, aszNumb);
+        return (MLD_SUCCESS);
     }
 
     if (!usRow) {

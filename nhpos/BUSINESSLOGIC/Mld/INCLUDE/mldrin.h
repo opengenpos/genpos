@@ -29,6 +29,9 @@
 * Oct-05-99 : 01.00.00 : M.Teraki   : Added #pragma(...)
 * Dec-15-15 : 02.02.01 : R.Chambers : replace MLD_ total type defines with standard PRT_ defines.
 * Dec-15-15 : 02.02.01 : R.Chambers : replace MLD_ decimal type defines with standard PRT_ defines.
+*
+*** OpenGENPOS **
+* Jul-15-25: 02.04.00 : R.Chambers : replaced struct MLDITEMDATA with ITEMCLASSHEADER
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -90,11 +93,6 @@
 #pragma pack(1)
 #endif
 
-
-typedef struct {
-    UCHAR uchMajorClass;
-    UCHAR uchMinorClass;
-}MLDITEMDATA;
 
 #if     (defined(_WIN32_WCE) || defined(WIN32)) && _MSC_VER >= 800
 #pragma pack(pop)

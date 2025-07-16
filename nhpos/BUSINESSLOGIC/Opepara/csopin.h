@@ -32,6 +32,9 @@
 *
 *   Oct-05-99 : 01.00.00 :M.Teraki   : Added #pragma(...)
 *   Dec-14-99 : 01.00.00 :hrkato     : Saratoga
+* 
+** OpenGENPOS **
+*   Jul-15-25 : 02.04.00 :R.Chambers  :added extern TCHAR CONST auchOP_DFPR[]
 \*=======================================================================*/
 /*=======================================================================*\
 :   PVCS ENTRY
@@ -42,7 +45,9 @@
 :    $Log$
 \*-----------------------------------------------------------------------*/
 
-#define CSOPH_INCLUDED
+#if !defined(CSOPIN_H_INCLUDED)
+
+#define CSOPIN_H_INCLUDED
 
 /*
 ===========================================================================
@@ -470,7 +475,6 @@ extern PifFileHandle   hsOpMldFileHandle; /* for MLD Mnemonics file handle */
      File Names for the Database folder files.
 	 See file nwop.c for the definitions.
 -----------------------------------------------*/
-extern TCHAR CONST auchOP_PLU_OLD[];
 extern TCHAR CONST auchOP_PLU[];
 extern TCHAR CONST auchOP_DEPT[];
 extern TCHAR CONST auchOP_OEP[];     /* Add 2172 Rel 1.0 */
@@ -479,5 +483,8 @@ extern TCHAR CONST auchOP_CSTR[];
 extern TCHAR CONST auchOP_PPI[];     /* === Add PPI (Promotional Pricing Item) File (Release 3.1) BEGIN === */
 extern TCHAR CONST auchOP_MLD[];     /* Mld Mnemonics File, V3.3 */
 extern TCHAR CONST auchOP_RSN[];     /* Reason Code file for Rel 2.2.1 and Amtrak/VCS */
+extern TCHAR CONST auchOP_DFPR[];    /* DFPR_FNAME biometrics file for Rel 2.2.1 and Amtrak/VCS */
+
+#endif
 
 /* ====== End of Header ========= */

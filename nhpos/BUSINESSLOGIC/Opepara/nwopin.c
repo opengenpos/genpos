@@ -92,27 +92,23 @@
 
 #include    <ecr.h>
 #include    <pif.h>
+#include    <appllog.h>
 #include    <log.h>
 #include    <rfl.h>
-#include    <paraequ.h>
-#include    <para.h>
 #include    <csop.h>
-#include    <plu.h>
 #include    <csstbfcc.h>
 #include    <csstbstb.h>
 #include    <csstbpar.h>
-#include    <appllog.h>
 #include    <applini.h>
 #include    <ej.h>
 #include    "csopin.h"
-#include    "csttl.h"
 #include    "csgcs.h"
 
 //static SHORT (*pComp)(VOID *pKey, VOID *pusHPoint) = Op_CompIndex;    /* Add R3.0 */
 //static SHORT (*pCompSub)(VOID *pKey, VOID *pusHPoint) = Op_CompSubIndex;    /* Add R3.0 */
 static SHORT (*pCompDept)(VOID *pKey, VOID *pusHPoint) = Op_DeptCompIndex;    /* Add R3.0 */
 
-static UCHAR FARCONST auchFlexMem[] =    {FLEX_DEPT_ADR,
+static UCHAR  auchFlexMem[] =    {FLEX_DEPT_ADR,
                                    FLEX_PLU_ADR,
                                    FLEX_WT_ADR,
                                    FLEX_CAS_ADR,
@@ -3092,7 +3088,7 @@ SHORT   OpReqBiometrics(USHORT usFcCode, USHORT usLockHnd)
         return(OP_LOCK);
     }
 
-	return OpReqFileTransfer (usFcCode, DFPR_FNAME, OP_BIOMETRICS_FILE, usLockHnd);
+	return OpReqFileTransfer (usFcCode, auchOP_DFPR, OP_BIOMETRICS_FILE, usLockHnd);
 }
 
 SHORT   OpReqReasonCodes(USHORT usFcCode, USHORT usLockHnd)
@@ -3190,7 +3186,7 @@ SHORT   OpResBiometrics (UCHAR  *puchRcvData,
                  USHORT *pusSndLen,
                  USHORT  usLockHnd)
 {
-	return OpResFileTransfer (puchRcvData, usRcvLen, puchSndData, pusSndLen, DFPR_FNAME, usLockHnd);
+	return OpResFileTransfer (puchRcvData, usRcvLen, puchSndData, pusSndLen, auchOP_DFPR, usLockHnd);
 }
 
 SHORT   OpResReasonCodes (UCHAR  *puchRcvData,

@@ -52,6 +52,9 @@
 // Apr-19-2015  02.02.01 R.Chambers   replace TTL_MAX_BLOCK in ttl.h with STD_MAX_HOURBLK
 // Apr-21-2015  02.02.01 R.Chambers   moved CONSOLIMAXSIZE to here from storage.h to eliminate storage.h
 // Sep-23-2023  0x.04.00 R.Chambers   removed the unused definition of '_DEBUG_BREAK'
+//
+//  OpenGenPOS
+// Jul-15-2025  02.04.00 R.Chambers   moved and renamed DFPR_FNAME. now auchOP_DFPR.
 /////////////////////////////////////////////////////////////////////////////
 
 #ifndef _INC_ECR
@@ -513,11 +516,6 @@ extern "C"{
 #define     STD_FOLDER_IMAGESFILES     _T("C:\\FlashDisk\\NCR\\Saratoga\\Database\\Images")
 #define     STD_FOLDER_LOGFOLDER       _T("C:\\FlashDisk\\NCR\\Saratoga\\Log")
 #define     STD_FOLDER_AMTRAK_CONFIG   _T("C:\\POSNAME")
-
-// if the constant for the biometrics file is not defined then define it.
-#ifndef DFPR_FNAME
-#define DFPR_FNAME L"DFPR_DB"
-#endif
 
 //  ----     Standard symbols used with printing and displaying 
 

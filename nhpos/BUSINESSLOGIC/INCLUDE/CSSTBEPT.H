@@ -26,6 +26,8 @@
 *    Jan-21-94      :M.Ozawa            :Delete EEPT definition for GP
 *    Nov-19-96      :Y.shozy            :Append EEPT definition for GP R2.0
 *
+** OpenGENPOS
+*    Jul-15-25  :R.Chambers  : moved define constant CLI_MAX_EEPTDATA from csstbfcc.h
 \*=======================================================================*/
 /*=======================================================================*\
 :   PVCS ENTRY
@@ -39,13 +41,16 @@
 #if !defined(CSSTBEPT_H_INCLUDED)
 #define CSSTBEPT_H_INCLUDED
 
+#include "eept.h"
+
 /*
 ===========================================================================
     DEFINE
 ===========================================================================
 */
 
-#include "eept.h"
+#define     CLI_MAX_EEPTDATA    493     /* Maximumm EEPT data,  Saratoga */
+
 /*
 ===========================================================================
     TYPEDEF
@@ -109,7 +114,8 @@ LONG CliUpdateSpecifiedBlock(LONG lUieAc102_SubMenu, ULONG ulBlockOffset, EEPT_B
     MEMORY
 ===========================================================================
 */
-extern EEPTSENDMES    EEptSndBuf;                     /* Send Buffer         (R2.0)*/
+
+//extern EEPTSENDMES    EEptSndBuf;                     /* Send Buffer         (R2.0)*/
 
 #endif
 /*===== END OF DEFINITION =====*/

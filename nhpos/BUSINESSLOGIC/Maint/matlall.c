@@ -59,6 +59,7 @@
 #include <regstrct.h>
 #include <transact.h>
 #include <prt.h>
+#include <rfl.h>
 
 #include "maintram.h"
 
@@ -76,19 +77,16 @@
 */
 SHORT MaintLoadAll( ULONG ulLoadAllFlags )
 {
-    UCHAR           i;
     SHORT           sError;
     SHORT           sReturn = SUCCESS;
-    MAINTBCAS       MaintBcas;
-    MAINTERRORCODE  MaintErrCode;
-    PARASTOREGNO    ParaStoRegNo;
-    CLIOPBCAS       BcasRegNo[CLI_ALLTRANSNO];
+	MAINTBCAS       MaintBcas = { 0 };
+    MAINTERRORCODE  MaintErrCode = { 0 };
+    CLIOPBCAS       BcasRegNo[CLI_ALLTRANSNO] = { 0 };
 
     /* Make Header */
     MaintHeaderCtl(AC_ALL_DOWN, RPT_ACT_ADR);
 
     /* preset parameter for MaintBcas */
-	memset (&MaintBcas, 0, sizeof(MaintBcas));
     MaintBcas.uchMajorClass = CLASS_MAINTBCAS;
     MaintBcas.usPrtControl = ( PRT_JOURNAL | PRT_RECEIPT);
 
@@ -106,11 +104,10 @@ SHORT MaintLoadAll( ULONG ulLoadAllFlags )
             MaintErrCode.sErrorCode = sReturn;
             PrtPrintItem(NULL, &MaintErrCode);
         } else {
-            MaintBcas.uchTermNo = CliReadUAddr();
-            ParaStoRegNo.uchMajorClass = CLASS_PARASTOREGNO;
-            ParaStoRegNo.uchAddress = SREG_NO_ADR;
-            CliParaRead(&ParaStoRegNo);
-            MaintBcas.usRegNo = ParaStoRegNo.usRegisterNo;
+			RflStoreRegNo   StRg = RflGetStoreRegisterNo();
+
+			MaintBcas.uchTermNo = CliReadUAddr();
+            MaintBcas.usRegNo = StRg.usRegNo;
 			MaintBcas.uchBcasStatus = 1;      // the request worked so default to value of 1
             PrtPrintItem(NULL, &MaintBcas);
 		}
@@ -123,11 +120,10 @@ SHORT MaintLoadAll( ULONG ulLoadAllFlags )
 				MaintErrCode.sErrorCode = sReturn;
 				PrtPrintItem(NULL, &MaintErrCode);
 			} else {
+				RflStoreRegNo   StRg = RflGetStoreRegisterNo();
+
 				MaintBcas.uchTermNo = CliReadUAddr();
-				ParaStoRegNo.uchMajorClass = CLASS_PARASTOREGNO;
-				ParaStoRegNo.uchAddress = SREG_NO_ADR;
-				CliParaRead(&ParaStoRegNo);
-				MaintBcas.usRegNo = ParaStoRegNo.usRegisterNo;
+				MaintBcas.usRegNo = StRg.usRegNo;
 				MaintBcas.uchBcasStatus = 1;      // the request worked so default to value of 1
 				PrtPrintItem(NULL, &MaintBcas);
 			}
@@ -188,7 +184,7 @@ SHORT MaintLoadAll( ULONG ulLoadAllFlags )
         } else {
             /* report on broadcast results */
 			NHPOS_NONASSERT_NOTE("==STATE", "==STATE: AC75 Complete.");
-            for (i = 0; i < CLI_ALLTRANSNO; i++) {
+            for (UCHAR i = 0; i < CLI_ALLTRANSNO; i++) {
                 /* in case successful communication */ 
                 if (BcasRegNo[i].uchBcasStatus != 0) {
 					char  xBuff[128];

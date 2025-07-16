@@ -34,11 +34,27 @@
 * $Log$
 *===========================================================================
 */
+
+#if !defined(MLDSUP_H_INCLUDED)
+
+#define MLDSUP_H_INCLUDED
+
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 /**
 ;========================================================================
 ;+                  I N C L U D E     F I L E s                         +
 ;========================================================================
 **/
+
+#include <paraequ.h>
+#include <para.h>
+#include <maint.h>
+#include <report.h>
+
 /* include files for change function name */
 #include "mldlcd.h"
 
@@ -82,28 +98,13 @@ extern UCHAR	   uchUifACRptOnOffFile; //ESMITH PRTFILE
 extern UCHAR       uchUifACDataType;               /* Data Type Save Area */
 extern UCHAR       uchUifACRptType;                /* Report Type Save Area */
 
-extern CONST TCHAR FARCONST aszMldAC9[][64];
-/* extern CONST UCHAR FARCONST aszMldAC20[][64]; */
-/* extern CONST UCHAR FARCONST aszMldAC63[][64]; */
-/* extern CONST UCHAR FARCONST aszMldAC68[][64]; */
-//extern CONST TCHAR FARCONST aszMldAC71[][64];
-//extern CONST TCHAR FARCONST	aszMldAC71_AddSettings[][64];
-//extern CONST TCHAR FARCONST aszMldAC71_AddSettingsTitle[][64];
-/* extern CONST UCHAR FARCONST aszMldAC114[][64]; */
-//extern CONST TCHAR FARCONST aszMldAC116[][64];
-//extern CONST TCHAR FARCONST aszMldAC124E[][64];
-//extern CONST TCHAR FARCONST aszMldAC124R[][64];
-extern CONST TCHAR FARCONST aszMldAC152[][64];
-extern CONST TCHAR FARCONST aszMldAC153[][64];
-extern CONST TCHAR FARCONST aszMldAC160[][64];
-/* extern CONST UCHAR FARCONST aszMldAC161[][64]; */
-
 /**
 ;========================================================================
             P R O T O T Y P E    D E C L A R A T I O N s                        
 ;========================================================================
 **/
 #if defined DISPLAY_MAIN
+
 /*******************************************
 * Prottype name of LCD 
 ********************************************/
@@ -184,5 +185,7 @@ VOID MldMaintETKFl( MAINTETKFL *pData, USHORT usClear);
 VOID MldParaOEPDisp(PARAOEPTBL *pOep);
 VOID MldParaCPNDisp(PARACPN *pCpn, USHORT usStatus);
 VOID MldParaPPI(PARAPPI *pPPI, USHORT usClear);
+
+#endif
 
 /**** End of File ****/

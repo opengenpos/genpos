@@ -31,6 +31,9 @@
 * 
 *** NCR2171 **
 * Aug-26-99: 01.00.00 : M.Teraki  : initial (for Win32)
+*
+*** OpenGENPOS **
+* Jul-15-25: 02.04.00 : R.Chambers : moved aszMldAC153 to here and made static.
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -80,11 +83,22 @@
 */
 
 
-extern const TCHAR FARCONST auchTime[];
-extern const TCHAR FARCONST auchDate[];
-extern const TCHAR FARCONST auchAMPM[];
+extern const TCHAR  auchTime[];
+extern const TCHAR  auchDate[];
+extern const TCHAR  auchAMPM[];
 
 static VOID MldMaintMakeETKFl(MAINTETKFL *pData, TCHAR *aszMldInTime, TCHAR *aszMldOutTime, TCHAR *aszMldInAMPM, TCHAR *aszMldOutAMPM, TCHAR *aszMldDate);
+
+static CONST TCHAR aszMldAC153[][64] = {
+                            _T("....*....1....*....2....*....3....*....4"),
+                            _T("%-16s\t%9lu "),
+                            _T("%s%s%s  IN    OUT"),
+/*                            "BLOCK JOB\tDATE  IN    OUT   ", */
+                            _T("%s%s%s  IN      OUT"),
+/*                            "BLOCK JOB\tDATE  IN      OUT     ", */
+                            _T("%2d       %02d    %s    %s %s "),
+                            _T("")
+};
 
 /*
 *===========================================================================

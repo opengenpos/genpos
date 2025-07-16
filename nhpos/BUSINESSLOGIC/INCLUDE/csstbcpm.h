@@ -9,7 +9,7 @@
 \*************************************************************************/
 /*========================================================================*\
 *   Title              : Client/Server STUB module, Header file for user                        
-*   Category           : Client/Server STUB CPM interface
+*   Category           : Client/Server STUB CPM (Charge Post) interface
 *   Program Name       : CSSTBCPM.H                                            
 *  ------------------------------------------------------------------------  
 *   Compile            : MS-C Ver. 6.00 A by Microsoft Corp.              
@@ -38,11 +38,23 @@
 :    $Log$
 \*-----------------------------------------------------------------------*/
 
+#if !defined(CSSTBCPM_H_INCLUDED)
+
+#define CSSTBCPM_H_INCLUDED
+
+
 /*
 ===========================================================================
     DEFINE
 ===========================================================================
 */
+
+//**  NOTE: DEPRECATED FUNCTIONALITY.
+// 
+// CPM was the server that handled a version of in house electronic payments in the NHPOS 2170 for
+// hotels and other installations with a Charge Post application tied to something such as a room number.
+// This functionality is no longer supported.  See function SerRecvCpm().
+//     Richard Chambers, Jul-15-2025
 
 /*  Reset Tally 128 */
 /*  EPT   Tally   1 */ 
@@ -54,6 +66,8 @@
 #define CLI_RESET_TLY_BOTH     (1+2+128)    /* Reset CPM/EPT Tally  */
 #define CLI_RESET_TLY_EPT      (1+128)      /* Reset EPT     Tally  */
 #define CLI_RESET_TLY_CPM      (2+128)      /* Reset CPM     Tally  */
+
+#define CLI_MAX_CPMDATA        (400)    /* Maximumm CPM data Modifed for new Charge Post IF */
 
 /*
 ===========================================================================
@@ -134,20 +148,19 @@ typedef struct {
 ----------------------------------------*/
 /* For register Mode */
 
-SHORT   CliCpmSendMessage(UCHAR  *pSendData,      /* Set by Reg Appli. */
-                          USHORT usSendLen);      /* Set by Reg Appli. */
-
-SHORT   CliCpmReceiveMessage(UCHAR  *pRecData,    /* Set by Reg Appli. */
-                             USHORT usRecSize);   /* Set by Reg Appli. */
+// following two functions were the interface for sending and receiving CPM messages.
+// CPM was the server that handled a version of in house electronic payments in the NHPOS 2170 for
+// hotels and other installations with a Charge Post application tied to something such as a room number.
+// This functionality is no longer supported.  See function SerRecvCpm().
+//     Richard Chambers, Jul-15-2025
+//SHORT   CliCpmSendMessage(UCHAR  *pSendData, USHORT usSendLen);      /* Set by Reg Appli. */
+//SHORT   CliCpmReceiveMessage(UCHAR  *pRecData, USHORT usRecSize);   /* Set by Reg Appli. */
 
 UCHAR   CliCpmGetAsMasUaddr(VOID);                /* Get As Master terminal address */
 
 /* For Supervisor Mode */
-
 SHORT   SerCpmChangeStatus(UCHAR uchState);        /* Set by Sup Appli. */
-
-SHORT   SerCpmEptReadResetTally(UCHAR        uchType,     /* Read Tally        */
-                                CPMEPT_TALLY *pTally);
+SHORT   SerCpmEptReadResetTally(UCHAR uchType, CPMEPT_TALLY *pTally);    /* Read Tally        */
 
 /*-----------------------------
     Internal Function
@@ -160,5 +173,7 @@ USHORT    CstCpmGetUpdNo(VOID);
 ===========================================================================
 */
 extern CPMSENDMES    CpmSndBuf;                   /* Send Buffer */    
+
+#endif
 
 /*===== END OF DEFINITION =====*/

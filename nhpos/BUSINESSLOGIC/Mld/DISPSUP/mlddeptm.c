@@ -31,6 +31,9 @@
 * 
 *** NCR2171 **
 * Aug-26-99: 01.00.00 : M.Teraki  : initial (for Win32)
+*
+*** OpenGENPOS **
+* Jul-15-25: 02.04.00 : R.Chambers : moved aszMldAC114 to here and made static.
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -50,6 +53,7 @@
 #include	<tchar.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <ecr.h>
 #include <uie.h>
 #include <pif.h>
@@ -77,6 +81,47 @@
 #include <mldmenu.h>
 
 #include "maintram.h" 
+
+/*------------------------------------------------------------------------*\
+                        D E P T   M a i n t e n a n c e
+\*------------------------------------------------------------------------*/
+static CONST MLDMENU aszMldAC114[] = {
+                            {-1,_T("")},
+                            {LCD_DPT_ADDR1_ADR, _T(" 1 %s\t%2d ")},
+                            {LCD_DPT_ADDR2_ADR, _T(" 2 %s\t%4s ")},
+                            {LCD_DPT_ADDR3_ADR, _T(" 3 %s\t%4s ")},
+                            {LCD_DPT_ADDR4_ADR, _T(" 4 %s\t%4s ")},
+                            {LCD_DPT_ADDR5_ADR, _T(" 5 %s\t%4s ")},
+                            {LCD_DPT_ADDR6_ADR, _T(" 6 %s\t%4s ")},
+                            {LCD_DPT_ADDR7_ADR, _T(" 7 %s\t%4s ")},
+                            {LCD_DPT_ADDR8_ADR, _T(" 8 %s\t%s ")},
+                            {LCD_DPT_ADDR9_ADR, _T(" 9 %s\t%4s ")},
+                            {LCD_DPT_ADDR10_ADR, _T("10 %s\t%2d ")},
+                            {LCD_DPT_ADDR11_ADR, _T("11 %s\t%20s ")},
+                            {LCD_DPT_ADDR12_ADR, _T("12 %s\t%2d ")},
+                            {LCD_DPT_ADDR13_ADR, _T("13 %s\t%4s ")},
+                            {LCD_DPT_ADDR14_ADR, _T("14 %s\t%4s ")},
+                            {0,_T("")}
+};
+/***
+CONST UCHAR FARCONST aszMldAC114[][64] = {
+                            "....*....1....*....2....*....3....*....4",
+                            " 1 Major Department Number\t%2d ",
+                            " 2 Prt Mod/Spv Int/Special/Minus\t%4s ",
+                            " 3 Sng Dbl/Issu Rec/Val/Rec Cond\t%4s ",
+                            " 4 Tax4/Tax3/Tax2/Tax1\t%4s ",
+                            " 5 Disc2/Disc1/Not Use/Not Use\t%4s ",
+                            " 6 Not Use/Hash/Cond./Scale\t%4s ",
+                            " 7 Rmt4/Rmt3/Rmt2/Rmt1\t%4s ",
+                            " 8 Bonus Total Index\t%s ",
+                            " 9 Adj4/Adj3/Adj2/Adj1\t%4s ",
+                            "10 HALO\t%2d ",
+                            "11 Department Name\t%12s ",
+                            "12 Print Priorty\t%2d ",
+                            "13 Rmt8/Rmt7/Rmt6/Rmt5\t%4s ",
+                            ""
+                            };
+***/
 
 /*
 *===========================================================================

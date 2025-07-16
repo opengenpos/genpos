@@ -253,8 +253,9 @@ typedef struct {
     TCHAR aszPluName[20+1];         // PARA_PLU_LEN
     GCNUM uchOrder;
 } ORDERPMT;
+
 typedef struct {
-    UCHAR uchMajorClass;
+    UCHAR uchMajorClass;            // begin ITEMCLASSHEADER with uchMajorClass and uchMinorClass.
     UCHAR uchMinorClass;
     TCHAR aszAdjective[4+1];        // PARA_ADJMNEMO_LEN
     TCHAR aszPluName[20+1];         // PARA_PLU_LEN
@@ -265,7 +266,7 @@ typedef struct {
 } MLDPOPORDER;
 
 typedef struct {
-    UCHAR uchMajorClass;
+    UCHAR uchMajorClass;            // begin ITEMCLASSHEADER with uchMajorClass and uchMinorClass.
     UCHAR uchMinorClass;
     TCHAR aszAdjective[4+1];        // PARA_ADJMNEMO_LEN
     TCHAR aszPluName[20+1];         // PARA_PLU_LEN
@@ -287,7 +288,7 @@ typedef union {
 } ORDERPMT_UNION;
 
 typedef struct {
-    UCHAR uchMajorClass;
+    UCHAR uchMajorClass;            // begin ITEMCLASSHEADER with uchMajorClass and uchMinorClass.
     UCHAR uchMinorClass;
     TCHAR aszAdjective[4+1];        // PARA_ADJMNEMO_LEN
     TCHAR aszPluName[20+1];         // PARA_PLU_LEN

@@ -20,6 +20,9 @@
 * Update Histories                                                         
 *  Date     : Ver.Rev. :   Name     : Description
 * Mar-27-95 : 03.00.00 :  M.Ozawa   : Initial
+*
+*** OpenGENPOS **
+* Jul-15-25: 02.04.00 : R.Chambers : ifdefed out MldCreatePopUp() and MldCreatePopUpRect()
 *============================================================================
 *============================================================================
 * PVCS Entry
@@ -62,11 +65,11 @@
 ;+                    S T A T I C    R A M s
 ;========================================================================
 **/
-TCHAR FARCONST  aszMldOrderPop[] = _T("%02d %s\n"); /* 2172 */
-TCHAR FARCONST  aszMldOrderPop1[] = _T("%02d %.10s\n"); /* 2172 */
-TCHAR FARCONST  aszMldOrderPop2[] = _T("%02d %-4s %.18s\n"); /* 2172 */
-TCHAR FARCONST  aszMldOrderPop3[] = _T("%02d %-2s %.7s\n");
-TCHAR FARCONST  aszMldOrderPop4[] = _T(" \t%s");
+static CONST TCHAR   aszMldOrderPop[] = _T("%02d %s\n"); /* 2172 */
+static CONST TCHAR   aszMldOrderPop1[] = _T("%02d %.10s\n"); /* 2172 */
+static CONST TCHAR   aszMldOrderPop2[] = _T("%02d %-4s %.18s\n"); /* 2172 */
+static CONST TCHAR   aszMldOrderPop3[] = _T("%02d %-2s %.7s\n");
+static CONST TCHAR   aszMldOrderPop4[] = _T(" \t%s");
 
 /*
 *===========================================================================
@@ -139,7 +142,8 @@ SHORT MldCreatePopUpRectWindowOnly(VOSRECT *pRect)
         break;
 
     default:
-        break;
+        NHPOS_ASSERT_TEXT(uchMldCurScroll == MLD_SCROLL_1, "MldCreatePopUpRectWindowOnly(): invalid scroll display type.")
+        return 0;
     }
 
     VosSetCurType(usWinHandle, VOS_INVISIBLE);
@@ -150,11 +154,7 @@ SHORT MldCreatePopUpRectWindowOnly(VOSRECT *pRect)
 		// previous to TOUCHSCREEN this handle would be LCDWIN_ID_REG209
 		usHandle = LCDWIN_ID_REG102;
         //usMldPopupHandle = MldCreateDrive3Popup(MLD_C_BLACK);
-		VosCreateWindowRect(pRect,              /* rectangle for the window to popup */
-                    VOS_FONT_NORMAL,        /* font attribute */
-                    MLD_C_BLACK,                /* charactor attribute */
-                    VOS_B_NONE,             /* boarder attribute */
-                    &usHandle);             /* window handle */
+		VosCreateWindowRect(pRect, VOS_FONT_NORMAL, MLD_C_BLACK, VOS_B_NONE, &usHandle);
 
 		/* set normal status for cursor control */
 		VosSetWinType(usHandle, VOS_WIN_NORMAL);
@@ -163,11 +163,7 @@ SHORT MldCreatePopUpRectWindowOnly(VOSRECT *pRect)
 
 		usHandle = LCDWIN_ID_REG102;
         //usMldPopupHandle = MldCreatePrechkPopup(MLD_C_BLACK);
-		VosCreateWindowRect(pRect,              /* rectangle for the window to popup */
-                    VOS_FONT_NORMAL,        /* font attribute */
-                    MLD_C_BLACK,                /* charactor attribute */
-                    VOS_B_NONE,             /* boarder attribute */
-                    &usHandle);             /* window handle */
+		VosCreateWindowRect(pRect, VOS_FONT_NORMAL, MLD_C_BLACK, VOS_B_NONE, &usHandle);
 
 		/* set normal status for cursor control */
 		VosSetWinType(usHandle, VOS_WIN_NORMAL);
@@ -181,6 +177,7 @@ SHORT MldCreatePopUpRectWindowOnly(VOSRECT *pRect)
 	return usMaxButtons;
 }
 
+#if defined(POSSIBLE_DEAD_CODE)
 SHORT MldCreatePopUp(VOID *pData)
 {
 	VOSRECT VosRect;
@@ -214,7 +211,7 @@ SHORT MldCreatePopUpRect(VOID *pData, VOSRECT *pRect)
 {
 	USHORT usMaxButtons = 0;
 
-    if (((MLDITEMDATA *)pData)->uchMajorClass != CLASS_POPUP) {
+    if (((ITEMCLASSHEADER *)pData)->uchMajorClass != CLASS_POPUP) {
         return(MLD_ERROR);
     }
 
@@ -222,7 +219,7 @@ SHORT MldCreatePopUpRect(VOID *pData, VOSRECT *pRect)
 
     VosCls(usMldPopupHandle);
 
-    switch (((MLDITEMDATA *)pData)->uchMinorClass) {
+    switch (((ITEMCLASSHEADER *)pData)->uchMinorClass) {
     case CLASS_POPORDERPMT:
 
         MldDispOrderEntryPrompt(pData); /* order entryp prompt */
@@ -235,7 +232,6 @@ SHORT MldCreatePopUpRect(VOID *pData, VOSRECT *pRect)
 
     return(usMaxButtons);
 }
-
 
 USHORT MldCreatePrechkPopup(UCHAR uchAttr)
 {
@@ -277,6 +273,7 @@ USHORT MldCreateDrive3Popup(UCHAR uchAttr)
 
     return(usHandle);
 }
+#endif
 
 // Adding support for a more general OEP window functionality that is
 // used by Amtrak for displaying list of Preauths that need to be finalized.
@@ -347,7 +344,7 @@ VOID MldDispOrderEntryPromptText( MLDPOPORDERUNION_VARY *pData)
 SHORT MldUpdatePopUp(VOID *pData)
 {
 
-    if (((MLDITEMDATA *)pData)->uchMajorClass != CLASS_POPUP) {
+    if (((ITEMCLASSHEADER *)pData)->uchMajorClass != CLASS_POPUP) {
 
         return(MLD_ERROR);
     }
@@ -356,7 +353,7 @@ SHORT MldUpdatePopUp(VOID *pData)
 
     VosCls(usMldPopupHandle);
 
-    switch (((MLDITEMDATA *)pData)->uchMinorClass) {
+    switch (((ITEMCLASSHEADER *)pData)->uchMinorClass) {
     case CLASS_POPORDERPMT:
     case CLASS_POPORDERPMT_UP:      /* V3.3 */
     case CLASS_POPORDERPMT_DOWN:    /* V3.3 */

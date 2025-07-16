@@ -94,7 +94,7 @@ SHORT   MldLocalScrollWrite(VOID *pItem, USHORT usType, USHORT usScroll)
 {
     SHORT sStatus;
 
-    switch ( ((MLDITEMDATA *)pItem)->uchMajorClass ) {
+    switch ( ((ITEMCLASSHEADER *)pItem)->uchMajorClass ) {
 
     case CLASS_ITEMOPEOPEN:             /* operator open */
         sStatus = MldItemOpeOpen(pItem, usType, usScroll);

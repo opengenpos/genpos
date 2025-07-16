@@ -2770,15 +2770,15 @@ VOID    ItemTendEPTEdit(UCHAR uchCPFlag, UCHAR uchFuncCode, EEPTREQDATA *CPSend,
     static  const TCHAR FARCONST    fmt08ld[] = _T("%08ld");
     static  const TCHAR FARCONST    fmt010ld[] = _T("%010ld");
 
-    TRANGCFQUAL     *WorkGCF = TrnGetGCFQualPtr();
-    TRANITEMIZERS   *WorkTI = TrnGetTIPtr();
+    TRANGCFQUAL     * const WorkGCF = TrnGetGCFQualPtr();
+    TRANITEMIZERS   * const WorkTI = TrnGetTIPtr();
     DCURRENCY       lAmount, lDiscItemizers1, lDiscItemizers2,lTenderAmount;
     DCURRENCY       lChargeTipsforEdit;
 	BOOL            bDataCapEpdBcServer;
     CHAR            chStrLen;
     UCHAR           i;
 	UCHAR			asz2172[] = "2172", uchTmp;
-    PARASTOREGNO    StoreReg;
+	RflStoreRegNo   StRg = RflGetStoreRegisterNo();
     PARAHOTELID     Hotel;
     ITEMCOMMONTAX   WorkTax;
     ITEMCOMMONVAT   WorkVAT;
@@ -2806,10 +2806,7 @@ VOID    ItemTendEPTEdit(UCHAR uchCPFlag, UCHAR uchFuncCode, EEPTREQDATA *CPSend,
     memcpy (CPSend->aszCardLabel, ItemTender->aszCPMsgText[NUM_CPRSPCO_CARDLABEL], sizeof(CPSend->aszCardLabel));
 
 	memcpy(CPSend->auchSystemNo, asz2172, sizeof(CPSend->auchSystemNo));   /* System # */
-    StoreReg.uchMajorClass = CLASS_PARASTOREGNO;
-    StoreReg.uchAddress = SREG_NO_ADR;
-    CliParaRead(&StoreReg);
-    ItemTendCPConvData(CPSend->auchStoreNo, UCHARSIZEOF(CPSend->auchStoreNo), fmt04ld, StoreReg.usStoreNo);
+    ItemTendCPConvData(CPSend->auchStoreNo, UCHARSIZEOF(CPSend->auchStoreNo), fmt04ld, StRg.usStoreNo);
 
 	// generate the pseudo ref number for Stored credt tender transactions for Amtrak
 	{
@@ -2843,7 +2840,7 @@ VOID    ItemTendEPTEdit(UCHAR uchCPFlag, UCHAR uchFuncCode, EEPTREQDATA *CPSend,
 
 	if (bDataCapEpdBcServer) {   // EPD, E-Meal, and Bad Check Server will provide the Terminal Number and Store Number
 		ItemTendCPConvData(CPSend->auchSrcTerminal, UCHARSIZEOF(CPSend->auchSrcTerminal), fmt02ld, CliReadUAddr());
-		ItemTendCPConvData(CPSend->auchMerchantID, UCHARSIZEOF(CPSend->auchMerchantID), fmt08ld, StoreReg.usStoreNo);
+		ItemTendCPConvData(CPSend->auchMerchantID, UCHARSIZEOF(CPSend->auchMerchantID), fmt08ld, StRg.usStoreNo);
 	} else {
 		for(i = 0; i < ARRAYSIZEOF(CPSend->auchMerchantID); i++) {
 			CPSend->auchMerchantID[i] = (UCHAR)pTendKeyInfo->TenderKeyInfo.tcMerchantID[i];
@@ -2893,8 +2890,8 @@ VOID    ItemTendEPTEdit(UCHAR uchCPFlag, UCHAR uchFuncCode, EEPTREQDATA *CPSend,
 		// from the first two digits of the operator id.
 		memset (CPSend->auchCashierNo, 0, sizeof(CPSend->auchCashierNo));
 		ItemTendCPConvData(CPSend->auchCashierNo, 2, fmt02ld, CliReadUAddr());
-		ItemTendCPConvData(CPSend->auchCashierNo+2, 4, fmt04ld, (StoreReg.usStoreNo % 10000));
-		ItemTendCPConvData(CPSend->auchCashierNo+6, 3, fmt03ld, (ulCashierID % 1000));
+		ItemTendCPConvData(CPSend->auchCashierNo+2, 4, fmt04ld, (StRg.usStoreNo % 10000));
+		ItemTendCPConvData(CPSend->auchCashierNo+6, 3, fmt03ld, (ulCashierID % 1000));  // old style NHPOS Cashier Id was three digits
 	} else {
 		CPSend->auchCashierNo[0] = CPSend->auchCashierNo[1] = '0';
 		ItemTendCPConvData(CPSend->auchCashierNo+2, 8, fmt08ld, ulCashierID);

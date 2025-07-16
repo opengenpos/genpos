@@ -47,6 +47,7 @@
 *   Dec-11-14:R.Chambers  :Removed CLI_ETKINDJOBREAD_RESHLEN
 ** OpenGenPOS **
 *   Nov-17-24:R.Chambers  : eliminated CLI_MAX_IPDATA, moved SERTMPFILE_DATASTART to ech.h
+*   Jul-15-25:R.Chambers  : moved define constant CLI_MAX_EEPTDATA to csstbept.h
 \*=======================================================================*/
 /*=======================================================================*\
 :   PVCS ENTRY
@@ -94,12 +95,11 @@
 										 * Must match value of CLI_PLU_MAX_NO in PEP/PCIF */
 #define     CLI_EMPLOYEE_NAME   /*16*/20      /* Employee Name, R3.1 */
 #define     CLI_ISPLOG_LEN      24      /* ISP LOG Length, V3.3 */
-#define     CLI_MAX_EEPTDATA    493     /* Maximumm EEPT data,  Saratoga */
 #define     CLI_PLU_LEN         STD_PLU_NUMBER_LEN      /* PLU Length,          Saratoga */
 #define     CLI_PLU_NAME_SIZE   STD_PLU_MNEMONIC_LEN
 #define     CLI_OEP_PLU_SIZE    STD_OEP_MAX_NUM /* set to STD_OEP_MAX_NUM - CSMALL */
 #define		CLI_FILENAME_SIZE	STD_FILENAME_LENGTH_MAX	//ESMITH LAYOUT
-#define		CLI_MODE_SIZE			4
+#define		CLI_MODE_SIZE		STD_FILENAME_MODE_SIZE
 //#define		CLI_BROADCAST_SIZE		450    //  same as OP_BACKUP_WORK_SIZE
 #define		CLI_MAXBYTES_SIZE       32767
 
@@ -111,7 +111,6 @@
 #define     CLI_MAX_EJREPTDATA  (4*48)  /* Maximumm EJ  data  */
 #define     CLI_NEW_ETK_JOB     15      /* ETK      Job codes */
 #define     CLI_MAX_ETKDATA    (100)  /* Maximumm ETK data  */
-#define     CLI_MAX_CPMDATA    (400)    /* Maximumm CPM data Modifed for new Charge Post IF */
 #define     CLI_MAX_EJREAD      48      /* Maximum EJ Read Data, R3.1 */
 
 /*------------------------------------------------
@@ -407,6 +406,11 @@
 #define     CLI_FCETKCREATTLIDX  0x0a31  /* ETK create total index  (ISP unique)*/
 // #define     CLI_FCBAKETK         0x0a50  /* Bak ETK, see CLI_FCBAK      */
 
+// following function codes were used for sending and receiving CPM messages.
+// CPM was the server that handled a version of in house electronic payments in the NHPOS 2170 for
+// hotels and other installations with a Charge Post application tied to something such as a room number.
+// This functionality is no longer supported.  See function SerRecvCpm().
+//     Richard Chambers, Jul-15-2025
 #define     CLI_FCCPM            0x0b00  /* CPM commom */
 #define     CLI_FCCPMSENDMESS    0x0b01  /* CPM Send request message */
 #define     CLI_FCCPMRECVMESS    0x0b02  /* CPM Recv request message */

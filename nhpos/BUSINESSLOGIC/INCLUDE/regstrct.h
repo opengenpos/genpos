@@ -1217,8 +1217,6 @@
 //    Richard Chambers, Sep-28-2017
 #define PLU_BASE_UNIT           1000L  /* item quantity base unit value to convert non-scalable item quantity to weight in thousandths. Same as ITM_SL_QTY  */
 
-#define STOREGNO_UNIT           1000L  /* used with ulStoreregNo, et. al. CLASS_PARASTOREGNO, SREG_NO_ADR. See ItemCountCons() - store number * 1000L + register number */
-
 /*--------------------------------------------------------------------------
 *       ITEM MODULE interface data
 --------------------------------------------------------------------------*/
@@ -1453,6 +1451,10 @@
 // and to instead use ITEMSTORAGENONPTR(pData)->uchMajorClass instead.
 // see also other help macros TRANSTORAGENONPTR() and TRANSTORAGEDATAPTR() for
 // raw transaction record data that is still compressed.
+//
+// WARNING: Only first two members, uchMajorClass and uchMinorClass, are valid
+//          accross all of the various transaction ITEM type. For example ITEMTOTAL
+//          and ITEMTENDER don't have the same layout as ITEMSALES, ITEMDISC, or ITEMCOUPON.
 #define ITEMSTORAGENONPTR(x) ((ITEMGENERICHEADER *)(x))
 
 	//
@@ -1469,6 +1471,14 @@
 		UCHAR           uchData[1];
 	} ITEMGENERICHEADER;
 
+
+    typedef struct {
+        UCHAR       uchMajorClass;          /* 1:major class */
+        UCHAR       uchMinorClass;          /* 2:minor class */
+    }ITEMCLASSHEADER;
+
+#define ITEMCLASSPTR(x) ((ITEMCLASSHEADER *)(x))    // usage example ITEMCLASSPTR(pItem)->uchMajorClass whee pItem is usually void *
+    
 /*--------------------------------------------------------------------------
 *       operator open data
 --------------------------------------------------------------------------*/

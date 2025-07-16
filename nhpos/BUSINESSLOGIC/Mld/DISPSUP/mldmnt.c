@@ -1,3 +1,22 @@
+
+#if defined(POSSIBLE_DEAD_CODE)
+// This source file had several TCHAR arrays defined for menus, etc.
+// Since the data structures were used only in a single other source file,
+// those definitions were moved from this file to the source file they were
+// used, deleting them from this file.
+//
+// Since the data structures were only used within those specific source files,
+// the data structures were marked with the static keyword to reduce visibility
+// to file scope.
+//
+// Data structures moved:
+//    CONST UCHAR FARCONST aszMldAC114[][64];
+//    CONST TCHAR FARCONST aszMldAC152[][64];
+//    CONST TCHAR FARCONST aszMldAC153[][64];
+//    CONST TCHAR FARCONST aszMldAC160[][64];
+//
+//     Richard Chambers, Jul-14-2025
+
 /*========================================================================*\
 ||                                                                        ||
 ||        *=*=*=*=*=*=*=*=*                                               ||
@@ -145,46 +164,6 @@ CONST TCHAR FARCONST aszMldAC71_AddSettings[][64] = {
 #endif
 
 /*------------------------------------------------------------------------*\
-                        D E P T   M a i n t e n a n c e
-\*------------------------------------------------------------------------*/
-CONST MLDMENU FARCONST aszMldAC114[] = {
-                            {-1,_T("")},
-                            {LCD_DPT_ADDR1_ADR, _T(" 1 %s\t%2d ")},
-                            {LCD_DPT_ADDR2_ADR, _T(" 2 %s\t%4s ")},
-                            {LCD_DPT_ADDR3_ADR, _T(" 3 %s\t%4s ")},
-                            {LCD_DPT_ADDR4_ADR, _T(" 4 %s\t%4s ")},
-                            {LCD_DPT_ADDR5_ADR, _T(" 5 %s\t%4s ")},
-                            {LCD_DPT_ADDR6_ADR, _T(" 6 %s\t%4s ")},
-                            {LCD_DPT_ADDR7_ADR, _T(" 7 %s\t%4s ")},
-                            {LCD_DPT_ADDR8_ADR, _T(" 8 %s\t%s ")},
-                            {LCD_DPT_ADDR9_ADR, _T(" 9 %s\t%4s ")},
-                            {LCD_DPT_ADDR10_ADR, _T("10 %s\t%2d ")},
-                            {LCD_DPT_ADDR11_ADR, _T("11 %s\t%20s ")},
-                            {LCD_DPT_ADDR12_ADR, _T("12 %s\t%2d ")},
-                            {LCD_DPT_ADDR13_ADR, _T("13 %s\t%4s ")},
-                            {LCD_DPT_ADDR14_ADR, _T("14 %s\t%4s ")},
-                            {0,_T("")}
-                            };
-/***
-CONST UCHAR FARCONST aszMldAC114[][64] = {
-                            "....*....1....*....2....*....3....*....4",
-                            " 1 Major Department Number\t%2d ",
-                            " 2 Prt Mod/Spv Int/Special/Minus\t%4s ",
-                            " 3 Sng Dbl/Issu Rec/Val/Rec Cond\t%4s ",
-                            " 4 Tax4/Tax3/Tax2/Tax1\t%4s ",
-                            " 5 Disc2/Disc1/Not Use/Not Use\t%4s ",
-                            " 6 Not Use/Hash/Cond./Scale\t%4s ",
-                            " 7 Rmt4/Rmt3/Rmt2/Rmt1\t%4s ",
-                            " 8 Bonus Total Index\t%s ",
-                            " 9 Adj4/Adj3/Adj2/Adj1\t%4s ",
-                            "10 HALO\t%2d ",
-                            "11 Department Name\t%12s ",
-                            "12 Print Priorty\t%2d ",
-                            "13 Rmt8/Rmt7/Rmt6/Rmt5\t%4s ",
-                            ""
-                            };
-***/
-/*------------------------------------------------------------------------*\
             A S S I G N   S E T   M E N U   M a i n t e n a n c e
 \*------------------------------------------------------------------------*/
 
@@ -193,36 +172,7 @@ CONST UCHAR FARCONST aszMldAC114[][64] = {
 \*------------------------------------------------------------------------*/
 
 
-/*------------------------------------------------------------------------*\
-    E M P L O Y E E   N U M B E R   A S S I G N   M a i n t e n a n c e
-\*------------------------------------------------------------------------*/
-CONST TCHAR FARCONST aszMldAC152[][64] = {
-                            _T("....*....1....*....2....*....3....*....4"),
-                            _T("%-16s\t%s 1  2  3 "),
-/*                            "%-16s\tJOB1  2  3 ", */
-                            _T("%9lu\t%02u %02u %02u "),
-                            _T("")
-                            };
 
-CONST TCHAR FARCONST aszMldAC153[][64] = {
-                            _T("....*....1....*....2....*....3....*....4"),
-                            _T("%-16s\t%9lu "),
-                            _T("%s%s%s  IN    OUT"),
-/*                            "BLOCK JOB\tDATE  IN    OUT   ", */
-                            _T("%s%s%s  IN      OUT"),
-/*                            "BLOCK JOB\tDATE  IN      OUT     ", */
-                            _T("%2d       %02d    %s    %s %s "),
-                            _T("")
-                            };
-
-/*------------------------------------------------------------------------*\
-                        O. E. P.   M a i n t e n a n c e
-\*------------------------------------------------------------------------*/
-CONST TCHAR FARCONST aszMldAC160[][64] = {
-                            _T("....*....1....*....2....*....3....*....4"),
-                            _T("%2d/\t%2u "),
-                            _T("")
-                            };
 
 /*------------------------------------------------------------------------*\
                     C O U P O N   M a i n t e n a n c e
@@ -234,3 +184,4 @@ CONST TCHAR FARCONST aszMldAC160[][64] = {
 
 \*------------------------------------------------------------------------*/
 
+#endif

@@ -54,6 +54,7 @@
 #define CSOP_H_INCLUDED
 
 #include "paraequ.h"
+#include <para.h>
 
 /*
 ===========================================================================
@@ -471,10 +472,6 @@ typedef    struct {
     PLU_PARA PluPara20[1];
 } PLUIF_OEP_VARY;
 
-typedef   struct {
-    UCHAR   uchClass;
-    ULONG   ulOffset;
-}PARA_BRD;
 
 /* MLD Mnemonics File, V3.3 */
 typedef struct {
@@ -629,18 +626,10 @@ SHORT   OpReqAllPara(USHORT usLockHnd);
 SHORT   OpReqPluOep(USHORT usFcode, USHORT usLockHnd);
 SHORT   OpReqSup(USHORT usLockHnd);
 SHORT   OpReqSupPara(USHORT usLockHnd);
-SHORT   OpResSup(UCHAR  *puchRcvData,
-                    USHORT  usRcvLen,
-                    UCHAR  *puchSndData,
-                    USHORT *pusSndLen,
-                    USHORT  usLockHnd);
+SHORT   OpResSup(UCHAR  *puchRcvData, USHORT  usRcvLen, UCHAR  *puchSndData, USHORT *pusSndLen, USHORT  usLockHnd);
 SHORT   OpReqBackUp(USHORT usLockHnd);
 SHORT   OpReqBackUpPara(USHORT usLockHnd);
-SHORT   OpResBackUp(UCHAR  *puchRcvData,
-                    USHORT  usRcvLen,
-                    UCHAR  *puchSndData,
-                    USHORT *pusSndLen,
-                    USHORT  usLockHnd);
+SHORT   OpResBackUp(UCHAR  *puchRcvData, USHORT  usRcvLen, UCHAR  *puchSndData, USHORT *pusSndLen, USHORT  usLockHnd);
 
 
 // The following #if is used to enable or disable
@@ -697,7 +686,6 @@ SHORT   OpResReasonCodes(UCHAR  *puchRcvData, USHORT  usRcvLen, UCHAR  *puchSndD
 SHORT   OpReqLay(USHORT usLockHnd);
 SHORT   OpReqPrinterLogos(USHORT usLockHnd);
 SHORT   OpReqAdditionalParams(USHORT usLockHnd);
-SHORT   OpReqBiometricsFile(USHORT usLockHnd);
 SHORT   OpReqFile(TCHAR *pszFileName, USHORT usLockHnd);
 SHORT   OpTransferFile(USHORT usTerminalPosition, TCHAR *pszLocalFileName, TCHAR *pszRemoteFileName, USHORT usLockHnd);
 SHORT   OpDisplayOperatorMessage(USHORT  *pusMessageBufferEnum);
