@@ -306,9 +306,9 @@ SHORT   ItemSalesCursorVoidReturns(ITEMSALES *pItemSales, SHORT sQTY);
 
 SHORT ItemTransGetReturnsGcf (GCNUM  usGCNumber, GCNUM usNewGCNumber);
 
-USHORT  ItemDiscGetMdcCheck_ITEMDISC1 (UCHAR uchDiscountNo, USHORT usAddress);
-USHORT  ItemDiscGetMnemonic_ITEMDISC1 (UCHAR uchDiscountNo);
-USHORT  ItemDiscGetRate_ITEMDISC1 (UCHAR uchDiscountNo);
+USHORT     ItemDiscGetMdcCheck_ITEMDISC1 (UCHAR uchDiscountNo, USHORT usAddress);
+USTRNADRS  ItemDiscGetMnemonic_ITEMDISC1 (UCHAR uchDiscountNo);
+USHORT     ItemDiscGetRate_ITEMDISC1 (UCHAR uchDiscountNo);
 
 VOID    ItemTenderClearChargeAutoTips(VOID);
 

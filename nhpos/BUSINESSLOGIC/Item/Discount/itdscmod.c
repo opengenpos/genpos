@@ -293,9 +293,9 @@ typedef struct {
 	USHORT usAddressTo[7];
 } MDCTranslateTableType;
 
-static MDCTranslateTableType MdcTranslationTable [] = {
+static const MDCTranslateTableType MdcTranslationTable [] = {
 	{MDC_MODID11_ADR, {
-		MDC_MODID11_ADR,
+		MDC_MODID11_ADR,   // default value should the discount number be out of range
 		MDC_MODID11_ADR,
 		MDC_MODID21_ADR,
 		MDC_MODID31_ADR,
@@ -304,7 +304,7 @@ static MDCTranslateTableType MdcTranslationTable [] = {
 		MDC_MODID61_ADR}
 	},
 	{MDC_MODID12_ADR, {
-		MDC_MODID12_ADR,
+		MDC_MODID12_ADR,   // default value should the discount number be out of range
 		MDC_MODID12_ADR,
 		MDC_MODID22_ADR,
 		MDC_MODID32_ADR,
@@ -313,7 +313,7 @@ static MDCTranslateTableType MdcTranslationTable [] = {
 		MDC_MODID62_ADR}
 	},
 	{MDC_MODID13_ADR, {
-		MDC_MODID13_ADR,
+		MDC_MODID13_ADR,   // default value should the discount number be out of range
 		MDC_MODID13_ADR,
 		MDC_MODID23_ADR,
 		MDC_MODID33_ADR,
@@ -322,7 +322,7 @@ static MDCTranslateTableType MdcTranslationTable [] = {
 		MDC_MODID63_ADR}
 	},
 	{MDC_MODID15_ADR, {
-		MDC_MODID15_ADR,
+		MDC_MODID15_ADR,   // default value should the discount number be out of range
 		MDC_MODID15_ADR,
 		MDC_MODID25_ADR,
 		MDC_MODID35_ADR,
@@ -334,12 +334,10 @@ static MDCTranslateTableType MdcTranslationTable [] = {
 
 USHORT ItemDiscGetMdcCheck_ITEMDISC1 (UCHAR uchDiscountNo, USHORT usAddress)
 {
-	int i;
-
-	if (uchDiscountNo > sizeof(MdcTranslationTable[0].usAddressTo)/sizeof(MdcTranslationTable[0].usAddressTo[0]))
+	if (uchDiscountNo >= sizeof(MdcTranslationTable[0].usAddressTo) / sizeof(MdcTranslationTable[0].usAddressTo[0]))
 		uchDiscountNo = 0;   // set to the default value
 
-	for (i = 0; i < sizeof(MdcTranslationTable)/sizeof(MdcTranslationTable[0]); i++) {
+	for (USHORT i = 0; i < sizeof(MdcTranslationTable)/sizeof(MdcTranslationTable[0]); i++) {
 		if (usAddress == MdcTranslationTable[i].usAddress) {
 			usAddress = MdcTranslationTable[i].usAddressTo[uchDiscountNo];
 			break;
@@ -350,13 +348,13 @@ USHORT ItemDiscGetMdcCheck_ITEMDISC1 (UCHAR uchDiscountNo, USHORT usAddress)
 }
 
 typedef struct {
-	USHORT usAddressMnemonic;
-	USHORT usAddressRate;
-	USHORT usAddressRounding;
+    USTRNADRS usAddressMnemonic;
+	USHORT    usAddressRate;
+	USHORT    usAddressRounding;
 } ItemDisc1TableType;
 
-static ItemDisc1TableType ItemDisc1Table [] = {
-		{TRN_ITMDISC_ADR,   RATE_MTRID_ADR,    RND_ITEMDISC1_ADR},
+static const ItemDisc1TableType ItemDisc1Table [] = {
+		{TRN_ITMDISC_ADR,   RATE_MTRID_ADR,    RND_ITEMDISC1_ADR},   // default value should the discount number be out of range
 		{TRN_ITMDISC_ADR,   RATE_MTRID_ADR,    RND_ITEMDISC1_ADR},
 		{TRN_MODID_ADR,     RATE_MODID_ADR,    RND_ITEMDISC2_ADR},
 		{TRN_ITMDISC_ADR_3, RATE_ITMDISC3_ADR, RND_ITEMDISC1_ADR},
@@ -365,9 +363,9 @@ static ItemDisc1TableType ItemDisc1Table [] = {
 		{TRN_ITMDISC_ADR_6, RATE_ITMDISC6_ADR, RND_ITEMDISC1_ADR}
 };
 
-USHORT ItemDiscGetMnemonic_ITEMDISC1 (UCHAR uchDiscountNo)
+USTRNADRS ItemDiscGetMnemonic_ITEMDISC1 (UCHAR uchDiscountNo)
 {
-	if (uchDiscountNo > sizeof(ItemDisc1Table)/sizeof(ItemDisc1Table[0]))
+	if (uchDiscountNo >= sizeof(ItemDisc1Table)/sizeof(ItemDisc1Table[0]))
 		uchDiscountNo = 0;   // set to the default value
 
 	return ItemDisc1Table[uchDiscountNo].usAddressMnemonic;
@@ -375,7 +373,7 @@ USHORT ItemDiscGetMnemonic_ITEMDISC1 (UCHAR uchDiscountNo)
 
 USHORT ItemDiscGetRate_ITEMDISC1 (UCHAR uchDiscountNo)
 {
-	if (uchDiscountNo > sizeof(ItemDisc1Table)/sizeof(ItemDisc1Table[0]))
+	if (uchDiscountNo >= sizeof(ItemDisc1Table)/sizeof(ItemDisc1Table[0]))
 		uchDiscountNo = 0;   // set to the default value
 
 	return ItemDisc1Table[uchDiscountNo].usAddressRate;

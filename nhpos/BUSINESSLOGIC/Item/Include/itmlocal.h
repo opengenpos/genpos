@@ -855,9 +855,6 @@ SHORT   ItemDiscCheckQualSpl(CONST UIFREGDISC *pUifDisc, CONST ITEMDISC *pDisc);
 SHORT   ItemDiscCheckNormalAndSeat(CONST ITEMDISC *pDisc);
 SHORT   ItemDiscCheckGCFStat(VOID);
 SHORT   ItemDiscItemDiscModif(ITEMDISC *pDiscData2);
-USHORT  ItemDiscGetMdcCheck_ITEMDISC1 (UCHAR uchDiscountNo, USHORT usAddress);
-USHORT  ItemDiscGetMnemonic_ITEMDISC1 (UCHAR uchDiscountNo);
-USHORT  ItemDiscGetRate_ITEMDISC1 (UCHAR uchDiscountNo);
 VOID    ItemDiscGetTaxMDC(ITEMDISC *pDiscData);
 VOID    ItemDiscGetCanTaxMod(VOID *pData);
 VOID    ItemDiscCommonTranMnemonic (UCHAR uchMinorClass, UCHAR uchDiscountNo, PARATRANSMNEMO  *pTransMnemoRcvBuff);
@@ -865,7 +862,6 @@ SHORT   ItemDiscCommonIF(CONST UIFREGDISC *pDiscData1, ITEMDISC *pDiscData2);
 VOID    ItemDiscDisplay(ITEMDISC *pItemDisc2);
 SHORT   ItemDiscCursorVoid(ITEMDISC *pData);
 SHORT   ItemDiscCursorVoidCheck(ITEMDISC *pData);
-SHORT   ItemChargeTipsOpen();  //GSU SR 6 CRW 11/8/2002 Opens a transaction with charge tips as first item
 /*
 * --------------------------------------------------------------------------
     Coupon Module's Define Declaration
