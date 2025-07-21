@@ -4560,9 +4560,9 @@ SHORT  RflGetSlipMaxLines (VOID)
 *            structs are the same layout in the first couple of members, uchMajorClass and uchMinorClass.
 *===========================================================================
 */
-USHORT  RflChkTtlStandardAdr(UCHAR uchMinorClass)
+USTRNADRS  RflChkTtlStandardAdr(UCHAR uchMinorClass)
 {
-    USHORT   usTrnMnemAddr = TRN_TTL1_ADR;
+	USTRNADRS   usTrnMnemAddr = TRN_TTL1_ADR;
 
     switch ( uchMinorClass ) {
     case CLASS_TOTAL1:
@@ -4601,9 +4601,9 @@ USHORT  RflChkTtlStandardAdr(UCHAR uchMinorClass)
 }
 
 
-USHORT  RflChkTtlAdr(ITEMTOTAL *pItem)
+USTRNADRS  RflChkTtlAdr(CONST ITEMTOTAL *pItem)
 {
-    USHORT   usTrnMnemAddr = TRN_TTL1_ADR;
+	USTRNADRS   usTrnMnemAddr = TRN_TTL1_ADR;
 
     switch ( pItem->uchMinorClass ) {
     case CLASS_TOTAL1:
@@ -4759,9 +4759,9 @@ USHORT  RflChkTtlAdr(ITEMTOTAL *pItem)
 *            for the tender minor code.
 *===========================================================================
 */
-USHORT  RflChkTendAdr(ITEMTENDER *pItem)
+USTRNADRS  RflChkTendAdr(CONST ITEMTENDER *pItem)
 {
-	USHORT  usAddress = 0;
+	USTRNADRS  usAddress = 0;
 	UCHAR   uchMinorClassTemp = pItem->uchMinorClass;
 
 	if (pItem->uchMinorClass == CLASS_TEND_TIPS_RETURN) {
@@ -4808,9 +4808,9 @@ USHORT  RflChkTendAdr(ITEMTENDER *pItem)
 *            This code is similar to function MldChkDiscAdr().
 *===========================================================================
 */
-USHORT  RflChkDiscAdr(ITEMDISC *pItem)
+USTRNADRS  RflChkDiscAdr(CONST ITEMDISC *pItem)
 {
-	USHORT  usAddress = 0;
+	USTRNADRS  usAddress = 0;
 
     switch (pItem->uchMinorClass) {
     case CLASS_CHARGETIP:

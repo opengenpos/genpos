@@ -479,10 +479,10 @@ ULONG  RflGetLimitFloor (USHORT usAddress);
 SHORT  RflGetSlipMaxLines (VOID);
 
 // following are VOID pointers to allow for compile.
-USHORT  RflChkTtlStandardAdr(UCHAR uchMinorClass);
-USHORT  RflChkTtlAdr(VOID *pItem);       // ITEMTOTAL *pItem
-USHORT  RflChkTendAdr(VOID *pItem);      // ITEMTENDER *pItem
-USHORT  RflChkDiscAdr(VOID *pItem);      // ITEMDISC *pItem
+USTRNADRS  RflChkTtlStandardAdr(UCHAR uchMinorClass);
+USTRNADRS  RflChkTtlAdr(CONST ITEMTOTAL *pItem);       // ITEMTOTAL *pItem
+USTRNADRS  RflChkTendAdr(CONST ITEMTENDER *pItem);      // ITEMTENDER *pItem
+USTRNADRS  RflChkDiscAdr(CONST ITEMDISC *pItem);      // ITEMDISC *pItem
 
 VOID    RflUpdateDisplayDescriptorMaps (USHORT usMaps, ULONG  ulDescripToSetMap, ULONG  ulDescripToClearMap);
 VOID    RFLUpdateDisplayByMajorMinorClass (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR fbSaveControl);
