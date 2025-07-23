@@ -150,7 +150,7 @@ VOID PmgWinFinalize( VOID )
 *
 **************************************************************************
 */
-USHORT  PmgWinPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
+USHORT  PmgWinPrint(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen)
 {
 	int     i, j = 0, k = 0;
 	BOOL    bS, bD, bSD;

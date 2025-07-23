@@ -149,7 +149,7 @@ VOID PmgOPOSFinalize( VOID )
 *
 **************************************************************************
 */
-USHORT  PmgOPOSPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
+USHORT  PmgOPOSPrint(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen)
 {
 	TCHAR   prtBuff[MAX_PRINT_BUFFER] = {0};
 	TCHAR*	pStop;
@@ -1136,7 +1136,7 @@ static int createPrintBuffer(TCHAR* outBuff, const TCHAR* inBuff, int lineLength
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
-USHORT  PmgCOMPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
+USHORT  PmgCOMPrint(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen)
 {
 	TCHAR   prtBuff[MAX_PRINT_BUFFER] = { 0 };
 	TCHAR   tmpBuff[128] = { 0 };

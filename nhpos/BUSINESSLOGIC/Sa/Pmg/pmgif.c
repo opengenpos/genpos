@@ -66,7 +66,7 @@ typedef struct {
 	VOID    (*PmgFinalize) (VOID);
 	VOID    (*PmgStartReceipt) ( VOID );
 	VOID    (*PmgEndReceipt) ( VOID );
-	USHORT  (*PmgPrint) (USHORT, TCHAR *, USHORT);
+	USHORT  (*PmgPrint) (USHORT, CONST TCHAR *, USHORT);
 	VOID    (*PmgWait) (VOID);
 	USHORT  (*PmgBeginSmallValidation) (USHORT);
 	USHORT  (*PmgEndSmallValidation) (USHORT);
@@ -290,7 +290,7 @@ VOID PmgInitialize( VOID )
 	USHORT usFunc = 0;
 
 	usFunc = BlFwIfGetPrintType();
-	if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgInitialize) {
+	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgInitialize) {
 		printerfuncs[usFunc].PmgInitialize ();
 	}
 }
@@ -312,7 +312,7 @@ VOID PmgFinalize( VOID )
 	USHORT usFunc = 0;
 
 	usFunc = BlFwIfGetPrintType();
-	if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgFinalize) {
+	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgFinalize) {
 		printerfuncs[usFunc].PmgFinalize ();
 	}
 	return;
@@ -335,7 +335,7 @@ VOID PmgStartReceipt( VOID )
 	USHORT usFunc = 0;
 
 	usFunc = BlFwIfGetPrintType();
-	if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgStartReceipt) {
+	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgStartReceipt) {
 		if (printerfuncs[usFunc].PmgStartReceipt)
 		{
 			printerfuncs[usFunc].PmgStartReceipt ();
@@ -362,7 +362,7 @@ VOID PmgEndReceipt( VOID )
 	USHORT usFunc = 0;
 
 	usFunc = BlFwIfGetPrintType();
-	if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndReceipt) {
+	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndReceipt) {
 		if (printerfuncs[usFunc].PmgEndReceipt)
 		{
 			printerfuncs[usFunc].PmgEndReceipt ();
@@ -391,8 +391,8 @@ VOID PmgEndReceipt( VOID )
 **************************************************************************
 */
 #if defined(PmgPrint)
-USHORT  PmgPrint_Special(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen);
-USHORT  PmgPrint_Debug (USHORT usPrtType, TCHAR *pucBuff, USHORT usLen, char *aszFilePath, int nLineNo)
+USHORT  PmgPrint_Special(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen);
+USHORT  PmgPrint_Debug (USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen, char *aszFilePath, int nLineNo)
 {
 #undef PmgPrint
 	char xBuff[128];
@@ -403,9 +403,9 @@ USHORT  PmgPrint_Debug (USHORT usPrtType, TCHAR *pucBuff, USHORT usLen, char *as
 	NHPOS_NONASSERT_TEXT(xBuff);
 	return PmgPrint_Special(usPrtType, pucBuff, usLen);
 }
-USHORT  PmgPrint_Special(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
+USHORT  PmgPrint_Special(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen)
 #else
-USHORT  PmgPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
+USHORT  PmgPrint(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen)
 #endif
 {
 	USHORT usFunc = 0;
@@ -413,7 +413,7 @@ USHORT  PmgPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrint) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrint) {
 			return printerfuncs[usFunc].PmgPrint (usPrtType,pucBuff, usLen);
 		}
 	}
@@ -451,7 +451,7 @@ USHORT  PmgDblShrdPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
 	TRANITEMIZERS       *WorkTI;
 
 	usFunc = BlFwIfGetPrintType();
-	if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrint) {
+	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrint) {
 
 		TrnGetTI(&WorkTI);
 		WorkTI->blDblShrdPrinting = TRUE;
@@ -491,8 +491,8 @@ USHORT PmgPrintf(USHORT usPrtType, const TCHAR *pszFormat, ...)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrint) {
-			usLen = _RflFormStr(pszFormat, (SHORT *)(&pszFormat + 1), pszTmpBuff, 255);   // PmgPrintf() function to print format
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrint) {
+			usLen = _RflFormStr(pszFormat, (VOID *)(&pszFormat + 1), pszTmpBuff, 255);   // PmgPrintf() function to print format
 			return printerfuncs[usFunc].PmgPrint (usPrtType, pszTmpBuff, usLen);
 		}
 	}
@@ -520,7 +520,7 @@ VOID PmgWait( VOID )
 	USHORT usFunc = 0;
 
 	usFunc = BlFwIfGetPrintType();
-	if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgWait) {
+	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgWait) {
 		printerfuncs[usFunc].PmgWait ();
 	}
 }
@@ -566,7 +566,7 @@ USHORT PmgBeginSmallValidation(USHORT usPrtType)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgBeginSmallValidation) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgBeginSmallValidation) {
 			return printerfuncs[usFunc].PmgBeginSmallValidation (usPrtType);
 		}
 	}
@@ -596,7 +596,7 @@ USHORT PmgEndSmallValidation(USHORT usPrtType)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndSmallValidation) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndSmallValidation) {
 			return printerfuncs[usFunc].PmgEndSmallValidation (usPrtType);
 		}
 	}
@@ -627,7 +627,7 @@ USHORT PmgBeginValidation(USHORT usPrtType)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgBeginValidation) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgBeginValidation) {
 			return printerfuncs[usFunc].PmgBeginValidation (usPrtType);
 		}
 	}
@@ -657,7 +657,7 @@ USHORT PmgEndValidation(USHORT usPrtType)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndValidation) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndValidation) {
 			return printerfuncs[usFunc].PmgEndValidation (usPrtType);
 		}
 	}
@@ -705,7 +705,7 @@ USHORT PmgFeed(USHORT usPrtType, USHORT usLine)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgFeed) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgFeed) {
 			return printerfuncs[usFunc].PmgFeed (usPrtType,usLine);
 		}
 	}
@@ -736,7 +736,7 @@ USHORT PmgBeginImportant(USHORT usPrtType)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgBeginImportant) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgBeginImportant) {
 			return printerfuncs[usFunc].PmgBeginImportant (usPrtType);
 		}
 	}
@@ -766,7 +766,7 @@ USHORT PmgEndImportant(USHORT usPrtType)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndImportant) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndImportant) {
 			return printerfuncs[usFunc].PmgEndImportant (usPrtType);
 		}
 	}
@@ -815,7 +815,7 @@ USHORT PmgGetStatus(USHORT usPrtType, USHORT *pfbStatus)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgGetStatus) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgGetStatus) {
 			return printerfuncs[usFunc].PmgGetStatus (usPrtType, pfbStatus);
 		}
 	}
@@ -849,7 +849,7 @@ USHORT PmgGetStatusOnly(USHORT usPrtType, USHORT *pfbStatus)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgGetStatusOnly) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgGetStatusOnly) {
 			return printerfuncs[usFunc].PmgGetStatusOnly (usPrtType, pfbStatus);
 		}
 	}
@@ -883,7 +883,7 @@ USHORT PmgPrtConfig(USHORT usPrtType, USHORT *pusColumn, USHORT *pfbStatus)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrtConfig) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrtConfig) {
 			return printerfuncs[usFunc].PmgPrtConfig (usPrtType, pusColumn, pfbStatus);
 		}
 	}
@@ -1029,7 +1029,7 @@ USHORT  PmgFont( USHORT usPrtType, USHORT usFont)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgFont) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgFont) {
 			return printerfuncs[usFunc].PmgFont (usPrtType, usFont);
 		}
 	}
@@ -1062,7 +1062,7 @@ LONG  PmgGetSetCap( USHORT usPrtType, USHORT usPrtCap, LONG lValue)
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgGetSetPrtCap) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgGetSetPrtCap) {
 			return printerfuncs[usFunc].PmgGetSetPrtCap (usPrtType, usPrtCap, lValue);
 		}
 	}
@@ -1095,7 +1095,7 @@ USHORT  PmgPrintBarCode(USHORT usPrtType, TCHAR *pucBuff, ULONG ulTextFlags, ULO
 	if ((usPrtType & PMG_PRT_WEB_MASK) != PMG_PRT_WEB_FILE)
 	{
 		usFunc = BlFwIfGetPrintType();
-		if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrintBarCode) {
+		if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrintBarCode) {
 			return printerfuncs[usFunc].PmgPrintBarCode (usPrtType, pucBuff, ulTextFlags, ulCodeFlags);
 		}
 	}
@@ -1127,7 +1127,7 @@ VOID PmgSetValWaitCount(USHORT usRetryCount)
 	USHORT usFunc = 0;
 
 	usFunc = BlFwIfGetPrintType();
-	if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgSetValWaitCount) {
+	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgSetValWaitCount) {
 		 printerfuncs[usFunc].PmgSetValWaitCount (usRetryCount);
 	}
 }   
@@ -1148,7 +1148,7 @@ VOID PmgBeginTransaction( SHORT sType, ULONG ulTransNo )
 	USHORT usFunc = 0;
 
 	usFunc = BlFwIfGetPrintType();
-	if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgBeginTransaction) {
+	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgBeginTransaction) {
 		printerfuncs[usFunc].PmgBeginTransaction (sType,ulTransNo);
 	}
 	return;
@@ -1170,7 +1170,7 @@ VOID PmgEndTransaction( SHORT sType, ULONG ulTransNo )
 	USHORT usFunc = 0;
 
 	usFunc = BlFwIfGetPrintType();
-	if (usFunc && usFunc <= MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndTransaction) {
+	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgEndTransaction) {
 		printerfuncs[usFunc].PmgEndTransaction (sType,ulTransNo);
 	}
 	return;

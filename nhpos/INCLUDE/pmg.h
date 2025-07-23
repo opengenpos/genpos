@@ -438,7 +438,7 @@
 // this is typically for Windows connected printers
 VOID    PmgWinInitialize( VOID );
 VOID    PmgWinFinalize( VOID );
-USHORT  PmgWinPrint( USHORT, TCHAR *, USHORT);
+USHORT  PmgWinPrint( USHORT, CONST TCHAR *, USHORT);
 VOID    PmgWinWait( VOID );
 USHORT  PmgWinBeginValidation( USHORT );
 USHORT  PmgWinEndValidation( USHORT );
@@ -467,7 +467,7 @@ VOID	PmgWinEndTransaction( SHORT sType, ULONG ulTransNo );
 // 
 VOID    PmgFileInitialize( VOID );
 VOID    PmgFileFinalize( VOID );
-USHORT  PmgFilePrint( USHORT, TCHAR *, USHORT);
+USHORT  PmgFilePrint( USHORT, CONST TCHAR *, USHORT);
 VOID    PmgFileWait( VOID );
 USHORT  PmgFileBeginValidation( USHORT );
 USHORT  PmgFileEndValidation( USHORT );
@@ -500,7 +500,7 @@ TCHAR  *PmgFileGetThisFileNamePrt (USHORT usPrtType);
 // 
 VOID    PmgConnEngineInitialize( VOID );
 VOID    PmgConnEngineFinalize( VOID );
-USHORT  PmgConnEnginePrint( USHORT, TCHAR *, USHORT);
+USHORT  PmgConnEnginePrint( USHORT, CONST TCHAR *, USHORT);
 VOID    PmgConnEngineWait( VOID );
 USHORT  PmgConnEngineBeginValidation( USHORT );
 USHORT  PmgConnEngineEndValidation( USHORT );
@@ -529,7 +529,7 @@ VOID	PmgConnEngineEndTransaction( SHORT sType, ULONG ulTransNo );
 // this is typically for NCR receipt and validation printers
 VOID    PmgOPOSInitialize( VOID );
 VOID    PmgOPOSFinalize( VOID );
-USHORT  PmgOPOSPrint( USHORT, TCHAR *, USHORT);
+USHORT  PmgOPOSPrint( USHORT, CONST TCHAR *, USHORT);
 VOID    PmgOPOSWait( VOID );
 USHORT  PmgOPOSBeginValidation( USHORT );
 USHORT  PmgOPOSEndValidation( USHORT );
@@ -561,7 +561,7 @@ VOID	PmgOPOSEndTransaction( SHORT sType, ULONG ulTransNo );
 // this is typically for NCR receipt and validation printers
 VOID    PmgCOMInitialize(VOID);
 VOID    PmgCOMFinalize(VOID);
-USHORT  PmgCOMPrint(USHORT, TCHAR *, USHORT);
+USHORT  PmgCOMPrint(USHORT, CONST TCHAR *, USHORT);
 VOID    PmgCOMWait(VOID);
 USHORT  PmgCOMBeginValidation(USHORT);
 USHORT  PmgCOMEndValidation(USHORT);
@@ -592,7 +592,7 @@ VOID	PmgCOMEndTransaction(SHORT sType, ULONG ulTransNo);
 // this is typically for Zebra Bluetooth receipt printers
 VOID    PmgZEBRAInitialize( VOID );
 VOID    PmgZEBRAFinalize( VOID );
-USHORT  PmgZEBRAPrint( USHORT, TCHAR *, USHORT);
+USHORT  PmgZEBRAPrint( USHORT, CONST TCHAR *, USHORT);
 VOID    PmgZEBRAWait( VOID );
 USHORT  PmgZEBRABeginValidation( USHORT );
 USHORT  PmgZEBRAEndValidation( USHORT );
@@ -624,10 +624,10 @@ VOID	PmgZEBRAEndTransaction( SHORT sType, ULONG ulTransNo );
 // to do the actual printer operation requrested.
 VOID    PmgInitialize( VOID );
 #if 0
-USHORT  PmgPrint_Debug(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen, char *aszFilePath, int nLineNo);               /* Convert error code  */
+USHORT  PmgPrint_Debug(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen, char *aszFilePath, int nLineNo);               /* Convert error code  */
 #define PmgPrint(usPrtType,pucBuff,usLen) PmgPrint_Debug((usPrtType), (pucBuff), (usLen), __FILE__, __LINE__)
 #else
-USHORT   PmgPrint( USHORT, TCHAR *, USHORT);
+USHORT   PmgPrint( USHORT, CONST TCHAR *, USHORT);
 #endif
 USHORT  PmgDblShrdPrint( USHORT, TCHAR *, USHORT);
 USHORT  PmgPrintf( USHORT, const TCHAR *, ...);

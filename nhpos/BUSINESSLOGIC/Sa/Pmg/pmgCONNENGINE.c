@@ -155,7 +155,7 @@ VOID PmgConnEngineFinalize( VOID )
 *
 **************************************************************************
 */
-USHORT  PmgConnEnginePrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
+USHORT  PmgConnEnginePrint(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen)
 {
 
 	TCHAR  *pStop, *pPrtType, *pPrtTypeNormal;

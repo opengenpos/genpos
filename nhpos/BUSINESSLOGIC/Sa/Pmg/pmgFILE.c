@@ -261,7 +261,7 @@ VOID PmgFileFinalize( VOID )
 *			     in the OPOS print functionality.  Richard Chambers, Nov-20-2014
 **************************************************************************
 */
-USHORT  PmgFilePrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
+USHORT  PmgFilePrint(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen)
 {
 	int     j = 0, k = 0;
 	FILE    *pFileHandle = 0;

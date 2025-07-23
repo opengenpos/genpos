@@ -167,7 +167,7 @@ VOID PmgZEBRAFinalize( VOID )
 *
 **************************************************************************
 */
-USHORT  PmgZEBRAPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
+USHORT  PmgZEBRAPrint(USHORT usPrtType, CONST TCHAR *pucBuff, USHORT usLen)
 {
 
 	TCHAR  *pStop, *pPrtType, *pPrtTypeNormal;
