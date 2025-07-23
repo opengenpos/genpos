@@ -301,6 +301,63 @@ USHORT _RflFormStr(CONST TCHAR *lpszFormat, VOID *pvArgs, TCHAR *pszUser, USHORT
         }
 
         /* --- check maximum of number of string --- */
+
+        // decimal and comma print format modifiers are only used with currency formats.
+        //
+        // decimal and comma print format is of the form "%.2#3l$" where:
+        //   - . is the decimal format indicator
+        //   - 2 is the number of decimal places
+        //   - # is the comma format indicator
+        //   - 3 is digits per separator
+        //   - l is the variable type
+        //   - $ is to print as currency.
+
+#if 1
+        // new source code to process the decimal and comma operators in either order
+        // so decimal can be first or comma can be first if both are used.
+        // Only a single specifier can be used. Also both can be left out.
+        sFmax = 0;                                  /* initialize          */
+        fsDecimal = FALSE;
+        sComma = _RflEdit.sComma;
+        do {
+            switch (*lpszFmt) {
+            case  _T('.'):                            /* place a decimal point in the currency output     */
+                fsDecimal = TRUE;
+                if (*(++lpszFmt) == _T('*')) {        /* value in argument list   */
+                    sFmax = (USHORT)(*plArgs++);
+                    lpszFmt++;
+                }
+                else {                                /* value in format specifier    */
+                    while (_T('0') <= *lpszFmt && *lpszFmt <= _T('9')) {
+                        sFmax = sFmax * 10 + *lpszFmt++ - 0x30;
+                    }
+                }
+                break;
+            case _T('#'):                             /* place commas in the currency output */
+                if (*(++lpszFmt) == _T('*')) {              /* value in argument list */
+                    sComma = (*plArgs != 0xFF) ? (USHORT)(*plArgs) : (_RFL_INIT_COMMA);
+                    plArgs++;
+                    lpszFmt++;
+                }
+                else if (_T('0') <= *lpszFmt && *lpszFmt <= _T('9')) {     // value in format specifier
+                    sComma = 0;
+                    while (_T('0') <= *lpszFmt && *lpszFmt <= _T('9')) {
+                        sComma = sComma * 10 + *lpszFmt++ - 0x30;
+                    }
+                }
+                else {
+                    sComma = _RFL_INIT_COMMA;
+                }
+                break;
+            default:
+                // It's none of the special format modifiers so we are done.
+                // The while conditional will fail and processing continue.
+                break;
+            }
+        } while (*lpszFmt == _T('.') || *lpszFmt == _T('#'));
+#else
+        // old source code that required the decimal and the comma format specifiers
+        // to be in a particular order.
         sFmax = 0;                                  /* initialize          */
         if (*lpszFmt == _T('.')) {                      /* use max. number     */
             fsDecimal = TRUE;
@@ -319,7 +376,7 @@ USHORT _RflFormStr(CONST TCHAR *lpszFormat, VOID *pvArgs, TCHAR *pszUser, USHORT
         /* --- check comma option --- */
         if (*lpszFmt == _T('#')) {
             if (*(++lpszFmt) == _T('*')) {              /* value in argument */
-                sComma = (*plArgs != 0xFF) ? (*plArgs) : (_RFL_INIT_COMMA);
+                sComma = (*plArgs != 0xFF) ? (USHORT)(*plArgs) : (_RFL_INIT_COMMA);
                 plArgs++;
                 lpszFmt++;
             } else if (_T('0') <= *lpszFmt && *lpszFmt <= _T('9')) {
@@ -333,9 +390,9 @@ USHORT _RflFormStr(CONST TCHAR *lpszFormat, VOID *pvArgs, TCHAR *pszUser, USHORT
         } else {                                    /* use defaule value */
             sComma = _RflEdit.sComma;
         }
-
+#endif
         /* ---------- type prefix ---------- */
-		uchMask = 0;  // init the mask indicator to show no masking.
+		uchMask = 0;  // init the mask indicator to show no masking, format specifier M
 
         if (*lpszFmt == _T('l')) {
             usLong = 1;
