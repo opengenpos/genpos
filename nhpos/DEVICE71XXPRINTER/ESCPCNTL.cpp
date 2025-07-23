@@ -186,12 +186,12 @@ SHORT EscpLoopTest(ESCP *pEscp, UCHAR  *puchBuff, SHORT sLen)
 {
     SHORT sStatus;
     UCHAR uchStatus;
-    SHORT sTmplen;
+    USHORT usTmplen;
     CHAR  Escv[] = "\x1bv";
 //    CHAR  Escv[] = "\x1d\x05";
 
-    sTmplen = strlen(Escv);
-    sStatus = PifWriteCom(pEscp->sSio, Escv, sTmplen);
+    usTmplen = (USHORT)strlen(Escv);
+    sStatus = PifWriteCom(pEscp->sSio, Escv, usTmplen);
     if (sStatus < 0) {
         return (sStatus);
     }

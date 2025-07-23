@@ -1069,7 +1069,7 @@ USHORT  PmgResetPrt(USHORT usPrtType)
         USHORT usLength;                      /* length of command buffer to transmit */
 
         /* issue the realtime command 'Recover and clear buffers' */
-        usLength = strlen(DleEnq);
+        usLength = (USHORT)strlen(DleEnq);
         sRc = PifWriteCom(pPrtCtrl.hPort, DleEnq, usLength);
         if (sRc < 0 || sRc != usLength) {
             return FALSE;

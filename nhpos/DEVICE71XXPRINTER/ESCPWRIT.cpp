@@ -94,7 +94,7 @@ SHORT EscpWriteCom(SHORT sDummy, VOID  *pBuff, SHORT sCount)
     PifReleaseSem(pEscp->sSem);                   /* 222task switch on */
     if (sResult == sCount) {
        /* send 'Esc v' */
-        sLength = strlen(Escv);
+        sLength = (USHORT)strlen(Escv);
         PifRequestSem(pEscp->sSem);                   /* 222task switch off */
 		sStatus = PifWriteCom(pEscp->sSio, Escv, sLength);
 	    if (sStatus == PIF_ERROR_COM_POWER_FAILURE) {

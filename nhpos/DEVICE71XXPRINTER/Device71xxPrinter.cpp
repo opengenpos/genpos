@@ -180,7 +180,7 @@ DWORD WINAPI Write(
 		DWORD	dwResult;
 		CHAR    lineReset[] = "\x1b|1C";
 
-		dwResult = DevPmgPrint(PMG_PRT_RECEIPT, (UCHAR *)lineReset, strlen(lineReset));
+		dwResult = DevPmgPrint(PMG_PRT_RECEIPT, (UCHAR *)lineReset, (USHORT)strlen(lineReset));
 	}
 	dwResult = DevPmgPrint(PMG_PRT_RECEIPT, (UCHAR *)lpBuffer, (USHORT)dwNumberOfBytesToWrite);
 
