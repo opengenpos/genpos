@@ -423,10 +423,10 @@ VOID   RflCast32to64(HUGEINT *, LONG);
 /* :RflForm.c */  
 #if 0
 #pragma message("  ====++++====   _RflFormStr_Debug() is ENABLED     ====++++====")
-USHORT _RflFormStr_Debug(const TCHAR FAR *pszFmt, VOID *psArgs, TCHAR *pszStr, USHORT usLength, char *aszFilePath, int nLineNo);
+USHORT _RflFormStr_Debug(const TCHAR  *pszFmt, VOID *psArgs, TCHAR *pszStr, USHORT usLength, char *aszFilePath, int nLineNo);
 #define _RflFormStr(pszFmt,psArgs,pszStr,usLength) _RflFormStr_Debug(pszFmt, psArgs, pszStr, usLength, __FILE__,__LINE__)
 #else
-USHORT _RflFormStr(const TCHAR FAR *pszFmt, VOID *psArgs, TCHAR *pszStr, USHORT usLength);
+USHORT _RflFormStr(const TCHAR  *pszFmt, VOID *psArgs, TCHAR *pszStr, USHORT usLength); // if pszFmt is const the cast psArgs to void *
 #endif
 UCHAR  _RflSetDecimal(UCHAR);         /* :RflForm.c */
 UCHAR  _RflSetComma(UCHAR);           /* :RflForm.c */

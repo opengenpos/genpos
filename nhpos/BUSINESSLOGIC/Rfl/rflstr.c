@@ -135,9 +135,9 @@ USHORT   RflSPrintf_Debug_line(char *aszFilePath, int nLineNo)
 	return RflSPrintf_Debug_usRetStatus;
 }
 
-USHORT   RflSPrintf_Debug(TCHAR *pszDest, USHORT usDestLen, const TCHAR FAR *pszFormat, ...)
+USHORT   RflSPrintf_Debug(TCHAR *pszDest, USHORT usDestLen, const TCHAR *pszFormat, ...)
 {
-    RflSPrintf_Debug_usRetStatus = _RflFormStr(pszFormat, (SHORT *)( (UCHAR *)&pszFormat + sizeof(pszFormat) ), pszDest, usDestLen);
+    RflSPrintf_Debug_usRetStatus = _RflFormStr(pszFormat, (VOID *)(&pszFormat + 1), pszDest, usDestLen);
 
 	if (RflSPrintf_Debug_usRetStatus >= 0x7fff) {
 		char xBuffer[128];
@@ -149,11 +149,11 @@ USHORT   RflSPrintf_Debug(TCHAR *pszDest, USHORT usDestLen, const TCHAR FAR *psz
 }
 
 #else
-USHORT  RflSPrintf(TCHAR *pszDest, USHORT usDestLen, const TCHAR FAR *pszFormat, ...)
+USHORT  RflSPrintf(TCHAR *pszDest, USHORT usDestLen, const TCHAR  *pszFormat, ...)
 {
 	NHPOS_ASSERT(usDestLen < MAX_COUNT_ASSERT);
 
-    return( _RflFormStr(pszFormat, (SHORT *)( (UCHAR *)&pszFormat + sizeof(pszFormat) ), pszDest, usDestLen) );
+    return( _RflFormStr(pszFormat, (VOID *)(&pszFormat + 1), pszDest, usDestLen) );
 }
 #endif
 

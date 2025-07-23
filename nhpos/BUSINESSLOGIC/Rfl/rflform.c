@@ -219,8 +219,8 @@ USHORT _RflFormStr(CONST TCHAR *lpszFormat, VOID *pvArgs, TCHAR *pszUser, USHORT
     SHORT   sFmin, sFmax, sDecimal, sComma, sLeading, sLength, sCount;
     SHORT   fsDecimal, fsLeftJust;
     USHORT  usLong, usPos = 0;
-    TCHAR   *pszBuf, szBuf[_RFL_LEN_BUF + 1], szWork[10 + 1];
-    CONST   TCHAR FAR *lpszFmt = lpszFormat;
+    TCHAR* pszBuf, szBuf[_RFL_LEN_BUF + 1] = { 0 }, szWork[10 + 1] = { 0 };
+    CONST   TCHAR  *lpszFmt = lpszFormat;
     SHORT   sHigh;
     LONG    lLow;
     D13DIGITS d13ArgVal;
@@ -230,9 +230,6 @@ USHORT _RflFormStr(CONST TCHAR *lpszFormat, VOID *pvArgs, TCHAR *pszUser, USHORT
 
 	if (usLength < 1)
 		return 0;
-
-    memset(szBuf,0x00,sizeof(szBuf));
-	memset(szWork,0x00,sizeof(szWork));
 
 	if (lpszFormat == 0 || pszUser == 0) {
 		PifAbort(MODULE_RFL_FORMSTR, FAULT_INVALID_DATA);
