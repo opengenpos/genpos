@@ -45,19 +45,15 @@
 
 #include	<tchar.h>
 #include <ecr.h>
-/* #include <pif.h> */
 #include <paraequ.h> 
 #include <para.h>
 #include <csttl.h>
-/* #include <cswai.h> */
 #include <csop.h>
 #include <report.h> 
 #include <maint.h> 
-/* #include <regstrct.h> */
-/* #include <transact.h> */
 #include <pmg.h>
+#include <prt.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*
@@ -78,7 +74,6 @@
 
 VOID PrtThrmSupStoRegNo( PARASTOREGNO *pData )
 {
-
     /* define thermal print format */
     static const TCHAR  auchPrtThrmSupStoRegNo[] = _T("%18u  /  %04u%03u");
 
@@ -89,7 +84,6 @@ VOID PrtThrmSupStoRegNo( PARASTOREGNO *pData )
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
 
         /* print ADDRESS / STORE/REGISTER No. */
-
         PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
                   auchPrtThrmSupStoRegNo,           /* format */
                   ( USHORT)pData->uchAddress,       /* address */
@@ -100,7 +94,6 @@ VOID PrtThrmSupStoRegNo( PARASTOREGNO *pData )
     if (pData->usPrintControl & PRT_JOURNAL) {  /* EJ */
 
         /* print ADDRESS / STORE/REGISTER No. */
-
         PrtPrintf(PMG_PRT_JOURNAL,                  /* printer type */
                   auchPrtSupStoRegNo,               /* format */
                   ( USHORT)pData->uchAddress,       /* address */

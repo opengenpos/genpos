@@ -134,18 +134,9 @@ UCHAR   fbPrtAbortStatus;                       /* abort key entry status */
 UCHAR   fbPrtAltrSav;                           /* save alternation status */
 UCHAR   fbPrtAbortSav;                          /* save abort key entry status */
 UCHAR   fbPrtShrPrint;                          /* not print status */                        
-USHORT  usPrtShrPmgSem;
 
 PRTCONTROL PrtCompNo;                           /* print status save area */
 
-/* -- for display on the fly -- */
-PRTDFLIF    PrtDflIf;                           /* display data buffer */
-UCHAR   fbPrtDflErr;                            /* error displayed or not */
-UCHAR   uchPrtDflTypeSav;                       /* save transaction type */
-
-//now using MLD_NO_DISP_PLU_LOW and MLD_NO_DISP_PLU_HIGH (ecr.h)
-//CONST TCHAR auchPrtNoPrintPLULow[]  = _T("00000000099500"); /* 2172 */
-//CONST TCHAR auchPrtNoPrintPLUHigh[] = _T("00000000099999"); /* 2172 */
 
 /**
 ;========================================================================
@@ -154,9 +145,7 @@ UCHAR   uchPrtDflTypeSav;                       /* save transaction type */
 **/
 USHORT   PrtPrintLine(USHORT usPrtControl, TCHAR *pLineToPrint)
 {
-	USHORT usLen;
-
-	usLen = tcharlen(pLineToPrint);
+	USHORT usLen = tcharlen(pLineToPrint);
 
 	if (usLen < 0 || usLen > 255)
 		return PMG_SUCCESS;
@@ -173,9 +162,7 @@ USHORT   PrtPrintLine(USHORT usPrtControl, TCHAR *pLineToPrint)
 // an NCR receipt printer sees this as print an empty string so it does nothing.
 USHORT   PrtPrintLineImmediate (USHORT usPrtControl, TCHAR *pLineToPrint)
 {
-	USHORT usLen;
-
-	usLen = tcharlen(pLineToPrint);
+	USHORT usLen = tcharlen(pLineToPrint);
 
 	if (usLen < 0 || usLen > 255)
 		return PMG_SUCCESS;
@@ -200,7 +187,7 @@ USHORT   PrtPrintLineImmediate (USHORT usPrtControl, TCHAR *pLineToPrint)
 USHORT   PrtPrintItem(TRANINFORMATION  *pTran, VOID *pItem)
 {
 
-    switch ( ((PRTITEMDATA *)pItem)->uchMajorClass ) {
+    switch ( ((ITEMCLASSHEADER *)pItem)->uchMajorClass ) {
 
 /*-------------------*\
   R E G    M O D E 
@@ -585,9 +572,9 @@ USHORT   PrtPrintCpEpt(TRANINFORMATION  *pTran, VOID *pItem)
 {
     USHORT  usMedia;
 
-    switch ( ((PRTITEMDATA *)pItem)->uchMajorClass ) {
+    switch ( ((ITEMCLASSHEADER *)pItem)->uchMajorClass ) {
     case CLASS_ITEMPRINT:                    // PrtPrintCpEpt() - trailer , header , ticket (ITEMPRINT *)
-        if (((PRTITEMDATA *)pItem)->uchMinorClass != CLASS_PROMOTION) {
+        if (((ITEMCLASSHEADER *)pItem)->uchMinorClass != CLASS_PROMOTION) {
             PrtItemPrint(pTran, pItem);
         }
         break;
@@ -680,7 +667,7 @@ USHORT   PrtCheckTenderMedia(ITEMTENDER *pItem)
 VOID   PrtDispItem(TRANINFORMATION  *pTran, VOID *pItem)
 {
 
-    switch ( ((PRTITEMDATA *)pItem)->uchMajorClass ) {
+    switch ( ((ITEMCLASSHEADER *)pItem)->uchMajorClass ) {
 
     case CLASS_ITEMPRINT:                    // PrtDispItem() - trailer , header , ticket (ITEMPRINT *)
         PrtDispPrint(pTran, pItem);
@@ -747,44 +734,44 @@ VOID   PrtDispItem(TRANINFORMATION  *pTran, VOID *pItem)
 */
 USHORT   PrtDispItemForm(TRANINFORMATION  *pTran, VOID *pItem, TCHAR *puchBuffer)
 {
-    USHORT usLine, i;
+    USHORT usLine = 0;
 
-    switch ( ((PRTITEMDATA *)pItem)->uchMajorClass ) {
+    switch ( ((ITEMCLASSHEADER *)pItem)->uchMajorClass ) {
 
     case CLASS_ITEMPRINT:               /* trailer , header , ticket */
-        usLine = PrtDispPrintForm(pTran, (ITEMPRINT *)pItem, puchBuffer);
+        usLine = PrtDispPrintForm(pTran, pItem, puchBuffer);
         break;
 
     case CLASS_ITEMSALES:               /* plu, dept, setmenu, mod.discount */
-        usLine = PrtDispSalesForm(pTran, (ITEMSALES *)pItem, puchBuffer);
+        usLine = PrtDispSalesForm(pTran, pItem, puchBuffer);
         break;
 
     case CLASS_UIFREGSALES:             /* print modifier */
-        usLine = PrtDflPrtModForm(pTran, (UIFREGSALES *)pItem, puchBuffer);
+        usLine = PrtDflPrtModForm(pTran, pItem, puchBuffer);
         break;
 
     case CLASS_ITEMDISC:                /* discount */
-        usLine = PrtDispDiscForm(pTran, (ITEMDISC *)pItem, puchBuffer);
+        usLine = PrtDispDiscForm(pTran, pItem, puchBuffer);
         break;
 
     case CLASS_ITEMCOUPON:              /* coupon */
-        usLine = PrtDispCouponForm( pTran, ( ITEMCOUPON * )pItem, puchBuffer);
+        usLine = PrtDispCouponForm( pTran, pItem, puchBuffer);
         break;
 
     case CLASS_ITEMMISC:                /* nosale, ROA, paid out... */
-        usLine = PrtDispMiscForm(pTran, (ITEMMISC *)pItem, puchBuffer);
+        usLine = PrtDispMiscForm(pTran, pItem, puchBuffer);
         break;
 
     case CLASS_ITEMTENDER:              /* tender */
-        usLine = PrtDispTenderForm(pTran, (ITEMTENDER *)pItem, puchBuffer);
+        usLine = PrtDispTenderForm(pTran, pItem, puchBuffer);
         break;
 
     case CLASS_ITEMAFFECTION:           /* tax */
-        usLine = PrtDispAffectionForm(pTran, (ITEMAFFECTION *)pItem, puchBuffer);
+        usLine = PrtDispAffectionForm(pTran, pItem, puchBuffer);
         break;
 
     case CLASS_ITEMTOTAL:               /* total */
-        usLine = PrtDispTotalForm(pTran, (ITEMTOTAL *)pItem, puchBuffer);
+        usLine = PrtDispTotalForm(pTran, pItem, puchBuffer);
         break;
 /*
     case CLASS_ITEMMULTI:               / check paid /
@@ -792,11 +779,11 @@ USHORT   PrtDispItemForm(TRANINFORMATION  *pTran, VOID *pItem, TCHAR *puchBuffer
         break;
 */
     case CLASS_ITEMMODIFIER:            /* modifier */
-        usLine = PrtDispModifierForm(pTran, (ITEMMODIFIER *)pItem, puchBuffer);
+        usLine = PrtDispModifierForm(pTran, pItem, puchBuffer);
         break;
 
     case CLASS_ITEMTRANSOPEN:           /* newcheck , reorder */
-        usLine = PrtDispTransOpenForm(pTran, (ITEMTRANSOPEN *)pItem, puchBuffer);
+        usLine = PrtDispTransOpenForm(pTran, pItem, puchBuffer);
         break;
 
     default:
@@ -804,17 +791,17 @@ USHORT   PrtDispItemForm(TRANINFORMATION  *pTran, VOID *pItem, TCHAR *puchBuffer
         break;
     }
 #if 1	/* just debug */
-    switch ( ((PRTITEMDATA *)pItem)->uchMajorClass ) {
+    switch ( ((ITEMCLASSHEADER *)pItem)->uchMajorClass ) {
     case CLASS_ITEMSALES:               /* plu, dept, setmenu, mod.discount */
     case CLASS_UIFREGSALES:             /* print modifier */
     
-	    switch ( ((PRTITEMDATA *)pItem)->uchMinorClass ) {
+	    switch ( ((ITEMCLASSHEADER *)pItem)->uchMinorClass ) {
 	    case CLASS_DEPTMODDISC:             /* dept modifiered disc. */
     	case CLASS_PLUMODDISC:              /* plu modifiered disc. */
 	    case CLASS_SETMODDISC:              /* setmenu modifiered disc. */
 
 	    	/* fill space, if NULL exists */
-	    	for (i=0; i<usLine*(PRT_DFL_LINE+1); i++) {
+	    	for (USHORT i = 0; i < usLine * (PRT_DFL_LINE + 1); i++) {
 
     	    	if (*puchBuffer == _T('\0')) {
 
@@ -829,7 +816,7 @@ USHORT   PrtDispItemForm(TRANINFORMATION  *pTran, VOID *pItem, TCHAR *puchBuffer
 	    
 	default:
     	/* fill space, if NULL exists */
-	    for (i=0; i<usLine*(PRT_DFL_LINE+1); i++) {
+	    for (USHORT i = 0; i < usLine * (PRT_DFL_LINE + 1); i++) {
 
     	    if (*puchBuffer == _T('\0')) {
 
@@ -842,7 +829,7 @@ USHORT   PrtDispItemForm(TRANINFORMATION  *pTran, VOID *pItem, TCHAR *puchBuffer
 
 #else
     /* fill space, if NULL exists */
-    for (i=0; i<usLine*(PRT_DFL_LINE+1); i++) {
+    for (USHORT i=0; i < usLine * (PRT_DFL_LINE + 1); i++) {
 
         if (*puchBuffer == _T('\0')) {
 

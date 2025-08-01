@@ -56,9 +56,9 @@
 #include <para.h>
 #include <maint.h> 
 #include <pmg.h>
+#include <prt.h>
 #include <cpm.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*

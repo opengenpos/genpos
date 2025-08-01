@@ -84,6 +84,102 @@
 ;+        P R O G R A M    D E C L A R A T I O N s 
 ;========================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID  PrtChrgTip_TH(TRANINFORMATION  *pTran, ITEMDISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran,    -transaction information
+*            ITEMDISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none 
+*            
+** Synopsis: This function prints charge tips (thermal)
+*===========================================================================
+*/
+static VOID  PrtChrgTip_TH(TRANINFORMATION  *pTran, ITEMDISC *pItem)
+{
+    USHORT  usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);     /* print header if necessary */
+
+    PrtTHVoid(pItem->fbDiscModifier, pItem->usReasonCode);               /* void line */
+
+    PrtTHNumber(pItem->aszNumber);              /* number line */
+
+    PrtTHWaiTaxMod(PrtChrgTipID(pTran, pItem), pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);  /* waiter & taxmodifier */
+
+    PrtTHPerDisc(usAdr, pItem->uchRate, pItem->lAmount);   /* % discount */
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtChrgTip_EJ(TRANINFORMATION  *pTran, ITEMDISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran,    -transaction information
+*            ITEMDISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none 
+*            
+** Synopsis: This function prints charge tips (electric journal)
+*===========================================================================
+*/
+static VOID  PrtChrgTip_EJ(TRANINFORMATION  *pTran, ITEMDISC *pItem)
+{
+    USHORT   usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
+
+    PrtEJVoid(pItem->fbDiscModifier, pItem->usReasonCode);               /* void line */
+
+    PrtEJNumber(pItem->aszNumber);              /* number line */
+
+    PrtEJWaiTaxMod(PrtChrgTipID(pTran, pItem), pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);  /* waiter & taxmodifier */
+
+    PrtEJPerDisc(usAdr, pItem->uchRate, pItem->lAmount);   /* % discount */
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtChrgTip_SP(TRANINFORMATION *pTran, ITEMDISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*          : ITEMDISC         *pItem     -Item Data address
+*
+*   Output : none
+*   InOut  : none
+** Return  : none 
+*            
+** Synopsis: This function prints charge tips
+*===========================================================================
+*/
+static VOID PrtChrgTip_SP(TRANINFORMATION *pTran, ITEMDISC *pItem)
+{
+    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    USHORT  usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
+
+    /* -- set void mnemonic and number -- */
+    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbDiscModifier, pItem->usReasonCode, pItem->aszNumber);
+    /* -- set charge tips mnemonic and amount -- */
+    usSlipLine += PrtSPChargeTips(aszSPPrintBuff[usSlipLine], usAdr, PrtChrgTipID(pTran, pItem), pTran->TranModeQual.fsModeStatus, pItem);
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (USHORT i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtChrgTip(TRANINFORMATION  *pTran, ITEMDISC *pItem);      
@@ -131,111 +227,6 @@ VOID PrtChrgTip(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtChrgTip_TH(TRANINFORMATION  *pTran, ITEMDISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran,    -transaction information
-*            ITEMDISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none 
-*            
-** Synopsis: This function prints charge tips (thermal)
-*===========================================================================
-*/
-VOID  PrtChrgTip_TH(TRANINFORMATION  *pTran, ITEMDISC *pItem)
-{
-    USHORT  usAdr;
-
-    usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
-
-    PrtTHHead(pTran);                           /* print header if necessary */
-
-    PrtTHVoid(pItem->fbDiscModifier, pItem->usReasonCode);               /* void line */
-
-    PrtTHNumber(pItem->aszNumber);              /* number line */
-
-    PrtTHWaiTaxMod(PrtChrgTipID(pTran, pItem), pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);  /* waiter & taxmodifier */
-
-    PrtTHPerDisc(usAdr, pItem->uchRate, pItem->lAmount);   /* % discount */
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtChrgTip_EJ(TRANINFORMATION  *pTran, ITEMDISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran,    -transaction information
-*            ITEMDISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none 
-*            
-** Synopsis: This function prints charge tips (electric journal)
-*===========================================================================
-*/
-VOID  PrtChrgTip_EJ(TRANINFORMATION  *pTran, ITEMDISC *pItem)
-{
-    USHORT   usAdr;
-
-    usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
-
-    PrtEJVoid(pItem->fbDiscModifier, pItem->usReasonCode);               /* void line */
-
-    PrtEJNumber(pItem->aszNumber);              /* number line */
-
-    PrtEJWaiTaxMod(PrtChrgTipID(pTran, pItem), pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);  /* waiter & taxmodifier */
-
-    PrtEJPerDisc(usAdr, pItem->uchRate, pItem->lAmount);   /* % discount */
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtChrgTip_SP(TRANINFORMATION *pTran, ITEMDISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*          : ITEMDISC         *pItem     -Item Data address
-*
-*   Output : none
-*   InOut  : none
-** Return  : none 
-*            
-** Synopsis: This function prints charge tips
-*===========================================================================
-*/
-VOID PrtChrgTip_SP(TRANINFORMATION *pTran, ITEMDISC *pItem)
-{
-    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
-
-    USHORT  usAdr;
-
-    usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
-
-    /* -- set void mnemonic and number -- */
-    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbDiscModifier, pItem->usReasonCode, pItem->aszNumber);
-    /* -- set charge tips mnemonic and amount -- */
-    usSlipLine += PrtSPChargeTips(aszSPPrintBuff[usSlipLine], usAdr, PrtChrgTipID(pTran, pItem), pTran->TranModeQual.fsModeStatus, pItem);
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
-}
-
-/*
-*===========================================================================
 ** Format  : USHORT  PrtChrgTipID(TRANINFORMATION  *pTran, ITEMDISC *pItem);      
 *
 *   Input  : TRANINFORMATION  *pTran,    -transaction information
@@ -273,18 +264,13 @@ ULONG  PrtChrgTipID(TRANINFORMATION  *pTran, ITEMDISC *pItem)
 */
 VOID PrtDflChrgTip(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
 {
-    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1]; /* display data save area */
-    USHORT  usLineNo;                       /* number of lines to be displayed */
+    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
+    USHORT  usLineNo = 0;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
-    USHORT  usAdr;
-
-    usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
+    USHORT  usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -302,8 +288,9 @@ VOID PrtDflChrgTip(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
     usLineNo += PrtDflPerDisc(aszDflBuff[usLineNo], usAdr, pItem->uchRate, pItem->lAmount);
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- check void status -- */
     PrtDflCheckVoid(pItem->fbDiscModifier);
@@ -311,7 +298,7 @@ VOID PrtDflChrgTip(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_DISC); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -337,14 +324,11 @@ VOID PrtDflChrgTip(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
 */
 USHORT PrtDflChrgTipForm(TRANINFORMATION  *pTran, ITEMDISC  *pItem, TCHAR *puchBuffer)
 {
-    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1]; /* display data save area */
-    USHORT  usLineNo=0, i;                       /* number of lines to be displayed */
+    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
+    USHORT  usLineNo=0;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  usAdr;
+    USHORT  usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
 
-    usAdr = RflChkDiscAdr(pItem);      /* set discount mnemonic */
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -361,7 +345,7 @@ USHORT PrtDflChrgTipForm(TRANINFORMATION  *pTran, ITEMDISC  *pItem, TCHAR *puchB
 
     usLineNo += PrtDflPerDisc(aszDflBuff[usLineNo], usAdr, pItem->uchRate, pItem->lAmount);
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i=0; i<usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
     _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));

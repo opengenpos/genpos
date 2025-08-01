@@ -27,6 +27,11 @@
 *           :          :            : PrtThrmSupMakeETKFl()
 * Aug-08-99 : 03.05.00 : M.Teraki   : Remove WAITER_MODEL
 * Dec-19-02:          :R.Chambers : SR 15 for Software Security
+*
+** OpenGENPOS **
+*
+* Jul-05-25 : 02.04.00 : R.Chambers : removed zombie function declarations. include transact.h, include once
+* Jul-27-23 : 02.04.00 : R.Chambers : single definition of PRT_MAX_PERCENT in prt.h.
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -38,11 +43,28 @@
 *===========================================================================
 */
 
+#if !defined(PRTSIN_H_INCLUDED)
+
+#define PRTSIN_H_INCLUDED
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#include "transact.h"
+
 /*
 ============================================================================
             A R G U M E N T   D E C L A R A T I O N s
 ============================================================================
 */
+
+// declarations for data variables used for ETK reporting
+// and formats used for creating these strings.
+// See functions PrtThrmSupMakeString() and PrtThrmSupMakeETKFl().
+extern const TCHAR  auchThrmEtkTime[];
+extern const TCHAR  auchThrmEtkDate[];
+extern const TCHAR  auchThrmEtkAMPM[];
 
 extern TCHAR aszPrThrmInTime[7 + 1];
 extern TCHAR aszPrThrmOutTime[7 + 1];
@@ -57,8 +79,6 @@ extern TCHAR aszPrThrmWorkTime[5 + 1 + 7 + 1];  /* R3.1 */
 +                       D E F I N I T I O N S
 ============================================================================
 */
-
-#define PRT_MAX_PERCENT  60000          
 
 /*
 ;========================================================================
@@ -138,25 +158,20 @@ VOID  PrtThrmSupKdsIp( PARAKDSIP *pData );               /* prskdst.c  2172 */
 VOID PrtThermSupAge( PARABOUNDAGE *pData );              /* prsaget.c 2172 */
 VOID PrtThermSupRest( PARARESTRICTION *pData );          /* prsrestt.c 2172 */
 
-VOID  PrtSupLoanPickup(VOID *pTran, MAINTLOANPICKUP *pData);     /* Saratoga */
-VOID  PrtSupLoanPickup_VL(VOID *pTran, MAINTLOANPICKUP *pData);
-VOID  PrtSupLoanPickup_SP(VOID *pTran, MAINTLOANPICKUP *pData);
+VOID  PrtSupLoanPickup(TRANINFORMATION* pTran, MAINTLOANPICKUP *pData);     /* Saratoga */
 USHORT PrtChkLoanPickupAdr(UCHAR uchMajorClass, UCHAR uchMinorClass);
 VOID  PrtThrmSupMiscPara(PARAMISCPARA *pData);
 
 VOID  PrtSupVLHead(MAINTSPHEADER *pData);
-VOID  PrtSupVLTrail(VOID *pTran, MAINTSPHEADER *pData);
-VOID  PrtSupVLLoanPickup(VOID *pTran, MAINTLOANPICKUP *pData);
+VOID  PrtSupVLTrail(TRANINFORMATION *pTran, MAINTSPHEADER *pData);
+VOID  PrtSupVLLoanPickup(TRANINFORMATION *pTran, MAINTLOANPICKUP *pData);
 VOID  PrtSupVLForQty(MAINTLOANPICKUP *pData);
 VOID  PrtSupVLForeignTend(MAINTLOANPICKUP *pData);
-VOID  PrtSupVLModifier(VOID *pTran, USHORT usModifier, USHORT usReasonCode);
-VOID  PrtVLMnemAmt(USHORT usAdr, DCURRENCY lAmount, BOOL fsType);
+VOID  PrtSupVLModifier(TRANINFORMATION *pTran, USHORT usModifier, USHORT usReasonCode);
+VOID  PrtVLMnemAmt(USTRNADRS usAdr, DCURRENCY lAmount, BOOL fsType);
 
-VOID  PrtSupLoanPickup_TH(MAINTLOANPICKUP *pData);
-VOID  PrtSupForeignTender_TH(CONST MAINTLOANPICKUP *pData);
-VOID  PrtSupLoanPickup_EJ(MAINTLOANPICKUP *pData);
-VOID  PrtSupForeignTender_EJ(MAINTLOANPICKUP *pData);
 VOID  PrtThrmSupMiscPara(PARAMISCPARA *pData);
 VOID  PrtThrmSupUnlockNo( PARAUNLOCKNO *pData );
 
+#endif
 /***** END of DEFINITION *****/

@@ -47,7 +47,6 @@
 #include	<tchar.h>
 #include <ecr.h>
 #include <stdlib.h>
-/* #include <pif.h> */
 #include <paraequ.h> 
 #include <csttl.h>
 #include <csop.h>
@@ -55,8 +54,8 @@
 #include <para.h>
 #include <maint.h> 
 #include <pmg.h>
+#include <prt.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*
@@ -77,7 +76,7 @@ VOID  PrtThrmSupTally( PARACPMTALLY *pData )
 {
     static TCHAR  auchPrtSupTally[] = _T("%-15s                      %5s");    /* define thermal print format */
 
-    TCHAR  auchData[6] = {0,0,0,0,0,0};             /* ushort to decimal */
+    TCHAR  auchData[6] = {0};             /* ushort to decimal */
 
     /* convert hex to decimal */
     _ultot( (ULONG)pData->usTallyData, auchData, 10);

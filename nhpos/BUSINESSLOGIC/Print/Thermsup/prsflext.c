@@ -47,21 +47,18 @@
 **/
 
 #include	<tchar.h>
-#include <ecr.h>
 #include <stdlib.h>
-/* #include <pif.h> */
+
+#include <ecr.h>
 #include <paraequ.h> 
 #include <para.h>
-/* #include <cswai.h> */
 #include <maint.h> 
-/* #include <regstrct.h> */
-/* #include <transact.h> */
 #include <csttl.h>
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
+#include <prt.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*
@@ -86,7 +83,7 @@ VOID  PrtThrmSupFlexMem( PARAFLEXMEM *pData )
     static const TCHAR  auchPrtThrmSupFlexMem[] = _T("%18u  /  %6lu %1s");       /* define thermal print format */    
     static const TCHAR  auchPrtSupFlexMem[] = _T("%8u / %6lu %1s");       /* define EJ print format */    
 
-    TCHAR   auchPTD[4] = {0, 0, 0, 0};
+    TCHAR   auchPTD[4] = {0};
 
     /* check if PTD plag is exist */
 

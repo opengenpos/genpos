@@ -55,7 +55,6 @@
 #include <regstrct.h>
 #include <transact.h>
 #include <paraequ.h>
-/* #include <para.h> */
 #include <pmg.h>
 #include <dfl.h>
 #include "prtrin.h"
@@ -67,40 +66,6 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;========================================================================
 **/
-/*
-*===========================================================================
-** Format  : VOID   PrtMulti(TRANINFORMATION  *pTran,ITEMMULTI *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMMULTI        *pItem     -Item Data address
-*
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints multi check.
-*===========================================================================
-*/
-VOID PrtMulti(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
-{
-
-
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-
-    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
-        PrtMulChk_SP(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
-        PrtMulChk_TH(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
-        PrtMulChk_EJ(pItem);
-    }
-
-}
 
 /*
 *===========================================================================
@@ -115,15 +80,13 @@ VOID PrtMulti(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 ** Synopsis: This function prints multi check. (thermal)
 *===========================================================================
 */
-VOID   PrtMulChk_TH(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+static VOID   PrtMulChk_TH(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
-    UCHAR i;
-
-    PrtTHHead(pTran);                       /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);        /* print header if necessary */
 
     PrtTHMulChk(pItem->usGuestNo, pItem->uchCdv);  /* checkpaid mnemo, GCF# */
 
-    for (i = 0; i < 3; i++) {
+    for (USHORT i = 0; i < 3; i++) {
 
         if ( pItem->lService[i] == 0L ) {       /* if amount "0", not print */
             continue;
@@ -147,18 +110,16 @@ VOID   PrtMulChk_TH(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 ** Synopsis: This function prints multi check. (electric journal)
 *===========================================================================
 */
-VOID   PrtMulChk_EJ(ITEMMULTI *pItem)
+static VOID   PrtMulChk_EJ(CONST ITEMMULTI *pItem)
 {
-    UCHAR i;
-
     PrtEJMulChk(pItem->usGuestNo, pItem->uchCdv);  /* checkpaid mnemo, GCF# */
 
-    for (i = 0; i < 3; i++) {
+    for (USHORT i = 0; i < 3; i++) {
 
         if ( pItem->lService[i] == 0L ) {       /* if amount "0", not print */
             continue;
         }
-        PrtEJAmtMnem( (UCHAR)(i+TRN_ADCK1_ADR), pItem->lService[i] );
+        PrtEJAmtMnem( (i+TRN_ADCK1_ADR), pItem->lService[i] );
     }
 
     PrtEJAmtSym(TRN_TTL2_ADR, pItem->lMI, PRT_DOUBLE);       /* check total */
@@ -178,36 +139,30 @@ VOID   PrtMulChk_EJ(ITEMMULTI *pItem)
 ** Synopsis: This function prints multi check. (slip)
 *===========================================================================
 */
-VOID  PrtMulChk_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+static VOID  PrtMulChk_SP(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
-    TCHAR   aszSPPrintBuff[5][PRT_SPCOLUMN + 1]; /* print data save area */
+    TCHAR   aszSPPrintBuff[5][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
     USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
 
-    /* -- initialize the buffer -- */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
-    
     /* -- set check paid mnemonic and guest check No. -- */
     usSlipLine += PrtSPGstChkNo(aszSPPrintBuff[0], pItem);
 
     /* -- set add check mnemonic and amount -- */
-    for (i = 0; i < TRN_ADCK3_ADR + 1 - TRN_ADCK1_ADR; i++) {
+    for (USHORT i = 0; i < TRN_ADCK3_ADR + 1 - TRN_ADCK1_ADR; i++) {
         if ( pItem->lService[i] == 0L ) {       /* if amount "0", not print */
             continue;
         }
-        usSlipLine += PrtSPServTaxSum(aszSPPrintBuff[usSlipLine], 
-            (UCHAR)(i+TRN_ADCK1_ADR), pItem->lService[i], PRT_SINGLE);
+        usSlipLine += PrtSPServTaxSum(aszSPPrintBuff[usSlipLine], (i+TRN_ADCK1_ADR), pItem->lService[i], PRT_SINGLE);
     }
     /* -- set check total mnemonic and amount -- */
-    usSlipLine += PrtSPMnemNativeAmt(aszSPPrintBuff[usSlipLine], 
-        TRN_TTL2_ADR, pItem->lMI, PRT_DOUBLE);
+    usSlipLine += PrtSPMnemNativeAmt(aszSPPrintBuff[usSlipLine], TRN_TTL2_ADR, pItem->lMI, PRT_DOUBLE);
 
     /* -- check if paper change is necessary or not -- */
     usSaveLine = PrtCheckLine(usSlipLine, pTran);
 
     /* -- print the data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
+    for (USHORT i = 0; i < usSlipLine; i++) {
 /*  --- fix a glitch (05/15/2001)
         PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
         PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
@@ -217,6 +172,38 @@ VOID  PrtMulChk_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
     usPrtSlipPageLine += usSlipLine + usSaveLine;        
 }
 
+/*
+*===========================================================================
+** Format  : VOID   PrtMulti(TRANINFORMATION  *pTran,ITEMMULTI *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMMULTI        *pItem     -Item Data address
+*
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints multi check.
+*===========================================================================
+*/
+VOID PrtMulti(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
+{
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+
+    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
+        PrtMulChk_SP(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
+        PrtMulChk_TH(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
+        PrtMulChk_EJ(pItem);
+    }
+
+}
 
 
 /*
@@ -233,17 +220,14 @@ VOID  PrtMulChk_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 ** Synopsis: This function displays multi check.
 *===========================================================================
 */
-VOID PrtDflMulti(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+VOID PrtDflMulti(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
-    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1];   /* display data save area */
+    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -254,7 +238,7 @@ VOID PrtDflMulti(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
     /* -- set item data -- */
     usLineNo += PrtDflMulChk(aszDflBuff[usLineNo], pItem->usGuestNo, pItem->uchCdv);
 
-    for (i = 0; i < 3; i++) {
+    for (USHORT i = 0; i < 3; i++) {
         if ( pItem->lService[i] == 0L ) {       /* if amount "0", not print */
             continue;
         }
@@ -268,7 +252,7 @@ VOID PrtDflMulti(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TOTAL); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;

@@ -28,6 +28,9 @@
 * Jun-29-93 : 01.00.12 : J.IKEDA   : Initial                                   
 * Dec-28-95 : 03.01.00 : M.Ozawa   : Enhanced to Wage Report
 * Nov-27-02 :          : R.Chambers: Add PrtThrmSupETKFileJCSummary for LePeeps SR07
+*
+** OpenGenPOS **
+* Jul-28-25 : v2.04.00 : R.Chambers  : use same strings PrtThrmSupMakeString() and PrtThrmSupMakeETKFl()
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -50,25 +53,18 @@
 #include <string.h>
 
 #include <ecr.h>
-/* #include <pif.h> */
 #include <rfl.h>
-/* #include <log.h> */
 #include <paraequ.h> 
 #include <para.h>
 #include <csstbpar.h>
-/* #include <cswai.h> */
 #include <maint.h> 
-/* #include <regstrct.h> */
-/* #include <transact.h> */
 #include <csetk.h>
 #include <csttl.h>
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
-/* #include <appllog.h> */
+#include <prt.h>
 
-#include "prtcom.h"
-/* #include "prtrin.h" */
 #include "prtsin.h"
 
 /*
@@ -76,10 +72,6 @@
 ;                      C O M M O N   R A M   A R E A                         
 ;=============================================================================
 */
-
-const TCHAR FARCONST auchTime[] = _T("%2u:%02u");
-const TCHAR FARCONST auchDate[] = _T("%02u/%02u");
-const TCHAR FARCONST auchAMPM[] = _T("%s");
 
 /*
 *===========================================================================
@@ -129,8 +121,8 @@ VOID  PrtThrmSupETKFile( RPTEMPLOYEE *pData )
             /* make data */
             PrtThrmSupMakeString(pData);
 
-            if(pData->uchJobCode) {
-                _itot(pData->uchJobCode, aszBuffer, 10);
+            if(pData->EtkField.uchJobCode) {
+                _itot(pData->EtkField.uchJobCode, aszBuffer, 10);
             }
 
             /* print DATE/TIME/JOB CODE/WORKED HOURS */
@@ -220,12 +212,10 @@ VOID  PrtThrmSupETKFileJCSummary( PRPTJCSUMMARY  pData )
 	// We use the print format above in variable auchPrtSupETKFile1
 	// to determine the field sizes and types.
 	if (pData->uchMajorClass == CLASS_RPTJCSUMMARYTITLES) {
-		PARACHAR24  Char24Data;
-		Char24Data.uchStatus = 0;                           /* Set W/ Amount Status */
-		Char24Data.uchAddress = CH24_JCSUMTITLE_ADR;        /* Set Address 1 */
-		Char24Data.uchMajorClass = CLASS_PARACHAR24;        /* Set Major Class */
-		ParaChar24Read(&Char24Data);                        /* Execute Read Procedure */
-		PrtPrintf(PMG_PRT_RECEIPT, auchPrtSupETKFileTitle, Char24Data.aszMnemonics);
+        WCHAR  aszMnemonics[PARA_CHAR24_LEN + 1] = { 0 };      /* Char. 24 Mnemonics Data */
+
+        RflGet24Mnem(aszMnemonics, CH24_JCSUMTITLE_ADR);
+		PrtPrintf(PMG_PRT_RECEIPT, auchPrtSupETKFileTitle, aszMnemonics);
 	}
 	else if (pData->uchMajorClass == CLASS_RPTJCSUMMARYTOTALS) {
 		PrtPrintf(PMG_PRT_RECEIPT, auchPrtSupETKFileTotals, 
@@ -255,9 +245,11 @@ VOID  PrtThrmSupETKFileJCSummary( PRPTJCSUMMARY  pData )
 ** Return:      Nothing
 *
 ** Description: This function makes string data.
+*
+*               See also function MldRptSupMakeString() which does basically
+*               the same thing.
 *===========================================================================
 */
-
 VOID PrtThrmSupMakeString(RPTEMPLOYEE *pData) 
 {
     TCHAR  aszPrtNull[1] = {'\0'};
@@ -276,25 +268,25 @@ VOID PrtThrmSupMakeString(RPTEMPLOYEE *pData)
     /* check time */    
     if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT3)) {   /* MILITARY type */
         /* check if TIME-IN is exist */
-        if (pData->usTimeInTime != ETK_TIME_NOT_IN) {
-            usInHour = pData->usTimeInTime;
+        if (pData->EtkField.usTimeinTime != ETK_TIME_NOT_IN) {
+            usInHour = pData->EtkField.usTimeinMinute;
         }
     
         /* check if TIME-OUT is exist */
-        if (pData->usTimeOutTime != ETK_TIME_NOT_IN) {
-            usOutHour = pData->usTimeOutTime;
+        if (pData->EtkField.usTimeOutTime != ETK_TIME_NOT_IN) {
+            usOutHour = pData->EtkField.usTimeOutTime;
         }
 
-        RflSPrintf(aszPrThrmInAMPM, TCHARSIZEOF(aszPrThrmInAMPM), auchAMPM, aszPrtNull); 
-        RflSPrintf(aszPrThrmOutAMPM, TCHARSIZEOF(aszPrThrmOutAMPM), auchAMPM, aszPrtNull); 
+        RflSPrintf(aszPrThrmInAMPM, TCHARSIZEOF(aszPrThrmInAMPM), auchThrmEtkAMPM, aszPrtNull);
+        RflSPrintf(aszPrThrmOutAMPM, TCHARSIZEOF(aszPrThrmOutAMPM), auchThrmEtkAMPM, aszPrtNull);
     } else {    /* AM/PM type */
         /* check if TIME-IN is exist */
-        if (pData->usTimeInTime != ETK_TIME_NOT_IN) {
+        if (pData->EtkField.usTimeinMinute != ETK_TIME_NOT_IN) {
             /* check if Time-in Hour is '0' */
-            if (pData->usTimeInTime == 0) {   /* in case of "0:00 AM" */
+            if (pData->EtkField.usTimeinMinute == 0) {   /* in case of "0:00 AM" */
                 usInHour = 12;
             } else {
-                usInHour = pData->usTimeInTime;
+                usInHour = pData->EtkField.usTimeinMinute;
             }
 
             if (usInHour > 12) {
@@ -302,22 +294,22 @@ VOID PrtThrmSupMakeString(RPTEMPLOYEE *pData)
             }
 
             /* AM/PM ? */
-            if (pData->usTimeInTime >= 12) {
-                RflSPrintf(aszPrThrmInAMPM, TCHARSIZEOF(aszPrThrmInAMPM), auchAMPM, aszPrtPM);          /* set PM */
+            if (pData->EtkField.usTimeinMinute >= 12) {
+                RflSPrintf(aszPrThrmInAMPM, TCHARSIZEOF(aszPrThrmInAMPM), auchThrmEtkAMPM, aszPrtPM);          /* set PM */
             } else {
-                RflSPrintf(aszPrThrmInAMPM, TCHARSIZEOF(aszPrThrmInAMPM), auchAMPM, aszPrtAM);          /* set AM */
+                RflSPrintf(aszPrThrmInAMPM, TCHARSIZEOF(aszPrThrmInAMPM), auchThrmEtkAMPM, aszPrtAM);          /* set AM */
             }
         } else {
             tcharnset(aszPrThrmInAMPM, _T('*'), 2);
         }
 
         /* check if TIME-OUT is exist */
-        if (pData->usTimeOutTime != ETK_TIME_NOT_IN) {
+        if (pData->EtkField.usTimeOutTime != ETK_TIME_NOT_IN) {
             /* check if Time-out Hour is '0' */
-            if (pData->usTimeOutTime == 0) {   /* in case of "0:00 AM" */
+            if (pData->EtkField.usTimeOutTime == 0) {   /* in case of "0:00 AM" */
                 usOutHour = 12;
             } else {
-                usOutHour = pData->usTimeOutTime;
+                usOutHour = pData->EtkField.usTimeOutTime;
             }
 
             if (usOutHour > 12) {
@@ -325,10 +317,10 @@ VOID PrtThrmSupMakeString(RPTEMPLOYEE *pData)
             }
 
             /* AM/PM ? */
-            if (pData->usTimeOutTime >= 12) {
-                RflSPrintf(aszPrThrmOutAMPM, TCHARSIZEOF(aszPrThrmOutAMPM), auchAMPM, aszPrtPM);             /* set PM */
+            if (pData->EtkField.usTimeOutTime >= 12) {
+                RflSPrintf(aszPrThrmOutAMPM, TCHARSIZEOF(aszPrThrmOutAMPM), auchThrmEtkAMPM, aszPrtPM);             /* set PM */
             } else {
-                RflSPrintf(aszPrThrmOutAMPM, TCHARSIZEOF(aszPrThrmOutAMPM), auchAMPM, aszPrtAM);             /* set AM */
+                RflSPrintf(aszPrThrmOutAMPM, TCHARSIZEOF(aszPrThrmOutAMPM), auchThrmEtkAMPM, aszPrtAM);             /* set AM */
             }
         } else {
             tcharnset(aszPrThrmOutAMPM, _T('*'), 2);
@@ -336,39 +328,39 @@ VOID PrtThrmSupMakeString(RPTEMPLOYEE *pData)
     }
 
     /* check if TIME-IN is Illegal */
-    if (pData->usTimeInTime == ETK_TIME_NOT_IN) {
+    if (pData->EtkField.usTimeinMinute == ETK_TIME_NOT_IN) {
         tcharnset(aszPrThrmInTime, _T('*'), 5);
         tcharnset(aszPrThrmWorkTime, _T('*'), 13);
         aszPrThrmWorkTime[5] = _T(' ');
     }
 
     /* check if TIME-OUT is illegal */
-    if (pData->usTimeOutTime == ETK_TIME_NOT_IN) {
+    if (pData->EtkField.usTimeOutTime == ETK_TIME_NOT_IN) {
         tcharnset(aszPrThrmOutTime, _T('*'), 5);
         tcharnset(aszPrThrmWorkTime, _T('*'), 13);
         aszPrThrmWorkTime[5] = ' ';
     }
 
     /* check if TIME-IN is exist */
-    if (pData->usTimeInTime != ETK_TIME_NOT_IN) {
+    if (pData->EtkField.usTimeinMinute != ETK_TIME_NOT_IN) {
         /* set TIME-IN */
-        RflSPrintf(aszPrThrmInTime, TCHARSIZEOF(aszPrThrmInTime), auchTime, 
-                   usInHour, pData->usTimeInMinute);     
+        RflSPrintf(aszPrThrmInTime, TCHARSIZEOF(aszPrThrmInTime), auchThrmEtkTime,
+                   usInHour, pData->EtkField.usTimeinMinute);
     }
 
     /* check if TIME-OUT is exist */
-    if (pData->usTimeOutTime != ETK_TIME_NOT_IN) {
+    if (pData->EtkField.usTimeOutTime != ETK_TIME_NOT_IN) {
         /* set TIME-OUT */
-        RflSPrintf(aszPrThrmOutTime, TCHARSIZEOF(aszPrThrmOutTime), auchTime, 
-                   usOutHour, pData->usTimeOutMinute);    
+        RflSPrintf(aszPrThrmOutTime, TCHARSIZEOF(aszPrThrmOutTime), auchThrmEtkTime,
+                   usOutHour, pData->EtkField.usTimeOutMinute);
     }
 
     /* check if WORK TIME is exist */
     if (pData->uchMinorClass == CLASS_RPTEMPLOYEE_PRTTIME) {
-		static const TCHAR FARCONST auchTimeWage[] = _T("%2u:%02u %7l$");
+		static const TCHAR  auchThrmEtkWage[] = _T("%2u:%02u %7l$");
 
 		/* set WORK TIME */
-        RflSPrintf(aszPrThrmWorkTime, TCHARSIZEOF(aszPrThrmWorkTime),  auchTimeWage, 
+        RflSPrintf(aszPrThrmWorkTime, TCHARSIZEOF(aszPrThrmWorkTime), auchThrmEtkWage,
                    pData->usWorkTime, pData->usWorkMinute, (DCURRENCY)pData->ulWorkWage);  // format of %7l$ requires DCURRENCY
     }
 
@@ -377,9 +369,9 @@ VOID PrtThrmSupMakeString(RPTEMPLOYEE *pData)
 
     /* check MDC */
     if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT2)) {    /* DD/MM/YY */
-        RflSPrintf(aszPrThrmDate, TCHARSIZEOF(aszPrThrmDate), auchDate, pData->usDay, pData->usMonth);
+        RflSPrintf(aszPrThrmDate, TCHARSIZEOF(aszPrThrmDate), auchThrmEtkDate, pData->EtkField.usDay, pData->EtkField.usMonth);
     } else {    /* MM/DD/YY */
-        RflSPrintf(aszPrThrmDate, TCHARSIZEOF(aszPrThrmDate), auchDate, pData->usMonth, pData->usDay);    
+        RflSPrintf(aszPrThrmDate, TCHARSIZEOF(aszPrThrmDate), auchThrmEtkDate, pData->EtkField.usMonth, pData->EtkField.usDay);
     }
 }
 /***** End of Source *****/

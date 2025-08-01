@@ -74,38 +74,6 @@
 #include "prrcolm_.h"
 #include <rfl.h>
 
-/*
-*===========================================================================
-** Format  : VOID   PrtUSTax(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem);   
-*            
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMAFFECTION    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints tax and addcheck .
-*            
-*===========================================================================
-*/
-VOID  PrtUSTax(TRANINFORMATION  *pTran, ITEMAFFECTION   *pItem)
-{
-
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-    
-    if ( fsPrtPrintPort & PRT_SLIP ) {     /* slip print */
-        PrtUSTax_SP(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_RECEIPT ) {  /* thermal print */
-        PrtUSTax_TH(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_JOURNAL ) {  /* electric journal */
-        PrtUSTax_EJ(pItem);
-    }
-}
 
 /*
 *===========================================================================
@@ -120,11 +88,11 @@ VOID  PrtUSTax(TRANINFORMATION  *pTran, ITEMAFFECTION   *pItem)
 ** Synopsis: This function prints us tax.  (thermal)
 *===========================================================================
 */
-VOID  PrtUSTax_TH(TRANINFORMATION  *pTran, ITEMAFFECTION   *pItem)
+static VOID  PrtUSTax_TH(TRANINFORMATION  *pTran, ITEMAFFECTION   *pItem)
 {
     USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
 
-    PrtTHHead(pTran);
+    PrtTHHead(pTran->TranCurQual.usConsNo);
 
     /* -- print subtotal line R3.1 -- */
     if (pItem->lAmount) {
@@ -161,7 +129,7 @@ VOID  PrtUSTax_TH(TRANINFORMATION  *pTran, ITEMAFFECTION   *pItem)
 ** Synopsis: This function prints us tax.  (electric journal)
 *===========================================================================
 */
-VOID  PrtUSTax_EJ(ITEMAFFECTION   *pItem)
+static VOID  PrtUSTax_EJ(ITEMAFFECTION   *pItem)
 {
     USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
 
@@ -199,7 +167,7 @@ VOID  PrtUSTax_EJ(ITEMAFFECTION   *pItem)
 ** Synopsis: This function prints us tax.  (slip)
 *===========================================================================
 */
-VOID PrtUSTax_SP(TRANINFORMATION  *pTran, ITEMAFFECTION  *pItem)
+static VOID PrtUSTax_SP(TRANINFORMATION  *pTran, ITEMAFFECTION  *pItem)
 {
 	TCHAR  aszSPPrintBuff[4][PRT_SPCOLUMN + 1] = {0};    /* print data save area */
     USHORT  usSlipLine = 0;                              /* number of lines to be printed */
@@ -238,6 +206,38 @@ VOID PrtUSTax_SP(TRANINFORMATION  *pTran, ITEMAFFECTION  *pItem)
     usPrtSlipPageLine += usSlipLine + usSaveLine;        
 }
 
+/*
+*===========================================================================
+** Format  : VOID   PrtUSTax(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem);   
+*            
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMAFFECTION    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints tax and addcheck .
+*            
+*===========================================================================
+*/
+VOID  PrtUSTax(TRANINFORMATION  *pTran, ITEMAFFECTION   *pItem)
+{
+
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+    
+    if ( fsPrtPrintPort & PRT_SLIP ) {     /* slip print */
+        PrtUSTax_SP(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_RECEIPT ) {  /* thermal print */
+        PrtUSTax_TH(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_JOURNAL ) {  /* electric journal */
+        PrtUSTax_EJ(pItem);
+    }
+}
 
 
 /*
@@ -259,7 +259,6 @@ VOID  PrtDflUSTax(TRANINFORMATION  *pTran, ITEMAFFECTION   *pItem)
 	TCHAR  aszDflBuff[14][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
     USHORT  usLineNo, usSav;                   /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
     USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
 
 
@@ -297,13 +296,14 @@ VOID  PrtDflUSTax(TRANINFORMATION  *pTran, ITEMAFFECTION   *pItem)
     }
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TAX); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;

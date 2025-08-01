@@ -83,11 +83,11 @@
 */
 
 
-extern const TCHAR  auchTime[];
-extern const TCHAR  auchDate[];
-extern const TCHAR  auchAMPM[];
+extern const TCHAR  auchThrmEtkTime[];
+extern const TCHAR  auchThrmEtkDate[];
+extern const TCHAR  auchThrmEtkAMPM[];
 
-static VOID MldMaintMakeETKFl(MAINTETKFL *pData, TCHAR *aszMldInTime, TCHAR *aszMldOutTime, TCHAR *aszMldInAMPM, TCHAR *aszMldOutAMPM, TCHAR *aszMldDate);
+static VOID MldMaintMakeETKFl(MAINTETKFL *pData);
 
 static CONST TCHAR aszMldAC153[][64] = {
                             _T("....*....1....*....2....*....3....*....4"),
@@ -99,6 +99,13 @@ static CONST TCHAR aszMldAC153[][64] = {
                             _T("%2d       %02d    %s    %s %s "),
                             _T("")
 };
+
+static TCHAR aszMldInTime[7 + 1] = { 0 };
+static TCHAR aszMldOutTime[7 + 1] = { 0 };
+static TCHAR aszMldDate[5 + 1] = { 0 };
+static TCHAR aszMldInAMPM[2 + 1] = { 0 };
+static TCHAR aszMldOutAMPM[2 + 1] = { 0 };
+static TCHAR aszMldWorkTime[5 + 1 + 7 + 1] = { 0 };     /* R3.1 */
 
 /*
 *===========================================================================
@@ -114,18 +121,11 @@ static CONST TCHAR aszMldAC153[][64] = {
 ** Description: This function sets data and display to MLD.
 *===========================================================================
 */
-
 VOID  MldMaintETKFl( MAINTETKFL *pData, USHORT usClear)
 {
-    TCHAR   aszBlock[PARA_TRANSMNEMO_LEN+1];
+    TCHAR   aszBlock[PARA_TRANSMNEMO_LEN+1] = { 0 };
 	TCHAR   aszJob[PARA_TRANSMNEMO_LEN + 1] = { 0 };
     TCHAR   aszDate[PARA_TRANSMNEMO_LEN+1] = { 0 };
-	TCHAR aszMldInTime[7 + 1] = { 0 };
-	TCHAR aszMldOutTime[7 + 1] = { 0 };
-	TCHAR aszMldDate[5 + 1] = { 0 };
-	TCHAR aszMldInAMPM[2 + 1] = { 0 };
-	TCHAR aszMldOutAMPM[2 + 1] = { 0 };
-	TCHAR aszMldWorkTime[5 + 1 + 7 + 1] = { 0 };     /* R3.1 */
 
     /********************************************************/
     /* Clear Scroll Display and Display Item telop,         */
@@ -149,7 +149,7 @@ VOID  MldMaintETKFl( MAINTETKFL *pData, USHORT usClear)
         }
     }
 
-    MldMaintMakeETKFl(pData, aszMldInTime, aszMldOutTime, aszMldInAMPM, aszMldOutAMPM, aszMldDate);
+    MldMaintMakeETKFl(pData);
 
     /*********************/
     /* Display Parameter */
@@ -170,15 +170,17 @@ VOID  MldMaintETKFl( MAINTETKFL *pData, USHORT usClear)
 ** Return:      Nothing
 *
 ** Description: This function makes ETK File string data.
+*
+*               See also function PrtThrmSupMakeETKFl() which does basically
+*               the same thing.
 *===========================================================================
 */
-
-static VOID MldMaintMakeETKFl(MAINTETKFL *pData, TCHAR *aszMldInTime, TCHAR *aszMldOutTime, TCHAR *aszMldInAMPM, TCHAR *aszMldOutAMPM, TCHAR *aszMldDate)
+static VOID MldMaintMakeETKFl(MAINTETKFL *pData)
 {
     TCHAR  aszPrtNull[1] = {'\0'};
 
-    USHORT usInHour;
-    USHORT usOutHour;
+    USHORT usInHour = 0;
+    USHORT usOutHour = 0;
 
     /* check time */    
     if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT3)) {   /* MILITARY type */
@@ -192,8 +194,8 @@ static VOID MldMaintMakeETKFl(MAINTETKFL *pData, TCHAR *aszMldInTime, TCHAR *asz
             usOutHour = pData->EtkField.usTimeOutTime;
         }
 
-        RflSPrintf(aszMldInAMPM, TCHARSIZEOF(aszMldInAMPM), auchAMPM, aszPrtNull); 
-        RflSPrintf(aszMldOutAMPM, TCHARSIZEOF(aszMldOutAMPM), auchAMPM, aszPrtNull); 
+        RflSPrintf(aszMldInAMPM, TCHARSIZEOF(aszMldInAMPM), auchThrmEtkAMPM, aszPrtNull);
+        RflSPrintf(aszMldOutAMPM, TCHARSIZEOF(aszMldOutAMPM), auchThrmEtkAMPM, aszPrtNull);
     } else {    /* AM/PM type */
         /* check if TIME-IN is exist */
         if (pData->EtkField.usTimeinTime != ETK_TIME_NOT_IN) {
@@ -210,9 +212,9 @@ static VOID MldMaintMakeETKFl(MAINTETKFL *pData, TCHAR *aszMldInTime, TCHAR *asz
 
             /* AM/PM ? */
             if (pData->EtkField.usTimeinTime >= 12) {
-                RflSPrintf(aszMldInAMPM, TCHARSIZEOF(aszMldInAMPM), auchAMPM, aszPrtPM);          /* set PM */
+                RflSPrintf(aszMldInAMPM, TCHARSIZEOF(aszMldInAMPM), auchThrmEtkAMPM, aszPrtPM);          /* set PM */
             } else {
-                RflSPrintf(aszMldInAMPM, TCHARSIZEOF(aszMldInAMPM), auchAMPM, aszPrtAM);          /* set AM */
+                RflSPrintf(aszMldInAMPM, TCHARSIZEOF(aszMldInAMPM), auchThrmEtkAMPM, aszPrtAM);          /* set AM */
             }
         } else {
             tcharnset(aszMldInAMPM, _T('*'), 2);
@@ -233,9 +235,9 @@ static VOID MldMaintMakeETKFl(MAINTETKFL *pData, TCHAR *aszMldInTime, TCHAR *asz
 
             /* AM/PM ? */
             if (pData->EtkField.usTimeOutTime >= 12) {
-                RflSPrintf(aszMldOutAMPM, TCHARSIZEOF(aszMldOutAMPM), auchAMPM, aszPrtPM);             /* set PM */
+                RflSPrintf(aszMldOutAMPM, TCHARSIZEOF(aszMldOutAMPM), auchThrmEtkAMPM, aszPrtPM);             /* set PM */
             } else {
-                RflSPrintf(aszMldOutAMPM, TCHARSIZEOF(aszMldOutAMPM), auchAMPM, aszPrtAM);             /* set AM */
+                RflSPrintf(aszMldOutAMPM, TCHARSIZEOF(aszMldOutAMPM), auchThrmEtkAMPM, aszPrtAM);             /* set AM */
             }
         } else {
             tcharnset(aszMldOutAMPM, _T('*'), 2);
@@ -255,22 +257,22 @@ static VOID MldMaintMakeETKFl(MAINTETKFL *pData, TCHAR *aszMldInTime, TCHAR *asz
     /* check if TIME-IN is exist */
     if (pData->EtkField.usTimeinTime != ETK_TIME_NOT_IN) {
         /* set TIME-IN */
-        RflSPrintf(aszMldInTime, TCHARSIZEOF(aszMldInTime), auchTime, usInHour, pData->EtkField.usTimeinMinute);
+        RflSPrintf(aszMldInTime, TCHARSIZEOF(aszMldInTime), auchThrmEtkTime, usInHour, pData->EtkField.usTimeinMinute);
     }
 
     /* check if TIME-OUT is exist */
     if (pData->EtkField.usTimeOutTime != ETK_TIME_NOT_IN) {
         /* set TIME-OUT */
-        RflSPrintf(aszMldOutTime, TCHARSIZEOF(aszMldOutTime),  auchTime, usOutHour, pData->EtkField.usTimeOutMinute);
+        RflSPrintf(aszMldOutTime, TCHARSIZEOF(aszMldOutTime), auchThrmEtkTime, usOutHour, pData->EtkField.usTimeOutMinute);
     }
     _tcscat(aszMldInTime, aszMldInAMPM);   
     _tcscat(aszMldOutTime, aszMldOutAMPM);   
 
     /* check MDC */
     if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT2)) {    /* DD/MM/YY */
-        RflSPrintf(aszMldDate, TCHARSIZEOF(aszMldDate), auchDate, pData->EtkField.usDay, pData->EtkField.usMonth);
+        RflSPrintf(aszMldDate, TCHARSIZEOF(aszMldDate), auchThrmEtkDate, pData->EtkField.usDay, pData->EtkField.usMonth);
     } else {
-        RflSPrintf(aszMldDate, TCHARSIZEOF(aszMldDate), auchDate,  pData->EtkField.usMonth, pData->EtkField.usDay);
+        RflSPrintf(aszMldDate, TCHARSIZEOF(aszMldDate), auchThrmEtkDate,  pData->EtkField.usMonth, pData->EtkField.usDay);
     }
 }
 

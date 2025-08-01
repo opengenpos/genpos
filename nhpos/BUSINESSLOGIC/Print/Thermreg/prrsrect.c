@@ -66,6 +66,111 @@
 
 /*
 *===========================================================================
+** Format  : VOID PrtStoreRecall_TH( TRANINFORMATION *pTran,
+*                                    SHORT           sWidthType);
+*
+*   Input  : TRANINFORMATION *pTran     - Transaction Information address
+*            SHORT           sWidthType - Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints in store/recall. (thermal)
+*===========================================================================
+*/
+static VOID PrtStoreRecall_TH( TRANINFORMATION *pTran, SHORT sWidthType )
+{
+
+    /* --- print header, if necessary --- */
+    PrtTHHead(pTran->TranCurQual.usConsNo);
+
+	//Receipt ID printing   //PDINU
+	//This code checks to see if there is a mnemonic entered and prints it
+	//on one line
+
+	/* --- print order no. and unique trans no --- */
+	if (pTran->TranModeQual.aszTent[0] > 0){
+		PrtTHTentName( pTran->TranGCFQual.aszName );
+	}
+	else{
+		PrtTHCustomerName( pTran->TranGCFQual.aszName );
+	}
+    PrtTHTblPerGC( pTran->TranGCFQual.usTableNo, pTran->TranGCFQual.usNoPerson,
+                   pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv, 0, sWidthType );
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtStoreRecall_EJ( TRANINFORMATION *pTran,
+*                                     SHORT            sWidthType )
+*
+*   Input  : TRANINFORMATION *pTran      -  Transaction Information address
+*            SHORT            sWidthType -  Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints in store/recall. (electric journal)
+*===========================================================================
+*/
+static VOID PrtStoreRecall_EJ( TRANINFORMATION *pTran, SHORT sWidthType )
+{
+    /* --- print table no. and order no. --- */
+
+    PrtEJCustomerName( pTran->TranGCFQual.aszName );
+    PrtEJTblPerson( pTran->TranGCFQual.usTableNo, pTran->TranGCFQual.usNoPerson, 0, sWidthType );
+    PrtEJGuest( pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv );
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtStoreRecall_SP( TRANINFORMATION *pTran,
+*                                    SHORT           sWidthType )
+*
+*   Input  : TRANINFORMATION *pTran     -   Transaction Information address
+*            SHORT           sWidthType -   Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints store/recall (slip)
+*===========================================================================
+*/
+static VOID PrtStoreRecall_SP( TRANINFORMATION *pTran, SHORT sWidthType )
+{
+    TCHAR   szSPPrintBuff[3][PRT_SPCOLUMN + 1] = { 0 };
+    USHORT  usSlipLine = 0;             /* number of lines to be printed */
+    USHORT  usSaveLine;                 /* save slip lines to be added */
+
+    /* --- set order No. and No. of person --- */
+    usSlipLine =  PrtSPHeader3( szSPPrintBuff[ 0 ], pTran );
+    usSlipLine += PrtSPHeader1( szSPPrintBuff[ usSlipLine ], pTran, sWidthType );
+    usSlipLine += PrtSPHeader2( szSPPrintBuff[ usSlipLine ], pTran, 0 );
+
+    /* --- check if paper change is necessary or not --- */ 
+    usSaveLine = PrtCheckLine( usSlipLine, pTran );
+ 
+    /* -- not print header line if just after paper change -- */
+    if ( usSaveLine != 0 ) {
+        usSlipLine -= 3;
+    } else {
+        /* -- print all data in the buffer -- */
+        for (USHORT i = 0; i < usSlipLine; i++ ) {
+	/*  --- fix a glitch (05/15/2001)
+            PmgPrint( PMG_PRT_SLIP, szSPPrintBuff[ i ], PRT_SPCOLUMN ); */
+            PrtPrint( PMG_PRT_SLIP, szSPPrintBuff[ i ], PRT_SPCOLUMN );
+        }
+    }
+
+    /* --- update current line No. --- */
+    usPrtSlipPageLine += ( usSaveLine + usSlipLine );
+}
+
+/*
+*===========================================================================
 ** Format  : VOID  PrtStoreRecall( TRANINFORMATION  *pTran,
 *                                  ITEMTRANSOPEN    *pItem )
 *   Input  : TRANINFORMATION *pTran - Transaction Information address
@@ -123,123 +228,6 @@ VOID PrtStoreRecall( TRANINFORMATION *pTran, ITEMTRANSOPEN *pItem )
         PrtStoreRecall_EJ( pTran, sWidthType );
         fsPrtPrintPort = fsPortSave;
     }
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtStoreRecall_TH( TRANINFORMATION *pTran,
-*                                    SHORT           sWidthType);
-*
-*   Input  : TRANINFORMATION *pTran     - Transaction Information address
-*            SHORT           sWidthType - Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints in store/recall. (thermal)
-*===========================================================================
-*/
-VOID PrtStoreRecall_TH( TRANINFORMATION *pTran, SHORT sWidthType )
-{
-
-    /* --- print header, if necessary --- */
-
-    PrtTHHead( pTran );
-
-	//Receipt ID printing   //PDINU
-	//This code checks to see if there is a mnemonic entered and prints it
-	//on one line
-
-	/* --- print order no. and unique trans no --- */
-
-	if (pTran->TranModeQual.aszTent[0] > 0){
-		PrtTHTentName( pTran->TranGCFQual.aszName );
-	}
-	else{
-		PrtTHCustomerName( pTran->TranGCFQual.aszName );
-	}
-    PrtTHTblPerGC( pTran->TranGCFQual.usTableNo,
-                   pTran->TranGCFQual.usNoPerson,
-                   pTran->TranGCFQual.usGuestNo,
-                   pTran->TranGCFQual.uchCdv,
-                   0,
-                   sWidthType );
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtStoreRecall_EJ( TRANINFORMATION *pTran,
-*                                     SHORT            sWidthType )
-*
-*   Input  : TRANINFORMATION *pTran      -  Transaction Information address
-*            SHORT            sWidthType -  Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints in store/recall. (electric journal)
-*===========================================================================
-*/
-VOID PrtStoreRecall_EJ( TRANINFORMATION *pTran, SHORT sWidthType )
-{
-    /* --- print table no. and order no. --- */
-
-    PrtEJCustomerName( pTran->TranGCFQual.aszName );
-    PrtEJTblPerson( pTran->TranGCFQual.usTableNo,
-                    pTran->TranGCFQual.usNoPerson,
-                    0,
-                    sWidthType );
-    PrtEJGuest( pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv );
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtStoreRecall_SP( TRANINFORMATION *pTran,
-*                                    SHORT           sWidthType )
-*
-*   Input  : TRANINFORMATION *pTran     -   Transaction Information address
-*            SHORT           sWidthType -   Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints store/recall (slip)
-*===========================================================================
-*/
-VOID PrtStoreRecall_SP( TRANINFORMATION *pTran, SHORT sWidthType )
-{
-    TCHAR   szSPPrintBuff[ 3 ][ PRT_SPCOLUMN + 1 ];
-    USHORT  usSlipLine = 0;             /* number of lines to be printed */
-    USHORT  usSaveLine;                 /* save slip lines to be added */
-
-    /* --- set order No. and No. of person --- */
-    memset( szSPPrintBuff[ 0 ], '\0', sizeof( szSPPrintBuff ));
-
-    usSlipLine =  PrtSPHeader3( szSPPrintBuff[ 0 ], pTran );
-    usSlipLine += PrtSPHeader1( szSPPrintBuff[ usSlipLine ], pTran, sWidthType );
-    usSlipLine += PrtSPHeader2( szSPPrintBuff[ usSlipLine ], pTran, 0 );
-
-    /* --- check if paper change is necessary or not --- */ 
-    usSaveLine = PrtCheckLine( usSlipLine, pTran );
- 
-    /* -- not print header line if just after paper change -- */
-    if ( usSaveLine != 0 ) {
-        usSlipLine -= 3;
-    } else {
-		USHORT  i;
-        /* -- print all data in the buffer -- */
-        for ( i = 0; i < usSlipLine; i++ ) {
-	/*  --- fix a glitch (05/15/2001)
-            PmgPrint( PMG_PRT_SLIP, szSPPrintBuff[ i ], PRT_SPCOLUMN ); */
-            PrtPrint( PMG_PRT_SLIP, szSPPrintBuff[ i ], PRT_SPCOLUMN );
-        }
-    }
-
-    /* --- update current line No. --- */
-    usPrtSlipPageLine += ( usSaveLine + usSlipLine );
 }
 
 /* ===== End of File ( PrRSRecT.C ) ===== */

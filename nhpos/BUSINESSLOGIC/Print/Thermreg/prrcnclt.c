@@ -72,6 +72,86 @@
 ;+        P R O G R A M    D E C L A R A T I O N s                      +
 ;========================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID PrtCancel_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints transaction cancel .(thermal)
+*===========================================================================
+*/
+static VOID  PrtCancel_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
+{
+    PrtTHHead(pTran->TranCurQual.usConsNo);    /* print header if necessary */
+
+    PrtTHNumber(pItem->aszNumber);             /* number line */
+
+    PrtTHAmtMnemMnem(TRN_TRACAN_ADR, TRN_CANCEL_ADR, pItem->lAmount);   /* cancel line */
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtCancel_EJ(ITEMMISC *pItem);      
+*
+*   Input  : ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints transaction cancel .(electric journal)
+*===========================================================================
+*/
+static VOID  PrtCancel_EJ(ITEMMISC *pItem)
+{
+    PrtEJMnem(TRN_TRACAN_ADR, PRT_DOUBLE);     /* cancel with double wide */
+
+    PrtEJNumber(pItem->aszNumber);             /* number line */
+
+    PrtEJAmtMnem(TRN_CANCEL_ADR, pItem->lAmount);/* cancel total */
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtCancel_SP(TRANINFORMATION  *pTran, ITEMMISC  *pItem);      
+*
+*   Input  : ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints transaction cancel. (slip)
+*===========================================================================
+*/
+static VOID  PrtCancel_SP(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
+{
+    TCHAR  aszSPPrintBuff[PRT_SPCOLUMN + 1]; /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    /* initialize the buffer */
+    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));
+
+    /* -- set cancel mnemonic -- */
+    usSlipLine += PrtSPCancel(aszSPPrintBuff, TRN_TRACAN_ADR, TRN_CANCEL_ADR, pItem->lAmount);
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);   
+
+    /* -- print all data in the buffer -- */ 
+/*  --- fix a glitch (05/15/2001)
+    PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN); */
+    PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtCancel(TRANINFORMATION  *pTran, ITEMMISC *pItem);      
@@ -102,86 +182,6 @@ VOID PrtCancel(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
         PrtCancel_EJ(pItem);
     }
 }
-
-/*
-*===========================================================================
-** Format  : VOID PrtCancel_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints transaction cancel .(thermal)
-*===========================================================================
-*/
-VOID  PrtCancel_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
-{
-    PrtTHHead(pTran);                          /* print header if necessary */
-
-    PrtTHNumber(pItem->aszNumber);             /* number line */
-
-    PrtTHAmtMnemMnem(TRN_TRACAN_ADR, TRN_CANCEL_ADR, pItem->lAmount);   /* cancel line */
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtCancel_EJ(ITEMMISC *pItem);      
-*
-*   Input  : ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints transaction cancel .(electric journal)
-*===========================================================================
-*/
-VOID  PrtCancel_EJ(ITEMMISC *pItem)
-{
-    PrtEJMnem(TRN_TRACAN_ADR, PRT_DOUBLE);     /* cancel with double wide */
-
-    PrtEJNumber(pItem->aszNumber);             /* number line */
-
-    PrtEJAmtMnem(TRN_CANCEL_ADR, pItem->lAmount);/* cancel total */
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtCancel_SP(TRANINFORMATION  *pTran, ITEMMISC  *pItem);      
-*
-*   Input  : ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints transaction cancel. (slip)
-*===========================================================================
-*/
-VOID  PrtCancel_SP(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
-{
-    TCHAR  aszSPPrintBuff[PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));
-
-    /* -- set cancel mnemonic -- */
-    usSlipLine += PrtSPCancel(aszSPPrintBuff, TRN_TRACAN_ADR, TRN_CANCEL_ADR, pItem->lAmount);
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);   
-
-    /* -- print all data in the buffer -- */ 
-/*  --- fix a glitch (05/15/2001)
-    PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN); */
-    PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
-}
-
 
 
 /*
@@ -223,8 +223,9 @@ VOID PrtDflCancel(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
     usLineNo += PrtDflAmtMnem(aszDflBuff[usLineNo], TRN_CANCEL_ADR, pItem->lAmount); 
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_CANCEL); 

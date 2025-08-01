@@ -13,10 +13,6 @@
 * Category    : Print, NCR 2170  US Hospitarity Application
 * Program Name: PrRMlTlT.C                                                      
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract:
 *      PrtMultiTotal() : print items specified minor class "CLASS_MULTITOTAL"
 *      PrtMulTotal_TH() : print multi check (thermal)
@@ -67,40 +63,6 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;========================================================================
 **/
-/*
-*===========================================================================
-** Format  : VOID   PrtMultiTotal(TRANINFORMATION  *pTran,ITEMMULTI *pItem)
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMMULTI        *pItem     -Item Data address
-*
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints multi check grand total.
-*===========================================================================
-*/
-VOID PrtMultiTotal(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
-{
-
-
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-
-    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
-        PrtMulTotal_SP(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
-        PrtMulTotal_TH(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
-        PrtMulTotal_EJ(pItem);
-    }
-
-}
 
 /*
 *===========================================================================
@@ -115,20 +77,16 @@ VOID PrtMultiTotal(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 ** Synopsis: This function prints multi check grand total. (thermal)
 *===========================================================================
 */
-VOID   PrtMulTotal_TH(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+static VOID   PrtMulTotal_TH(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
-    UCHAR i;
-
-    PrtTHHead(pTran);                       /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);        /* print header if necessary */
 
     PrtTHMulChk(pItem->usGuestNo, pItem->uchCdv);  /* checkpaid mnemo, GCF# */
 
-    for (i = 0; i < 3; i++) {
-
+    for (USHORT i = 0; i < 3; i++) {
         if ( pItem->lService[i] == 0L ) {       /* if amount "0", not print */
             continue;
         }
-
         PrtTHAmtMnem((i+TRN_ADCK1_ADR), pItem->lService[i] );
     }
 
@@ -147,13 +105,12 @@ VOID   PrtMulTotal_TH(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 ** Synopsis: This function prints multi check grand total. (electric journal)
 *===========================================================================
 */
-VOID   PrtMulTotal_EJ(ITEMMULTI *pItem)
+static VOID   PrtMulTotal_EJ(CONST ITEMMULTI *pItem)
 {
-    UCHAR i;
 
     PrtEJMulChk(pItem->usGuestNo, pItem->uchCdv);  /* checkpaid mnemo, GCF# */
 
-    for (i = 0; i < 3; i++) {
+    for (USHORT i = 0; i < 3; i++) {
 
         if ( pItem->lService[i] == 0L ) {       /* if amount "0", not print */
             continue;
@@ -179,18 +136,14 @@ VOID   PrtMulTotal_EJ(ITEMMULTI *pItem)
 ** Synopsis: This function prints multi check grand total. (slip)
 *===========================================================================
 */
-VOID  PrtMulTotal_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+static VOID  PrtMulTotal_SP(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
-    TCHAR   aszSPPrintBuff[4][PRT_SPCOLUMN + 1]; /* print data save area */
+    TCHAR   aszSPPrintBuff[4][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
     USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
-
-    /* -- initialize the buffer -- */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
     
     /* -- set add check mnemonic and amount -- */
-    for (i = 0; i < TRN_ADCK3_ADR + 1 - TRN_ADCK1_ADR; i++) {
+    for (USHORT i = 0; i < TRN_ADCK3_ADR + 1 - TRN_ADCK1_ADR; i++) {
 
         if ( pItem->lService[i] == 0L ) {       /* if amount "0", not print */
             continue;
@@ -207,7 +160,7 @@ VOID  PrtMulTotal_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
     usSaveLine = PrtCheckLine(usSlipLine, pTran);
 
     /* -- print the data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
+    for (USHORT i = 0; i < usSlipLine; i++) {
 /*  --- fix a glitch (05/15/2001)
         PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
         PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
@@ -215,6 +168,41 @@ VOID  PrtMulTotal_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 
     /* -- update current line No. -- */
     usPrtSlipPageLine += usSlipLine + usSaveLine;        
+}
+
+/*
+*===========================================================================
+** Format  : VOID   PrtMultiTotal(TRANINFORMATION  *pTran,ITEMMULTI *pItem)
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMMULTI        *pItem     -Item Data address
+*
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints multi check grand total.
+*===========================================================================
+*/
+VOID PrtMultiTotal(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
+{
+
+
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+
+    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
+        PrtMulTotal_SP(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
+        PrtMulTotal_TH(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
+        PrtMulTotal_EJ(pItem);
+    }
+
 }
 
 
@@ -233,7 +221,7 @@ VOID  PrtMulTotal_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 ** Synopsis: This function displays multi check grand total.
 *===========================================================================
 */
-VOID PrtDflMultiTotal(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+VOID PrtDflMultiTotal(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
     TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1];   /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */

@@ -72,53 +72,6 @@
 
 /*
 *===========================================================================
-** Format  : VOID  CheckGiftCardPrint();      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTENDER       *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints Gift Card Info
-*===========================================================================
-*/
-VOID	CheckGiftCardPrt(ITEMTENDER  *pItem)
-{
-	if(pItem->lBalanceDue == 0L){
-		TRANGCFQUAL    *pWorkGCF = TrnGetGCFQualPtr();
-
-		if(pWorkGCF->TrnGiftCard[0].ItemTender.lTenderAmount != 0){
-			TRANINFORMATION  TranInfo = {0};
-			SHORT index;
-			for(index = 0; index < 10;index++){
-				if(pWorkGCF->TrnGiftCard[index].GiftCard != 0){
-					ITEMTENDER ItemTender = pWorkGCF->TrnGiftCard[index].ItemTender;
-					RflDecryptByteString((UCHAR *)&(ItemTender.aszNumber[0]), sizeof(ItemTender.aszNumber));
-					
-					if ( fsPrtPrintPort & PRT_SLIP ) {              /* slip print           */
-						PrtTender_SP(&TranInfo, pItem, 0);          /* normal slip          */
-					}
-					if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
-						PrtTender_TH(&TranInfo,&ItemTender);
-					}
-					if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
-						PrtTender_EJ(&ItemTender);
-					}
-	/*				if(! CliParaMDCCheck(MDC_CPPARA2_ADR, EVEN_MDC_BIT0)){
-						memset(&pWorkGCF->TrnGiftCard[index].ItemTender,0,sizeof(ITEMTENDER));
-						memset(&ItemTender,0,sizeof(ITEMTENDER));
-					}
-	*/
-					memset (&ItemTender, 0xcc, sizeof(ItemTender));    // overwrite PAN account data per PCI-DSS
-				}
-			}
-		}
-	}
-}
-
-/*
-*===========================================================================
 ** Format  : VOID  PrtItemTender(TRANINFORMATION *pTran, ITEMTENDER *pItem);      
 *
 *   Input  : TRANINFORMATION  *pTran     -Transaction Information address
@@ -161,7 +114,7 @@ VOID   PrtItemTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
     case CLASS_TEND_FSCHANGE:           /* Saratoga */
     case CLASS_TEND_TIPS_RETURN:           /* Saratoga */
         PrtTender(pTran, pItem);
-		CheckGiftCardPrt(pItem);
+		CheckGiftCardPrt(pTran, pItem);
         break;
 
     case CLASS_FOREIGN1:                /* foreign tender */

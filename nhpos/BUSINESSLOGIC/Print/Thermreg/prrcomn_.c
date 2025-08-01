@@ -143,7 +143,6 @@
 ;+                    S T A T I C    R A M s
 ;========================================================================
 **/
-CONST TCHAR aszPrtNull[] = _T("");                         /* null */
 CONST TCHAR  aszPrtTime[] = _T("%2d:%02d%s ");      /* time */
 CONST TCHAR  aszPrtTimeWithZone[] = _T("%2d:%02d%s %-3.3s ");      /* time with a time zone */
 CONST TCHAR  aszPrtDate[] = _T("%02d/%02d/%02d");    /* date */
@@ -155,13 +154,36 @@ extern USHORT usShrSemDrawer;                           /* semaphore handle for 
 
 USHORT usDbgHandle;
 
-UCHAR	fbPrtSendToStatus;		/* status ( send to file, send to printer ) */ //ESMITH PRTFILE
+static UCHAR	fbPrtSendToStatus;		/* status ( send to file, send to printer ) */ //ESMITH PRTFILE
 
 /**
 ;========================================================================
 ;+             P R O G R A M    D E C L A R A T I O N s
 ;========================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : UCHAR	PrtSetPrintMode(VOID);
+*
+*   Input  : none
+*   Output : none
+*   InOut  : none
+** Return  : UCHAR
+*
+** Synopsis: This function sets the print mode.to file on terminal or
+*			 printer
+*===========================================================================
+*/ //ESMITH PRTFILE
+VOID	PrtSetPrintMode(UCHAR uchMode)
+{
+    if ((uchMode & PRT_SENDTO_MASKFUNC) ||
+        (uchMode == PRT_SENDTO_PRINTER)) {
+
+        fbPrtSendToStatus = uchMode;
+    }
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtSlipInitial(VOID)
@@ -404,26 +426,23 @@ VOID   PrtRectCompul(VOID)
 *            (insert "0x12"  behind character.)
 *===========================================================================
 */
-VOID  PrtDouble(TCHAR *pszDest, USHORT usDestLen, TCHAR *pszSource)
+VOID  PrtDouble(TCHAR *pszDest, USHORT usDestLen, CONST TCHAR *pszSource)
 {
-    TCHAR  *pszDst = pszDest;
-    TCHAR  *pszSorc = pszSource;
-
     if (usDestLen == 0) {
         return ;
     }
 
-    for ( ; (*pszSorc != '\0') && (usDestLen > 2); usDestLen -= 2) {
-        *pszDst++ = PRT_DOUBLE;
-        if ( *pszSorc == PRT_DOUBLE ) {
-            *pszDst++ = PRT_SPACE;
+    for ( ; (*pszSource != '\0') && (usDestLen > 2); usDestLen -= 2) {
+        *pszDest++ = PRT_DOUBLE;
+        if ( *pszSource == PRT_DOUBLE ) {
+            *pszDest++ = PRT_SPACE;
         } else {
-            *pszDst++ = *pszSorc;
+            *pszDest++ = *pszSource;
         }
-		pszSorc++;
+        pszSource++;
     }
 
-    *pszDst = '\0';
+    *pszDest = '\0';
 }
 
 /*
@@ -442,21 +461,18 @@ VOID  PrtDouble(TCHAR *pszDest, USHORT usDestLen, TCHAR *pszSource)
 *            (insert "0x13"  behind character.)
 *===========================================================================
 */
-VOID  PrtSDouble(TCHAR *pszDest, USHORT usDestLen, TCHAR *pszSource)
+VOID  PrtSDouble(TCHAR *pszDest, USHORT usDestLen, CONST TCHAR *pszSource)
 {
-    TCHAR  *pszDst = pszDest;
-    TCHAR  *pszSorc = pszSource;
-
     if (usDestLen == 0) {
         return ;
     }
 
-    for ( ; (*pszSorc != '\0') && (usDestLen > 2); pszSorc++ , usDestLen -= 2) {
-        *pszDst++ = PRT_SDOUBLE;
-        *pszDst++ = *pszSorc;
+    for ( ; (*pszSource != '\0') && (usDestLen > 2); pszSource++ , usDestLen -= 2) {
+        *pszDest++ = PRT_SDOUBLE;
+        *pszDest++ = *pszSource;
     }
 
-    *pszDst = '\0';
+    *pszDest = '\0';
 }
 
 /*
@@ -538,7 +554,7 @@ VOID  PrtPortion(SHORT fsPrtState)
 *            (for void consolidation)
 *===========================================================================
 */
-VOID  PrtPortion2(ITEMSALES *pItem)
+VOID  PrtPortion2(CONST ITEMSALES *pItem)
 {
 	if(fsPrtStatus & PRT_EJ_JOURNAL)
 	{
@@ -640,8 +656,8 @@ VOID  PrtGetVoid(TCHAR *pszVoidMnem, USHORT usStrLen)
 
 SHORT  PrtGetReturns(USHORT fbMod, USHORT usReasonCode, TCHAR *pszVoidMnem, USHORT usStrLen)
 {
-	USHORT usAddr = 0;
-	SHORT  sRetStatus;
+    UCSPCADRS usAddr = 0;
+	SHORT     sRetStatus;
 
 	if (fbMod & RETURNS_MODIFIER_1) {
 		usAddr = SPC_RETURNS_1;
@@ -890,7 +906,7 @@ SHORT  PrtChkPort(VOID)
 *===========================================================================
 */
 VOID  PrtGetScale(TCHAR *pszMnem, SHORT *psDecPoint, LONG  *plWeight,
-                                  TRANINFORMATION  *pTran, ITEMSALES *pItem)
+                                  CONST TRANINFORMATION  *pTran, CONST ITEMSALES *pItem)
 {
     /* -- get weight symbol -- */
 	RflGetSpecMnem(pszMnem, SPC_LB_ADR);
@@ -923,6 +939,7 @@ VOID  PrtGetScale(TCHAR *pszMnem, SHORT *psDecPoint, LONG  *plWeight,
 fh**/
 VOID  PrtGetDate(TCHAR *pszDest, USHORT usDestLen, const TRANINFORMATION *pTran)
 {
+    CONST TCHAR aszPrtNull[] = _T("");                         /* null */
     TCHAR  aszDate[PRT_DATE_LEN + 1 ] = {0};                /* date mnemomics  */
     TCHAR  aszTime[PRT_TIME_LEN + 2 + 1] = {0};             /* time mnemomics "2" for spaces */
     DATE_TIME   dateTime = pTran->TranGCFQual.DateTimeStamp;  /* date & time */
@@ -971,7 +988,7 @@ VOID  PrtGetDate(TCHAR *pszDest, USHORT usDestLen, const TRANINFORMATION *pTran)
     memset(pszDest, '\0', usDestLen * sizeof(TCHAR));
 
     /* -- check write length ("1" for  Null) --*/
-    if ( (_tcslen(aszTime) + _tcslen(aszDate) + 1) <= usDestLen) {
+    if ( (tcharlen(aszTime) + tcharlen(aszDate) + 1) <= usDestLen) {
         _tcscpy(pszDest, aszTime);     /* write time to destination buffer */
         _tcscat(pszDest, aszDate);     /* write date to destination buffer */
     }
@@ -998,6 +1015,7 @@ VOID  PrtGetDate(TCHAR *pszDest, USHORT usDestLen, const TRANINFORMATION *pTran)
 fh**/
 VOID  PrtGetJobInDate(TCHAR *pszDest, USHORT usDestLen, TRANINFORMATION *pTran, ITEMMISC *pItem)
 {
+    CONST TCHAR aszPrtNull[] = _T("");                         /* null */
     TCHAR  aszDate[PRT_DATE_LEN + 1 ] = {0};      /* date mnemomics  */
     TCHAR  aszTime[PRT_TIME_LEN + 1 +1] = {0};    /* time mnemomics "1" for space */
     USHORT usWorkHour;
@@ -1025,7 +1043,7 @@ VOID  PrtGetJobInDate(TCHAR *pszDest, USHORT usDestLen, TRANINFORMATION *pTran, 
     memset(pszDest, '\0', usDestLen);
 
     /* -- check write length ("1" for  Null) --*/
-    if ( (_tcslen(aszTime) + _tcslen(aszDate) + 1) <= usDestLen) {
+    if ( (tcharlen(aszTime) + tcharlen(aszDate) + 1) <= usDestLen) {
         _tcscpy(pszDest, aszTime);     /* write time to destination buffer */
         _tcscat(pszDest, aszDate);     /* write date to destination buffer */
     }
@@ -1052,6 +1070,7 @@ VOID  PrtGetJobInDate(TCHAR *pszDest, USHORT usDestLen, TRANINFORMATION *pTran, 
 fh**/
 VOID  PrtGetJobOutDate(TCHAR *pszDest, USHORT usDestLen, TRANINFORMATION *pTran, ITEMMISC *pItem)
 {
+    CONST TCHAR aszPrtNull[] = _T("");                         /* null */
     TCHAR       aszDate[PRT_DATE_LEN + 1 ] = {0};     /* date mnemomics  */
     TCHAR       aszTime[PRT_TIME_LEN + 1 +1] = {0};   /* time mnemomics "1" for space */
     USHORT      usWorkHour;
@@ -1082,7 +1101,7 @@ VOID  PrtGetJobOutDate(TCHAR *pszDest, USHORT usDestLen, TRANINFORMATION *pTran,
     memset(pszDest, '\0', usDestLen);
 
     /* -- check write length ("1" for  Null) --*/
-    if ( (_tcslen(aszTime) + _tcslen(aszDate) + 1) <= usDestLen) {
+    if ( (tcharlen(aszTime) + tcharlen(aszDate) + 1) <= usDestLen) {
         _tcscpy(pszDest, aszTime);     /* write time to destination buffer */
         _tcscat(pszDest, aszDate);     /* write date to destination buffer */
     }
@@ -1132,46 +1151,46 @@ SHORT  PrtGetTaxMod(TCHAR *pszDest, USHORT usDestLen, SHORT fsTax, USHORT fbMod)
    canadian tax
   -------------- */
     if (fsTax & MODEQUAL_CANADIAN) {
-		PARASPEMNEMO   SM = {0};                      /* special mnemonics */
+        WCHAR      aszMnemonics[PARA_SPEMNEMO_LEN + 1] = { 0 };
+        UCSPCADRS  usAddress = 0;
 
-		SM.uchMajorClass = CLASS_PARASPECIALMNEMO;
         switch (PRT_TAX_MASK & fbMod) {
 
         case  CANTAX_MEAL << 1:
-            SM.uchAddress    = SPC_TXMOD1_ADR;
+            usAddress = SPC_TXMOD1_ADR;
             break;
 
         case  CANTAX_CARBON << 1:
-            SM.uchAddress    = SPC_TXMOD2_ADR;
+            usAddress = SPC_TXMOD2_ADR;
             break;
 
         case  CANTAX_SNACK << 1:
-            SM.uchAddress    = SPC_TXMOD3_ADR;
+            usAddress = SPC_TXMOD3_ADR;
             break;
 
         case  CANTAX_BEER << 1:
-            SM.uchAddress    = SPC_TXMOD4_ADR;
+            usAddress = SPC_TXMOD4_ADR;
             break;
 
         case  CANTAX_LIQUOR << 1:
-            SM.uchAddress    = SPC_TXMOD5_ADR;
+            usAddress = SPC_TXMOD5_ADR;
             break;
 
         case  CANTAX_GROCERY << 1:
-            SM.uchAddress    = SPC_TXMOD6_ADR;
+            usAddress = SPC_TXMOD6_ADR;
             break;
 
         case  CANTAX_TIP << 1:
-            SM.uchAddress    = SPC_TXMOD7_ADR;
+            usAddress = SPC_TXMOD7_ADR;
             break;
 
         case  CANTAX_PST1 << 1:
-            SM.uchAddress    = SPC_TXMOD8_ADR;
+            usAddress = SPC_TXMOD8_ADR;
             break;
 
         case  CANTAX_BAKED << 1:
 //        case CANTAX_SPEC_BAKED << 1:         should this be added to accommodate special baked goods?  RJC Apr-02-2025
-            SM.uchAddress    = SPC_TXMOD9_ADR;
+            usAddress = SPC_TXMOD9_ADR;
             break;
 
         default:
@@ -1179,10 +1198,9 @@ SHORT  PrtGetTaxMod(TCHAR *pszDest, USHORT usDestLen, SHORT fsTax, USHORT fbMod)
         }
 
         /* -- get tax  modifier mnemonics -- */
-        CliParaRead( &SM );
-
+        RflGetSpecMnem(aszMnemonics, SPC_TXMOD1_ADR);
         if (PARA_SPEMNEMO_LEN  < usDestLen) {
-            _tcsncpy(pszDest, SM.aszMnemonics, PARA_SPEMNEMO_LEN);
+            _tcsncpy(pszDest, aszMnemonics, PARA_SPEMNEMO_LEN);
         } else {
             return (PRT_WITHOUTDATA);
         }
@@ -1194,15 +1212,13 @@ SHORT  PrtGetTaxMod(TCHAR *pszDest, USHORT usDestLen, SHORT fsTax, USHORT fbMod)
 
     /* get taxmodifier1 mnemo -- */
     if (fbMod & TAX_MODIFIER1) {
-		PARASPEMNEMO   SM = {0};                      /* special mnemonics */
+        WCHAR   aszMnemonics[PARA_SPEMNEMO_LEN + 1] = { 0 };
 
-		SM.uchMajorClass = CLASS_PARASPECIALMNEMO;
-        SM.uchAddress    = SPC_TXMOD1_ADR;
-        CliParaRead( &SM );
-
+        RflGetSpecMnem(aszMnemonics, SPC_TXMOD1_ADR);
         /* -- check destination buffer length ("1" for space) -- */
-        if ( ( usWriteLen += (tcharlen(SM.aszMnemonics)+1) ) < usDestLen ) {
-            _tcscpy(pszDest, SM.aszMnemonics);
+        usWriteLen += (tcharlen(aszMnemonics) + 1);
+        if (usWriteLen < usDestLen ) {
+            _tcscpy(pszDest, aszMnemonics);
             *(pszDest+usWriteLen-1) = PRT_SPACE;
         } else {
             return (PRT_WITHOUTDATA);
@@ -1211,15 +1227,13 @@ SHORT  PrtGetTaxMod(TCHAR *pszDest, USHORT usDestLen, SHORT fsTax, USHORT fbMod)
 
     /* get taxmodifier2 mnemo -- */
     if (fbMod & TAX_MODIFIER2) {
-		PARASPEMNEMO   SM = {0};                      /* special mnemonics */
+        WCHAR   aszMnemonics[PARA_SPEMNEMO_LEN + 1] = { 0 };
 
-		SM.uchMajorClass = CLASS_PARASPECIALMNEMO;
-        SM.uchAddress    = SPC_TXMOD2_ADR;
-        CliParaRead( &(SM) );
-
+        RflGetSpecMnem(aszMnemonics, SPC_TXMOD2_ADR);
         /* -- check destination buffer length ("1" for space) -- */
-        if ( ( usWriteLen += (tcharlen(SM.aszMnemonics)+1) ) < usDestLen ) {
-            _tcscat(pszDest, SM.aszMnemonics);
+        usWriteLen += (tcharlen(aszMnemonics) + 1);
+        if (usWriteLen < usDestLen) {
+            _tcscat(pszDest, aszMnemonics);
             *(pszDest+usWriteLen-1) = PRT_SPACE;
         } else {
             return (PRT_WITHOUTDATA);
@@ -1228,14 +1242,12 @@ SHORT  PrtGetTaxMod(TCHAR *pszDest, USHORT usDestLen, SHORT fsTax, USHORT fbMod)
 
     /* get taxmodifier3 mnemo -- */
     if (fbMod & TAX_MODIFIER3) {
-		PARASPEMNEMO   SM = {0};                      /* special mnemonics */
+        WCHAR   aszMnemonics[PARA_SPEMNEMO_LEN + 1] = { 0 };
 
-		SM.uchMajorClass = CLASS_PARASPECIALMNEMO;
-        SM.uchAddress    = SPC_TXMOD3_ADR;
-        CliParaRead( &(SM) );
-
-        if ( (usWriteLen += (tcharlen(SM.aszMnemonics)+1)) < usDestLen ) {
-            _tcscat(pszDest, SM.aszMnemonics);
+        RflGetSpecMnem(aszMnemonics, SPC_TXMOD3_ADR);
+        usWriteLen += (tcharlen(aszMnemonics) + 1);
+        if (usWriteLen < usDestLen) {
+            _tcscat(pszDest, aszMnemonics);
             *(pszDest+usWriteLen-1) = PRT_SPACE;
         } else {
             return (PRT_WITHOUTDATA);
@@ -1244,13 +1256,12 @@ SHORT  PrtGetTaxMod(TCHAR *pszDest, USHORT usDestLen, SHORT fsTax, USHORT fbMod)
 
     /* --- get FS Mod,  Saratoga --- */
     if (fbMod & FOOD_MODIFIER) {
-		PARASPEMNEMO   SM = {0};                      /* special mnemonics */
+        WCHAR   aszMnemonics[PARA_SPEMNEMO_LEN + 1] = { 0 };
 
-		SM.uchMajorClass = CLASS_PARASPECIALMNEMO;
-        SM.uchAddress    = SPC_FSMOD_ADR;
-        CliParaRead(&SM);
-        if ((usWriteLen += tcharlen(SM.aszMnemonics)) < usDestLen) {
-            _tcscat(pszDest, SM.aszMnemonics);
+        RflGetSpecMnem(aszMnemonics, SPC_FSMOD_ADR);
+        usWriteLen += (tcharlen(aszMnemonics) + 1);
+        if (usWriteLen < usDestLen) {
+            _tcscat(pszDest, aszMnemonics);
         } else {
             return (PRT_WITHOUTDATA);
         }
@@ -1268,22 +1279,6 @@ SHORT  PrtGetTaxMod(TCHAR *pszDest, USHORT usDestLen, SHORT fsTax, USHORT fbMod)
     }
 }
 
-/*
-*===========================================================================
-** Format  : VOID  PrtGet24Mnem(UCHAR   *pszDest, UCHAR uchAddress);
-*
-*   Input  : UCHAR uchAddress          -24Char Mnemonics address
-*   Output : UCHAR  *pszDest,          -destination buffer address
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function gets 24Char mnemonics.
-*===========================================================================
-*/
-VOID  PrtGet24Mnem(TCHAR  *pszDest, USHORT usAddress)
-{
-	RflGet24Mnem (pszDest, usAddress);
-}
 
 /*
 *===========================================================================
@@ -1320,7 +1315,7 @@ VOID  PrtGetLead(TCHAR  *pszDest, USHORT usAddress)
 *            Destination buffer must be initialized to binary zeros.
 *===========================================================================
 */
-TCHAR *PrtSetNumber(TCHAR  *pszDest, TCHAR  *pszNumber)
+TCHAR *PrtSetNumber(TCHAR  *pszDest, CONST TCHAR  *pszNumber)
 {
     USHORT     usMnemLen;           /* number mnemonics length */
     USHORT     usNumLen;            /* number length */
@@ -1347,7 +1342,6 @@ TCHAR *PrtSetNumber(TCHAR  *pszDest, TCHAR  *pszNumber)
 
     /* -- write space on 2nd line -- */
     tcharnset(&pszDest[usPrtEJColumn], PRT_SPACE, usMnemLen + 1);
-//    memset(&pszDest[usPrtEJColumn], PRT_SPACE, usMnemLen + 1);
 
     /* -- write 2nd line -- */
     if ( usFieldLen >= (usNumLen-usFieldLen) ) {
@@ -1384,7 +1378,7 @@ TCHAR *PrtSetNumber(TCHAR  *pszDest, TCHAR  *pszNumber)
 *           adjective and mnemoic and print modifiers, condiments.
 *===========================================================================
 */
-VOID PrtSetItem( TCHAR *puchWrtPtr, ITEMSALES *pItem, DCURRENCY *plAllPrice,
+VOID PrtSetItem( TCHAR *puchWrtPtr, CONST ITEMSALES *pItem, DCURRENCY *plAllPrice,
                                         SHORT sFormatType, USHORT usColumn )
 {
     *plAllPrice = pItem->lProduct;
@@ -1537,22 +1531,21 @@ VOID PrtSetItem( TCHAR *puchWrtPtr, ITEMSALES *pItem, DCURRENCY *plAllPrice,
 *           condiments with priority order.
 *===========================================================================
 */
-USHORT PrtSetChildPriority( TCHAR *puchDest, ITEMSALES *pItem,
+USHORT PrtSetChildPriority( TCHAR *puchDest, CONST ITEMSALES *pItem,
                             DCURRENCY *plAllPrice, SHORT sFormatType, USHORT usColumn )
 {
     BOOL        fIsPLUItem;
     USHORT      usMaxChild;
     TCHAR       * CONST puchStart = puchDest;
-	TCHAR       auchDummy[NUM_PLU_LEN] = {0};
 
     usMaxChild = ( pItem->uchChildNo + pItem->uchCondNo + pItem->uchPrintModNo );
-    if (sFormatType != PRT_NOT_ZERO_COND) { /* not print zero price condiment */
-		USHORT      usWrtLen;
-		USHORT      usI;
+    if (usMaxChild > STD_MAX_COND_NUM) usMaxChild = STD_MAX_COND_NUM;
 
-        for ( usI = 0; usI < usMaxChild; usI++ ) {
+    if (sFormatType != PRT_NOT_ZERO_COND) { /* not print zero price condiment */
+
+        for (USHORT usI = 0; usI < usMaxChild; usI++ ) {
             if ( pItem->auchPrintModifier[ usI ] ) {
-                usWrtLen = tcharlen( RflGetMnemonicByClass(CLASS_PARAPRTMODI, puchDest, pItem->auchPrintModifier[usI]) );
+		        USHORT      usWrtLen = tcharlen( RflGetMnemonicByClass(CLASS_PARAPRTMODI, puchDest, pItem->auchPrintModifier[usI]) );
 
                 /* --- make a space between mnemonic --- */
                 if (usColumn) { /* if separeted print option, V3.3 */
@@ -1577,22 +1570,23 @@ USHORT PrtSetChildPriority( TCHAR *puchDest, ITEMSALES *pItem,
 
     if ( fIsPLUItem ) {
 		USHORT      usWrtLen, usAdjLen;
-		USHORT      usI;
 
-        for ( usI = ( USHORT )pItem->uchChildNo; usI < usMaxChild; usI++ ) {
-            if (_tcsncmp(pItem->Condiment[ usI ].auchPLUNo, auchDummy, NUM_PLU_LEN) != 0 ) {
+        for (USHORT usI = pItem->uchChildNo; usI < usMaxChild || usI < STD_MAX_COND_NUM; usI++ ) {
+            CONST TCHAR* auchPluNo = pItem->Condiment[usI].auchPLUNo;
+
+            if (_tcsncmp(auchPluNo, MLD_NO_DISP_PLU_DUMMY, NUM_PLU_LEN) != 0 ) {
                 if ((sFormatType == PRT_NOT_ZERO_COND) && (pItem->Condiment[ usI ].lUnitPrice == 0L)) {
                     /* ---- not print zero price condiment ---- */
                     continue;
-
-                } else if (((_tcsncmp(pItem->Condiment[ usI ].auchPLUNo, MLD_NO_DISP_PLU_LOW, NUM_PLU_LEN) >= 0) &&
-                            (_tcsncmp(pItem->Condiment[ usI ].auchPLUNo, MLD_NO_DISP_PLU_HIGH, NUM_PLU_LEN) <= 0))
+                }
+                
+                if (((_tcsncmp(auchPluNo, MLD_NO_DISP_PLU_LOW, NUM_PLU_LEN) >= 0) && (_tcsncmp(auchPluNo, MLD_NO_DISP_PLU_HIGH, NUM_PLU_LEN) <= 0))
                             && !((fsPrtStatus & (PRT_REQKITCHEN|PRT_TAKETOKIT)) ||  /* kitchen print */
                                  (pItem->fsPrintStatus & (PRT_SINGLE_RECPT|PRT_DOUBLE_RECPT)))) {
                                  /* ticket print status */
 
                     /* --- get all product price --- */
-                    *plAllPrice += ( pItem->Condiment[ usI ].lUnitPrice * ( pItem->lQTY / 1000 ));
+                    *plAllPrice += ( (DCURRENCY)pItem->Condiment[ usI ].lUnitPrice * ( pItem->lQTY / 1000 ));
                     /* ---- not print special plu no ---- */
                     continue;
                 } else {
@@ -1636,7 +1630,7 @@ USHORT PrtSetChildPriority( TCHAR *puchDest, ITEMSALES *pItem,
 					}
 
                     /* --- get all product price --- */
-                    *plAllPrice += ( pItem->Condiment[ usI ].lUnitPrice * ( pItem->lQTY / 1000 ));
+                    *plAllPrice += ( (DCURRENCY)pItem->Condiment[ usI ].lUnitPrice * ( pItem->lQTY / 1000 ));
                 }
             }
         }   /* end for */
@@ -1662,7 +1656,7 @@ USHORT PrtSetChildPriority( TCHAR *puchDest, ITEMSALES *pItem,
 *           condiments with no order (input order).
 *===========================================================================
 */
-USHORT PrtSetChildNotOrder( TCHAR *puchDest, ITEMSALES *pItem,
+USHORT PrtSetChildNotOrder( TCHAR *puchDest, CONST ITEMSALES *pItem,
                             DCURRENCY *plAllPrice, SHORT sFormatType, USHORT usColumn )
 {
     BOOL        fIsPLUItem;
@@ -1712,7 +1706,7 @@ USHORT PrtSetChildNotOrder( TCHAR *puchDest, ITEMSALES *pItem,
                                 (pItem->fsPrintStatus & (PRT_SINGLE_RECPT|PRT_DOUBLE_RECPT)))) {
                                 /* ticket print status */
                     /* --- get all product price --- */
-                    *plAllPrice += ( pItem->Condiment[ usI ].lUnitPrice * ( pItem->lQTY / 1000 ));
+                    *plAllPrice += ( (DCURRENCY)pItem->Condiment[ usI ].lUnitPrice * ( pItem->lQTY / 1000 ));
                     /* ---- not print special plu no ---- */
                     continue;
                 } else {
@@ -1755,7 +1749,7 @@ USHORT PrtSetChildNotOrder( TCHAR *puchDest, ITEMSALES *pItem,
 					}
 
 					/* --- get all product price --- */
-                    *plAllPrice += ( pItem->Condiment[ usI ].lUnitPrice * ( pItem->lQTY / 1000 ));
+                    *plAllPrice += ( (DCURRENCY)pItem->Condiment[ usI ].lUnitPrice * ( pItem->lQTY / 1000 ));
                 }
             }
         }
@@ -1797,10 +1791,7 @@ USHORT PrtSetChildNotOrder( TCHAR *puchDest, ITEMSALES *pItem,
 */
 SHORT  PrtGet1Line(TCHAR *pStart, TCHAR **pEnd, USHORT usColumn)
 {
-    TCHAR  *puchWork;
-    USHORT i;
-
-    puchWork = pStart + usColumn;
+    TCHAR  *puchWork = pStart + usColumn;
 
     if (( *puchWork == PRT_SPACE ) || ( *puchWork == PRT_SEPARATOR )) {
         *pEnd = puchWork;
@@ -1809,7 +1800,7 @@ SHORT  PrtGet1Line(TCHAR *pStart, TCHAR **pEnd, USHORT usColumn)
         return (PRT_LAST);
     }
 
-    for ( i = 0; ; i++ ) {
+    for (USHORT i = 0; ; i++ ) {
         if (( *(puchWork - i)  == PRT_SPACE ) || ( *(puchWork - i)  == PRT_SEPARATOR )) {
             *pEnd = puchWork - i;
             return (PRT_CONTINUE);
@@ -1873,16 +1864,16 @@ SHORT  PrtChkCasWai(TCHAR *pszMnem, ULONG ulCasID, ULONG ulWaiID)
 ** Synopsis: This function  get all product price(noun own and condiments')
 *===========================================================================
 */
-VOID  PrtGetAllProduct(ITEMSALES *pItem, DCURRENCY *plProduct)
+VOID  PrtGetAllProduct(CONST ITEMSALES *pItem, DCURRENCY *plProduct)
 {
-    USHORT i;
     USHORT  usNoOfChild;
     DCURRENCY    lChildPrice = 0;
     TCHAR   auchDummy[NUM_PLU_LEN] = {0};
 
     usNoOfChild = pItem->uchCondNo + pItem->uchPrintModNo + pItem->uchChildNo;
 
-    for ( i = pItem->uchChildNo; i < usNoOfChild; i++) {
+    NHPOS_ASSERT(usNoOfChild <= sizeof(pItem->Condiment) / sizeof(pItem->Condiment[0]));
+    for (USHORT i = pItem->uchChildNo; i < usNoOfChild; i++) {
         if (_tcsncmp(pItem->Condiment[ i ].auchPLUNo, auchDummy, NUM_PLU_LEN) != 0 ) {
             lChildPrice += pItem->Condiment[ i ].lUnitPrice;
         }
@@ -1901,6 +1892,7 @@ VOID  PrtGetAllProduct(ITEMSALES *pItem, DCURRENCY *plProduct)
 ** Return  : none
 *
 ** Synopsis: This function adjusts native mnemonics and amount sign
+*            See also PrtAdjustForeign() which does the same for foreign currency.
 *===========================================================================
 */
 VOID  PrtAdjustNative(TCHAR *pszDest, DCURRENCY lAmount)
@@ -1912,7 +1904,7 @@ VOID  PrtAdjustNative(TCHAR *pszDest, DCURRENCY lAmount)
 	RflGetSpecMnem(aszSpecMnem, SPC_CNSYMNTV_ADR);
 
     /* -- get string length -- */
-//    usStrLen = _tcslen(aszSpecMnem);
+//    usStrLen = tcharlen(aszSpecMnem);
 
     /* -- convert long to ASCII -- */
     RflSPrintf(&pszDest[0], PRT_EJCOLUMN + 1, aszPrtAmount, aszSpecMnem, lAmount);
@@ -1968,7 +1960,7 @@ VOID  PrtFillSpace(TCHAR   *pszString, USHORT  usSize)
 *
 **************************************************************************
 */
-USHORT    PrtPrint(USHORT usPrtType, TCHAR *puchBuff, USHORT usLen)
+USHORT    PrtPrint(USHORT usPrtType, CONST TCHAR *puchBuff, USHORT usLen)
 {
 #if defined(USE_2170_ORIGINAL)
 #if _DEBUG
@@ -2057,7 +2049,7 @@ USHORT    PrtPrint(USHORT usPrtType, TCHAR *puchBuff, USHORT usLen)
 			{
 				if ( fbPrtShrStatus & PRT_SHARED_SYSTEM )
 				{
-					PrtShrPrint( puchBuff, (USHORT) (usLen*sizeof(TCHAR))); //ESMITH EJ PRINT
+					PrtShrPrint( puchBuff, usLen); //ESMITH EJ PRINT
 				}
 				else
 				{
@@ -2112,7 +2104,7 @@ USHORT    PrtPrint(USHORT usPrtType, TCHAR *puchBuff, USHORT usLen)
 *
 **************************************************************************
 */
-USHORT    PrtPrintf(USHORT usPrtType, const TCHAR FAR *pszFormat, ...)
+USHORT    PrtPrintf(USHORT usPrtType, CONST TCHAR *pszFormat, ...)
 {
 
     /* --- Fix a glich (05/15/2001)
@@ -2129,7 +2121,7 @@ USHORT    PrtPrintf(USHORT usPrtType, const TCHAR FAR *pszFormat, ...)
 	TCHAR   szTmpBuff[ PRT_SPCOLUMN * (NUM_CPRSPCO_EPT + 1)] = {0};    // sized to max number of lines in response for credit returns
     TCHAR   auchAlignedText[ 80 ] = {0};
 
-    usLen = _RflFormStr( pszFormat, (SHORT *)( &pszFormat + 1 ), szTmpBuff, PRT_SPCOLUMN * (NUM_CPRSPCO_EPT + 1));
+    usLen = _RflFormStr( pszFormat, (VOID *)( &pszFormat + 1 ), szTmpBuff, PRT_SPCOLUMN * (NUM_CPRSPCO_EPT + 1));
 
 	if ( (fbPrtSendToStatus & PRT_SENDTO_MASKFUNC) && ( usPrtType != PMG_PRT_JOURNAL) && ( usPrtType != PMG_PRT_SLIP) ) { /* Send Prints to file on terminal */
 		switch( fbPrtSendToStatus )
@@ -2152,7 +2144,7 @@ USHORT    PrtPrintf(USHORT usPrtType, const TCHAR FAR *pszFormat, ...)
 		case PMG_PRT_RECEIPT:
 			if ( fbPrtShrStatus & PRT_SHARED_SYSTEM )
 			{
-				PrtShrPrint( szTmpBuff, (USHORT)(usLen * sizeof(TCHAR)) ); //ESMITH EJ PRINT
+				PrtShrPrint( szTmpBuff, usLen); //ESMITH EJ PRINT
 			}
 			else
 			{
@@ -2211,43 +2203,6 @@ VOID  PrtEndValidation(USHORT usPort)
 
     PrtPmgWait();                               /* wait print spooler become empty */
 }
-#if 0
-/*
-*===========================================================================
-** Format  : VOID   PrtSetTHColumn(VOID);
-*
-*   Input  : none
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function sets receipt and journal's columns to
-*            static area " usPrtRJColumn"
-*===========================================================================
-*/
-VOID   PrtSetRJColumn(VOID)
-{
-
-    UCHAR  fbStatus;
-
-    PmgPrtConfig(PMG_PRT_RECEIPT, &usPrtRJColumn, &fbStatus);
-
-    /* -- get printer type, and set validation type -- */
-
-    if ( usPrtRJColumn == PRT_24CHAR ) {
-        if (fbStatus & PMG_VALIDATION) {
-            usPrtVLColumn = PRT_VL_24;
-        } else {
-            usPrtVLColumn = PRT_VL_21;
-        }
-    }
-
-    if ( usPrtRJColumn == PRT_21CHAR ) {
-        usPrtVLColumn = PRT_VL_21;
-    }
-
-}
-#endif
 
 /*
 **************************************************************************
@@ -2386,10 +2341,9 @@ VOID  PrtSlipPmgWait(VOID)
 */
 SHORT  PrtChkFullSP(TCHAR   *pszWork)
 {
-    USHORT  usI, usLen;
+    USHORT  usLen = tcharlen(pszWork);
 
-    usLen = tcharlen(pszWork);
-    for ( usI = 0; usI < usLen; usI ++, pszWork ++ ) {
+    for (USHORT usI = 0; usI < usLen; usI ++, pszWork ++ ) {
         if ( ( *pszWork != PRT_SPACE ) && ( *pszWork != '\0' ) ) {
             return(0);
         }
@@ -2480,7 +2434,7 @@ USHORT PrtSPVLInit(VOID)
 ** Synopsis: This function checks void consolidation is available or not.
 *===========================================================================
 */
-SHORT PrtChkVoidConsolidation(TRANINFORMATION  *pTran, ITEMSALES *pItem)
+SHORT PrtChkVoidConsolidation(CONST TRANINFORMATION  *pTran, CONST ITEMSALES *pItem)
 {
     if ((pTran->TranCurQual.auchTotalStatus[4] & CURQUAL_TOTAL_NOCONSOLIDATE_PRINT) ||
         ((pTran->TranCurQual.flPrintStatus & CURQUAL_GC_SYS_MASK) == CURQUAL_PRE_UNBUFFER) ||        /* unbuffering print */
@@ -2518,7 +2472,7 @@ SHORT PrtChkVoidConsolidation(TRANINFORMATION  *pTran, ITEMSALES *pItem)
 ** Synopsis:
 *===========================================================================
 */
-SHORT PrtChkPrintPluNo(ITEMSALES *pItem)
+SHORT PrtChkPrintPluNo(CONST ITEMSALES *pItem)
 {
     if ((_tcsncmp(pItem->auchPLUNo, MLD_NO_DISP_PLU_LOW, NUM_PLU_LEN) >= 0) &&
         (_tcsncmp(pItem->auchPLUNo, MLD_NO_DISP_PLU_HIGH, NUM_PLU_LEN) <= 0)) {
@@ -2577,7 +2531,7 @@ SHORT PrtChkPrintPluNo(ITEMSALES *pItem)
 ** Synopsis:
 *===========================================================================
 */
-SHORT PrtChkPrintType(ITEMSALES *pItem)
+SHORT PrtChkPrintType(CONST ITEMSALES *pItem)
 {
     if ((fsPrtStatus & (PRT_REQKITCHEN|PRT_TAKETOKIT)) ||  /* kitchen print */
             (pItem->fsPrintStatus & (PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT)) ) {
@@ -2767,7 +2721,7 @@ USHORT  PrtGetTaxMod2(TCHAR *pszDest, USHORT usDestLen, UCHAR uchMinorClass)
 ** Synopsis: This function gets SI symbol for Sales 21RFC05437
 *===========================================================================
 */
-SHORT    PrtGetSISymSales( TCHAR  *aszSISym, ITEMSALES *pItem )
+SHORT    PrtGetSISymSales( TCHAR  *aszSISym, CONST ITEMSALES *pItem )
 {
 	switch(PrtCheckTaxSystem()) {
 	case PRT_TAX_US:
@@ -2798,7 +2752,7 @@ SHORT    PrtGetSISymSales( TCHAR  *aszSISym, ITEMSALES *pItem )
 ** Synopsis: This function gets SI symbol for Sales US, 21RFC05437
 *===========================================================================
 */
-SHORT    PrtGetSISymSalesUS( TCHAR  *aszSISym, ITEMSALES *pItem )
+SHORT    PrtGetSISymSalesUS( TCHAR  *aszSISym, CONST ITEMSALES *pItem )
 {
     UCHAR   fchFood = 0;
     UCHAR   uchOffset1 = 0, uchOffset2 = 0;
@@ -2859,7 +2813,7 @@ SHORT    PrtGetSISymSalesUS( TCHAR  *aszSISym, ITEMSALES *pItem )
 ** Synopsis: This function gets SI symbol for Sales US, 21RFC05437
 *===========================================================================
 */
-SHORT    PrtGetSISymSalesCanada( TCHAR  *aszSISym, ITEMSALES *pItem )
+SHORT    PrtGetSISymSalesCanada( TCHAR  *aszSISym, CONST ITEMSALES *pItem )
 {
     USHORT  uchWorkMod;
     UCHAR   uchOffset1 = 0, uchOffset2 = 0;
@@ -2927,7 +2881,7 @@ SHORT    PrtGetSISymSalesCanada( TCHAR  *aszSISym, ITEMSALES *pItem )
 ** Synopsis: This function gets SI symbol for Sales
 *===========================================================================
 */
-SHORT    PrtGetSISymSalesIntl( TCHAR  *aszSISym, ITEMSALES *pItem )
+SHORT    PrtGetSISymSalesIntl( TCHAR  *aszSISym, CONST ITEMSALES *pItem )
 {
     UCHAR   uchWorkMDC;
     UCHAR   uchOffset1 = 0, uchOffset2 = 0;
@@ -2956,50 +2910,10 @@ SHORT    PrtGetSISymSalesIntl( TCHAR  *aszSISym, ITEMSALES *pItem )
 *   InOut  : none
 ** Return  : none
 *
-** Synopsis: This function gets SI symbol for Discount 21RFC05437
-*===========================================================================
-*/
-SHORT    PrtGetSISymDisc( TCHAR  *aszSISym, ITEMDISC *pItem )
-{
-	if (pItem->uchMinorClass == CLASS_ITEMDISC1) {
-
-	    if (((fsPrtStatus & PRT_REQKITCHEN) == 0) &&	/* not KP, KDS */
-            !(pItem->fsPrintStatus & (PRT_VALIDATION | PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT))) {  /* not validation, tichet */
-
-			switch(PrtCheckTaxSystem()) {
-			case PRT_TAX_US:
-				return PrtGetSISymItemDiscUS(aszSISym, pItem);
-				break;
-
-			case PRT_TAX_INTL:
-				return PrtGetSISymItemDiscIntl(aszSISym, pItem);
-				break;
-
-			default:
-				return PrtGetSISymItemDiscCanada(aszSISym, pItem);
-				break;
-			}
-		}
-
-	}
-	/* not set si symbol at reg. disc, charge tips, like gp */
-
-	return 0;
-}
-
-/*
-*===========================================================================
-** Format  : VOID   PrtGetSISymDisc( UCHAR  *aszSISym, ITEMDISC *pItem )
-*
-*   Input  : UCHAR  *puchStatus         -
-*   Output : UCHAR  *aszSISym           -mnemonic address
-*   InOut  : none
-** Return  : none
-*
 ** Synopsis: This function gets SI symbol for Discount US, 21RFC05437
 *===========================================================================
 */
-SHORT    PrtGetSISymItemDiscUS( TCHAR  *aszSISym, ITEMDISC *pItemDisc )
+static SHORT    PrtGetSISymItemDiscUS( TCHAR  *aszSISym, CONST ITEMDISC *pItemDisc )
 {
     UCHAR   uchOffset1 = 0, uchOffset2 = 0;
 
@@ -3052,7 +2966,7 @@ SHORT    PrtGetSISymItemDiscUS( TCHAR  *aszSISym, ITEMDISC *pItemDisc )
 ** Synopsis: This function gets SI symbol for Discount US, 21RFC05437
 *===========================================================================
 */
-SHORT    PrtGetSISymItemDiscCanada( TCHAR  *aszSISym, ITEMDISC *pItem )
+static SHORT    PrtGetSISymItemDiscCanada( TCHAR  *aszSISym, CONST ITEMDISC *pItem )
 {
     UCHAR   uchWorkMDC;
     UCHAR   uchOffset1 = 0, uchOffset2 = 0;
@@ -3111,7 +3025,7 @@ SHORT    PrtGetSISymItemDiscCanada( TCHAR  *aszSISym, ITEMDISC *pItem )
 ** Synopsis: This function gets SI symbol for Discount US, 21RFC05437
 *===========================================================================
 */
-SHORT    PrtGetSISymItemDiscIntl( TCHAR  *aszSISym, ITEMDISC *pItem )
+static SHORT    PrtGetSISymItemDiscIntl( TCHAR  *aszSISym, CONST ITEMDISC *pItem )
 {
     UCHAR   uchWorkMDC;
     UCHAR   uchOffset1 = 0, uchOffset2 = 0;
@@ -3133,35 +3047,40 @@ SHORT    PrtGetSISymItemDiscIntl( TCHAR  *aszSISym, ITEMDISC *pItem )
 
 /*
 *===========================================================================
-** Format  : VOID   PrtGetSISymCoupon( UCHAR  *aszSISym, ITEMSALES *pItem )
+** Format  : VOID   PrtGetSISymDisc( UCHAR  *aszSISym, ITEMDISC *pItem )
 *
 *   Input  : UCHAR  *puchStatus         -
 *   Output : UCHAR  *aszSISym           -mnemonic address
 *   InOut  : none
 ** Return  : none
 *
-** Synopsis: This function gets SI symbol for Coupon 21RFC05437
+** Synopsis: This function gets SI symbol for Discount 21RFC05437
 *===========================================================================
 */
-SHORT    PrtGetSISymCoupon( TCHAR  *aszSISym, ITEMCOUPON *pItem )
+SHORT    PrtGetSISymDisc( TCHAR  *aszSISym, CONST ITEMDISC *pItem )
 {
-    if (((fsPrtStatus & PRT_REQKITCHEN) == 0) &&	/* not KP, KDS */
-        !(pItem->fsPrintStatus & (PRT_VALIDATION | PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT))) {  /* not validation, tichet */
+	if (pItem->uchMinorClass == CLASS_ITEMDISC1) {
 
-		switch(PrtCheckTaxSystem()) {
-		case PRT_TAX_US:
-			return PrtGetSISymCouponUS(aszSISym, pItem);
-			break;
+	    if (((fsPrtStatus & PRT_REQKITCHEN) == 0) &&	/* not KP, KDS */
+            !(pItem->fsPrintStatus & (PRT_VALIDATION | PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT))) {  /* not validation, tichet */
 
-		case PRT_TAX_INTL:
-			return PrtGetSISymCouponIntl(aszSISym, pItem);
-			break;
+			switch(PrtCheckTaxSystem()) {
+			case PRT_TAX_US:
+				return PrtGetSISymItemDiscUS(aszSISym, pItem);
+				break;
 
-		default:
-			return PrtGetSISymCouponCanada(aszSISym, pItem);
-			break;
+			case PRT_TAX_INTL:
+				return PrtGetSISymItemDiscIntl(aszSISym, pItem);
+				break;
+
+			default:
+				return PrtGetSISymItemDiscCanada(aszSISym, pItem);
+				break;
+			}
 		}
+
 	}
+	/* not set si symbol at reg. disc, charge tips, like gp */
 
 	return 0;
 }
@@ -3178,11 +3097,10 @@ SHORT    PrtGetSISymCoupon( TCHAR  *aszSISym, ITEMCOUPON *pItem )
 ** Synopsis: This function gets SI symbol for Coupon US, 21RFC05437
 *===========================================================================
 */
-SHORT    PrtGetSISymCouponUS( TCHAR  *aszSISym, ITEMCOUPON *pItem )
+static SHORT    PrtGetSISymCouponUS( TCHAR  *aszSISym, CONST ITEMCOUPON *pItem )
 {
     UCHAR   uchCheckBit, uchTaxableSts, uchTaxState, fchFood;
     USHORT  uchModifier;
-    SHORT   i;
     UCHAR   uchOffset1 = 0, uchOffset2 = 0;
 
 	/* US Tax */
@@ -3191,7 +3109,7 @@ SHORT    PrtGetSISymCouponUS( TCHAR  *aszSISym, ITEMCOUPON *pItem )
     uchTaxableSts  = pItem->fbStatus[ 0 ];
 	uchTaxState    = 0;
 
-    for ( i = 0; i < 3; i++, uchCheckBit <<= 1 ){
+    for (SHORT i = 0; i < 3; i++, uchCheckBit <<= 1 ){
         uchTaxState |= (( uchTaxableSts ^ uchModifier ) & uchCheckBit );
     }
     uchTaxState >>= 1;
@@ -3243,7 +3161,7 @@ SHORT    PrtGetSISymCouponUS( TCHAR  *aszSISym, ITEMCOUPON *pItem )
 ** Synopsis: This function gets SI symbol for Coupon US, 21RFC05437
 *===========================================================================
 */
-SHORT    PrtGetSISymCouponCanada( TCHAR  *aszSISym, ITEMCOUPON *pItem )
+static SHORT    PrtGetSISymCouponCanada( TCHAR  *aszSISym, CONST ITEMCOUPON *pItem )
 {
     USHORT  uchWorkMDC;
     UCHAR   uchOffset1 = 0, uchOffset2 = 0;
@@ -3311,7 +3229,7 @@ SHORT    PrtGetSISymCouponCanada( TCHAR  *aszSISym, ITEMCOUPON *pItem )
 ** Synopsis: This function gets SI symbol for Coupon
 *===========================================================================
 */
-SHORT    PrtGetSISymCouponIntl( TCHAR  *aszSISym, ITEMCOUPON *pItem )
+static SHORT    PrtGetSISymCouponIntl( TCHAR  *aszSISym, CONST ITEMCOUPON *pItem )
 {
     UCHAR   uchWorkMDC;
     UCHAR   uchOffset1 = 0, uchOffset2 = 0;
@@ -3330,6 +3248,41 @@ SHORT    PrtGetSISymCouponIntl( TCHAR  *aszSISym, ITEMCOUPON *pItem )
     }
 
 	return PrtGetSISym(aszSISym, uchOffset1, uchOffset2);
+}
+
+/*
+*===========================================================================
+** Format  : VOID   PrtGetSISymCoupon( UCHAR  *aszSISym, ITEMSALES *pItem )
+*
+*   Input  : UCHAR  *puchStatus         -
+*   Output : UCHAR  *aszSISym           -mnemonic address
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function gets SI symbol for Coupon 21RFC05437
+*===========================================================================
+*/
+SHORT    PrtGetSISymCoupon( TCHAR  *aszSISym, CONST ITEMCOUPON *pItem )
+{
+    if (((fsPrtStatus & PRT_REQKITCHEN) == 0) &&	/* not KP, KDS */
+        !(pItem->fsPrintStatus & (PRT_VALIDATION | PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT))) {  /* not validation, tichet */
+
+		switch(PrtCheckTaxSystem()) {
+		case PRT_TAX_US:
+			return PrtGetSISymCouponUS(aszSISym, pItem);
+			break;
+
+		case PRT_TAX_INTL:
+			return PrtGetSISymCouponIntl(aszSISym, pItem);
+			break;
+
+		default:
+			return PrtGetSISymCouponCanada(aszSISym, pItem);
+			break;
+		}
+	}
+
+	return 0;
 }
 
 /*

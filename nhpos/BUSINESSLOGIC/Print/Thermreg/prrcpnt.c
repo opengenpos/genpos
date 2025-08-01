@@ -74,6 +74,72 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;============================================================================
 **/
+
+/* --- DTREE#2 Check Endorsement,   Dec/18/2000, 21RFC05402 --- */
+static CONST TCHAR   aszPrtSPMnemAmt[] = _T("%-32s %11l$");                   /* trans. mnem and amount */
+static CONST TCHAR   aszPrtSPMnemAmtSI[] = _T("%s %s\t%11l$");              /* trans. mnem and amount, 21RFC05437 */
+
+
+/*
+*===========================================================================
+** Format  : USHORT  PrtSPCoupon( UCHAR *pszDest,
+*                                 UCHAR *pszMnemonic,
+*                                 LONG  lAmount )
+*
+*    Input : UCHAR  *pszDest        -   point to destination buffer
+*            UCHAR  *pszMnemonic    -   point to coupon mnemonic
+*            LONG   lAmount         -   amount of coupon
+*
+*   Output : UCHAR  *pszDest        -   point to created string
+*    InOut : none
+*
+** Return  : number of line(s) to be set
+*
+** Synopsis:    This function sets coupon mnemonics and its amount, and
+*               then it stores created string to the buffer 'pszDest'
+*===========================================================================
+*/
+USHORT  PrtSPCoupon(TCHAR* pszDest, CONST TCHAR* pszMnemonic, DCURRENCY lAmount)
+{
+    /* -- set coupon mnemonics, and its amount -- */
+    RflSPrintf(pszDest, (PRT_SPCOLUMN + 1), aszPrtSPMnemAmt, pszMnemonic, lAmount);
+
+    return (1);
+}
+
+/*
+*===========================================================================
+** Format  : USHORT  PrtSPCoupon( UCHAR *pszDest,
+*                                 UCHAR *pszMnemonic,
+*                                 LONG  lAmount )
+*
+*    Input : UCHAR  *pszDest        -   point to destination buffer
+*            UCHAR  *pszMnemonic    -   point to coupon mnemonic
+*            LONG   lAmount         -   amount of coupon
+*
+*   Output : UCHAR  *pszDest        -   point to created string
+*    InOut : none
+*
+** Return  : number of line(s) to be set
+*
+** Synopsis:    This function sets coupon mnemonics and its amount, and
+*               then it stores created string to the buffer 'pszDest'
+*===========================================================================
+*/
+USHORT  PrtSPCouponSISym(TCHAR* pszDest, CONST TCHAR* pszMnemonic, DCURRENCY lAmount, CONST TCHAR* pszSISym, TCHAR uchMDC)
+{
+                                                                                /* -- set coupon mnemonics, and its amount -- */
+    if (uchMDC) {
+        /* si before mnemonics */
+        RflSPrintf(pszDest, (PRT_SPCOLUMN + 1), aszPrtSPMnemAmtSI, pszSISym, pszMnemonic, lAmount);
+    }
+    else {
+        RflSPrintf(pszDest, (PRT_SPCOLUMN + 1), aszPrtSPMnemAmt, pszMnemonic, pszSISym, lAmount);
+    }
+
+    return (1);
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtItemCoupon( TRANINFORMATION *pTran, ITEMCOUPON *pItem );
@@ -134,6 +200,132 @@ VOID   PrtDispCoupon( TRANINFORMATION  *pTran, ITEMCOUPON *pItem )
     }
 }
 
+
+
+/*
+*===========================================================================
+** Format  : VOID PrtCoupon_TH( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
+*
+*    Input : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMCOUPON       *pItem     -Coupon item address
+*   Output : none
+*    InOut : none
+** Return  : none
+*
+** Synopsis: This function prints coupon item on thermal printer.
+*===========================================================================
+*/
+static VOID  PrtCoupon_TH( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
+{
+    /* --- print header line --- */
+    PrtTHHead(pTran->TranCurQual.usConsNo);
+
+    /* --- print void line --- */
+    PrtTHVoid( pItem->fbModifier, pItem->usReasonCode );
+
+    /* --- print number line --- */
+    PrtTHNumber( pItem->aszNumber );
+
+    /* --- print tax modifier line --- */
+    PrtTHTaxMod( pTran->TranModeQual.fsModeStatus, pItem->fbModifier );
+
+    /* --- print coupon item line --- */
+    PrtTHCoupon( pItem );
+}
+
+
+
+/*
+*===========================================================================
+** Format  : VOID PrtCoupon_EJ( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
+*
+*    Input : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMCOUPON       *pItem     -Coupon item address
+*   Output : none
+*    InOut : none
+** Return  : none
+*
+** Synopsis: This function prints coupon item on electric jornal printer.
+*===========================================================================
+*/
+static VOID  PrtCoupon_EJ( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
+{
+    /* --- print void line --- */
+	PrtEJVoid( pItem->fbModifier, pItem->usReasonCode );
+
+    /* --- print number line --- */
+    PrtEJNumber( pItem->aszNumber );
+
+    /* --- print tax modifier line --- */
+    PrtEJTaxMod( pTran->TranModeQual.fsModeStatus, pItem->fbModifier );
+
+    if (pItem->uchMinorClass == CLASS_UPCCOUPON) {
+        TCHAR  aszPLUNo[PLU_MAX_DIGIT + 1] = { 0 };
+
+        RflConvertPLU(aszPLUNo, pItem->auchUPCCouponNo);
+        PrtEJPLUNo(aszPLUNo);
+	} else {
+        TCHAR  aszPLUNo[PLU_MAX_DIGIT + 1] = { 0 };
+
+        RflSPrintf (aszPLUNo, PLU_MAX_DIGIT, _T("CCP#%d"), pItem->uchCouponNo);
+        PrtEJPLUNo(aszPLUNo);
+	}
+    /* --- print coupon item line --- */
+    PrtEJCoupon( pItem );
+}
+
+
+
+/*
+*===========================================================================
+** Format  : VOID PrtCoupon_SP( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
+*
+*    Input : TRANINFORMATION    *pTran  - Transaction information address
+*            ITEMCOUPON         *pItem  - coupon data address
+*   Output : none
+*    InOut : none
+** Return  : none
+*
+** Synopsis: This function prints coupon item on slip.
+*===========================================================================
+*/
+static VOID PrtCoupon_SP( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
+{
+    TCHAR   aszSPPrintBuff[ 3 ][ PRT_SPCOLUMN + 1 ] = {0}; /* print data save area */
+    USHORT  usSlipLine = 0;         /* number of lines to be printed */
+    USHORT  usSaveLine = 0;         /* save slip lines to be added */
+
+    /* -- set void mnemonic and number -- */
+    usSlipLine = PrtSPVoidNumber( aszSPPrintBuff[ 0 ], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
+
+    /* -- set tax modifier mnemonic -- */
+    usSlipLine += PrtSPTaxMod( aszSPPrintBuff[ usSlipLine ], pTran->TranModeQual.fsModeStatus, pItem->fbModifier);
+
+    /* -- set coupon mnemonic, and its amount --- */
+	if ( CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT1) ) {
+		TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN * 2 + 1] = {0};  /* times 2 for possible double in PrtGetSISymCoupon() */
+
+	    if (PrtGetSISymCoupon(aszSpecMnem, pItem)) {						/* si symbol for item disc. */
+		    usSlipLine += PrtSPCouponSISym( aszSPPrintBuff[ usSlipLine ], pItem->aszMnemonic, pItem->lAmount, aszSpecMnem, CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT2) ); 
+		} else {
+			usSlipLine += PrtSPCoupon( aszSPPrintBuff[ usSlipLine ], pItem->aszMnemonic, pItem->lAmount);
+    	}
+    } else {
+	    usSlipLine += PrtSPCoupon( aszSPPrintBuff[ usSlipLine ], pItem->aszMnemonic, pItem->lAmount);
+	}
+	
+    /* -- determine whether the paper is necessary to be changed --- */
+    usSaveLine = PrtCheckLine( usSlipLine, pTran );
+
+    /* -- print all data in the buffer -- */ 
+    for (USHORT usIndex = 0; usIndex < usSlipLine; usIndex++ ) {
+        PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ usIndex ], PRT_SPCOLUMN );
+    }
+
+   /* -- update current line No. -- */
+    usPrtSlipPageLine += ( usSlipLine + usSaveLine );
+}
+
 /*
 *===========================================================================
 **  Format : VOID    PrtCoupon( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
@@ -148,7 +340,6 @@ VOID   PrtDispCoupon( TRANINFORMATION  *pTran, ITEMCOUPON *pItem )
 ** Synopsis: This function prints a coupon item on each printers.
 *===========================================================================
 */
-
 VOID PrtCoupon( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
 {
     /* -- set print portion to static area "fsPrtPrintPort" -- */
@@ -192,133 +383,6 @@ VOID PrtCoupon( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
 }
 
 
-
-/*
-*===========================================================================
-** Format  : VOID PrtCoupon_TH( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
-*
-*    Input : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMCOUPON       *pItem     -Coupon item address
-*   Output : none
-*    InOut : none
-** Return  : none
-*
-** Synopsis: This function prints coupon item on thermal printer.
-*===========================================================================
-*/
-
-VOID  PrtCoupon_TH( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
-{
-    /* --- print header line --- */
-    PrtTHHead( pTran );
-
-    /* --- print void line --- */
-    PrtTHVoid( pItem->fbModifier, pItem->usReasonCode );
-
-    /* --- print number line --- */
-    PrtTHNumber( pItem->aszNumber );
-
-    /* --- print tax modifier line --- */
-    PrtTHTaxMod( pTran->TranModeQual.fsModeStatus, pItem->fbModifier );
-
-    /* --- print coupon item line --- */
-    PrtTHCoupon( pItem );
-}
-
-
-
-/*
-*===========================================================================
-** Format  : VOID PrtCoupon_EJ( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
-*
-*    Input : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMCOUPON       *pItem     -Coupon item address
-*   Output : none
-*    InOut : none
-** Return  : none
-*
-** Synopsis: This function prints coupon item on electric jornal printer.
-*===========================================================================
-*/
-
-VOID  PrtCoupon_EJ( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
-{
-    TCHAR  aszPLUNo[PLU_MAX_DIGIT + 1];
-
-    /* --- print void line --- */
-	PrtEJVoid( pItem->fbModifier, pItem->usReasonCode );
-
-    /* --- print number line --- */
-    PrtEJNumber( pItem->aszNumber );
-
-    /* --- print tax modifier line --- */
-    PrtEJTaxMod( pTran->TranModeQual.fsModeStatus, pItem->fbModifier );
-
-	memset(aszPLUNo, 0x00, sizeof(aszPLUNo));
-    if (pItem->uchMinorClass == CLASS_UPCCOUPON) {
-        RflConvertPLU(aszPLUNo, pItem->auchUPCCouponNo);
-        PrtEJPLUNo(aszPLUNo);
-	} else {
-		RflSPrintf (aszPLUNo, PLU_MAX_DIGIT, _T("CCP#%d"), pItem->uchCouponNo);
-        PrtEJPLUNo(aszPLUNo);
-	}
-    /* --- print coupon item line --- */
-    PrtEJCoupon( pItem );
-}
-
-
-
-/*
-*===========================================================================
-** Format  : VOID PrtCoupon_SP( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
-*
-*    Input : TRANINFORMATION    *pTran  - Transaction information address
-*            ITEMCOUPON         *pItem  - coupon data address
-*   Output : none
-*    InOut : none
-** Return  : none
-*
-** Synopsis: This function prints coupon item on slip.
-*===========================================================================
-*/
-VOID PrtCoupon_SP( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
-{
-    TCHAR   aszSPPrintBuff[ 3 ][ PRT_SPCOLUMN + 1 ] = {0}; /* print data save area */
-    USHORT  usSlipLine;         /* number of lines to be printed */
-    USHORT  usSaveLine;         /* save slip lines to be added */
-    USHORT  usIndex;
-
-    /* -- set void mnemonic and number -- */
-    usSlipLine = PrtSPVoidNumber( aszSPPrintBuff[ 0 ], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
-
-    /* -- set tax modifier mnemonic -- */
-    usSlipLine += PrtSPTaxMod( aszSPPrintBuff[ usSlipLine ], pTran->TranModeQual.fsModeStatus, pItem->fbModifier);
-
-    /* -- set coupon mnemonic, and its amount --- */
-	if ( CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT1) ) {
-		TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN * 2 + 1] = {0};  /* times 2 for possible double in PrtGetSISymCoupon() */
-
-	    if (PrtGetSISymCoupon(aszSpecMnem, pItem)) {						/* si symbol for item disc. */
-		    usSlipLine += PrtSPCouponSISym( aszSPPrintBuff[ usSlipLine ], pItem->aszMnemonic, pItem->lAmount, aszSpecMnem, CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT2) ); 
-		} else {
-			usSlipLine += PrtSPCoupon( aszSPPrintBuff[ usSlipLine ], pItem->aszMnemonic, pItem->lAmount);
-    	}
-    } else {
-	    usSlipLine += PrtSPCoupon( aszSPPrintBuff[ usSlipLine ], pItem->aszMnemonic, pItem->lAmount);
-	}
-	
-    /* -- determine whether the paper is necessary to be changed --- */
-    usSaveLine = PrtCheckLine( usSlipLine, pTran );
-
-    /* -- print all data in the buffer -- */ 
-    for ( usIndex = 0; usIndex < usSlipLine; usIndex++ ) {
-        PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ usIndex ], PRT_SPCOLUMN );
-    }
-
-   /* -- update current line No. -- */
-    usPrtSlipPageLine += ( usSlipLine + usSaveLine );
-}
-
 /*
 *===========================================================================
 ** Format  : VOID PrtDflCoupon( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
@@ -334,15 +398,12 @@ VOID PrtCoupon_SP( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
 */
 VOID PrtDflCoupon( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
 {
-    TCHAR   aszDflBuff[ 9 ][ PRT_DFL_LINE + 1 ];    /* display data save area */
-    USHORT  usLineNo;                       /* number of lines to be displayed */
+    TCHAR   aszDflBuff[9][PRT_DFL_LINE + 1] = { 0 };    /* display data save area */
+    USHORT  usLineNo = 0;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;
-    USHORT  usIndex;
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
-
-    memset( aszDflBuff, 0x00, sizeof( aszDflBuff ));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader( aszDflBuff[ 0 ], pTran );
@@ -357,8 +418,9 @@ VOID PrtDflCoupon( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
     usLineNo += PrtDflCpnItem( aszDflBuff[ usLineNo ], pItem->aszMnemonic, pItem->lAmount );
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- check void status -- */
     PrtDflCheckVoid( pItem->fbModifier );
@@ -366,7 +428,7 @@ VOID PrtDflCoupon( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
     /* -- set display data in the buffer -- */ 
     PrtDflIType( usLineNo, DFL_COUPON );
 
-    for ( usIndex = 0; usIndex < usLineNo; usIndex++ ) {
+    for (USHORT usIndex = 0; usIndex < usLineNo; usIndex++ ) {
         PrtDflSetData( aszDflBuff[ usIndex ], &usOffset );
         if ( aszDflBuff[ usIndex ][ PRT_DFL_LINE ] != 0x00 ) {
             usIndex++;
@@ -392,7 +454,7 @@ VOID PrtDflCoupon( TRANINFORMATION *pTran, ITEMCOUPON *pItem )
 */
 USHORT   PrtDispCouponForm( TRANINFORMATION  *pTran, ITEMCOUPON *pItem, TCHAR *puchBuffer )
 {
-    USHORT usLine;
+    USHORT usLine = 0;
     
     switch ( pItem->uchMinorClass ) {
 
@@ -424,11 +486,9 @@ USHORT   PrtDispCouponForm( TRANINFORMATION  *pTran, ITEMCOUPON *pItem, TCHAR *p
 */
 USHORT PrtDflCouponForm( TRANINFORMATION *pTran, ITEMCOUPON *pItem, TCHAR *puchBuffer )
 {
-    TCHAR   aszDflBuff[ 9 ][ PRT_DFL_LINE + 1 ];    /* display data save area */
-    USHORT  usLineNo=0, i,j;                       /* number of lines to be displayed */
+    TCHAR   aszDflBuff[9][PRT_DFL_LINE + 1] = { 0 };    /* display data save area */
+    USHORT  usLineNo=0;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;
-
-    memset( aszDflBuff, 0x00, sizeof( aszDflBuff ));
 
     /* -- set header -- */
 #if 0
@@ -443,15 +503,15 @@ USHORT PrtDflCouponForm( TRANINFORMATION *pTran, ITEMCOUPON *pItem, TCHAR *puchB
     usLineNo += PrtDflTaxMod( aszDflBuff[ usLineNo ], pTran->TranModeQual.fsModeStatus, pItem->fbModifier );
     usLineNo += PrtDflCpnItem( aszDflBuff[ usLineNo ], pItem->aszMnemonic, pItem->lAmount );
 
-	for (i=0; i<usLineNo; i++) {
-		for (j=0; j<(PRT_DFL_LINE+1); j++) {
+	for (USHORT i=0; i < usLineNo; i++) {
+		for (USHORT j=0; j < (PRT_DFL_LINE+1); j++) {
         	if (aszDflBuff[i][j] == _T('\0')) {
         		aszDflBuff[i][j] = _T(' ');
 			}
         }
 	}
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i=0; i < usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
 	_tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));

@@ -67,6 +67,113 @@
 
 /*
 *===========================================================================
+** Format  : VOID PrtEtkIn_TH(TRANINFORMATION  *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transactionn Information address
+*            ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints ETK time-in .(thermal)
+*===========================================================================
+*/
+static VOID  PrtEtkIn_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
+{
+	if (pItem->uchMinorClass == CLASS_SIGNIN) {
+		return;
+	}
+
+    PrtTHHead(pTran->TranCurQual.usConsNo); /* print header if necessary */
+
+    PrtTHEtkCode(pItem, PRT_WTIN);         /* print employee, job code */ 
+
+	if (pItem->aszNumber[0]) {
+		PrtPrint(PMG_PRT_RECEIPT, pItem->aszNumber, tcharlen(pItem->aszNumber));  // print Time-in method mnemonic if specified
+	}
+
+    PrtTHMnem(TRN_ETKIN_ADR, PRT_SINGLE);  /* ETK time-in line */
+
+    PrtTHJobTimeIn(pTran, pItem);          /* ETK time-in time */
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtEtkIn_EJ(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information Address
+*          : ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints ETK time-in .(electric journal)
+*===========================================================================
+*/
+static VOID  PrtEtkIn_EJ(TRANINFORMATION *pTran, ITEMMISC *pItem)
+{
+	USHORT  usAddress = TRN_ETKIN_ADR;
+
+    PrtEJEtkCode(pItem, PRT_WTIN);         /* print employee, job code */ 
+
+	if (pItem->aszNumber[0]) {
+		PrtPrint(PMG_PRT_JOURNAL, pItem->aszNumber, tcharlen(pItem->aszNumber));  // print Time-in method mnemonic if specified
+	}
+
+	if (pItem->uchMinorClass == CLASS_SIGNIN) {
+		usAddress = TRN_SIGNIN_ADR;
+	}
+
+    PrtEJMnem(usAddress, PRT_SINGLE);      /* ETK time-in or Operator sign-in line */
+
+    PrtEJJobTimeIn(pTran, pItem, PRT_WTIN); /* ETK time-in time */
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtEtkIn_SP( TRANINFORMATION  *pTran, ITEMMISC *pItem );      
+*
+*   Input  : ITEMMISC  *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints ETK time-in .(slip)
+*===========================================================================
+*/
+static VOID PrtEtkIn_SP( TRANINFORMATION  *pTran, ITEMMISC  *pItem )
+{
+    TCHAR  aszSPPrintBuff[1][PRT_SPCOLUMN + 1]; /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+    USHORT  i;   
+
+    /* -- initialize the buffer */
+    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
+                                                
+    /* -- set time-in data -- */                                                
+    usSlipLine += PrtSPEtkTimeIn(aszSPPrintBuff[usSlipLine], pTran, pItem);
+                                                
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+
+    /* -- slip release -- */
+    PrtSlpRel();                            
+
+}
+
+/*
+*===========================================================================
 ** Format  : VOID   PrtEtkIn(TRANINFORMATION  *pTran, ITEMMISC *pItem);
 *
 *   Input  : TRANINFORMATION  *pTran     -Transaction Information address
@@ -108,83 +215,99 @@ VOID  PrtEtkIn(TRANINFORMATION  *pTran, ITEMMISC *pItem)
 
 }
 
+
 /*
 *===========================================================================
-** Format  : VOID PrtEtkIn_TH(TRANINFORMATION  *pTran, ITEMMISC *pItem);      
+** Format  : VOID PrtEtkOut_TH(TRANINFORMATION  *pTran, ITEMMISC *pItem, SHORT sType);      
 *
 *   Input  : TRANINFORMATION  *pTran     -Transactionn Information address
 *            ITEMMISC         *pItem     -Item Data address
+*            SHORT              sType      -print type
+*                                           PRT_WTIN: with time-in
+*                                           PRT_WOIN: without time-in
 *   Output : none
 *   InOut  : none
 ** Return  : none
 *            
-** Synopsis: This function prints ETK time-in .(thermal)
+** Synopsis: This function prints ETK time-out .(thermal)
 *===========================================================================
 */
-VOID  PrtEtkIn_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
+static VOID  PrtEtkOut_TH(TRANINFORMATION *pTran, ITEMMISC *pItem, SHORT sType)
 {
-	if (pItem->uchMinorClass == CLASS_SIGNIN) {
+	if (pItem->uchMinorClass == CLASS_SIGNOUT) {
 		return;
 	}
 
-    PrtTHHead(pTran);                      /* print header if necessary */  
-
-    PrtTHEtkCode(pItem, PRT_WTIN);         /* print employee, job code */ 
+    PrtTHHead(pTran->TranCurQual.usConsNo);  /* print header if necessary */
+    
+    PrtTHEtkCode(pItem, sType);            /* print employee, job code */ 
 
 	if (pItem->aszNumber[0]) {
-		PrtPrint(PMG_PRT_RECEIPT, pItem->aszNumber, tcharlen(pItem->aszNumber));  // print Time-in method mnemonic if specified
+		PrtPrint(PMG_PRT_RECEIPT, pItem->aszNumber, tcharlen(pItem->aszNumber));  // print Time-out method mnemonic if specified
 	}
 
-    PrtTHMnem(TRN_ETKIN_ADR, PRT_SINGLE);  /* ETK time-in line */
+    PrtTHEtkOut(TRN_ETKIN_ADR, TRN_ETKOUT_ADR); /* ETK time-out line */
 
-    PrtTHJobTimeIn(pTran, pItem);          /* ETK time-in time */
+    PrtTHJobTimeOut(pTran, pItem, sType);  /* ETK time-out time */
 }
 
 /*
 *===========================================================================
-** Format  : VOID PrtEtkIn_EJ(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+** Format  : VOID PrtEtkOut_EJ(TRANINFORMATION *pTran, ITEMMISC *pItem, SHORT sType);      
 *
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information Address
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
 *          : ITEMMISC         *pItem     -Item Data address
+*            SHORT              sType      -print type
+*                                           PRT_WTIN: with time-in
+*                                           PRT_WOIN: without time-in
 *   Output : none
 *   InOut  : none
 ** Return  : none
 *            
-** Synopsis: This function prints ETK time-in .(electric journal)
+** Synopsis: This function prints ETK time-out .(electric journal)
 *===========================================================================
 */
-VOID  PrtEtkIn_EJ(TRANINFORMATION *pTran, ITEMMISC *pItem)
+static VOID  PrtEtkOut_EJ(TRANINFORMATION *pTran, ITEMMISC *pItem, SHORT sType)
 {
 	USHORT  usAddress = TRN_ETKIN_ADR;
 
-    PrtEJEtkCode(pItem, PRT_WTIN);         /* print employee, job code */ 
+    PrtEJEtkCode(pItem, sType);            /* print employee, job code */ 
 
 	if (pItem->aszNumber[0]) {
-		PrtPrint(PMG_PRT_JOURNAL, pItem->aszNumber, tcharlen(pItem->aszNumber));  // print Time-in method mnemonic if specified
+		PrtPrint(PMG_PRT_JOURNAL, pItem->aszNumber, tcharlen(pItem->aszNumber));  // print Time-out method mnemonic if specified
 	}
 
-	if (pItem->uchMinorClass == CLASS_SIGNIN) {
-		usAddress = TRN_SIGNIN_ADR;
+	if (pItem->uchMinorClass == CLASS_SIGNOUT) {
+		usAddress = TRN_SIGNOUT_ADR;
 	}
 
-    PrtEJMnem(usAddress, PRT_SINGLE);      /* ETK time-in or Operator sign-in line */
+    PrtEJMnem(usAddress, PRT_SINGLE);  /* ETK time-in line */
 
-    PrtEJJobTimeIn(pTran, pItem, PRT_WTIN); /* ETK time-in time */
+	if (pItem->uchMinorClass != CLASS_SIGNOUT) {
+		PrtEJJobTimeIn(pTran, pItem, sType);   /* ETK time-in time */
+
+		PrtEJMnem(TRN_ETKOUT_ADR, PRT_SINGLE); /* ETK time-out line */
+	}
+
+    PrtEJJobTimeOut(pTran, pItem);         /* ETK time-out time */
 }
 
 /*
 *===========================================================================
-** Format  : VOID PrtEtkIn_SP( TRANINFORMATION  *pTran, ITEMMISC *pItem );      
+** Format  : VOID PrtEtkOut_SP( TRANINFORMATION  *pTran, ITEMMISC *pItem, SHORT sType );      
 *
 *   Input  : ITEMMISC  *pItem     -Item Data address
+*            SHORT              sType      -print type
+*                                           PRT_WTIN: with time-in
+*                                           PRT_WOIN: without time-in
 *   Output : none
 *   InOut  : none
 ** Return  : none
 *            
-** Synopsis: This function prints ETK time-in .(slip)
+** Synopsis: This function prints ETK time-out .(slip)
 *===========================================================================
 */
-VOID PrtEtkIn_SP( TRANINFORMATION  *pTran, ITEMMISC  *pItem )
+static VOID PrtEtkOut_SP( TRANINFORMATION  *pTran, ITEMMISC  *pItem, SHORT sType )
 {
     TCHAR  aszSPPrintBuff[1][PRT_SPCOLUMN + 1]; /* print data save area */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
@@ -195,7 +318,7 @@ VOID PrtEtkIn_SP( TRANINFORMATION  *pTran, ITEMMISC  *pItem )
     memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
                                                 
     /* -- set time-in data -- */                                                
-    usSlipLine += PrtSPEtkTimeIn(aszSPPrintBuff[usSlipLine], pTran, pItem);
+    usSlipLine += PrtSPEtkTimeOut(aszSPPrintBuff[usSlipLine], pTran, pItem, sType);
                                                 
     /* -- check if paper change is necessary or not -- */ 
     usSaveLine = PrtCheckLine(usSlipLine, pTran);
@@ -261,125 +384,3 @@ VOID  PrtEtkOut(TRANINFORMATION  *pTran, ITEMMISC *pItem, SHORT sType)
     }
 }
 
-
-/*
-*===========================================================================
-** Format  : VOID PrtEtkOut_TH(TRANINFORMATION  *pTran, ITEMMISC *pItem, SHORT sType);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transactionn Information address
-*            ITEMMISC         *pItem     -Item Data address
-*            SHORT              sType      -print type
-*                                           PRT_WTIN: with time-in
-*                                           PRT_WOIN: without time-in
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints ETK time-out .(thermal)
-*===========================================================================
-*/
-VOID  PrtEtkOut_TH(TRANINFORMATION *pTran, ITEMMISC *pItem, SHORT sType)
-{
-	if (pItem->uchMinorClass == CLASS_SIGNOUT) {
-		return;
-	}
-
-    PrtTHHead(pTran);                      /* print header if necessary */  
-    
-    PrtTHEtkCode(pItem, sType);            /* print employee, job code */ 
-
-	if (pItem->aszNumber[0]) {
-		PrtPrint(PMG_PRT_RECEIPT, pItem->aszNumber, tcharlen(pItem->aszNumber));  // print Time-out method mnemonic if specified
-	}
-
-    PrtTHEtkOut(TRN_ETKIN_ADR, TRN_ETKOUT_ADR); /* ETK time-out line */
-
-    PrtTHJobTimeOut(pTran, pItem, sType);  /* ETK time-out time */
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtEtkOut_EJ(TRANINFORMATION *pTran, ITEMMISC *pItem, SHORT sType);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*          : ITEMMISC         *pItem     -Item Data address
-*            SHORT              sType      -print type
-*                                           PRT_WTIN: with time-in
-*                                           PRT_WOIN: without time-in
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints ETK time-out .(electric journal)
-*===========================================================================
-*/
-VOID  PrtEtkOut_EJ(TRANINFORMATION *pTran, ITEMMISC *pItem, SHORT sType)
-{
-	USHORT  usAddress = TRN_ETKIN_ADR;
-
-    PrtEJEtkCode(pItem, sType);            /* print employee, job code */ 
-
-	if (pItem->aszNumber[0]) {
-		PrtPrint(PMG_PRT_JOURNAL, pItem->aszNumber, tcharlen(pItem->aszNumber));  // print Time-out method mnemonic if specified
-	}
-
-	if (pItem->uchMinorClass == CLASS_SIGNOUT) {
-		usAddress = TRN_SIGNOUT_ADR;
-	}
-
-    PrtEJMnem(usAddress, PRT_SINGLE);  /* ETK time-in line */
-
-	if (pItem->uchMinorClass != CLASS_SIGNOUT) {
-		PrtEJJobTimeIn(pTran, pItem, sType);   /* ETK time-in time */
-
-		PrtEJMnem(TRN_ETKOUT_ADR, PRT_SINGLE); /* ETK time-out line */
-	}
-
-    PrtEJJobTimeOut(pTran, pItem);         /* ETK time-out time */
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtEtkOut_SP( TRANINFORMATION  *pTran, ITEMMISC *pItem, SHORT sType );      
-*
-*   Input  : ITEMMISC  *pItem     -Item Data address
-*            SHORT              sType      -print type
-*                                           PRT_WTIN: with time-in
-*                                           PRT_WOIN: without time-in
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints ETK time-out .(slip)
-*===========================================================================
-*/
-VOID PrtEtkOut_SP( TRANINFORMATION  *pTran, ITEMMISC  *pItem, SHORT sType )
-{
-    TCHAR  aszSPPrintBuff[1][PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
-
-    /* -- initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
-                                                
-    /* -- set time-in data -- */                                                
-    usSlipLine += PrtSPEtkTimeOut(aszSPPrintBuff[usSlipLine], pTran, pItem, sType);
-                                                
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
-
-    /* -- slip release -- */
-    PrtSlpRel();                            
-
-}

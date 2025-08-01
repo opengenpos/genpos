@@ -74,6 +74,94 @@
 ;+        P R O G R A M    D E C L A R A T I O N s                      +
 ;========================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID PrtTipsPaidOut_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*   Input  : ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints tips paid out. (thermal)
+*===========================================================================
+*/
+static VOID  PrtTipsPaidOut_TH(CONST TRANINFORMATION *pTran, CONST ITEMMISC *pItem)
+{
+    PrtTHHead(pTran->TranCurQual.usConsNo);       /* print header if necessary */
+
+	PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);                /* void line */
+
+    PrtTHNumber(pItem->aszNumber);               /* number line */
+
+    PrtTHWaiAmtMnem(pItem->ulID, TRN_TIPPO_ADR, pItem->lAmount);
+                                                 /* tips paid out line */
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTipsPaidOut_EJ(ITEMMISC *pItem);      
+*
+*   Input  : ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints tips paid out. (electric journal)
+*===========================================================================
+*/
+static VOID  PrtTipsPaidOut_EJ(CONST ITEMMISC *pItem)
+{
+    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);                /* void line */
+
+    PrtEJNumber(pItem->aszNumber);               /* number line */
+
+    PrtEJWaiter(pItem->ulID);                    /* waiter */
+
+    PrtEJAmtMnem(TRN_TIPPO_ADR, pItem->lAmount); /* tips paid out line */
+
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTipsPaidOut_SP(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints tips paid out. (slip)
+*===========================================================================
+*/
+static VOID PrtTipsPaidOut_SP(CONST TRANINFORMATION *pTran, CONST ITEMMISC *pItem)
+{
+    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    /* -- set void mnemonic and number -- */
+    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
+    /* -- set paid out mnemonic -- */
+    usSlipLine += PrtSPTipsPO(aszSPPrintBuff[usSlipLine], pItem->ulID, TRN_TIPPO_ADR, pItem->lAmount);
+                                                        
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (USHORT i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);       
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtTipsPaidOut(TRANINFORMATION  *pTran, ITEMMISC *pItem);      
@@ -87,7 +175,7 @@
 ** Synopsis: This function prints tips paid out
 *===========================================================================
 */
-VOID PrtTipsPaidOut(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
+VOID PrtTipsPaidOut(CONST TRANINFORMATION  *pTran, CONST ITEMMISC  *pItem)
 {
 
 
@@ -121,98 +209,6 @@ VOID PrtTipsPaidOut(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
 
 }
 
-/*
-*===========================================================================
-** Format  : VOID PrtTipsPaidOut_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*   Input  : ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints tips paid out. (thermal)
-*===========================================================================
-*/
-VOID  PrtTipsPaidOut_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
-{
-    PrtTHHead(pTran);                            /* print header if necessary */
-
-	PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);                /* void line */
-
-    PrtTHNumber(pItem->aszNumber);               /* number line */
-
-    PrtTHWaiAmtMnem(pItem->ulID, TRN_TIPPO_ADR, pItem->lAmount);
-                                                 /* tips paid out line */
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtTipsPaidOut_EJ(ITEMMISC *pItem);      
-*
-*   Input  : ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints tips paid out. (electric journal)
-*===========================================================================
-*/
-VOID  PrtTipsPaidOut_EJ(ITEMMISC *pItem)
-{
-    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);                /* void line */
-
-    PrtEJNumber(pItem->aszNumber);               /* number line */
-
-    PrtEJWaiter(pItem->ulID);                    /* waiter */
-
-    PrtEJAmtMnem(TRN_TIPPO_ADR, pItem->lAmount); /* tips paid out line */
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtTipsPaidOut_SP(TRANINFORMATION *pTran, ITEMMISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints tips paid out. (slip)
-*===========================================================================
-*/
-VOID PrtTipsPaidOut_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
-{
-    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
-                                                /* initialize the area */
-    /* -- set void mnemonic and number -- */
-    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
-    /* -- set paid out mnemonic -- */
-    usSlipLine += PrtSPTipsPO(aszSPPrintBuff[usSlipLine], pItem->ulID, TRN_TIPPO_ADR, pItem->lAmount);
-                                                        
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);       
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
-}
-
-
 
 /*
 *===========================================================================
@@ -227,19 +223,14 @@ VOID PrtTipsPaidOut_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
 ** Synopsis: This function displays tips paid out
 *===========================================================================
 */
-VOID PrtDflTipsPaidOut(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
+VOID PrtDflTipsPaidOut(CONST TRANINFORMATION  *pTran, CONST ITEMMISC  *pItem)
 {
-
-    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1];   /* display data save area */
+    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
 
     /* --- if this frame is 1st frame, display customer name --- */
-
     PrtDflCustHeader( pTran );
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -257,8 +248,9 @@ VOID PrtDflTipsPaidOut(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
     usLineNo += PrtDflAmtMnem(aszDflBuff[usLineNo], TRN_TIPPO_ADR, pItem->lAmount); 
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- check void status -- */
     PrtDflCheckVoid(pItem->fbModifier);
@@ -266,7 +258,7 @@ VOID PrtDflTipsPaidOut(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_SINGLE); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -291,17 +283,16 @@ VOID PrtDflTipsPaidOut(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
 ** Synopsis: This function displays tips paid out
 *===========================================================================
 */
-USHORT PrtDflTipsPaidOutForm(TRANINFORMATION  *pTran, ITEMMISC  *pItem, TCHAR *puchBuffer)
+USHORT PrtDflTipsPaidOutForm(CONST TRANINFORMATION  *pTran, CONST ITEMMISC  *pItem, TCHAR *puchBuffer)
 {
 
-    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1];   /* display data save area */
-    USHORT  usLineNo=0, i;                       /* number of lines to be displayed */
+    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
+    USHORT  usLineNo=0;                       /* number of lines to be displayed */
 
     /* --- if this frame is 1st frame, display customer name --- */
 
     PrtDflCustHeader( pTran );
 
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -318,7 +309,7 @@ USHORT PrtDflTipsPaidOutForm(TRANINFORMATION  *pTran, ITEMMISC  *pItem, TCHAR *p
 
     usLineNo += PrtDflAmtMnem(aszDflBuff[usLineNo], TRN_TIPPO_ADR, pItem->lAmount); 
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i = 0; i < usLineNo; i++) {
 
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }

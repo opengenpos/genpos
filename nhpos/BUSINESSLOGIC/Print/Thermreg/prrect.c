@@ -70,6 +70,33 @@
 ;+        P R O G R A M    D E C L A R A T I O N s                      +
 ;========================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID PrtErrCorr_EJ(ITEMTENDER *pItem);      
+*                               
+*   Input  : ITEMTENDER         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints error correct for charge posting(electric journal)
+*===========================================================================
+*/
+static VOID  PrtErrCorr_EJ(ITEMTENDER *pItem)
+{
+    PrtEJMnem(TRN_EC_ADR, PRT_DOUBLE);              /* E/C with double wide */
+    PrtEJOffTend(pItem->fbModifier);                /* Cp off line          */
+    PrtEJOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
+    PrtEJNumber(pItem->aszNumber);                                 /* number line          */
+    PrtEJCPRoomCharge(pItem->aszRoomNo, pItem->aszGuestID);        /* room #, guest ID     */
+    PrtEJAmtMnem(RflChkTendAdr(pItem), pItem->lTenderAmount);      /* E/C amount line      */
+    PrtEJFolioPost(pItem->aszFolioNumber, pItem->aszPostTransNo);  /* folio#, post trans#  */
+    for (USHORT i = 0; i < NUM_CPRSPCO; i++) {
+        PrtEJCPRspMsgText(pItem->aszCPMsgText[i]);  /* Response Msg         */
+    }
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtErrCorr(ITEMTENDER *pItem);      
@@ -93,34 +120,6 @@ VOID PrtErrCorr(ITEMTENDER *pItem)
         PrtErrCorr_EJ(pItem);
     }
 
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtErrCorr_EJ(ITEMTENDER *pItem);      
-*                               
-*   Input  : ITEMTENDER         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints error correct for charge posting(electric journal)
-*===========================================================================
-*/
-VOID  PrtErrCorr_EJ(ITEMTENDER *pItem)
-{
-    USHORT  i;
-
-    PrtEJMnem(TRN_EC_ADR, PRT_DOUBLE);              /* E/C with double wide */
-    PrtEJOffTend(pItem->fbModifier);                /* Cp off line          */
-    PrtEJOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
-    PrtEJNumber(pItem->aszNumber);                                 /* number line          */
-    PrtEJCPRoomCharge(pItem->aszRoomNo, pItem->aszGuestID);        /* room #, guest ID     */
-    PrtEJAmtMnem(RflChkTendAdr(pItem), pItem->lTenderAmount);      /* E/C amount line      */
-    PrtEJFolioPost(pItem->aszFolioNumber, pItem->aszPostTransNo);  /* folio#, post trans#  */
-    for (i = 0; i < NUM_CPRSPCO; i++) {
-        PrtEJCPRspMsgText(pItem->aszCPMsgText[i]);  /* Response Msg         */
-    }
 }
 
 /***** End Of Source *****/

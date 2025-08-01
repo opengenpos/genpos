@@ -14,10 +14,6 @@
 * Category    : Print, NCR 2170 US Hospitality Application Program        
 * Program Name: PRSCWRPT.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract: The provided function names are as follows: 
 * 
 *               PrtThrmSupCashWaitFile() : form  Cashier  NAME/No.
@@ -52,9 +48,7 @@
 #include <string.h>
 
 #include "ecr.h"
-/* #include <pif.h> */
 #include "rfl.h"
-/* #include <log.h> */
 #include "paraequ.h"
 #include "para.h"
 #include "cswai.h"
@@ -65,7 +59,6 @@
 #include "csop.h"
 #include "report.h"
 #include "pmg.h"
-/* #include <appllog.h> */
 
 #include "prtrin.h"
 #include "prtsin.h"
@@ -111,37 +104,27 @@
 
 VOID  PrtThrmSupCashWaitFile( VOID *pData )  
 {
-    /* define thermal print format */
-    static const TCHAR  auchPrtThrmSupCashWaitFile[] = _T("%6s%-20s%2s%8s");    /* V3.3 */
-    static const TCHAR  auchPrtThrmSupEmployeeNo[] = _T("%6s%-16s%3s%8.8Mu");
-
-    /* define EJ print format */
-    static const TCHAR  auchPrtSupCashWaitFile[] = _T("%3s%s\t%s");
-    static const TCHAR  auchPrtSupEmployeeNo[] = _T("%-s\t%8.8Mu");
-
-    /* define thermal/EJ common print format */
-    static const TCHAR  auchNumber[] = _T("%8.8Mu");
-    static const TCHAR  auchNumber1[] = _T("%3u");
-
     TCHAR   aszPrtNull[1] = {'\0'};
-    TCHAR	aszDoubNumb[8 * 2 + 1] = { 0 };
-	TCHAR	aszNumb[8 + 1];
-    UCHAR   uchMajorClass;
-    UCHAR   uchMinorClass;
-    TCHAR   *uchMnemo;
-    ULONG   ulNumber;
-    USHORT  usPrtControl;
-
-    /* check major class */
-    uchMajorClass = *(( UCHAR *)pData);
+    TCHAR	aszNumb[8 + 1] = { 0 };
+    UCHAR   uchMajorClass = ITEMCLASSPTR(pData)->uchMajorClass;
+    UCHAR   uchMinorClass = ITEMCLASSPTR(pData)->uchMinorClass;
+    TCHAR   *uchMnemo = aszPrtNull;
+    ULONG   ulNumber = 0;
+    USHORT  usPrtControl = 0;
 
     switch(uchMajorClass) {
     case CLASS_RPTCASHIER:  /* In case of CASHIER/EMPLOYEE */
-        uchMinorClass = (( RPTCASHIER *)pData)->uchMinorClass;
-        ulNumber = (( RPTCASHIER *)pData)->ulCashierNumber;
+        ulNumber = (( RPTCASHIER *)pData)->ulCashierNumber;      // cashier number or terminal number
 
-		if (uchMinorClass != CLASS_RPTCASHIER_TERMINAL)
+        if (((RPTCASHIER*)pData)->uchMinorClass == CLASS_RPTCASHIER_TERMINAL) {
+            static const TCHAR  auchNumber1[] = _T("%3u");
+			RflSPrintf(aszNumb, TCHARSIZEOF(aszNumb), auchNumber1, ulNumber);
+        }
+        else {
+            static const TCHAR  auchNumber[] = _T("%8.8Mu");
 			ulNumber = RflTruncateEmployeeNumber (ulNumber);
+			RflSPrintf(aszNumb, TCHARSIZEOF(aszNumb), auchNumber, ulNumber);
+        }
 
         uchMnemo = (( RPTCASHIER *)pData)->aszCashMnemo;
         usPrtControl = (( RPTCASHIER *)pData)->usPrintControl;
@@ -153,38 +136,39 @@ VOID  PrtThrmSupCashWaitFile( VOID *pData )
         break;
 
     case CLASS_RPTEMPLOYEENO: /* In case of EMPLOYEE */                   
-        uchMinorClass = (( RPTEMPLOYEENO *)pData)->uchMinorClass;
+        ulNumber = ((RPTEMPLOYEENO *)pData)->ulEmployeeNumber;
+        ulNumber = RflTruncateEmployeeNumber(ulNumber);
         uchMnemo = (( RPTEMPLOYEENO *)pData)->aszEmpMnemo;
         usPrtControl = (( RPTEMPLOYEENO *)pData)->usPrintControl;
         break;
 
     default:
 /*        PifLog(MODULE_PRINT_SUPPRG_ID, LOG_ERROR_PRT_SUPPRG_ERROR); */
-        break;
+        return;
     }
 
     if (uchMajorClass == CLASS_RPTEMPLOYEENO) {
         /* check print control */
         if (usPrtControl & PRT_RECEIPT) {
+            static const TCHAR  auchPrtThrmSupEmployeeNo[] = _T("%6s%-16s%3s%8.8Mu");
             /* print EMPLOYEE No.*/
-            PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupEmployeeNo, aszPrtNull, uchMnemo, aszPrtNull, RflTruncateEmployeeNumber((( RPTEMPLOYEENO *)pData)->ulEmployeeNumber));
+            PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupEmployeeNo, aszPrtNull, uchMnemo, aszPrtNull, ulNumber);
         }
 
         /* --- Save Employee# and Name into EJ File,    TAR#116110 --- */
         if (uchMinorClass == CLASS_RPTEMPLOYEE_RESET || uchMinorClass == CLASS_RPTEMPLOYEE_NUMBER) {
             /* check print control */
             if (usPrtControl & PRT_JOURNAL) {
+                static const TCHAR  auchPrtSupEmployeeNo[] = _T("%-s\t%8.8Mu");
                 /* print EMPLOYEE No.*/
-                PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupEmployeeNo, uchMnemo, (( RPTEMPLOYEENO *)pData)->ulEmployeeNumber);
+                PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupEmployeeNo, uchMnemo, ulNumber);
             }            
         }
     } else {
-        /* convert Cashier/Waiter No. to double wide */
-		if ((( RPTCASHIER *)pData)->uchMinorClass == CLASS_RPTCASHIER_TERMINAL)
-			RflSPrintf(aszNumb, TCHARSIZEOF(aszNumb), auchNumber1, ulNumber);
-		else
-			RflSPrintf(aszNumb, TCHARSIZEOF(aszNumb), auchNumber, ulNumber);
-        memset(aszDoubNumb, '\0', sizeof(aszDoubNumb));
+        static const TCHAR  auchPrtThrmSupCashWaitFile[] = _T("%6s%-20s%2s%8s");    /* V3.3 */
+        TCHAR	aszDoubNumb[8 * 2 + 1] = { 0 };
+
+        /* convert Cashier/Waiter/Terminal No. to double wide */
         PrtDouble(aszDoubNumb, TCHARSIZEOF(aszDoubNumb), aszNumb);
 
         /* check print control */
@@ -193,19 +177,22 @@ VOID  PrtThrmSupCashWaitFile( VOID *pData )
             PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupCashWaitFile, aszPrtNull, uchMnemo, aszPrtNull, aszDoubNumb);
         }
 
-        /* check minor class */
-        if (uchMinorClass == CLASS_RPTWAITER_RESET || uchMinorClass == CLASS_RPTCASHIER_TERMINAL || uchMinorClass == CLASS_RPTCASHIER_RESET || uchMinorClass == CLASS_MAINTLOAN || uchMinorClass == CLASS_MAINTPICKUP) {
-            /* check print control */
-            if (usPrtControl & PRT_JOURNAL) {
+        /* check print control */
+        if (usPrtControl & PRT_JOURNAL) {
+            /* check minor class */
+            if (uchMinorClass == CLASS_RPTWAITER_RESET || uchMinorClass == CLASS_RPTCASHIER_TERMINAL || uchMinorClass == CLASS_RPTCASHIER_RESET || uchMinorClass == CLASS_MAINTLOAN || uchMinorClass == CLASS_MAINTPICKUP) {
+                static const TCHAR  auchPrtSupCashWaitFile[] = _T("%3s%s\t%s");
                 /* print CASHIER/WAITER NAME/No. */
                 PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupCashWaitFile, aszPrtNull, uchMnemo, aszDoubNumb);
             }            
         }
 
         /* check print control, Saratoga */
-        if ((usPrtControl & PRT_SLIP) && (uchMinorClass == CLASS_MAINTLOAN || uchMinorClass == CLASS_MAINTPICKUP)) {
-            /* print CASHIER/WAITER NAME/No. */
-            PrtPrintf(PMG_PRT_SLIP, auchPrtThrmSupCashWaitFile, aszPrtNull, uchMnemo, aszPrtNull, aszDoubNumb);
+        if (usPrtControl & PRT_SLIP) {
+            if (uchMinorClass == CLASS_MAINTLOAN || uchMinorClass == CLASS_MAINTPICKUP) {
+                /* print CASHIER/WAITER NAME/No. */
+                PrtPrintf(PMG_PRT_SLIP, auchPrtThrmSupCashWaitFile, aszPrtNull, uchMnemo, aszPrtNull, aszDoubNumb);
+            }
         }
     }
 }

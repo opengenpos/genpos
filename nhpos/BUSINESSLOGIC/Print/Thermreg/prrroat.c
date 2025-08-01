@@ -13,10 +13,6 @@
 * Category    : Print, NCR 2170 US Hospitarity Application
 * Program Name: PrRROAT.c                                                      
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract:  The provided function names are as follows:
 *
 *       PrtRecvOnAcnt() : prints received on acount
@@ -59,6 +55,7 @@
 #include "ecr.h"
 #include "paraequ.h"
 #include <para.h>
+#include <rfl.h>
 #include <csstbpar.h>
 #include "regstrct.h"
 #include "transact.h"
@@ -73,6 +70,92 @@
 ;+        P R O G R A M    D E C L A R A T I O N s 
 ;========================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID PrtRecvOnAcnt_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints received on acount .(thermal)
+*===========================================================================
+*/
+static VOID  PrtRecvOnAcnt_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
+{
+    PrtTHHead(pTran->TranCurQual.usConsNo);      /* print header if neccesary */
+
+    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);             /* void line */
+
+    PrtTHNumber(pItem->aszNumber);            /* number line */
+
+    PrtTHAmtMnem(TRN_RA_ADR, pItem->lAmount); /* ROA line */
+    
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtRecvOnAcnt_EJ(ITEMMISC *pItem);      
+*
+*   Input  : ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints received on acount .(electric journal)
+*===========================================================================
+*/
+static VOID  PrtRecvOnAcnt_EJ(ITEMMISC *pItem)
+{
+    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);             /* void line */
+
+    PrtEJNumber(pItem->aszNumber);            /* number line */
+
+    PrtEJAmtMnem(TRN_RA_ADR, pItem->lAmount); /* ROA line */
+    
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtRecvOnAcnt_SP(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information
+*            ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints received on acount. (slip)
+*===========================================================================
+*/
+static VOID PrtRecvOnAcnt_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
+{
+    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    /* -- set void mnemonic and number -- */
+    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
+    /* -- set received on account mnemonic -- */
+    usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_RA_ADR, pItem->lAmount);
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (USHORT i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtRecvOnAcnt(TRANINFORMATION  *pTran, ITEMMISC *pItem);      
@@ -120,95 +203,6 @@ VOID PrtRecvOnAcnt(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
 
 /*
 *===========================================================================
-** Format  : VOID PrtRecvOnAcnt_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints received on acount .(thermal)
-*===========================================================================
-*/
-VOID  PrtRecvOnAcnt_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
-{
-    PrtTHHead(pTran);                         /* print header if neccesary */  
-
-    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);             /* void line */
-
-    PrtTHNumber(pItem->aszNumber);            /* number line */
-
-    PrtTHAmtMnem(TRN_RA_ADR, pItem->lAmount); /* ROA line */
-    
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtRecvOnAcnt_EJ(ITEMMISC *pItem);      
-*
-*   Input  : ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints received on acount .(electric journal)
-*===========================================================================
-*/
-VOID  PrtRecvOnAcnt_EJ(ITEMMISC *pItem)
-{
-    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);             /* void line */
-
-    PrtEJNumber(pItem->aszNumber);            /* number line */
-
-    PrtEJAmtMnem(TRN_RA_ADR, pItem->lAmount); /* ROA line */
-    
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtRecvOnAcnt_SP(TRANINFORMATION *pTran, ITEMMISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information
-*            ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints received on acount. (slip)
-*===========================================================================
-*/
-VOID PrtRecvOnAcnt_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
-{
-    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
-
-    /* -- set void mnemonic and number -- */
-    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
-    /* -- set received on account mnemonic -- */
-    usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_RA_ADR, pItem->lAmount);
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
-}
-
-/*
-*===========================================================================
 ** Format  : VOID  PrtDflRecvOnAcnt(TRANINFORMATION  *pTran, ITEMMISC *pItem);      
 *
 *   Input  : TRANINFORMATION  *pTran     -Transaction Information address
@@ -222,17 +216,12 @@ VOID PrtRecvOnAcnt_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
 */
 VOID PrtDflRecvOnAcnt(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
 {
-
-    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1]; /* display data save area */
-    USHORT  usLineNo;                       /* number of lines to be displayed */
+    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
+    USHORT  usLineNo = 0;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
 
     /* --- if this frame is 1st frame, display customer name --- */
-
     PrtDflCustHeader( pTran );
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -248,8 +237,9 @@ VOID PrtDflRecvOnAcnt(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
     usLineNo += PrtDflAmtMnem(aszDflBuff[usLineNo], TRN_RA_ADR, pItem->lAmount); 
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- check void status -- */
     PrtDflCheckVoid(pItem->fbModifier);
@@ -257,7 +247,7 @@ VOID PrtDflRecvOnAcnt(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_SINGLE); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -283,12 +273,9 @@ VOID PrtDflRecvOnAcnt(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
 */
 USHORT PrtDflRecvOnAcntForm(TRANINFORMATION  *pTran, ITEMMISC  *pItem, TCHAR *puchBuffer)
 {
+    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
+    USHORT  usLineNo=0;                             /* number of lines to be displayed */
 
-    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1]; /* display data save area */
-    USHORT  usLineNo=0, i;                       /* number of lines to be displayed */
-
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -303,14 +290,115 @@ USHORT PrtDflRecvOnAcntForm(TRANINFORMATION  *pTran, ITEMMISC  *pItem, TCHAR *pu
 
     usLineNo += PrtDflAmtMnem(aszDflBuff[usLineNo], TRN_RA_ADR, pItem->lAmount); 
 
-    for (i=0; i<usLineNo; i++) {
-
+    for (USHORT i = 0; i < usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
     _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));
-    //memcpy(puchBuffer, aszDflBuff, usLineNo*(PRT_DFL_LINE+1));
     
     return usLineNo;
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtRecvOnAcnt_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints received on acount .(thermal)
+*===========================================================================
+*/
+static VOID  PrtMoney_TH(ITEMMISC *pItem)
+{
+    UCSPCADRS  uchSymAdr;     /* R2.0 */
+    USTRNADRS  usTrnsAdr;     /* R2.0 */
+
+    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);             /* void line */
+    PrtTHNumber(pItem->aszNumber);            /* number line */
+    PrtGetMoneyMnem(pItem->uchTendMinor, &usTrnsAdr, &uchSymAdr);
+
+    if((pItem->uchTendMinor >= CLASS_FOREIGN1) && (pItem->uchTendMinor <= CLASS_FOREIGN8)) {
+        PrtTHMoneyForeign(pItem->lAmount, TRN_FT_EQUIVALENT, uchSymAdr, pItem->fchStatus);
+    } else if ((pItem->uchTendMinor >= CLASS_TENDER1) && (pItem->uchTendMinor <= CLASS_TENDER20)) {
+        PrtTHAmtMnem(TRN_FT_EQUIVALENT, pItem->lAmount);
+	}
+}
+
+
+/*
+*===========================================================================
+** Format  : VOID   PrtMoney_EJ(ITEMMISC *pItem);      
+*
+*   Input  : ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints money. (electric journal)
+*===========================================================================
+*/
+static VOID    PrtMoney_EJ(ITEMMISC *pItem)
+{
+    UCSPCADRS  uchSymAdr;     /* R2.0 */
+    USTRNADRS  usTrnsAdr;     /* R2.0 */
+
+    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);             /* void line */
+    PrtEJNumber(pItem->aszNumber);            /* number line */
+    PrtGetMoneyMnem(pItem->uchTendMinor, &usTrnsAdr, &uchSymAdr);
+
+    if((pItem->uchTendMinor >= CLASS_FOREIGN1) && (pItem->uchTendMinor <= CLASS_FOREIGN8)) {
+        PrtEJMoneyForeign(pItem->lAmount, TRN_FT_EQUIVALENT, uchSymAdr, pItem->fchStatus);
+    } else if ((pItem->uchTendMinor >= CLASS_TENDER1) && (pItem->uchTendMinor <= CLASS_TENDER20)) {
+        PrtEJAmtMnem(TRN_FT_EQUIVALENT,  pItem->lAmount);
+	}
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtMoney_SP(TRNINFORMATION  *pTran, ITEMMISC  *pItem)
+*
+*   Input  : ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints money. (slip)
+*===========================================================================
+*/
+static VOID    PrtMoney_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
+{
+    TCHAR   aszSPPrintBuff[3][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+    UCSPCADRS  uchSymAdr;     /* R2.0 */
+    USTRNADRS  usTrnsAdr;     /* R2.0 */
+
+    /* -- set void mnemonic and number -- */
+    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
+    PrtGetMoneyMnem(pItem->uchTendMinor, &usTrnsAdr, &uchSymAdr);
+
+    /* -- set mnemonic -- */
+    if(pItem->uchTendMinor >= CLASS_FOREIGN1 && pItem->uchTendMinor <= CLASS_FOREIGN8) {
+        usSlipLine += PrtSPMoneyForeign(aszSPPrintBuff[usSlipLine], pItem->lAmount, usTrnsAdr, uchSymAdr, pItem->fchStatus);
+    } else {
+        /* -- set qty */
+        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], usTrnsAdr, pItem->lAmount);
+    }
+    /* -- check if paper change is necessary or not -- */
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */
+    for (USHORT i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
 }
 
 /*
@@ -345,112 +433,6 @@ VOID PrtMoney(TRANINFORMATION *pTran, ITEMMISC *pItem)
     }
 }
 
-/*
-*===========================================================================
-** Format  : VOID PrtRecvOnAcnt_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints received on acount .(thermal)
-*===========================================================================
-*/
-VOID  PrtMoney_TH(ITEMMISC *pItem)
-{
-    UCHAR  uchSymAdr;
-    USHORT usTrnsAdr;
-
-    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);             /* void line */
-    PrtTHNumber(pItem->aszNumber);            /* number line */
-    PrtGetMoneyMnem(pItem->uchTendMinor, &usTrnsAdr, &uchSymAdr);
-
-    if((pItem->uchTendMinor >= CLASS_FOREIGN1) && (pItem->uchTendMinor <= CLASS_FOREIGN8)) {
-        PrtTHMoneyForeign(pItem->lAmount, TRN_FT_EQUIVALENT, uchSymAdr, pItem->fchStatus);
-    } else if ((pItem->uchTendMinor >= CLASS_TENDER1) && (pItem->uchTendMinor <= CLASS_TENDER20)) {
-        PrtTHAmtMnem(TRN_FT_EQUIVALENT, pItem->lAmount);
-	}
-}
-
-
-/*
-*===========================================================================
-** Format  : VOID   PrtMoney_EJ(ITEMMISC *pItem);      
-*
-*   Input  : ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints money. (electric journal)
-*===========================================================================
-*/
-VOID    PrtMoney_EJ(ITEMMISC *pItem)
-{
-    UCHAR  uchSymAdr;
-    USHORT usTrnsAdr;
-
-    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);             /* void line */
-    PrtEJNumber(pItem->aszNumber);            /* number line */
-    PrtGetMoneyMnem(pItem->uchTendMinor, &usTrnsAdr, &uchSymAdr);
-
-    if((pItem->uchTendMinor >= CLASS_FOREIGN1) && (pItem->uchTendMinor <= CLASS_FOREIGN8)) {
-        PrtEJMoneyForeign(pItem->lAmount, TRN_FT_EQUIVALENT, uchSymAdr, pItem->fchStatus);
-    } else if ((pItem->uchTendMinor >= CLASS_TENDER1) && (pItem->uchTendMinor <= CLASS_TENDER20)) {
-        PrtEJAmtMnem(TRN_FT_EQUIVALENT,  pItem->lAmount);
-	}
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtMoney_SP(TRNINFORMATION  *pTran, ITEMMISC  *pItem)
-*
-*   Input  : ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints money. (slip)
-*===========================================================================
-*/
-VOID    PrtMoney_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
-{
-    TCHAR   aszSPPrintBuff[3][PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0,            /* number of lines to be printed */
-            usSaveLine,                /* save slip lines to be added */
-            i;
-    UCHAR  uchSymAdr;                  /* R2.0 */
-    USHORT usTrnsAdr;                 /* R2.0 */
-
-    /* -- initialize the buffer */
-    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));
-
-    /* -- set void mnemonic and number -- */
-    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
-    PrtGetMoneyMnem(pItem->uchTendMinor, &usTrnsAdr, &uchSymAdr);
-
-    /* -- set mnemonic -- */
-    if(pItem->uchTendMinor >= CLASS_FOREIGN1 && pItem->uchTendMinor <= CLASS_FOREIGN8) {
-        usSlipLine += PrtSPMoneyForeign(aszSPPrintBuff[usSlipLine], pItem->lAmount, usTrnsAdr, uchSymAdr, pItem->fchStatus);
-    } else {
-        /* -- set qty */
-        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], usTrnsAdr, pItem->lAmount);
-    }
-    /* -- check if paper change is necessary or not -- */
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
-}
 
 /*
 *===========================================================================
@@ -466,18 +448,23 @@ VOID    PrtMoney_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
 *            based on the tender type.
 *            This function also will handle a Foreign Total key press as well
 *            so long as CLASS_FOREIGNTOTAL1 is not in the same range as tender classes.
+* 
+*            See also function MldGetMoneyMnem() which does the same thing.
 *===========================================================================
 */
-VOID    PrtGetMoneyMnem(UCHAR uchTendMinor, USHORT *pusTran, UCHAR *puchSym)
+VOID    PrtGetMoneyMnem(UCHAR uchTendMinor, USTRNADRS *pusTran, UCSPCADRS *puchSym)
 {
-	*puchSym = 0;
-	*pusTran = 0;
+    RflMoneyMnem mm = RflGetMoneyMnem(uchTendMinor);
+
+    *puchSym = mm.usSym;
+	*pusTran = mm.usTran;
+#if 0
     if(uchTendMinor >= CLASS_FOREIGN1 && uchTendMinor <= CLASS_FOREIGN2) {
         *pusTran = (uchTendMinor - CLASS_FOREIGN1 + TRN_FT1_ADR);
-        *puchSym  = (UCHAR)(uchTendMinor - CLASS_FOREIGN1 + SPC_CNSYMFC1_ADR);
+        *puchSym  = (uchTendMinor - CLASS_FOREIGN1 + SPC_CNSYMFC1_ADR);
     } else if(uchTendMinor >= CLASS_FOREIGN3 && uchTendMinor <= CLASS_FOREIGN8) {
         *pusTran = (uchTendMinor - CLASS_FOREIGN3 + TRN_FT3_ADR);
-        *puchSym  = (UCHAR)(uchTendMinor - CLASS_FOREIGN3 + SPC_CNSYMFC3_ADR);
+        *puchSym  = (uchTendMinor - CLASS_FOREIGN3 + SPC_CNSYMFC3_ADR);
     }  else if (uchTendMinor >= CLASS_TENDER1 && uchTendMinor <= CLASS_TENDER8) {
         *pusTran = (uchTendMinor - CLASS_TENDER1 + TRN_TEND1_ADR);
     }  else if (uchTendMinor >= CLASS_TENDER9 && uchTendMinor <= CLASS_TENDER11) {
@@ -486,11 +473,11 @@ VOID    PrtGetMoneyMnem(UCHAR uchTendMinor, USHORT *pusTran, UCHAR *puchSym)
         *pusTran = (uchTendMinor - CLASS_TENDER12 + TRN_TENDER12_ADR);
     } else if(uchTendMinor >= CLASS_FOREIGNTOTAL1 && uchTendMinor <= CLASS_FOREIGNTOTAL8) {
         *pusTran = (uchTendMinor - CLASS_FOREIGNTOTAL1 + TRN_FT1_ADR);
-        *puchSym  = (UCHAR)(uchTendMinor - CLASS_FOREIGNTOTAL1 + SPC_CNSYMFC1_ADR);
+        *puchSym  = (uchTendMinor - CLASS_FOREIGNTOTAL1 + SPC_CNSYMFC1_ADR);
 	} else {
 		NHPOS_ASSERT(uchTendMinor <= CLASS_TENDER20);
-		return;
 	}
+#endif
 }
 
 /***** End Of Source *****/

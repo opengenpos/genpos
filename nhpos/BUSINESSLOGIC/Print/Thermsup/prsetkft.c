@@ -26,6 +26,9 @@
 * Update Histories                                                         
 *    Date   : Ver.Rev. :   Name    : Description
 * Oct-04-93 : 02.00.01 : J.IKEDA   : Initial                                   
+*
+** OpenGenPOS **
+* Jul-28-25 : v2.04.00 : R.Chambers  : use same strings PrtThrmSupMakeString() and PrtThrmSupMakeETKFl()
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -48,13 +51,10 @@
 #include <string.h>
 
 #include <ecr.h>
-/* #include <pif.h> */
 #include <rfl.h>
-/* #include <log.h> */
 #include <paraequ.h> 
 #include <para.h>
 #include <csstbpar.h>
-/* #include <cswai.h> */
 #include <maint.h> 
 #include <regstrct.h>
 #include <transact.h>
@@ -63,9 +63,8 @@
 #include <csetk.h>
 #include <report.h>
 #include <pmg.h>
-/* #include <appllog.h> */
+#include <prt.h>
 
-#include "prtcom.h"
 #include "prtrin.h"
 #include "prtsin.h"
 
@@ -161,14 +160,16 @@ VOID  PrtThrmSupMaintETKFl( MAINTETKFL *pData )
 ** Return:      Nothing
 *
 ** Description: This function makes ETK File string data.
+*
+*               See also function MldMaintMakeETKFl() which does basically
+*               the same thing.
 *===========================================================================
 */
-
 VOID PrtThrmSupMakeETKFl(MAINTETKFL *pData) 
 {
     TCHAR  aszPrtNull[1] = {'\0'};
-    USHORT usInHour;
-    USHORT usOutHour;
+    USHORT usInHour = 0;
+    USHORT usOutHour = 0;
 
     /* initialize */
     memset(aszPrThrmInTime, '\0', sizeof(aszPrThrmInTime));

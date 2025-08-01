@@ -48,22 +48,19 @@
 #include	<tchar.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include <ecr.h>
-/* #include <pif.h> */
 #include <uie.h>
 #include <paraequ.h> 
 #include <para.h>
 #include <fsc.h>
-/* #include <cswai.h> */
 #include <maint.h> 
-/* #include <regstrct.h> */
-/* #include <transact.h> */
 #include <csttl.h>
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
+#include <prt.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 #include "prrcolm_.h"
 
@@ -87,11 +84,10 @@
 VOID  PrtThrmSupFSC( PARAFSC *pData )
 {
 
-    USHORT  usMinorFSCData;
-    TCHAR   aszPLUNumber[PLU_MAX_DIGIT+1];
-    TCHAR   aszStatus[2] = { 0, 0 };
-
     if (pData->uchMajorFSCData + UIE_FSC_BIAS == FSC_KEYED_PLU) {
+        TCHAR   aszPLUNumber[PLU_MAX_DIGIT + 1] = { 0 };
+        TCHAR   aszStatus[2] = { 0};
+
         if ( 0 == _tcslen(pData->PluNo.aszPLUNumber) ) {
             _tcscpy(aszPLUNumber, _T("0"));
         }
@@ -134,6 +130,7 @@ VOID  PrtThrmSupFSC( PARAFSC *pData )
     } else {
 		const TCHAR  *auchPrtThrmSupFSC  = _T("  P%2u %10u / %3u-%3u");  /* define thermal print format */
 		const TCHAR  *auchPrtSupFSC      = _T("P%2u %4u / %3u-%3u");     /* define EJ print format */
+        USHORT  usMinorFSCData;
 
         usMinorFSCData = (UCHAR)pData->uchMinorFSCData;
 

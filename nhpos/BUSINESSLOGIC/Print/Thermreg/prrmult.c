@@ -74,7 +74,7 @@
 ** Synopsis: This function prints multicheck operation.
 *===========================================================================
 */
-VOID PrtItemMulti(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+VOID PrtItemMulti(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
 
     switch (pItem->uchMinorClass) {

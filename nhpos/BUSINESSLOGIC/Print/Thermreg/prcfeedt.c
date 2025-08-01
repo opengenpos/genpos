@@ -315,7 +315,7 @@ VOID PrtInFeed(TRANINFORMATION *pTran, ITEMOTHER  *pItem)
             fbPrtShrStatus |= PRT_SHARED_SYSTEM; 
 
             if ( fbPrtTHHead != PRT_HEADER_PRINTED ) {
-                PrtShrInit(pTran);
+                PrtShrInit(pTran->TranCurQual.usConsNo);
                 PrtFeed(PMG_PRT_RECEIPT, (USHORT)(pItem->lAmount)); /* feed */
                 PrtShrEnd();
                 return;
@@ -344,7 +344,7 @@ VOID  PrtOutFeed(TRANINFORMATION *pTran, ITEMOTHER  *pItem)
 
     if ( pItem->fsPrintStatus & PRT_RECEIPT )  {              /* receipt */
 
-        PrtTHHead(pTran);                    /* print header */        
+        PrtTHHead(pTran->TranCurQual.usConsNo);  /* print header */
 
         PrtFeed(PMG_PRT_RECEIPT, (USHORT)(pItem->lAmount));   /* feed */
 

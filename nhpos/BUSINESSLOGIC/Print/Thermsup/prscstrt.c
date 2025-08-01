@@ -46,8 +46,8 @@
 **/
 #include	<tchar.h>
 #include <stdlib.h>
+
 #include <ecr.h>
-/* #include <pif.h> */
 #include <fsc.h>
 #include <paraequ.h> 
 #include <para.h>
@@ -56,9 +56,9 @@
 #include <report.h> 
 #include <maint.h> 
 #include <pmg.h>
-/* #include <appllog.h> */
+#include <prt.h>
+
 #include "prtsin.h"
-#include "prtcom.h"
 
 /*
 *===========================================================================

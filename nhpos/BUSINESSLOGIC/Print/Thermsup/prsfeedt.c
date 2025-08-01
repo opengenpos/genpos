@@ -13,10 +13,6 @@
 * Category    : Print, NCR 2170 US Hospitality Application Program        
 * Program Name: PRSFEEDT.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract: This function forms feed format.
 *
 *           The provided function names are as follows: 
@@ -46,12 +42,11 @@
 **/
 
 #include	<tchar.h>
+
 /**------ 2170 local ------**/
 #include <ecr.h>
 #include <paraequ.h> 
 #include <para.h>
-/* #include <csstbpar.h> */
-/* #include <cswai.h> */
 #include <maint.h> 
 #include <csttl.h>
 #include <csop.h>
@@ -84,19 +79,14 @@
 
 VOID  PrtThrmSupRJFeed(MAINTFEED *pData)
 {
-    TRANINFORMATION  Tran;
 
     /* check minor class */
     if (pData->uchMinorClass == CLASS_MAINTFEED_OUTSIDE) {
         /* check if receipt or journal */
         if (pData->usPrtControl & PRT_RECEIPT) {
-            /* set transaction information */
-            Tran.TranCurQual.ulStoreregNo = 0L;
-            Tran.TranCurQual.usConsNo = 0;
-
             /* print RECEIPT HEADER */
-            PrtTHHead(&Tran);
-            PrtEJInit(&Tran);                   /* initialize E/J */
+            PrtTHHead(0);
+            PrtEJInit(NULL);                   /* initialize E/J */
 
             /* initialize receipt header flag */
             fbPrtTHHead = 0;

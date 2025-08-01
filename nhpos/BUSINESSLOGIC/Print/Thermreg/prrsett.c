@@ -85,6 +85,412 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;============================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID  PrtSET_TH(TRANINFORMATION  *pTran, ITEMSALES *pItem);
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMSALES        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints set sales. (thermal)
+*===========================================================================
+*/
+static VOID   PrtSET_TH(TRANINFORMATION  *pTran, ITEMSALES *pItem)
+{
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);     /* print header if necessary */
+
+    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);      /* void line */
+
+//Saratoga Functionality (US Customs cwunn 4/25/03)
+	if(!(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2))) { //if US Customs #/type bit turned off (turned on is lower down)
+		if (pItem->fbModifier2 & SKU_MODIFIER) {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtTHMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
+			}
+		} else {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtTHNumber(pItem->aszNumber[numCounter]);     /* number line */
+			}
+		}
+	}
+//End Saratoga Functionality
+
+    if (pItem->fsPrintStatus & (PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT) ) {
+            /* ticket print status */
+        PrtTHSeatNo(pItem->uchSeatNo);                     /* seat no. */
+    }
+
+    /* 2172 */
+    if ( CliParaMDCCheck(MDC_PLU2_ADR, ODD_MDC_BIT2) ) {
+        TCHAR   aszPLUNo[PLU_MAX_DIGIT + 1] = {0};
+
+        RflConvertPLU(aszPLUNo, pItem->auchPLUNo);
+        PrtTHPLUNo(aszPLUNo);
+    }
+
+    if (pItem->ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
+        PrtTHWeight(pTran, pItem);
+    }  else {
+        PrtTHQty(pTran, pItem);
+    }
+
+//US Customs Functionality (US Customs cwunn 4/25/03)
+	if(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2)) { //if US Customs #/type bit turned on (turned off is above)
+		if (pItem->fbModifier2 & SKU_MODIFIER) {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtTHMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
+			}
+		} else {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtTHNumber(pItem->aszNumber[numCounter]);     /* number line */
+			}
+		}
+	}
+//End US Customs Functionality
+
+    /* --- print noun plu and its modifiers and condiments --- */
+    PrtTHItems(pTran, pItem);
+
+    /* -- send child plu? -- */
+    if ( (pTran->TranCurQual.flPrintStatus) & CURQUAL_SETMENU ) {
+        TCHAR   auchDummy[NUM_PLU_LEN] = {0};
+
+        for (USHORT i = 0; i < pItem->uchChildNo; i++ ) {
+            /* check condiment PLU exist or not */
+            if (_tcsncmp(pItem->Condiment[i].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
+                continue;
+            }
+
+            PrtTHChild(pItem->Condiment[i].uchAdjective, pItem->Condiment[i].aszMnemonic);
+        }
+    }
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtSETKP_TH(TRANINFORMATION  *pTran, ITEMSALES *pItem);
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMSALES        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints setmenu when take to kp print. (thermal)
+*===========================================================================
+*/
+static VOID   PrtSETKP_TH(TRANINFORMATION  *pTran, ITEMSALES *pItem)
+{
+    TCHAR  auchDummy[NUM_PLU_LEN] = {0};
+
+    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);      /* void line */
+
+//Saratoga Functionality (US Customs cwunn 4/25/03)
+	if(!(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2))) { //if US Customs #/type bit turned off (turned on is lower down)
+		if (pItem->fbModifier2 & SKU_MODIFIER) {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtTHMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
+			}
+		} else {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtTHNumber(pItem->aszNumber[numCounter]);     /* number line */
+			}
+		}
+	}
+//End Saratoga Fucntionality
+
+    PrtTHSeatNo2(pItem->uchSeatNo);                     /* seat no. */
+
+    if (pItem->ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
+        PrtTHWeight(pTran, pItem);
+    }  else {
+        PrtTHQty(pTran, pItem);
+    }
+
+//US Customs Functionality (US Customs cwunn 4/25/03)
+	if(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2)) { //if US Customs #/type bit turned on (turned off is above)
+		if (pItem->fbModifier2 & SKU_MODIFIER) {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtTHMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
+			}
+		} else {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtTHNumber(pItem->aszNumber[numCounter]);     /* number line */
+			}
+		}
+	}
+//End US Customs Fucntionality
+
+    /* --- print noun plu and its modifiers and condiments --- */
+    PrtTHItems(pTran, pItem);
+
+    if ( (pTran->TranCurQual.flPrintStatus) & CURQUAL_SETMENU_KITCHEN ) {
+        return;
+    }
+
+    for (USHORT i = 0; i < pItem->uchChildNo; i++ ) {
+        UCHAR  fbKpPort = 0;
+
+        /* check condiment PLU exist or not */
+        if (_tcsncmp(pItem->Condiment[i].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
+            continue;
+        }
+
+        PrtChkKPPortSub(&fbKpPort, (UCHAR)((pItem->Condiment[i].ControlCode.auchPluStatus[2]) >> 4), pTran, PRT_MDC);
+
+        /* ---- set printer port #5 - #8    R3.1 ---- */
+        PrtChkKPPortSub2(&fbKpPort, (UCHAR)( (pItem->Condiment[i].ControlCode.auchPluStatus[6]) << 4 ), pTran, PRT_MDC);
+
+        if ( fbKpPort & uchPrtCurKP ) {
+            PrtTHChild(pItem->Condiment[i].uchAdjective, pItem->Condiment[i].aszMnemonic);
+        }
+    }
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtSET_EJ(TRANINFORMATION  *pTran, ITEMSALES *pItem);
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMSALES        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints set sales. (electric journal)
+*===========================================================================
+*/
+static VOID   PrtSET_EJ(TRANINFORMATION  *pTran, ITEMSALES *pItem)
+{
+    TCHAR  aszPLUNo[PLU_MAX_DIGIT + 1 + 4] = {0};
+
+    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);      /* void line */
+
+//Saratoga Functionality (US Customs cwunn 4/25/03)
+	if(!(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2))) { //if US Customs #/type bit turned off (turned on is lower down)
+		if (pItem->fbModifier2 & SKU_MODIFIER) {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtEJMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
+			}
+		} else {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtEJNumber(pItem->aszNumber[numCounter]);     /* number line */
+			}
+		}
+	}
+//End Saratoga Functionality
+
+    PrtEJTaxMod((pTran->TranModeQual).fsModeStatus, pItem->fbModifier);
+
+    /* -- if Building operation Mnemonics 2172   -- */
+    RflConvertPLU(aszPLUNo+4, pItem->auchPLUNo);
+    if (pItem->fsLabelStatus & ITM_CONTROL_NOTINFILE) {
+        PrtEJPLUBuild(TRN_PLUBLD_ADR, aszPLUNo+4, pItem->usDeptNo);
+    } else {
+        TCHAR  aszPLUSymbol[] = _T("PLU#");
+
+        _tcsncpy(aszPLUNo, aszPLUSymbol, 4);
+        //memcpy(aszPLUNo, aszPLUSymbol, 4);      /* Dec/23/2000 */
+        PrtEJPLUNo(aszPLUNo);
+    }
+
+    if (pItem->ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
+        PrtEJWeight(pTran, pItem);
+    }  else {
+        PrtEJQty(pItem);
+    }
+
+//US Customs Functionality (US Customs cwunn 4/25/03)
+	if(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2)) { //if US Customs #/type bit turned on (turned off is above)
+		if (pItem->fbModifier2 & SKU_MODIFIER) {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtEJMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
+			}
+		} else {
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				PrtEJNumber(pItem->aszNumber[numCounter]);     /* number line */
+			}
+		}
+	}
+//End US Customs Functionality
+
+    PrtEJItems(pItem);
+
+    /* -- send child plu? -- */
+    if ( (pTran->TranCurQual.flPrintStatus) & CURQUAL_SETMENU ) {
+        TCHAR   auchDummy[NUM_PLU_LEN] = {0};
+
+        for (USHORT i = 0; i < pItem->uchChildNo; i++ ) {
+            /* check child PLU exist or not */
+            if (_tcsncmp(pItem->Condiment[i].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
+                continue;
+            }
+
+            PrtEJChild(pItem->Condiment[i].uchAdjective, pItem->Condiment[i].aszMnemonic);
+        }
+    }
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtSET_SP(TRANINFORMATION  *pTran, ITEMSALES *pItem);
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMSALES        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints setmenu. (slip)
+*===========================================================================
+*/
+static VOID PrtSET_SP(TRANINFORMATION  *pTran, ITEMSALES  *pItem)
+{
+    TCHAR   aszSPPrintBuff[13][PRT_SPCOLUMN + 1] = {0}; /* print data save area */
+    TCHAR   aszPLUNo[PLU_MAX_DIGIT + 1] = {0};
+    USHORT  usSlipLine = 0;             /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+	//Saratoga Functionality (US Customs cwunn 4/25/03)
+	if(!(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2))) { //if US Customs #/type bit turned off (turned on is lower down)
+		/* -- set void mnemonic and number -- */
+		if (pItem->fbModifier2 & SKU_MODIFIER) {
+			for(USHORT i = 0; i < NUM_OF_NUMTYPE_ENT; i++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[i][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				usSlipLine += PrtSPVoidMnemNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, TRN_SKUNO_ADR, pItem->aszNumber[i]);
+			}
+		} else {
+			for(USHORT i = 0; i < NUM_OF_NUMTYPE_ENT; i++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[i][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber[i]);
+			}
+		}
+	}
+//End Saratoga Functionality
+
+    /* -- set seat mnemonic and number -- */
+    if (fsPrtStatus & PRT_TAKETOKIT) {  /* take to kitchen status */
+        usSlipLine += PrtSPSeatNo(aszSPPrintBuff[0], pItem->uchSeatNo);    /* seat no. */
+    }
+
+    /* 2172 */
+    if ( pItem->fsPrintStatus & PRT_VALIDATION ) { /* validation print */
+        if (pItem->fsLabelStatus & ITM_CONTROL_NOTINFILE)
+        {
+            RflConvertPLU(aszPLUNo, pItem->auchPLUNo);
+            usSlipLine += PrtSPPLUBuild(aszSPPrintBuff[usSlipLine], TRN_PLUBLD_ADR, aszPLUNo, pItem->usDeptNo);
+        } else {
+            if ( CliParaMDCCheck(MDC_PLU2_ADR, ODD_MDC_BIT2) ) {
+                RflConvertPLU(aszPLUNo, pItem->auchPLUNo);
+                usSlipLine += PrtSPPLUNo(aszSPPrintBuff[usSlipLine], aszPLUNo);
+            }
+        }
+    } else {
+        if ( CliParaMDCCheck(MDC_PLU2_ADR, ODD_MDC_BIT2) ) {
+            RflConvertPLU(aszPLUNo, pItem->auchPLUNo);
+            usSlipLine += PrtSPPLUNo(aszSPPrintBuff[usSlipLine], aszPLUNo);
+        }
+    }
+
+    /* -- set tax modifier mnemonic, quantity and unit price -- */
+    usSlipLine += PrtSPQty(aszSPPrintBuff[usSlipLine], pTran, pItem);
+
+    /* -- set mnemonics (adjective, PLU, print mod.) -- */
+    usSlipLine += PrtSPItems(aszSPPrintBuff[usSlipLine], pTran, pItem);
+
+    /* -- send child plu? -- */
+    if ( (pTran->TranCurQual.flPrintStatus) & CURQUAL_SETMENU ) {
+		TCHAR   auchDummy[NUM_PLU_LEN] = {0};
+
+        for (USHORT i = 0; i < pItem->uchChildNo; i++ ) {
+            /* check child PLU exist or not */
+            if (_tcsncmp(pItem->Condiment[i].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
+                continue;
+            }
+            usSlipLine += PrtSPChild(aszSPPrintBuff[usSlipLine], pItem->Condiment[i].uchAdjective, pItem->Condiment[i].aszMnemonic);
+        }
+    }
+
+//US Customs Functionality (US Customs cwunn 4/25/03)
+	if(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2)) { //if US Customs #/type bit turned on (turned off is above)
+		/* -- set void mnemonic and number -- */
+		if (pItem->fbModifier2 & SKU_MODIFIER) {
+			for(USHORT i = 0; i < NUM_OF_NUMTYPE_ENT; i++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[i][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				usSlipLine += PrtSPVoidMnemNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, TRN_SKUNO_ADR, pItem->aszNumber[i]);
+			}
+		} else {
+			for(USHORT i = 0; i < NUM_OF_NUMTYPE_ENT; i++){//US Customs cwunn 4/21/03
+				if(pItem->aszNumber[i][0] == '\0'){ //empty slot found, stop printing
+					break;
+				}//Print all #/Type entries that are stored
+				usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber[i]);
+			}
+		}
+	}
+//End US CustomsFunctionality
+
+    /* -- check if paper change is necessary or not -- */
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */
+    for (USHORT i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtSET(TRANINFORMATION  *pTran, ITEMSALES *pItem);
@@ -168,414 +574,6 @@ VOID PrtSET(TRANINFORMATION  *pTran, ITEMSALES  *pItem)
     }
 }
 
-/*
-*===========================================================================
-** Format  : VOID  PrtSET_TH(TRANINFORMATION  *pTran, ITEMSALES *pItem);
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMSALES        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints set sales. (thermal)
-*===========================================================================
-*/
-VOID   PrtSET_TH(TRANINFORMATION  *pTran, ITEMSALES *pItem)
-{
-    USHORT  i;
-    TCHAR   auchDummy[NUM_PLU_LEN] = {0};
-    TCHAR   aszPLUNo[PLU_MAX_DIGIT + 1] = {0};
-	SHORT numCounter; //US Customs
-
-    PrtTHHead(pTran);                  /* print header if necessary */
-
-    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);      /* void line */
-
-//Saratoga Functionality (US Customs cwunn 4/25/03)
-	if(!(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2))) { //if US Customs #/type bit turned off (turned on is lower down)
-		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtTHMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
-			}
-		} else {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtTHNumber(pItem->aszNumber[numCounter]);     /* number line */
-			}
-		}
-	}
-//End Saratoga Functionality
-
-    if (pItem->fsPrintStatus & (PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT) ) {
-            /* ticket print status */
-        PrtTHSeatNo(pItem->uchSeatNo);                     /* seat no. */
-    }
-
-    /* 2172 */
-    if ( CliParaMDCCheck(MDC_PLU2_ADR, ODD_MDC_BIT2) ) {
-        RflConvertPLU(aszPLUNo, pItem->auchPLUNo);
-        PrtTHPLUNo(aszPLUNo);
-    }
-
-    if (pItem->ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
-        PrtTHWeight(pTran, pItem);
-    }  else {
-        PrtTHQty(pTran, pItem);
-    }
-
-//US Customs Functionality (US Customs cwunn 4/25/03)
-	if(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2)) { //if US Customs #/type bit turned on (turned off is above)
-		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtTHMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
-			}
-		} else {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtTHNumber(pItem->aszNumber[numCounter]);     /* number line */
-			}
-		}
-	}
-//End US Customs Functionality
-
-    /* --- print noun plu and its modifiers and condiments --- */
-    PrtTHItems(pTran, pItem);
-
-    /* -- send child plu? -- */
-    if ( (pTran->TranCurQual.flPrintStatus) & CURQUAL_SETMENU ) {
-        for ( i = 0; i < pItem->uchChildNo; i++ ) {
-            /* check condiment PLU exist or not */
-            if (_tcsncmp(pItem->Condiment[i].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
-                continue;
-            }
-
-            PrtTHChild(pItem->Condiment[i].uchAdjective, pItem->Condiment[i].aszMnemonic);
-        }
-    }
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtSETKP_TH(TRANINFORMATION  *pTran, ITEMSALES *pItem);
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMSALES        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints setmenu when take to kp print. (thermal)
-*===========================================================================
-*/
-VOID   PrtSETKP_TH(TRANINFORMATION  *pTran, ITEMSALES *pItem)
-{
-    USHORT i;
-    UCHAR  fbKpPort;
-    TCHAR  auchDummy[NUM_PLU_LEN] = {0};
-	SHORT numCounter; //US Customs
-
-    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);      /* void line */
-
-//Saratoga Functionality (US Customs cwunn 4/25/03)
-	if(!(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2))) { //if US Customs #/type bit turned off (turned on is lower down)
-		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtTHMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
-			}
-		} else {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtTHNumber(pItem->aszNumber[numCounter]);     /* number line */
-			}
-		}
-	}
-//End Saratoga Fucntionality
-
-    PrtTHSeatNo2(pItem->uchSeatNo);                     /* seat no. */
-
-    if (pItem->ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
-        PrtTHWeight(pTran, pItem);
-    }  else {
-        PrtTHQty(pTran, pItem);
-    }
-
-//US Customs Functionality (US Customs cwunn 4/25/03)
-	if(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2)) { //if US Customs #/type bit turned on (turned off is above)
-		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtTHMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
-			}
-		} else {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtTHNumber(pItem->aszNumber[numCounter]);     /* number line */
-			}
-		}
-	}
-//End US Customs Fucntionality
-
-    /* --- print noun plu and its modifiers and condiments --- */
-    PrtTHItems(pTran, pItem);
-
-    if ( (pTran->TranCurQual.flPrintStatus) & CURQUAL_SETMENU_KITCHEN ) {
-        return;
-    }
-
-    for ( i = 0; i < pItem->uchChildNo; i++ ) {
-        /* check condiment PLU exist or not */
-        if (_tcsncmp(pItem->Condiment[i].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
-            continue;
-        }
-
-        fbKpPort = 0;
-        PrtChkKPPortSub(&fbKpPort, (UCHAR)((pItem->Condiment[i].ControlCode.auchPluStatus[2]) >> 4), pTran, PRT_MDC);
-
-        /* ---- set printer port #5 - #8    R3.1 ---- */
-        PrtChkKPPortSub2(&fbKpPort, (UCHAR)( (pItem->Condiment[i].ControlCode.auchPluStatus[6]) << 4 ), pTran, PRT_MDC);
-
-        if ( fbKpPort & uchPrtCurKP ) {
-            PrtTHChild(pItem->Condiment[i].uchAdjective, pItem->Condiment[i].aszMnemonic);
-        }
-    }
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtSET_EJ(TRANINFORMATION  *pTran, ITEMSALES *pItem);
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMSALES        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints set sales. (electric journal)
-*===========================================================================
-*/
-VOID   PrtSET_EJ(TRANINFORMATION  *pTran, ITEMSALES *pItem)
-{
-    USHORT  i;
-    TCHAR   auchDummy[NUM_PLU_LEN] = {0};
-    TCHAR  aszPLUNo[PLU_MAX_DIGIT + 1 + 4] = {0};
-    TCHAR  aszPLUSymbol[] = _T("PLU#");
-	SHORT numCounter; //US Customs
-
-    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);      /* void line */
-
-//Saratoga Functionality (US Customs cwunn 4/25/03)
-	if(!(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2))) { //if US Customs #/type bit turned off (turned on is lower down)
-		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtEJMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
-			}
-		} else {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtEJNumber(pItem->aszNumber[numCounter]);     /* number line */
-			}
-		}
-	}
-//End Saratoga Functionality
-
-    PrtEJTaxMod((pTran->TranModeQual).fsModeStatus, pItem->fbModifier);
-
-    /* -- if Building operation Mnemonics 2172   -- */
-    RflConvertPLU(aszPLUNo+4, pItem->auchPLUNo);
-    if (pItem->fsLabelStatus & ITM_CONTROL_NOTINFILE) {
-        PrtEJPLUBuild(TRN_PLUBLD_ADR, aszPLUNo+4, pItem->usDeptNo);
-    } else {
-        _tcsncpy(aszPLUNo, aszPLUSymbol, 4);
-        //memcpy(aszPLUNo, aszPLUSymbol, 4);      /* Dec/23/2000 */
-        PrtEJPLUNo(aszPLUNo);
-    }
-
-    if (pItem->ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
-        PrtEJWeight(pTran, pItem);
-    }  else {
-        PrtEJQty(pItem);
-    }
-
-//US Customs Functionality (US Customs cwunn 4/25/03)
-	if(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2)) { //if US Customs #/type bit turned on (turned off is above)
-		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtEJMnemNumber(TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);     /* number line */
-			}
-		} else {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				PrtEJNumber(pItem->aszNumber[numCounter]);     /* number line */
-			}
-		}
-	}
-//End US Customs Functionality
-
-    PrtEJItems(pItem);
-
-    /* -- send child plu? -- */
-    if ( (pTran->TranCurQual.flPrintStatus) & CURQUAL_SETMENU ) {
-        for ( i = 0; i < pItem->uchChildNo; i++ ) {
-            /* check child PLU exist or not */
-            if (_tcsncmp(pItem->Condiment[i].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
-                continue;
-            }
-
-            PrtEJChild(pItem->Condiment[i].uchAdjective, pItem->Condiment[i].aszMnemonic);
-        }
-    }
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtSET_SP(TRANINFORMATION  *pTran, ITEMSALES *pItem);
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMSALES        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints setmenu. (slip)
-*===========================================================================
-*/
-VOID PrtSET_SP(TRANINFORMATION  *pTran, ITEMSALES  *pItem)
-{
-    TCHAR   aszSPPrintBuff[13][PRT_SPCOLUMN + 1] = {0}; /* print data save area */
-    TCHAR   aszPLUNo[PLU_MAX_DIGIT + 1] = {0};
-    USHORT  usSlipLine = 0;             /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;
-
-	//Saratoga Functionality (US Customs cwunn 4/25/03)
-	if(!(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2))) { //if US Customs #/type bit turned off (turned on is lower down)
-		/* -- set void mnemonic and number -- */
-		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(i = 0; i < NUM_OF_NUMTYPE_ENT; i++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[i][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				usSlipLine += PrtSPVoidMnemNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, TRN_SKUNO_ADR, pItem->aszNumber[i]);
-			}
-		} else {
-			for(i = 0; i < NUM_OF_NUMTYPE_ENT; i++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[i][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber[i]);
-			}
-		}
-	}
-//End Saratoga Functionality
-
-    /* -- set seat mnemonic and number -- */
-    if (fsPrtStatus & PRT_TAKETOKIT) {  /* take to kitchen status */
-        usSlipLine += PrtSPSeatNo(aszSPPrintBuff[0], pItem->uchSeatNo);    /* seat no. */
-    }
-
-    /* 2172 */
-    if ( pItem->fsPrintStatus & PRT_VALIDATION ) { /* validation print */
-        if (pItem->fsLabelStatus & ITM_CONTROL_NOTINFILE)
-        {
-            RflConvertPLU(aszPLUNo, pItem->auchPLUNo);
-            usSlipLine += PrtSPPLUBuild(aszSPPrintBuff[usSlipLine], TRN_PLUBLD_ADR, aszPLUNo, pItem->usDeptNo);
-        } else {
-            if ( CliParaMDCCheck(MDC_PLU2_ADR, ODD_MDC_BIT2) ) {
-                RflConvertPLU(aszPLUNo, pItem->auchPLUNo);
-                usSlipLine += PrtSPPLUNo(aszSPPrintBuff[usSlipLine], aszPLUNo);
-            }
-        }
-    } else {
-        if ( CliParaMDCCheck(MDC_PLU2_ADR, ODD_MDC_BIT2) ) {
-            RflConvertPLU(aszPLUNo, pItem->auchPLUNo);
-            usSlipLine += PrtSPPLUNo(aszSPPrintBuff[usSlipLine], aszPLUNo);
-        }
-    }
-
-    /* -- set tax modifier mnemonic, quantity and unit price -- */
-    usSlipLine += PrtSPQty(aszSPPrintBuff[usSlipLine], pTran, pItem);
-
-    /* -- set mnemonics (adjective, PLU, print mod.) -- */
-    usSlipLine += PrtSPItems(aszSPPrintBuff[usSlipLine], pTran, pItem);
-
-    /* -- send child plu? -- */
-    if ( (pTran->TranCurQual.flPrintStatus) & CURQUAL_SETMENU ) {
-		TCHAR   auchDummy[NUM_PLU_LEN] = {0};
-
-        for ( i = 0; i < pItem->uchChildNo; i++ ) {
-            /* check child PLU exist or not */
-            if (_tcsncmp(pItem->Condiment[i].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
-                continue;
-            }
-            usSlipLine += PrtSPChild(aszSPPrintBuff[usSlipLine], pItem->Condiment[i].uchAdjective, pItem->Condiment[i].aszMnemonic);
-        }
-    }
-
-//US Customs Functionality (US Customs cwunn 4/25/03)
-	if(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2)) { //if US Customs #/type bit turned on (turned off is above)
-		/* -- set void mnemonic and number -- */
-		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(i = 0; i < NUM_OF_NUMTYPE_ENT; i++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[i][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				usSlipLine += PrtSPVoidMnemNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, TRN_SKUNO_ADR, pItem->aszNumber[i]);
-			}
-		} else {
-			for(i = 0; i < NUM_OF_NUMTYPE_ENT; i++){//US Customs cwunn 4/21/03
-				if(pItem->aszNumber[i][0] == '\0'){ //empty slot found, stop printing
-					break;
-				}//Print all #/Type entries that are stored
-				usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber[i]);
-			}
-		}
-	}
-//End US CustomsFunctionality
-
-    /* -- check if paper change is necessary or not -- */
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;
-}
-
 
 /*
 *===========================================================================
@@ -594,9 +592,6 @@ VOID PrtDflSET(TRANINFORMATION  *pTran, ITEMSALES  *pItem)
 {
 	PRTDFLBUFF  dbuff = {0};
     UCHAR  fbPrtPort;                     /* print status for kp */
-    UCHAR  fbStatWork;                    /* print status for kp */
-    UCHAR  i, j;
-    TCHAR  auchDummy[NUM_PLU_LEN] = {0};
 
     if ( (pItem->fsPrintStatus & PRT_SPCL_PRINT) && (pItem->uchPrintModNo == 0) ) {
         /* send all child plu as not kp item */
@@ -610,7 +605,8 @@ VOID PrtDflSET(TRANINFORMATION  *pTran, ITEMSALES  *pItem)
     /* check setmenu children plu's kp portion */
     fbPrtPort = PrtDflSETChkChildKP(pTran, pItem);
 
-    for ( i = 0; i < MAX_DEST_SIZE;  i++ ) {
+    for (USHORT i = 0; i < MAX_DEST_SIZE;  i++ ) {
+        TCHAR  auchDummy[NUM_PLU_LEN] = {0};
 		USHORT usLineNo;                      /* number of lines to be displayed */
 		UCHAR  fbCurPrtState = (1 << i);      /* current print status*/
 
@@ -625,7 +621,9 @@ VOID PrtDflSET(TRANINFORMATION  *pTran, ITEMSALES  *pItem)
         usLineNo = PrtDflSETParent(&dbuff, pTran, pItem);
 
         /* -- set child PLU -- */
-        for ( j = 0; j < pItem->uchChildNo; j++ ) {
+        for (USHORT j = 0; j < pItem->uchChildNo; j++ ) {
+            UCHAR  fbStatWork = 0;                    /* print status for kp */
+
             /* check child PLU exist or not */
             if (_tcsncmp(pItem->Condiment[j].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
                 continue;
@@ -670,10 +668,9 @@ VOID PrtDflSET(TRANINFORMATION  *pTran, ITEMSALES  *pItem)
 UCHAR  PrtDflSETChkChildKP(TRANINFORMATION  *pTran, ITEMSALES *pItem)
 {
     UCHAR fbPrtPort = 0;
-    USHORT i;
 	TCHAR  auchDummy[NUM_PLU_LEN] = {0};
 
-    for ( i = 0; i < pItem->uchChildNo; i++ ) {
+    for (USHORT i = 0; i < pItem->uchChildNo; i++ ) {
 		UCHAR fbStatWork;
 
         /* check condiment PLU exist or not */
@@ -710,7 +707,6 @@ SHORT  PrtDflSETParent(PRTDFLBUFF *pBuff, TRANINFORMATION  *pTran, ITEMSALES *pI
 {
     USHORT usLineNo;
 	TCHAR  aszPLUNo[PLU_MAX_DIGIT + 1] = {0};
-	SHORT numCounter; //US Customs
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
@@ -727,14 +723,14 @@ SHORT  PrtDflSETParent(PRTDFLBUFF *pBuff, TRANINFORMATION  *pTran, ITEMSALES *pI
 //Saratoga Functionality (US Customs cwunn 4/25/03)
 	if(!(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2))) { //if US Customs #/type bit turned off (turned on is lower down)
 		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
 				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
 					break;
 				}//Print all #/Type entries that are stored
 				usLineNo += PrtDflMnemNumber(pBuff->aszDflBuff[usLineNo], TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);
 				}
 		} else {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
 				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
 					break;
 				}//Print all #/Type entries that are stored
@@ -765,14 +761,14 @@ SHORT  PrtDflSETParent(PRTDFLBUFF *pBuff, TRANINFORMATION  *pTran, ITEMSALES *pI
 //US Customs Functionality (US Customs cwunn 4/25/03)
 	if(CliParaMDCCheck(MDC_USCUSTOMS_ADR, ODD_MDC_BIT2)) { //if US Customs #/type bit turned on (turned off is above)
 		if (pItem->fbModifier2 & SKU_MODIFIER) {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
 				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
 					break;
 				}//Print all #/Type entries that are stored
 				usLineNo += PrtDflMnemNumber(pBuff->aszDflBuff[usLineNo], TRN_SKUNO_ADR, pItem->aszNumber[numCounter]);
-				}
+			}
 		} else {
-			for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
+			for(USHORT numCounter = 0; numCounter < NUM_OF_NUMTYPE_ENT; numCounter++){//US Customs cwunn 4/21/03
 				if(pItem->aszNumber[numCounter][0] == '\0'){ //empty slot found, stop printing
 					break;
 				}//Print all #/Type entries that are stored
@@ -801,7 +797,6 @@ SHORT  PrtDflSETParent(PRTDFLBUFF *pBuff, TRANINFORMATION  *pTran, ITEMSALES *pI
 */
 VOID  PrtDflSETSendAsNotKP(PRTDFLBUFF *pBuff, TRANINFORMATION  *pTran, ITEMSALES *pItem)
 {
-    USHORT i;
     USHORT usLineNo;
 	TCHAR auchDummy[NUM_PLU_LEN] = {0};
 
@@ -809,7 +804,7 @@ VOID  PrtDflSETSendAsNotKP(PRTDFLBUFF *pBuff, TRANINFORMATION  *pTran, ITEMSALES
     usLineNo = PrtDflSETParent(pBuff, pTran, pItem);
 
     /* -- set all child PLU -- */
-    for ( i = 0; i < pItem->uchChildNo; i++ ) {
+    for (USHORT i = 0; i < pItem->uchChildNo; i++ ) {
        /* check condiment PLU exist or not */
        if (_tcsncmp(pItem->Condiment[i].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
            continue;
@@ -923,12 +918,12 @@ VOID  PrtDflSETSendNoKPChild(PRTDFLBUFF *pBuff, TRANINFORMATION  *pTran, ITEMSAL
 VOID  PrtDflSETSend(UCHAR uchDestKP1, UCHAR uchDestKP2, USHORT  usLineNo,
                                         PRTDFLBUFF *pBuff, ITEMSALES *pItem)
 {
-    USHORT i;
     USHORT usOffset = 0;
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = uchDestKP1;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = uchDestKP2;
+    PrtDflIfSetDestCrt(uchDestKP1, uchDestKP2);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = uchDestKP1;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = uchDestKP2;
 
     /* -- check void status -- */
     PrtDflCheckVoid(pItem->fbModifier);
@@ -936,7 +931,7 @@ VOID  PrtDflSETSend(UCHAR uchDestKP1, UCHAR uchDestKP2, USHORT  usLineNo,
     /* -- set display data in the buffer -- */
     PrtDflIType(usLineNo, DFL_SALES);
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(pBuff->aszDflBuff[i], &usOffset);
         if ( pBuff->aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -964,18 +959,17 @@ VOID  PrtDflSETSend(UCHAR uchDestKP1, UCHAR uchDestKP2, USHORT  usLineNo,
 USHORT PrtDflSETForm(TRANINFORMATION  *pTran, ITEMSALES  *pItem, TCHAR *puchBuffer)
 {
 	TCHAR  aszDflBuff[33][PRT_DFL_LINE + 1] = {0}; /* display data save area */
-    USHORT usLineNo = 0, i;                        /* number of lines to be displayed */
-    UCHAR  j;
+    USHORT usLineNo = 0;                           /* number of lines to be displayed */
 
     /* set parent plu format */
     usLineNo = PrtDflDeptPLUForm(pTran, pItem, &aszDflBuff[0][0]);
 
     /* -- set child PLU -- */
-    for ( j = 0; j < pItem->uchChildNo; j++ ) {
+    for (USHORT j = 0; j < pItem->uchChildNo; j++ ) {
         usLineNo += PrtDflChild(aszDflBuff[usLineNo], pItem->Condiment[j].uchAdjective, pItem->Condiment[j].aszMnemonic);
     }
 
-    for (i = 0; i < usLineNo; i++) {
+    for (USHORT i = 0; i < usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
 

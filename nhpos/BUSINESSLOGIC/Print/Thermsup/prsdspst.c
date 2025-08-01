@@ -45,8 +45,9 @@
 **/
 
 #include	<tchar.h>
-#include <ecr.h>
 #include <stdlib.h>
+
+#include <ecr.h>
 #include <paraequ.h> 
 #include <para.h>
 #include <maint.h> 
@@ -54,8 +55,8 @@
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
+#include <prt.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*
@@ -75,30 +76,20 @@
 
 VOID  PrtThrmSupDispPara( PARADISPPARA *pData )
 {
+    static const TCHAR  auchPrtThrmSupDispPara[] = _T("%18u  /  %5u%3s");    /* define thermal print format */
+    static const TCHAR  auchPrtSupDispPara[] = _T("%8u / %5u%2s");    /* define EJ print format */
 
-    /* define thermal print format */
-
-    static const TCHAR  auchPrtThrmSupDispPara[] = _T("%18u  /  %5u%3s");
-
-    /* define EJ print format */
-
-    static const TCHAR  auchPrtSupDispPara[] = _T("%8u / %5u%2s");
-
-    TCHAR   auchAdj[5] = {0, 0, 0, 0, 0};
+    TCHAR   auchAdj[5] = {0};
 
     /* check if adjective is exist */
-
     if (pData->usAddress < DISPENS_OFFSET_ADR) {
         auchAdj[0] = _T('-');
         _itot(pData->uchAdjective, &auchAdj[1], 10);
     }
 
     /* check print control */
-
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
         /* print ADDRESS / No. of RECORD / PTD FLAG */
-
         PrtPrintf(PMG_PRT_RECEIPT,                  /* printer type */
                   auchPrtThrmSupDispPara,           /* format */
                   pData->usAddress,                     /* Address */
@@ -107,9 +98,7 @@ VOID  PrtThrmSupDispPara( PARADISPPARA *pData )
     } 
     
     if (pData->usPrintControl & PRT_JOURNAL) {  /* EJ */                                        /* EJ */
-
         /* print ADDRESS / No. of RECORD / PTD FLAG */
-
         PrtPrintf(PMG_PRT_JOURNAL,                  /* printer type */
                   auchPrtSupDispPara,               /* format */
                   pData->usAddress,                     /* Address */

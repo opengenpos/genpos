@@ -78,13 +78,606 @@
 #include "prrcolm_.h"
 #include <prt.h>
 
-extern VOID PrtSoftCHK(UCHAR uchMinorClass);
 
 /**
 ;============================================================================
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;============================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID  PrtTender_TH(TRANINFORMATION *pTran, ITEMTENDER   *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTENDER       *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none 
+*            
+** Synopsis: This function prints tender operation (thermal)
+*  Change Description: SR 131 cwunn 7/22/2003
+*		SR 131 requests that EPT and Charge Posting operations allow for
+*		masking of account numbers, depending on MDC settings.  In
+*		compliance with SR 131 and pending Visa and Mastecard merchant
+*		agreements, account numbers can be masked by configuring
+*		MDC Bit 377, CP & EPT Account Number Security Settings
+*		and MDC Bit 378, CP & EPT Account Number Masking Settings.
+*		Options include printing or not printing account # and date for
+*		EPT or CP operations, and masking or not masking account # for
+*		EPT or CP operations, when performed using certain tender keys.
+*		(EPT  can mask account #s on keys 2-6, CP can mask on keys 7-11).
+*		The number of digits masked in CP and EPT are indpendently configured.
+*===========================================================================
+*/
+static VOID PrtTender_TH(CONST TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
+{
+	PARAMDC TenderMDC = { 0 };  //Used to read Tender Key settings
+	USHORT	usMDCBase, usOffset;
+	UCHAR	localMDCBitA, localMDCMask;   	//used in reading MDC settings of Tender Keys
+	UCHAR   uchMinorClassTemp = pItem->uchMinorClass;
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);      /* print header if necessary */
+
+    PrtTHOffTend(pItem->fbModifier);                    /* Cp off line */
+	if (pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
+		PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);                       /* void line */
+	}
+
+    PrtTHCPRoomCharge(pItem->aszRoomNo, pItem->aszGuestID);
+
+	if (pItem->uchMinorClass == CLASS_TEND_TIPS_RETURN) {
+		uchMinorClassTemp = ITEMTENDER_CHARGETIPS(pItem).uchMinorTenderClass;
+		if (uchMinorClassTemp < CLASS_TENDER1) uchMinorClassTemp = CLASS_TENDER1;
+    } else if (pItem->uchMinorClass == CLASS_TEND_FSCHANGE) {
+		uchMinorClassTemp = CLASS_TENDER2;    // transform CLASS_TEND_FSCHANGE and use that tender key's MDC settings
+	}
+
+	if (uchMinorClassTemp <= CLASS_TENDER11) {
+		usMDCBase = MDC_CPTEND1_ADR;
+		usOffset = CLASS_TENDER1;
+	} else if (uchMinorClassTemp <= CLASS_TENDER20) {
+		usMDCBase = MDC_CPTEND12_ADR;
+		usOffset = CLASS_TENDER12;
+	} else {
+		NHPOS_ASSERT_TEXT(0, "PrtTender_TH(): Out of Range Tender.");
+		return;
+	}
+
+	TenderMDC.uchMajorClass = CLASS_PARAMDC;
+	TenderMDC.usAddress = usMDCBase + (uchMinorClassTemp - usOffset);
+	ParaRead(&TenderMDC);
+	localMDCBitA = (TenderMDC.usAddress % 2) ? ODD_MDC_BIT3 : EVEN_MDC_BIT3;
+	localMDCMask = (TenderMDC.usAddress % 2) ? MDC_ODD_MASK : MDC_EVEN_MASK;
+
+	//always print offline symbol
+	if ( pItem->fbModifier & OFFEPTTEND_MODIF){
+		PrtTHOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
+	}
+	else 
+	{
+		if(MldCheckEPTAcctPrint(TenderMDC, localMDCBitA, localMDCMask, pItem->aszNumber)){
+			PrtTHOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
+			PrtTHNumber(pItem->aszNumber);
+		}
+	}
+	//SSTOLTZ
+//	if( _tcscmp(pItem->aszMnem, _T("\0")) == 0){
+	// change made for Amtrak receipts to show the TRANSACTION TYPE
+	if (pItem->uchMinorClass == CLASS_TEND_TIPS_RETURN) {
+		PrtTHAmtTwoMnem((RflChkTendAdr(pItem) | STD_FORMATMASK_NO_AMOUNT), 0, pItem->lTenderAmount, pItem->aszCPMsgText[NUM_CPRSPCO_CARDLABEL]);
+	} else if ((TrnInformation.TranCurQual.fsCurStatus & (CURQUAL_MERCH_DUP | CURQUAL_CUST_DUP)) != 0) {
+		if (pItem->uchMinorClass !=  CLASS_TEND_FSCHANGE) { /* Saratoga */
+			if ((pItem->fbModifier & RETURNS_ORIGINAL) != 0) {
+				PrtTHAmtTwoMnem(RflChkTendAdr(pItem), 0, pItem->lTenderAmount, pItem->aszCPMsgText[NUM_CPRSPCO_CARDLABEL]);
+			} else {
+				USHORT  usReturnType = TRN_DSI_TRANSSALE;
+				USHORT  usAdr1 = TRN_DSI_TRANSTYPE;
+				if (pTran->TranCurQual.fsCurStatus & (CURQUAL_PRETURN | CURQUAL_TRETURN)) {
+					// For an Amtrak return if the tender amount is positive, non-zero then use the
+					// SALE mnemonic and not the RETURN mnemonic.
+					if (pTran->TranModeQual.usReturnType & 0x0100) {    // check to see if RETURNS_MODIFIER_1 has been used in this transaction
+						usReturnType = TRN_TRETURN1_ADR;
+					} else if (pTran->TranModeQual.usReturnType & 0x0200) {   // check to see if RETURNS_MODIFIER_2 has been used in this transaction
+						if (pItem->lTenderAmount <= 0)
+							usReturnType = TRN_TRETURN2_ADR;
+					} else if (pTran->TranModeQual.usReturnType & 0x0400) {   // check to see if RETURNS_MODIFIER_3 has been used in this transaction
+						if (pItem->lTenderAmount <= 0)
+							usReturnType = TRN_TRETURN3_ADR;
+					}
+				}
+				if ((pTran->ulCustomerSettingsFlags & SYSCONFIG_CUSTOMER_ENABLE_AMTRAK) == 0) {
+					usAdr1 = RflChkTendAdr(pItem);
+					usReturnType = 0;
+				}
+				PrtTHAmtTwoMnem(usAdr1, usReturnType, pItem->lTenderAmount, 0);
+			}
+		}
+	} else {
+		PrtTHAmtTwoMnem(RflChkTendAdr(pItem), 0, pItem->lTenderAmount, pItem->aszCPMsgText[NUM_CPRSPCO_CARDLABEL]);
+	}
+
+    if (pItem->lFoodStamp) {                            /* FS */
+        PrtTHZeroAmtMnem(TRN_FSCHNG_ADR, pItem->lFoodStamp);
+    }
+
+    if (pItem->lFSChange) {                             /* FS credit */
+        PrtTHZeroAmtMnem(TRN_FSCRD_ADR, pItem->lFSChange);
+    }
+
+    if (pItem->lGratuity && (pTran->TranCurQual.fsCurStatus2 & PRT_PREAUTH_RECEIPT) == 0) {   /* charge tips associated with this tender */
+        PrtTHZeroAmtMnem((TRN_CHRGTIP_ADR | STD_FORMATMASK_INDENT_4), pItem->lGratuity);
+    }
+
+	PrtTHZeroAmtMnem(TRN_REGCHG_ADR, pItem->lChange);   /* change */
+
+	// if this is an Employee Payroll Deduction balance inquiry receipt or an EPT receipt then
+	// we need to print the response text. we also need to print a receipt if this is an
+	// electronic payment tender which was Declined (ITM_REJECT_DECLINED).
+	if ((TrnInformation.TranCurQual.flPrintStatus & CURQUAL_EPAY_BALANCE) ||
+		((TrnInformation.TranCurQual.fsCurStatus2 & PRT_GIFT_RECEIPT) == 0 &&
+		(TrnInformation.TranCurQual.fsCurStatus & (CURQUAL_MERCH_DUP | CURQUAL_CUST_DUP)) != 0) ||
+		(pItem->fbModifier & DECLINED_EPT_MODIF) != 0) {
+
+		if ((pItem->fbModifier & RETURNS_ORIGINAL) == 0 && pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
+			// we only want to print the response text for Electronic Payment for a Return if this is the
+			// not the tender from the original.  If this was from the original transaction data then
+			// we will not print the response text.
+
+			if (pItem->uchPrintSelect != 0) {
+				TCHAR   *puchStart = (TCHAR *)pItem->aszCPMsgText;
+				for (USHORT i = 0; i < pItem->uchCPLineNo; i++) {
+					TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
+
+					_tcsncpy(aszPrint, puchStart + i * pItem->uchPrintSelect, pItem->uchPrintSelect);
+					if (_tcsstr (aszPrint, _T("STORED")) != 0 && (TrnInformation.TranCurQual.fsCurStatus & (CURQUAL_CUST_DUP | CURQUAL_MERCH_DUP)) != 0)
+						continue;
+					tcharTrimRight (aszPrint + 1);    // trim trailing spaces but if only spaces then keep the first one.
+					PrtTHCPRspMsgText(aszPrint);
+				}
+				// If this tender is supposed to be printed with the Tip and Total lines because it is a Preauth then
+				// print the tip and total lines after the EPT response text
+				if ((pItem->fbReduceStatus & REDUCE_ITEM) == 0 && (pItem->fbModifier & RETURNS_ORIGINAL) == 0) {
+					PARATENDERKEYINFO TendKeyInfo = { 0 };
+
+					TendKeyInfo.uchMajorClass = CLASS_PARATENDERKEYINFO;
+					TendKeyInfo.uchAddress = pItem->uchMinorClass;
+					ParaRead(&TendKeyInfo);
+
+					if(TendKeyInfo.TenderKeyInfo.usTranCode == TENDERKEY_TRANCODE_PREAUTH && (TrnInformation.TranCurQual.fbNoPrint & CURQUAL_NO_EPT_LOGO_SIG) == 0 && (fsPrtPrintPort & PRT_RECEIPT)) {     /* thermal print */
+						PrtTHTipTotal(PMG_PRT_RECEIPT);   // print tip and total lines since this is a TENDERKEY_TRANCODE_PREAUTH
+					}
+				}
+			} else {
+				USHORT  usTextOut = 0;
+				for (USHORT i = 0; i < NUM_CPRSPCO; i++) {
+					TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
+
+					_tcsncpy(aszPrint, pItem->aszCPMsgText[i], 39);
+					usTextOut = (usTextOut || (pItem->aszCPMsgText[i][0] != 0));
+					if (_tcsstr (aszPrint, _T("STORED")) != 0 && (TrnInformation.TranCurQual.fsCurStatus & (CURQUAL_CUST_DUP | CURQUAL_MERCH_DUP)) != 0)
+						continue;
+					tcharTrimRight (aszPrint + 1);    // trim trailing spaces but if only spaces then keep the first one.
+					PrtTHCPRspMsgText(aszPrint);      /* for charge posting */
+				}
+				// If this tender is supposed to be printed with the Tip and Total lines because it is a Preauth then
+				// print the tip and total lines after the EPT response text
+				if ((pItem->fbReduceStatus & REDUCE_ITEM) == 0 && (pItem->fbModifier & RETURNS_ORIGINAL) == 0) {
+					PARATENDERKEYINFO TendKeyInfo = { 0 };
+
+					TendKeyInfo.uchMajorClass = CLASS_PARATENDERKEYINFO;
+					TendKeyInfo.uchAddress = pItem->uchMinorClass;
+					ParaRead(&TendKeyInfo);
+
+					if(TendKeyInfo.TenderKeyInfo.usTranCode == TENDERKEY_TRANCODE_PREAUTH && (TrnInformation.TranCurQual.fbNoPrint & CURQUAL_NO_EPT_LOGO_SIG) == 0 && (fsPrtPrintPort & PRT_RECEIPT)) {     /* thermal print */
+						PrtTHTipTotal(PMG_PRT_RECEIPT);   // print tip and total lines since this is a TENDERKEY_TRANCODE_PREAUTH
+					}
+				}
+				if (usTextOut && (TrnInformation.TranCurQual.fbNoPrint & CURQUAL_NO_EPT_LOGO_SIG) == 0 && (pItem->fbModifier & RETURNS_ORIGINAL) == 0) {
+					PrtSoftCHK(SOFTCHK_EPT1_ADR);
+				}
+			}
+		}
+	}
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtTender_EJ(ITEMTENDER   *pItem);      
+*
+*   Input  : ITEMTENDER       *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none 
+*            
+** Synopsis: This function prints tender operation (electric journal)
+*  Change Description: SR 131 cwunn 7/22/2003
+*		SR 131 requests that EPT and Charge Posting operations allow for
+*		masking of account numbers, depending on MDC settings.  In
+*		compliance with SR 131 and pending Visa and Mastecard merchant
+*		agreements, account numbers can be masked by configuring
+*		MDC Bit 377, CP & EPT Account Number Security Settings
+*		and MDC Bit 378, CP & EPT Account Number Masking Settings.
+*		Options include printing or not printing account # and date for
+*		EPT or CP operations, and masking or not masking account # for
+*		EPT or CP operations, when performed using certain tender keys.
+*		(EPT  can mask account #s on keys 2-6, CP can mask on keys 7-11).
+*		The number of digits masked in CP and EPT are indpendently configured.
+*===========================================================================
+*/
+static VOID PrtTender_EJ(ITEMTENDER  *pItem)
+{
+	PARAMDC TenderMDC = { 0 };  //Used to read Tender Key settings
+    USHORT  i;
+	USHORT	usMDCBase, usOffset;
+	UCHAR	localMDCBitA, localMDCMask;   	//used in reading MDC settings of Tender Keys
+	UCHAR   uchMinorClassTemp = pItem->uchMinorClass;
+
+    PrtEJOffTend(pItem->fbModifier);                  /* void line */
+	if (pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
+		PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);                     /* void line */
+	}
+
+    PrtEJCPRoomCharge(pItem->aszRoomNo, pItem->aszGuestID);         /* for charge posting */
+
+	if (pItem->uchMinorClass == CLASS_TEND_TIPS_RETURN) {
+		uchMinorClassTemp = ITEMTENDER_CHARGETIPS(pItem).uchMinorTenderClass;
+		if (uchMinorClassTemp < CLASS_TENDER1) uchMinorClassTemp = CLASS_TENDER1;
+    } else if (pItem->uchMinorClass == CLASS_TEND_FSCHANGE) {
+		uchMinorClassTemp = CLASS_TENDER2;    // transform CLASS_TEND_FSCHANGE and use that tender key's MDC settings
+	}
+
+	if (uchMinorClassTemp <= CLASS_TENDER11) {
+		usMDCBase = MDC_CPTEND1_ADR;
+		usOffset = CLASS_TENDER1;
+	} else if (uchMinorClassTemp <= CLASS_TENDER20) {
+		usMDCBase = MDC_CPTEND12_ADR;
+		usOffset = CLASS_TENDER12;
+	} else {
+		NHPOS_ASSERT_TEXT(0, "PrtTender_EJ(): Out of Range Tender.");
+		return;
+	}
+
+	TenderMDC.uchMajorClass = CLASS_PARAMDC;
+	TenderMDC.usAddress = usMDCBase + (uchMinorClassTemp - usOffset);
+	ParaRead(&TenderMDC);
+	localMDCBitA = (TenderMDC.usAddress % 2) ? ODD_MDC_BIT3 : EVEN_MDC_BIT3;
+	localMDCMask = (TenderMDC.usAddress % 2) ? MDC_ODD_MASK : MDC_EVEN_MASK;
+
+	//always print offline symbol
+	if ( pItem->fbModifier & OFFEPTTEND_MODIF){
+		PrtEJOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
+	}
+	else {
+		//SR 131 cwunn 7/15/2003 Add MDC check to determine if expiration date should be printed
+		//if tender status indicates EPT
+		if(MldCheckEPTAcctPrint(TenderMDC, localMDCBitA, localMDCMask, pItem->aszNumber)){
+			PrtEJOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
+			PrtEJNumber(pItem->aszNumber);
+		}
+	}
+
+    PrtEJFolioPost(pItem->aszFolioNumber, pItem->aszPostTransNo);   /* for charge posting */
+	
+	//SSTOLTZ
+	PrtEJAmtAndMnemonic(pItem);
+
+    if (pItem->lFoodStamp) {                            /* FS */
+        PrtEJZeroAmtMnem(TRN_FSCHNG_ADR, pItem->lFoodStamp);
+    }
+
+    if (pItem->lFSChange) {                             /* FS credit */
+        PrtEJZeroAmtMnem(TRN_FSCRD_ADR, pItem->lFSChange);
+    }
+
+    if (pItem->lGratuity) {                             /* charge tips associated with this tender */
+        PrtEJZeroAmtMnem((TRN_CHRGTIP_ADR | STD_FORMATMASK_INDENT_4), pItem->lGratuity);
+    }
+
+    PrtEJZeroAmtMnem(TRN_REGCHG_ADR, pItem->lChange);   /* change */
+
+	if ((pItem->fbModifier & RETURNS_ORIGINAL) == 0 && pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
+		// we only want to print the response text for Electronic Payment for a Return if this is the
+		// not the tender from the original.  If this was from the original transaction data then
+		// we will not print the response text.
+		if (pItem->uchPrintSelect != 0) {
+			TCHAR   *puchStart = pItem->aszCPMsgText[0];
+			for (i = 0; i < pItem->uchCPLineNo; i++) {
+				TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
+
+				_tcsncpy(aszPrint, puchStart + i * pItem->uchPrintSelect, pItem->uchPrintSelect);
+				PrtEJCPRspMsgText(aszPrint);                    /* Saratoga */
+			}
+
+		} else {
+			for (i = 0; i < NUM_CPRSPCO; i++) {
+				TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
+				_tcsncpy(aszPrint, pItem->aszCPMsgText[i], STD_CPRSPTEXT_LEN);
+				PrtEJCPRspMsgText (aszPrint);      /* for charge posting */
+			}
+		}
+	}
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtTender_SP(TRANINFORMATION *pTran, ITEMTENDER *pItem,
+*                               UCHAR uchType);      
+*
+*   Input  : TRANINFORMATION  *pTran,    -transaction information
+*            ITEMTENDER       *pItem     -Item Data address
+*            UCHAR            uchType    - 0: normal slip, 1: slip validation
+*   Output : none
+*   InOut  : none
+** Return  : none 
+*            
+** Synopsis: This function prints tender operation (slip)
+*  Change Description: SR 131 cwunn 7/22/2003
+*		SR 131 requests that EPT and Charge Posting operations allow for
+*		masking of account numbers, depending on MDC settings.  In
+*		compliance with SR 131 and pending Visa and Mastecard merchant
+*		agreements, account numbers can be masked by configuring
+*		MDC Bit 377, CP & EPT Account Number Security Settings
+*		and MDC Bit 378, CP & EPT Account Number Masking Settings.
+*		Options include printing or not printing account # and date for
+*		EPT or CP operations, and masking or not masking account # for
+*		EPT or CP operations, when performed using certain tender keys.
+*		(EPT  can mask account #s on keys 2-6, CP can mask on keys 7-11).
+*		The number of digits masked in CP and EPT are indpendently configured.
+*===========================================================================
+*/
+static VOID PrtTender_SP(CONST TRANINFORMATION *pTran, ITEMTENDER *pItem, UCHAR uchType) 
+{
+	PARAMDC TenderMDC = { 0 };  //Used to read Tender Key settings
+	TCHAR   aszSPPrintBuff[8 + NUM_CPRSPTEXT][PRT_SPCOLUMN + 1] = {0};
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+	USHORT	usMDCBase, usOffset;
+	UCHAR	localMDCBitA, localMDCMask;   	//used in reading MDC settings of Tender Keys
+	UCHAR   uchMinorClassTemp = pItem->uchMinorClass;
+
+	if (pItem->uchMinorClass == CLASS_TEND_TIPS_RETURN) {
+		uchMinorClassTemp = ITEMTENDER_CHARGETIPS(pItem).uchMinorTenderClass;
+		if (uchMinorClassTemp < CLASS_TENDER1) uchMinorClassTemp = CLASS_TENDER1;
+    } else if (pItem->uchMinorClass == CLASS_TEND_FSCHANGE) {
+		uchMinorClassTemp = CLASS_TENDER2;    // transform CLASS_TEND_FSCHANGE and use that tender key's MDC settings
+	}
+
+	if (uchMinorClassTemp <= CLASS_TENDER11) {
+		usMDCBase = MDC_CPTEND1_ADR;
+		usOffset = CLASS_TENDER1;
+	} else if (uchMinorClassTemp <= CLASS_TENDER20) {
+		usMDCBase = MDC_CPTEND12_ADR;
+		usOffset = CLASS_TENDER12;
+	} else {
+		NHPOS_ASSERT_TEXT(0, "PrtTender_EJ(): Out of Range Tender.");
+		return;
+	}
+
+    /* -- set off line tender -- */
+    usSlipLine += PrtSPCPOffTend(aszSPPrintBuff[0], pItem->fbModifier); 
+
+	TenderMDC.uchMajorClass = CLASS_PARAMDC;
+	TenderMDC.usAddress = usMDCBase + (uchMinorClassTemp - usOffset);
+	ParaRead(&TenderMDC);
+	localMDCBitA = (TenderMDC.usAddress % 2) ? ODD_MDC_BIT3 : EVEN_MDC_BIT3;
+	localMDCMask = (TenderMDC.usAddress % 2) ? MDC_ODD_MASK : MDC_EVEN_MASK;
+
+	//always print offline symbol
+	if ( pItem->fbModifier & OFFEPTTEND_MODIF){
+		usSlipLine += PrtSPOffline(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );     /* EPT offline & exp.date   */
+	}
+	else {
+		//SR 131 cwunn 7/15/2003 Add MDC check to determine if expiration date should be printed
+		//if tender status indicates EPT
+		if((TenderMDC.uchMDCData & localMDCMask) == localMDCBitA){
+			//then check if MDC indicates print expiration date on EPT Tender,
+			if(!CliParaMDCCheck(MDC_EPT_MASK1_ADR, ODD_MDC_BIT0)){
+				//then print the expiration date
+				usSlipLine += PrtSPOffline(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );  /* EPT offline & exp.date   */
+			}
+		}
+		else {	//if tender status indicates CP
+			if((TenderMDC.uchMDCData & localMDCMask) != localMDCBitA){ //only bit 3, ept is not CP
+				//then check if MDC indicates print expiration date on CP Tender
+				if(!CliParaMDCCheck(MDC_EPT_MASK1_ADR, ODD_MDC_BIT1)){
+					usSlipLine += PrtSPOffline(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );   /* EPT offline & exp.date   */
+				}
+			}
+			else { //tender status indicates non-EPT or CP tender, expiration date
+				usSlipLine += PrtSPOffline(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );    /* EPT offline & exp.date   */
+			}
+		}
+	}
+
+	//always print void lines
+	if (pItem->fbModifier & VOID_MODIFIER){
+		usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
+	}
+	else {
+		//SR 131 cwunn 7/15/2003 Add MDC check to determine if tender number data should be printed.
+		//if tender status indicates EPT
+		if(MldCheckEPTAcctPrint(TenderMDC, localMDCBitA, localMDCMask, pItem->aszNumber)){
+			usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
+		}
+	}
+
+    /* -- set room number and guest id -- */
+    if ((pItem->aszRoomNo[0] != '\0') && (pItem->aszGuestID[0] != '\0')) {
+        usSlipLine += PrtSPCPRoomCharge(aszSPPrintBuff[usSlipLine], pItem->aszRoomNo, pItem->aszGuestID);
+    }
+    /* -- set tender mnemonic and amount -- */
+    if (pItem->uchMinorClass !=  CLASS_TEND_FSCHANGE) { /* Saratoga */
+        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], RflChkTendAdr(pItem),  pItem->lTenderAmount);
+    }
+
+    if (pItem->lFoodStamp) {                            /* FS */
+        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_FSCHNG_ADR, pItem->lFoodStamp);
+    }
+
+    if (pItem->lFSChange) {                             /* FS credit */
+        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_FSCRD_ADR, pItem->lFSChange);
+    }
+
+    if (pItem->lGratuity) {                             /* FS credit */
+        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_CHRGTIP_ADR, pItem->lGratuity);
+    }
+
+    /* -- set change mnemonic and amount -- */
+    if (pItem->lChange) { 
+        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_REGCHG_ADR, pItem->lChange);
+    }
+
+	if ((TrnInformation.TranCurQual.fsCurStatus2 & PRT_GIFT_RECEIPT) == 0) {
+		if ((pItem->fbModifier & RETURNS_ORIGINAL) == 0 && pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
+			// we only want to print the response text for Electronic Payment for a Return if this is the
+			// not the tender from the original.  If this was from the original transaction data then
+			// we will not print the response text.
+			/* -- set response message text -- */
+			if (uchType == 0) {                                 /* E-067 corr. 4/25 */
+				if (pItem->uchPrintSelect != 0) {
+					for (USHORT i = 0; i < pItem->uchCPLineNo && usSlipLine < 46; i++) {
+						TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
+						_tcsncpy(aszPrint, &pItem->aszCPMsgText[0][0] + i * pItem->uchPrintSelect, pItem->uchPrintSelect);
+						usSlipLine += PrtSPCPRspMsgText(aszSPPrintBuff[usSlipLine], aszPrint);
+					}
+
+				} else {
+					for (USHORT i = 0; i < NUM_CPRSPCO && usSlipLine < 46; i++) {
+						usSlipLine += PrtSPCPRspMsgText(aszSPPrintBuff[usSlipLine], &pItem->aszCPMsgText[i][0]);
+					}
+				}
+			}
+		}
+	}
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (USHORT i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtTHCPRespText(ITEMPRNT *pItem);
+*
+*   Input  : ITEMPRINT  *pItem
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints EPT response message,         Saratoga
+*===========================================================================
+*/
+VOID    PrtTHCPRespTextGiftCard(CONST TRANINFORMATION* pTran, ITEMPRINT* pItem)
+{
+	// Since this deals with gift card functionality which is an In-scope application
+	// for electronic payment, we are making a modification to eliminate compiler warnings
+	// while leaving a note for the change and why.
+	// 
+	// Since we are using an Out-of-Scope electronic payment architecture in order to eliminate
+	// PCI security requirements and testing, this functionality is unused for now.
+	// 
+	// Using the following very large struct on the stack causes a compiler warning about the size.
+	// It also seems weird that none of the standard settings that would be used for an electronic
+	// payment tender are being used. Mostly I suspect this is because this is the purchase
+	// of a gift card rather than being a gift card used as a tender. So more than likely there
+	// should be a clone of the tender printing functions used that are modified for documenting
+	// a gift card purchase on the receipt rather than doing this hack.
+	// 
+	// One modification is to follow the procedure in function CheckGiftCardPrt() below and make a
+	// copy of the ItemTender data with the encrypted PAN and then decrypt that copy rather than
+	// doing a re-encryption of the PAN data.
+	//     Richard Chambers, Jul-26-2025
+	// TRANINFORMATION  pTranTmp = { 0 };
+
+	ITEMTENDER ItemTender = pTran->TranGCFQual.TrnGiftCard[0].ItemTender;
+
+	RflDecryptByteString((UCHAR*)&(ItemTender.aszNumber[0]), sizeof(ItemTender.aszNumber));
+
+	if (fsPrtPrintPort & PRT_SLIP) {              /* slip print           */
+		PrtTender_SP(pTran, &ItemTender, 0);              /* normal slip          */
+	}
+	if (fsPrtPrintPort & PRT_RECEIPT) {     /* thermal print */
+		PrtTender_TH(pTran, &ItemTender);
+	}
+	if (fsPrtPrintPort & PRT_JOURNAL) {     /* electric journal */
+		PrtTender_EJ(&ItemTender);
+	}
+
+	memset(&ItemTender, 0xcc, sizeof(ItemTender));    // overwrite PAN account data per PCI-DSS
+}
+
+/*
+*===========================================================================
+** Format  : VOID  CheckGiftCardPrint();
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTENDER       *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints Gift Card Info
+*===========================================================================
+*/
+VOID	CheckGiftCardPrt(CONST TRANINFORMATION* pTran, ITEMTENDER* pItem)
+{
+	if (pItem->lBalanceDue == 0L) {
+		TRANGCFQUAL* pWorkGCF = TrnGetGCFQualPtr();
+
+		if (pWorkGCF->TrnGiftCard[0].ItemTender.lTenderAmount != 0) {
+			// Since this deals with gift card functionality which is an In-scope application
+			// for electronic payment, we are making a modification to eliminate compiler warnings
+			// while leaving a note for the change and why.
+			// 
+			// Since we are using an Out-of-Scope electronic payment architecture in order to eliminate
+			// PCI security requirements and testing, this functionality is unused for now.
+			// 
+			// Using the following very large struct on the stack causes a compiler warning about the size.
+			// It also seems weird that none of the standard settings that would be used for an electronic
+			// payment tender are being used. Mostly I suspect this is because this is the purchase
+			// of a gift card rather than being a gift card used as a tender. So more than likely there
+			// should be a clone of the tender printing functions used that are modified for documenting
+			// a gift card purchase on the receipt rather than doing this hack.
+			//     Richard Chambers, Jul-26-2025
+			// TRANINFORMATION  TranInfo = { 0 };
+
+			for (USHORT index = 0; index < 10; index++) {
+				if (pWorkGCF->TrnGiftCard[index].GiftCard != 0) {
+					ITEMTENDER ItemTender = pWorkGCF->TrnGiftCard[index].ItemTender;
+					RflDecryptByteString((UCHAR*)&(ItemTender.aszNumber[0]), sizeof(ItemTender.aszNumber));
+
+					if (fsPrtPrintPort & PRT_SLIP) {              /* slip print           */
+						PrtTender_SP(pTran, pItem, 0);          /* normal slip          */
+					}
+					if (fsPrtPrintPort & PRT_RECEIPT) {     /* thermal print */
+						PrtTender_TH(pTran, &ItemTender);
+					}
+					if (fsPrtPrintPort & PRT_JOURNAL) {     /* electric journal */
+						PrtTender_EJ(&ItemTender);
+					}
+					/*				if(! CliParaMDCCheck(MDC_CPPARA2_ADR, EVEN_MDC_BIT0)){
+										memset(&pWorkGCF->TrnGiftCard[index].ItemTender,0,sizeof(ITEMTENDER));
+										memset(&ItemTender,0,sizeof(ITEMTENDER));
+									}
+					*/
+					memset(&ItemTender, 0xcc, sizeof(ItemTender));    // overwrite PAN account data per PCI-DSS
+				}
+			}
+		}
+	}
+}
+
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtTender(TRANINFORMATION *pTran, ITEMTENDER *pItem);      
@@ -110,10 +703,10 @@ extern VOID PrtSoftCHK(UCHAR uchMinorClass);
 *		The number of digits masked in CP and EPT are indpendently configured.
 *===========================================================================
 */
-VOID PrtTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
+VOID PrtTender(CONST TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
 {
 	//SR 131 cwunn 7/16/2003 Tender Digit Masking 
-	PARATENDERKEYINFO TendKeyInfo;
+	PARATENDERKEYINFO TendKeyInfo = { 0 };
 	USHORT	usMDCBase, usOffset;
 	UCHAR   uchMinorClassTemp = pItem->uchMinorClass;
 	
@@ -434,488 +1027,7 @@ VOID PrtTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
 	RflEncryptByteString ((UCHAR *)&(pItem->aszNumber[0]), sizeof(pItem->aszNumber));
 }
 
-/*
-*===========================================================================
-** Format  : VOID  PrtTender_TH(TRANINFORMATION *pTran, ITEMTENDER   *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTENDER       *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none 
-*            
-** Synopsis: This function prints tender operation (thermal)
-*  Change Description: SR 131 cwunn 7/22/2003
-*		SR 131 requests that EPT and Charge Posting operations allow for
-*		masking of account numbers, depending on MDC settings.  In
-*		compliance with SR 131 and pending Visa and Mastecard merchant
-*		agreements, account numbers can be masked by configuring
-*		MDC Bit 377, CP & EPT Account Number Security Settings
-*		and MDC Bit 378, CP & EPT Account Number Masking Settings.
-*		Options include printing or not printing account # and date for
-*		EPT or CP operations, and masking or not masking account # for
-*		EPT or CP operations, when performed using certain tender keys.
-*		(EPT  can mask account #s on keys 2-6, CP can mask on keys 7-11).
-*		The number of digits masked in CP and EPT are indpendently configured.
-*===========================================================================
-*/
-VOID PrtTender_TH(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
-{
-	PARAMDC TenderMDC;  //Used to read Tender Key settings
-    USHORT  i;
-	USHORT	usMDCBase, usOffset;
-	UCHAR	localMDCBitA, localMDCMask;   	//used in reading MDC settings of Tender Keys
-	UCHAR   uchMinorClassTemp = pItem->uchMinorClass;
-
-    PrtTHHead(pTran);                                   /* print header if necessary */
-
-    PrtTHOffTend(pItem->fbModifier);                    /* Cp off line */
-	if (pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
-		PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);                       /* void line */
-	}
-
-    PrtTHCPRoomCharge(pItem->aszRoomNo, pItem->aszGuestID);
-
-	if (pItem->uchMinorClass == CLASS_TEND_TIPS_RETURN) {
-		uchMinorClassTemp = ITEMTENDER_CHARGETIPS(pItem).uchMinorTenderClass;
-		if (uchMinorClassTemp < CLASS_TENDER1) uchMinorClassTemp = CLASS_TENDER1;
-    } else if (pItem->uchMinorClass == CLASS_TEND_FSCHANGE) {
-		uchMinorClassTemp = CLASS_TENDER2;    // transform CLASS_TEND_FSCHANGE and use that tender key's MDC settings
-	}
-
-	if (uchMinorClassTemp <= CLASS_TENDER11) {
-		usMDCBase = MDC_CPTEND1_ADR;
-		usOffset = CLASS_TENDER1;
-	} else if (uchMinorClassTemp <= CLASS_TENDER20) {
-		usMDCBase = MDC_CPTEND12_ADR;
-		usOffset = CLASS_TENDER12;
-	} else {
-		NHPOS_ASSERT_TEXT(0, "PrtTender_TH(): Out of Range Tender.");
-		return;
-	}
-
-	TenderMDC.uchMajorClass = CLASS_PARAMDC;
-	TenderMDC.usAddress = usMDCBase + (uchMinorClassTemp - usOffset);
-	ParaRead(&TenderMDC);
-	localMDCBitA = (TenderMDC.usAddress % 2) ? ODD_MDC_BIT3 : EVEN_MDC_BIT3;
-	localMDCMask = (TenderMDC.usAddress % 2) ? MDC_ODD_MASK : MDC_EVEN_MASK;
-
-	//always print offline symbol
-	if ( pItem->fbModifier & OFFEPTTEND_MODIF){
-		PrtTHOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
-	}
-	else 
-	{
-		if(MldCheckEPTAcctPrint(TenderMDC, localMDCBitA, localMDCMask, pItem->aszNumber)){
-			PrtTHOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
-			PrtTHNumber(pItem->aszNumber);
-		}
-	}
-	//SSTOLTZ
-//	if( _tcscmp(pItem->aszMnem, _T("\0")) == 0){
-	// change made for Amtrak receipts to show the TRANSACTION TYPE
-	if (pItem->uchMinorClass == CLASS_TEND_TIPS_RETURN) {
-		PrtTHAmtTwoMnem((RflChkTendAdr(pItem) | STD_FORMATMASK_NO_AMOUNT), 0, pItem->lTenderAmount, pItem->aszCPMsgText[NUM_CPRSPCO_CARDLABEL]);
-	} else if ((TrnInformation.TranCurQual.fsCurStatus & (CURQUAL_MERCH_DUP | CURQUAL_CUST_DUP)) != 0) {
-		if (pItem->uchMinorClass !=  CLASS_TEND_FSCHANGE) { /* Saratoga */
-			if ((pItem->fbModifier & RETURNS_ORIGINAL) != 0) {
-				PrtTHAmtTwoMnem(RflChkTendAdr(pItem), 0, pItem->lTenderAmount, pItem->aszCPMsgText[NUM_CPRSPCO_CARDLABEL]);
-			} else {
-				USHORT  usReturnType = TRN_DSI_TRANSSALE;
-				USHORT  usAdr1 = TRN_DSI_TRANSTYPE;
-				if (pTran->TranCurQual.fsCurStatus & (CURQUAL_PRETURN | CURQUAL_TRETURN)) {
-					// For an Amtrak return if the tender amount is positive, non-zero then use the
-					// SALE mnemonic and not the RETURN mnemonic.
-					if (pTran->TranModeQual.usReturnType & 0x0100) {    // check to see if RETURNS_MODIFIER_1 has been used in this transaction
-						usReturnType = TRN_TRETURN1_ADR;
-					} else if (pTran->TranModeQual.usReturnType & 0x0200) {   // check to see if RETURNS_MODIFIER_2 has been used in this transaction
-						if (pItem->lTenderAmount <= 0)
-							usReturnType = TRN_TRETURN2_ADR;
-					} else if (pTran->TranModeQual.usReturnType & 0x0400) {   // check to see if RETURNS_MODIFIER_3 has been used in this transaction
-						if (pItem->lTenderAmount <= 0)
-							usReturnType = TRN_TRETURN3_ADR;
-					}
-				}
-				if ((pTran->ulCustomerSettingsFlags & SYSCONFIG_CUSTOMER_ENABLE_AMTRAK) == 0) {
-					usAdr1 = RflChkTendAdr(pItem);
-					usReturnType = 0;
-				}
-				PrtTHAmtTwoMnem(usAdr1, usReturnType, pItem->lTenderAmount, 0);
-			}
-		}
-	} else {
-		PrtTHAmtTwoMnem(RflChkTendAdr(pItem), 0, pItem->lTenderAmount, pItem->aszCPMsgText[NUM_CPRSPCO_CARDLABEL]);
-	}
-
-    if (pItem->lFoodStamp) {                            /* FS */
-        PrtTHZeroAmtMnem(TRN_FSCHNG_ADR, pItem->lFoodStamp);
-    }
-
-    if (pItem->lFSChange) {                             /* FS credit */
-        PrtTHZeroAmtMnem(TRN_FSCRD_ADR, pItem->lFSChange);
-    }
-
-    if (pItem->lGratuity && (pTran->TranCurQual.fsCurStatus2 & PRT_PREAUTH_RECEIPT) == 0) {   /* charge tips associated with this tender */
-        PrtTHZeroAmtMnem((TRN_CHRGTIP_ADR | STD_FORMATMASK_INDENT_4), pItem->lGratuity);
-    }
-
-	PrtTHZeroAmtMnem(TRN_REGCHG_ADR, pItem->lChange);   /* change */
-
-	// if this is an Employee Payroll Deduction balance inquiry receipt or an EPT receipt then
-	// we need to print the response text. we also need to print a receipt if this is an
-	// electronic payment tender which was Declined (ITM_REJECT_DECLINED).
-	if ((TrnInformation.TranCurQual.flPrintStatus & CURQUAL_EPAY_BALANCE) ||
-		((TrnInformation.TranCurQual.fsCurStatus2 & PRT_GIFT_RECEIPT) == 0 &&
-		(TrnInformation.TranCurQual.fsCurStatus & (CURQUAL_MERCH_DUP | CURQUAL_CUST_DUP)) != 0) ||
-		(pItem->fbModifier & DECLINED_EPT_MODIF) != 0) {
-
-		if ((pItem->fbModifier & RETURNS_ORIGINAL) == 0 && pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
-			// we only want to print the response text for Electronic Payment for a Return if this is the
-			// not the tender from the original.  If this was from the original transaction data then
-			// we will not print the response text.
-
-			if (pItem->uchPrintSelect != 0) {
-				TCHAR   *puchStart = (TCHAR *)pItem->aszCPMsgText;
-				for (i = 0; i < pItem->uchCPLineNo; i++) {
-					TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
-
-					_tcsncpy(aszPrint, puchStart + i * pItem->uchPrintSelect, pItem->uchPrintSelect);
-					if (_tcsstr (aszPrint, _T("STORED")) != 0 && (TrnInformation.TranCurQual.fsCurStatus & (CURQUAL_CUST_DUP | CURQUAL_MERCH_DUP)) != 0)
-						continue;
-					tcharTrimRight (aszPrint + 1);    // trim trailing spaces but if only spaces then keep the first one.
-					PrtTHCPRspMsgText(aszPrint);
-				}
-				// If this tender is supposed to be printed with the Tip and Total lines because it is a Preauth then
-				// print the tip and total lines after the EPT response text
-				if ((pItem->fbReduceStatus & REDUCE_ITEM) == 0 && (pItem->fbModifier & RETURNS_ORIGINAL) == 0) {
-					PARATENDERKEYINFO TendKeyInfo;
-
-					TendKeyInfo.uchMajorClass = CLASS_PARATENDERKEYINFO;
-					TendKeyInfo.uchAddress = pItem->uchMinorClass;
-					ParaRead(&TendKeyInfo);
-
-					if(TendKeyInfo.TenderKeyInfo.usTranCode == TENDERKEY_TRANCODE_PREAUTH && (TrnInformation.TranCurQual.fbNoPrint & CURQUAL_NO_EPT_LOGO_SIG) == 0 && (fsPrtPrintPort & PRT_RECEIPT)) {     /* thermal print */
-						PrtTHTipTotal(PMG_PRT_RECEIPT);   // print tip and total lines since this is a TENDERKEY_TRANCODE_PREAUTH
-					}
-				}
-			} else {
-				USHORT  usTextOut = 0;
-				for (i = 0; i < NUM_CPRSPCO; i++) {
-					TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
-
-					_tcsncpy(aszPrint, pItem->aszCPMsgText[i], 39);
-					usTextOut = (usTextOut || (pItem->aszCPMsgText[i][0] != 0));
-					if (_tcsstr (aszPrint, _T("STORED")) != 0 && (TrnInformation.TranCurQual.fsCurStatus & (CURQUAL_CUST_DUP | CURQUAL_MERCH_DUP)) != 0)
-						continue;
-					tcharTrimRight (aszPrint + 1);    // trim trailing spaces but if only spaces then keep the first one.
-					PrtTHCPRspMsgText(aszPrint);      /* for charge posting */
-				}
-				// If this tender is supposed to be printed with the Tip and Total lines because it is a Preauth then
-				// print the tip and total lines after the EPT response text
-				if ((pItem->fbReduceStatus & REDUCE_ITEM) == 0 && (pItem->fbModifier & RETURNS_ORIGINAL) == 0) {
-					PARATENDERKEYINFO TendKeyInfo;
-
-					TendKeyInfo.uchMajorClass = CLASS_PARATENDERKEYINFO;
-					TendKeyInfo.uchAddress = pItem->uchMinorClass;
-					ParaRead(&TendKeyInfo);
-
-					if(TendKeyInfo.TenderKeyInfo.usTranCode == TENDERKEY_TRANCODE_PREAUTH && (TrnInformation.TranCurQual.fbNoPrint & CURQUAL_NO_EPT_LOGO_SIG) == 0 && (fsPrtPrintPort & PRT_RECEIPT)) {     /* thermal print */
-						PrtTHTipTotal(PMG_PRT_RECEIPT);   // print tip and total lines since this is a TENDERKEY_TRANCODE_PREAUTH
-					}
-				}
-				if (usTextOut && (TrnInformation.TranCurQual.fbNoPrint & CURQUAL_NO_EPT_LOGO_SIG) == 0 && (pItem->fbModifier & RETURNS_ORIGINAL) == 0) {
-					PrtSoftCHK(SOFTCHK_EPT1_ADR);
-				}
-			}
-		}
-	}
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtTender_EJ(ITEMTENDER   *pItem);      
-*
-*   Input  : ITEMTENDER       *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none 
-*            
-** Synopsis: This function prints tender operation (electric journal)
-*  Change Description: SR 131 cwunn 7/22/2003
-*		SR 131 requests that EPT and Charge Posting operations allow for
-*		masking of account numbers, depending on MDC settings.  In
-*		compliance with SR 131 and pending Visa and Mastecard merchant
-*		agreements, account numbers can be masked by configuring
-*		MDC Bit 377, CP & EPT Account Number Security Settings
-*		and MDC Bit 378, CP & EPT Account Number Masking Settings.
-*		Options include printing or not printing account # and date for
-*		EPT or CP operations, and masking or not masking account # for
-*		EPT or CP operations, when performed using certain tender keys.
-*		(EPT  can mask account #s on keys 2-6, CP can mask on keys 7-11).
-*		The number of digits masked in CP and EPT are indpendently configured.
-*===========================================================================
-*/
-VOID PrtTender_EJ(ITEMTENDER  *pItem)
-{
-	PARAMDC TenderMDC;  //Used to read Tender Key settings
-    USHORT  i;
-	USHORT	usMDCBase, usOffset;
-	UCHAR	localMDCBitA, localMDCMask;   	//used in reading MDC settings of Tender Keys
-	UCHAR   uchMinorClassTemp = pItem->uchMinorClass;
-
-    PrtEJOffTend(pItem->fbModifier);                  /* void line */
-	if (pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
-		PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);                     /* void line */
-	}
-
-    PrtEJCPRoomCharge(pItem->aszRoomNo, pItem->aszGuestID);         /* for charge posting */
-
-	if (pItem->uchMinorClass == CLASS_TEND_TIPS_RETURN) {
-		uchMinorClassTemp = ITEMTENDER_CHARGETIPS(pItem).uchMinorTenderClass;
-		if (uchMinorClassTemp < CLASS_TENDER1) uchMinorClassTemp = CLASS_TENDER1;
-    } else if (pItem->uchMinorClass == CLASS_TEND_FSCHANGE) {
-		uchMinorClassTemp = CLASS_TENDER2;    // transform CLASS_TEND_FSCHANGE and use that tender key's MDC settings
-	}
-
-	if (uchMinorClassTemp <= CLASS_TENDER11) {
-		usMDCBase = MDC_CPTEND1_ADR;
-		usOffset = CLASS_TENDER1;
-	} else if (uchMinorClassTemp <= CLASS_TENDER20) {
-		usMDCBase = MDC_CPTEND12_ADR;
-		usOffset = CLASS_TENDER12;
-	} else {
-		NHPOS_ASSERT_TEXT(0, "PrtTender_EJ(): Out of Range Tender.");
-		return;
-	}
-
-	TenderMDC.uchMajorClass = CLASS_PARAMDC;
-	TenderMDC.usAddress = usMDCBase + (uchMinorClassTemp - usOffset);
-	ParaRead(&TenderMDC);
-	localMDCBitA = (TenderMDC.usAddress % 2) ? ODD_MDC_BIT3 : EVEN_MDC_BIT3;
-	localMDCMask = (TenderMDC.usAddress % 2) ? MDC_ODD_MASK : MDC_EVEN_MASK;
-
-	//always print offline symbol
-	if ( pItem->fbModifier & OFFEPTTEND_MODIF){
-		PrtEJOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
-	}
-	else {
-		//SR 131 cwunn 7/15/2003 Add MDC check to determine if expiration date should be printed
-		//if tender status indicates EPT
-		if(MldCheckEPTAcctPrint(TenderMDC, localMDCBitA, localMDCMask, pItem->aszNumber)){
-			PrtEJOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
-			PrtEJNumber(pItem->aszNumber);
-		}
-	}
-
-    PrtEJFolioPost(pItem->aszFolioNumber, pItem->aszPostTransNo);   /* for charge posting */
-	
-	//SSTOLTZ
-	PrtEJAmtAndMnemonic(pItem);
-
-    if (pItem->lFoodStamp) {                            /* FS */
-        PrtEJZeroAmtMnem(TRN_FSCHNG_ADR, pItem->lFoodStamp);
-    }
-
-    if (pItem->lFSChange) {                             /* FS credit */
-        PrtEJZeroAmtMnem(TRN_FSCRD_ADR, pItem->lFSChange);
-    }
-
-    if (pItem->lGratuity) {                             /* charge tips associated with this tender */
-        PrtEJZeroAmtMnem((TRN_CHRGTIP_ADR | STD_FORMATMASK_INDENT_4), pItem->lGratuity);
-    }
-
-    PrtEJZeroAmtMnem(TRN_REGCHG_ADR, pItem->lChange);   /* change */
-
-	if ((pItem->fbModifier & RETURNS_ORIGINAL) == 0 && pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
-		// we only want to print the response text for Electronic Payment for a Return if this is the
-		// not the tender from the original.  If this was from the original transaction data then
-		// we will not print the response text.
-		if (pItem->uchPrintSelect != 0) {
-			TCHAR   *puchStart = pItem->aszCPMsgText[0];
-			for (i = 0; i < pItem->uchCPLineNo; i++) {
-				TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
-
-				_tcsncpy(aszPrint, puchStart + i * pItem->uchPrintSelect, pItem->uchPrintSelect);
-				PrtEJCPRspMsgText(aszPrint);                    /* Saratoga */
-			}
-
-		} else {
-			for (i = 0; i < NUM_CPRSPCO; i++) {
-				TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
-				_tcsncpy(aszPrint, pItem->aszCPMsgText[i], STD_CPRSPTEXT_LEN);
-				PrtEJCPRspMsgText (aszPrint);      /* for charge posting */
-			}
-		}
-	}
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtTender_SP(TRANINFORMATION *pTran, ITEMTENDER *pItem,
-*                               UCHAR uchType);      
-*
-*   Input  : TRANINFORMATION  *pTran,    -transaction information
-*            ITEMTENDER       *pItem     -Item Data address
-*            UCHAR            uchType    - 0: normal slip, 1: slip validation
-*   Output : none
-*   InOut  : none
-** Return  : none 
-*            
-** Synopsis: This function prints tender operation (slip)
-*  Change Description: SR 131 cwunn 7/22/2003
-*		SR 131 requests that EPT and Charge Posting operations allow for
-*		masking of account numbers, depending on MDC settings.  In
-*		compliance with SR 131 and pending Visa and Mastecard merchant
-*		agreements, account numbers can be masked by configuring
-*		MDC Bit 377, CP & EPT Account Number Security Settings
-*		and MDC Bit 378, CP & EPT Account Number Masking Settings.
-*		Options include printing or not printing account # and date for
-*		EPT or CP operations, and masking or not masking account # for
-*		EPT or CP operations, when performed using certain tender keys.
-*		(EPT  can mask account #s on keys 2-6, CP can mask on keys 7-11).
-*		The number of digits masked in CP and EPT are indpendently configured.
-*===========================================================================
-*/
-VOID PrtTender_SP(TRANINFORMATION *pTran, ITEMTENDER *pItem, UCHAR uchType) 
-{
-	PARAMDC TenderMDC;  //Used to read Tender Key settings
-	TCHAR   aszSPPrintBuff[8 + NUM_CPRSPTEXT][PRT_SPCOLUMN + 1] = {0};
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
-	USHORT	usMDCBase, usOffset;
-	UCHAR	localMDCBitA, localMDCMask;   	//used in reading MDC settings of Tender Keys
-	UCHAR   uchMinorClassTemp = pItem->uchMinorClass;
-
-	if (pItem->uchMinorClass == CLASS_TEND_TIPS_RETURN) {
-		uchMinorClassTemp = ITEMTENDER_CHARGETIPS(pItem).uchMinorTenderClass;
-		if (uchMinorClassTemp < CLASS_TENDER1) uchMinorClassTemp = CLASS_TENDER1;
-    } else if (pItem->uchMinorClass == CLASS_TEND_FSCHANGE) {
-		uchMinorClassTemp = CLASS_TENDER2;    // transform CLASS_TEND_FSCHANGE and use that tender key's MDC settings
-	}
-
-	if (uchMinorClassTemp <= CLASS_TENDER11) {
-		usMDCBase = MDC_CPTEND1_ADR;
-		usOffset = CLASS_TENDER1;
-	} else if (uchMinorClassTemp <= CLASS_TENDER20) {
-		usMDCBase = MDC_CPTEND12_ADR;
-		usOffset = CLASS_TENDER12;
-	} else {
-		NHPOS_ASSERT_TEXT(0, "PrtTender_EJ(): Out of Range Tender.");
-		return;
-	}
-
-    /* -- set off line tender -- */
-    usSlipLine += PrtSPCPOffTend(aszSPPrintBuff[0], pItem->fbModifier); 
-
-	TenderMDC.uchMajorClass = CLASS_PARAMDC;
-	TenderMDC.usAddress = usMDCBase + (uchMinorClassTemp - usOffset);
-	ParaRead(&TenderMDC);
-	localMDCBitA = (TenderMDC.usAddress % 2) ? ODD_MDC_BIT3 : EVEN_MDC_BIT3;
-	localMDCMask = (TenderMDC.usAddress % 2) ? MDC_ODD_MASK : MDC_EVEN_MASK;
-
-	//always print offline symbol
-	if ( pItem->fbModifier & OFFEPTTEND_MODIF){
-		usSlipLine += PrtSPOffline(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );     /* EPT offline & exp.date   */
-	}
-	else {
-		//SR 131 cwunn 7/15/2003 Add MDC check to determine if expiration date should be printed
-		//if tender status indicates EPT
-		if((TenderMDC.uchMDCData & localMDCMask) == localMDCBitA){
-			//then check if MDC indicates print expiration date on EPT Tender,
-			if(!CliParaMDCCheck(MDC_EPT_MASK1_ADR, ODD_MDC_BIT0)){
-				//then print the expiration date
-				usSlipLine += PrtSPOffline(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );  /* EPT offline & exp.date   */
-			}
-		}
-		else {	//if tender status indicates CP
-			if((TenderMDC.uchMDCData & localMDCMask) != localMDCBitA){ //only bit 3, ept is not CP
-				//then check if MDC indicates print expiration date on CP Tender
-				if(!CliParaMDCCheck(MDC_EPT_MASK1_ADR, ODD_MDC_BIT1)){
-					usSlipLine += PrtSPOffline(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );   /* EPT offline & exp.date   */
-				}
-			}
-			else { //tender status indicates non-EPT or CP tender, expiration date
-				usSlipLine += PrtSPOffline(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );    /* EPT offline & exp.date   */
-			}
-		}
-	}
-
-	//always print void lines
-	if (pItem->fbModifier & VOID_MODIFIER){
-		usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
-	}
-	else {
-		//SR 131 cwunn 7/15/2003 Add MDC check to determine if tender number data should be printed.
-		//if tender status indicates EPT
-		if(MldCheckEPTAcctPrint(TenderMDC, localMDCBitA, localMDCMask, pItem->aszNumber)){
-			usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[usSlipLine], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
-		}
-	}
-
-    /* -- set room number and guest id -- */
-    if ((pItem->aszRoomNo[0] != '\0') && (pItem->aszGuestID[0] != '\0')) {
-        usSlipLine += PrtSPCPRoomCharge(aszSPPrintBuff[usSlipLine], pItem->aszRoomNo, pItem->aszGuestID);
-    }
-    /* -- set tender mnemonic and amount -- */
-    if (pItem->uchMinorClass !=  CLASS_TEND_FSCHANGE) { /* Saratoga */
-        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], RflChkTendAdr(pItem),  pItem->lTenderAmount);
-    }
-
-    if (pItem->lFoodStamp) {                            /* FS */
-        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_FSCHNG_ADR, pItem->lFoodStamp);
-    }
-
-    if (pItem->lFSChange) {                             /* FS credit */
-        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_FSCRD_ADR, pItem->lFSChange);
-    }
-
-    if (pItem->lGratuity) {                             /* FS credit */
-        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_CHRGTIP_ADR, pItem->lGratuity);
-    }
-
-    /* -- set change mnemonic and amount -- */
-    if (pItem->lChange) { 
-        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_REGCHG_ADR, pItem->lChange);
-    }
-
-	if ((TrnInformation.TranCurQual.fsCurStatus2 & PRT_GIFT_RECEIPT) == 0) {
-		if ((pItem->fbModifier & RETURNS_ORIGINAL) == 0 && pItem->uchMinorClass != CLASS_TEND_TIPS_RETURN) {
-			// we only want to print the response text for Electronic Payment for a Return if this is the
-			// not the tender from the original.  If this was from the original transaction data then
-			// we will not print the response text.
-			/* -- set response message text -- */
-			if (uchType == 0) {                                 /* E-067 corr. 4/25 */
-				if (pItem->uchPrintSelect != 0) {
-					for (i = 0; i < pItem->uchCPLineNo && usSlipLine < 46; i++) {
-						TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = {0};
-						_tcsncpy(aszPrint, &pItem->aszCPMsgText[0][0] + i * pItem->uchPrintSelect, pItem->uchPrintSelect);
-						usSlipLine += PrtSPCPRspMsgText(aszSPPrintBuff[usSlipLine], aszPrint);
-					}
-
-				} else {
-					for (i = 0; i < NUM_CPRSPCO && usSlipLine < 46; i++) {
-						usSlipLine += PrtSPCPRspMsgText(aszSPPrintBuff[usSlipLine], &pItem->aszCPMsgText[i][0]);
-					}
-				}
-			}
-		}
-	}
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
-}
-
+//        ------------
 
 /*
 *===========================================================================
@@ -930,12 +1042,11 @@ VOID PrtTender_SP(TRANINFORMATION *pTran, ITEMTENDER *pItem, UCHAR uchType)
 ** Synopsis: This function displays tender operation
 *===========================================================================
 */
-VOID PrtDflTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
+VOID PrtDflTender(CONST TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
 {
 	TCHAR  aszDflBuff[PRT_DFL_LINE_MAX + 5][PRT_DFL_LINE + 1] = { 0 };   /* display data save area, must be no larger than KDS_LINE_DATA_LEN TCHARs */
 	USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
@@ -981,22 +1092,23 @@ VOID PrtDflTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
 		if (pItem->uchPrintSelect != 0) {
 			TCHAR   *puchStart = pItem->aszCPMsgText[0];
 
-			for (i = 0; i < pItem->uchCPLineNo && usLineNo < PRT_DFL_LINE_MAX; i++) {
+			for (USHORT i = 0; i < pItem->uchCPLineNo && usLineNo < PRT_DFL_LINE_MAX; i++) {
 				TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = { 0 };
 
 				_tcsncpy(aszPrint, puchStart + i * pItem->uchPrintSelect, pItem->uchPrintSelect);
 				usLineNo += PrtDflCPRspMsgText(aszDflBuff[usLineNo], aszPrint);         /* for charge posting */
 			}
 		} else {
-			for (i = 0; i < NUM_CPRSPCO && usLineNo < PRT_DFL_LINE_MAX; i++) {
+			for (USHORT i = 0; i < NUM_CPRSPCO && usLineNo < PRT_DFL_LINE_MAX; i++) {
 				usLineNo += PrtDflCPRspMsgText(aszDflBuff[usLineNo], pItem->aszCPMsgText[i]);         /* for charge posting */
 			}
 		}
 	}
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+	PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- check void status -- */
     PrtDflCheckVoid(pItem->fbModifier);
@@ -1004,7 +1116,7 @@ VOID PrtDflTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TENDER); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -1029,7 +1141,7 @@ VOID PrtDflTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
 ** Synopsis: This function displays tender operation
 *===========================================================================
 */
-USHORT PrtDflTenderForm(TRANINFORMATION  *pTran, ITEMTENDER  *pItem, TCHAR *puchBuffer)
+USHORT PrtDflTenderForm(CONST TRANINFORMATION  *pTran, ITEMTENDER  *pItem, TCHAR *puchBuffer)
 {
 	TCHAR  aszDflBuff[PRT_DFL_LINE_MAX + 5][PRT_DFL_LINE + 1] = { 0 };   /* display data save area, must be no larger than KDS_LINE_DATA_LEN TCHARs */
     USHORT  usLineNo = 0;                       /* number of lines to be displayed */

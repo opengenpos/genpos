@@ -74,6 +74,91 @@
 ;+        P R O G R A M    D E C L A R A T I O N s                      +
 ;========================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID  PrtTipsDecld_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints declared tips. (thermal)
+*===========================================================================
+*/
+static VOID  PrtTipsDecld_TH(CONST TRANINFORMATION *pTran, CONST ITEMMISC *pItem)
+{                                           
+    PrtTHHead(pTran->TranCurQual.usConsNo);        /* print header if necessary */
+                                                
+    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);                 /* void line */
+                                                
+    PrtTHNumber(pItem->aszNumber);                /* number line */
+
+    PrtTHAmtMnem(TRN_DECTIP_ADR, pItem->lAmount); /* tips declared line */
+
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtTipsDecld_EJ(ITEMMISC *pItem);      
+*
+*   Input  : ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints declared tips. (electric journal)
+*===========================================================================
+*/
+static VOID  PrtTipsDecld_EJ(CONST ITEMMISC *pItem)
+{                                           
+    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);                 /* void line */
+                                                
+    PrtEJNumber(pItem->aszNumber);                /* number line */
+
+    PrtEJAmtMnem(TRN_DECTIP_ADR, pItem->lAmount); /* tips declared line */
+
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTipsDecld_SP(TRANINFORMATION *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints declared tips.
+*===========================================================================
+*/
+static VOID PrtTipsDecld_SP(CONST TRANINFORMATION *pTran, CONST ITEMMISC *pItem)
+{
+    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    /* -- set void mnemonic and number -- */
+    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
+    /* -- set tips declared mnemonic -- */
+    usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_DECTIP_ADR, pItem->lAmount);
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (USHORT i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtTipsDecld(TRANINFORMATION  *pTran, ITEMMISC *pItem);      
@@ -87,10 +172,8 @@
 ** Synopsis: This function prints declared tips.
 *===========================================================================
 */
-VOID PrtTipsDecld(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
+VOID PrtTipsDecld(CONST TRANINFORMATION  *pTran, CONST ITEMMISC  *pItem)
 {
-
-
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(pItem->fsPrintStatus);
 
@@ -121,95 +204,6 @@ VOID PrtTipsDecld(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
 
 }
 
-/*
-*===========================================================================
-** Format  : VOID  PrtTipsDecld_TH(TRANINFORMATION *pTran, ITEMMISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints declared tips. (thermal)
-*===========================================================================
-*/
-VOID  PrtTipsDecld_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
-{                                           
-    PrtTHHead(pTran);                             /* print header if necessary */                                                
-                                                
-    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);                 /* void line */
-                                                
-    PrtTHNumber(pItem->aszNumber);                /* number line */
-
-    PrtTHAmtMnem(TRN_DECTIP_ADR, pItem->lAmount); /* tips declared line */
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtTipsDecld_EJ(ITEMMISC *pItem);      
-*
-*   Input  : ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints declared tips. (electric journal)
-*===========================================================================
-*/
-VOID  PrtTipsDecld_EJ(ITEMMISC *pItem)
-{                                           
-    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);                 /* void line */
-                                                
-    PrtEJNumber(pItem->aszNumber);                /* number line */
-
-    PrtEJAmtMnem(TRN_DECTIP_ADR, pItem->lAmount); /* tips declared line */
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtTipsDecld_SP(TRANINFORMATION *pTran, ITEMMISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints declared tips.
-*===========================================================================
-*/
-VOID PrtTipsDecld_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
-{
-    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
-                                                /* initialize the area */
-    /* -- set void mnemonic and number -- */
-    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
-    /* -- set tips declared mnemonic -- */
-    usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_DECTIP_ADR, pItem->lAmount);
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
-}
-
-
 
 /*
 *===========================================================================
@@ -224,19 +218,14 @@ VOID PrtTipsDecld_SP(TRANINFORMATION *pTran, ITEMMISC *pItem)
 ** Synopsis: This function prints declared tips.
 *===========================================================================
 */
-VOID PrtDflTipsDecld(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
+VOID PrtDflTipsDecld(CONST TRANINFORMATION  *pTran, CONST ITEMMISC  *pItem)
 {
-
-    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1]; /* display data save area */
+    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
 
     /* --- if this frame is 1st frame, display customer name --- */
-
     PrtDflCustHeader( pTran );
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -252,8 +241,9 @@ VOID PrtDflTipsDecld(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
     usLineNo += PrtDflAmtMnem(aszDflBuff[usLineNo], TRN_DECTIP_ADR, pItem->lAmount); 
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- check void status -- */
     PrtDflCheckVoid(pItem->fbModifier);
@@ -261,7 +251,7 @@ VOID PrtDflTipsDecld(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_SINGLE); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -286,17 +276,14 @@ VOID PrtDflTipsDecld(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
 ** Synopsis: This function prints declared tips.
 *===========================================================================
 */
-USHORT PrtDflTipsDecldForm(TRANINFORMATION  *pTran, ITEMMISC  *pItem, TCHAR *puchBuffer)
+USHORT PrtDflTipsDecldForm(CONST TRANINFORMATION  *pTran, CONST ITEMMISC  *pItem, TCHAR *puchBuffer)
 {
-
-    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1]; /* display data save area */
-    USHORT  usLineNo=0, i;                       /* number of lines to be displayed */
+    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
+    USHORT  usLineNo=0;                       /* number of lines to be displayed */
 
     /* --- if this frame is 1st frame, display customer name --- */
-
     PrtDflCustHeader( pTran );
 
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -311,7 +298,7 @@ USHORT PrtDflTipsDecldForm(TRANINFORMATION  *pTran, ITEMMISC  *pItem, TCHAR *puc
 
     usLineNo += PrtDflAmtMnem(aszDflBuff[usLineNo], TRN_DECTIP_ADR, pItem->lAmount); 
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i = 0; i < usLineNo; i++) {
 
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }

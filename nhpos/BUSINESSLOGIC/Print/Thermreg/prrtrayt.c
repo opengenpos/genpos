@@ -88,54 +88,6 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;============================================================================
 **/
-/*
-*===========================================================================
-** Format  : VOID   PrtTrayTotal(TRANINFORMATION  *pTran, ITEMTOTAL *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints tray total key 
-*===========================================================================
-*/
-VOID  PrtTrayTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem)
-{
-
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-
-    if ( pItem->fsPrintStatus & PRT_VALIDATION ) { /* validation print */
-        if ( CliParaMDCCheck(MDC_VALIDATION_ADR, EVEN_MDC_BIT2) ) {
-            if(PRT_SUCCESS != PrtSPVLInit())
-			{
-				return;
-			}
-			PmgBeginSmallValidation( PMG_PRT_SLIP );//change to allow Small Slips
-            PrtSPVLHead(pTran);    
-            PrtTrayTotal_SP(pTran, pItem);
-            PrtSPVLTrail(pTran);
-			PmgEndSmallValidation( PMG_PRT_SLIP );//change to allow Small Slips
-            return;
-        }
-    }
-
-    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
-        PrtTrayTotal_SP(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
-        if ( ! (fsPrtStatus & PRT_TAKETOKIT)) {
-            PrtTrayTotal_TH(pTran, pItem);
-        }
-    }
-
-    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric print */
-        PrtTrayTotal_EJ(pItem);
-    }
-}
 
 /*
 *===========================================================================
@@ -150,7 +102,7 @@ VOID  PrtTrayTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem)
 ** Synopsis: This function prints tray total key  (thermal)
 *===========================================================================
 */
-VOID  PrtTrayTotal_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
+static VOID  PrtTrayTotal_TH(CONST TRANINFORMATION *pTran, CONST ITEMTOTAL *pItem)
 {
     SHORT sType;
 
@@ -161,7 +113,7 @@ VOID  PrtTrayTotal_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
         sType = PRT_SINGLE;
     }
 
-    PrtTHHead(pTran);                           /* print header if necessary */    
+    PrtTHHead(pTran->TranCurQual.usConsNo);     /* print header if necessary */
 
     PrtFeed(PMG_PRT_RECEIPT, 1);                /* 1 line feed(Receipt) */
 
@@ -186,7 +138,7 @@ VOID  PrtTrayTotal_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
 ** Synopsis: This function prints tray total key  (electric journal)
 *===========================================================================
 */
-VOID  PrtTrayTotal_EJ(ITEMTOTAL *pItem)
+static VOID  PrtTrayTotal_EJ(CONST ITEMTOTAL *pItem)
 {
     SHORT sType;
 
@@ -218,16 +170,13 @@ VOID  PrtTrayTotal_EJ(ITEMTOTAL *pItem)
 ** Synopsis: This function prints Tray total  (slip)
 *===========================================================================
 */
-VOID PrtTrayTotal_SP(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
+static VOID PrtTrayTotal_SP(CONST TRANINFORMATION *pTran, CONST ITEMTOTAL *pItem)
 {
-    TCHAR   aszSPPrintBuff[3][PRT_SPCOLUMN + 1]; /* print data save area */
+    TCHAR   aszSPPrintBuff[3][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
     USHORT  usSlipLine = 0;             /* number of lines to be printed */
     USHORT  usSaveLine;                 /* save slip lines to be added */
     USHORT  i;
     SHORT   sType;                      /* set double wide or single */
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
 
     /* -- total amount printed double wide? -- */
     if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
@@ -263,6 +212,54 @@ VOID PrtTrayTotal_SP(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
 
 }
 
+/*
+*===========================================================================
+** Format  : VOID   PrtTrayTotal(TRANINFORMATION  *pTran, ITEMTOTAL *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints tray total key 
+*===========================================================================
+*/
+VOID  PrtTrayTotal(CONST TRANINFORMATION  *pTran, CONST ITEMTOTAL  *pItem)
+{
+
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+
+    if ( pItem->fsPrintStatus & PRT_VALIDATION ) { /* validation print */
+        if ( CliParaMDCCheck(MDC_VALIDATION_ADR, EVEN_MDC_BIT2) ) {
+            if(PRT_SUCCESS != PrtSPVLInit())
+			{
+				return;
+			}
+			PmgBeginSmallValidation( PMG_PRT_SLIP );//change to allow Small Slips
+            PrtSPVLHead(pTran);    
+            PrtTrayTotal_SP(pTran, pItem);
+            PrtSPVLTrail(pTran);
+			PmgEndSmallValidation( PMG_PRT_SLIP );//change to allow Small Slips
+            return;
+        }
+    }
+
+    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
+        PrtTrayTotal_SP(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
+        if ( ! (fsPrtStatus & PRT_TAKETOKIT)) {
+            PrtTrayTotal_TH(pTran, pItem);
+        }
+    }
+
+    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric print */
+        PrtTrayTotal_EJ(pItem);
+    }
+}
 
 
 /*
@@ -278,16 +275,14 @@ VOID PrtTrayTotal_SP(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
 ** Synopsis: This function displays total key (Total)
 *===========================================================================
 */
-VOID  PrtDflTrayTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem)
+VOID  PrtDflTrayTotal(CONST TRANINFORMATION  *pTran, CONST ITEMTOTAL  *pItem)
 {
-    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1]; /* display data save area */
+    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
     SHORT sType;
 
     /* --- if this frame is 1st frame, display customer name --- */
-
     PrtDflCustHeader( pTran );
 
     /* -- total amount printed double wide? -- */
@@ -296,8 +291,6 @@ VOID  PrtDflTrayTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem)
     } else {
         sType = PRT_SINGLE;
     }
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -317,7 +310,7 @@ VOID  PrtDflTrayTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem)
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TOTAL); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -342,9 +335,9 @@ VOID  PrtDflTrayTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem)
 ** Synopsis: This function displays total key (Total)
 *===========================================================================
 */
-USHORT  PrtDflTrayTotalForm(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem, TCHAR *puchBuffer)
+USHORT  PrtDflTrayTotalForm(CONST TRANINFORMATION  *pTran, CONST ITEMTOTAL  *pItem, TCHAR *puchBuffer)
 {
-    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1]; /* display data save area */
+    TCHAR  aszDflBuff[8][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
     USHORT  usLineNo=0, i;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
     SHORT sType;
@@ -356,7 +349,6 @@ USHORT  PrtDflTrayTotalForm(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem, TCHAR *p
         sType = PRT_SINGLE;
     }
 
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);

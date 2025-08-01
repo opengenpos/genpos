@@ -13,10 +13,6 @@
 * Category    : Print, NCR 2170  US Hospitarity Application
 * Program Name: PrRMulPT.C                                                      
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /Gs /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstruct:
 *      PrtMultiPost() : print items specified minor class "CLASS_MULTIPOSTCHECK"
 *      PrtMulPost_TH() : print multi check (thermal)
@@ -62,40 +58,6 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;========================================================================
 **/
-/*
-*===========================================================================
-** Format  : VOID   PrtMultiPost(TRANINFORMATION  *pTran,ITEMMULTI *pItem)
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMMULTI        *pItem     -Item Data address
-*
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints multi check in post check.
-*===========================================================================
-*/
-VOID PrtMultiPost(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
-{
-
-
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-
-    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
-        PrtMulPost_SP(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
-        PrtMulPost_TH(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
-        PrtMulPost_EJ(pItem);
-    }
-
-}
 
 /*
 *===========================================================================
@@ -110,9 +72,9 @@ VOID PrtMultiPost(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 ** Synopsis: This function prints multi check in post check. (thermal)
 *===========================================================================
 */
-VOID   PrtMulPost_TH(TRANINFORMATION *pTran, ITEMMULTI *pItem)
+static VOID   PrtMulPost_TH(CONST TRANINFORMATION *pTran, CONST ITEMMULTI *pItem)
 {
-    PrtTHHead(pTran);                               /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);        /* print header if necessary */
 
     PrtTHMulChk(pItem->usGuestNo, pItem->uchCdv);  /* checkpaid mnemo, GCF# */
 
@@ -132,7 +94,7 @@ VOID   PrtMulPost_TH(TRANINFORMATION *pTran, ITEMMULTI *pItem)
 *                                               (electric journal)
 *===========================================================================
 */
-VOID   PrtMulPost_EJ(ITEMMULTI *pItem)
+static VOID   PrtMulPost_EJ(CONST ITEMMULTI *pItem)
 {
     PrtEJMulChk(pItem->usGuestNo, pItem->uchCdv);  /* checkpaid mnemo, GCF# */
 
@@ -153,15 +115,12 @@ VOID   PrtMulPost_EJ(ITEMMULTI *pItem)
 ** Synopsis: This function prints multi check in post check. (slip)
 *===========================================================================
 */
-VOID  PrtMulPost_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+static VOID  PrtMulPost_SP(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
-    TCHAR   aszSPPrintBuff[2][PRT_SPCOLUMN + 1]; /* print data save area */
+    TCHAR   aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
     USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
 
-    /* -- initialize the buffer -- */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
     
     /* -- set check paid mnemonic and guest check No. -- */
     usSlipLine += PrtSPGstChkNo(aszSPPrintBuff[0], pItem);
@@ -174,7 +133,7 @@ VOID  PrtMulPost_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
     usSaveLine = PrtCheckLine(usSlipLine, pTran);
 
     /* -- print the data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
+    for (USHORT i = 0; i < usSlipLine; i++) {
 /*  --- fix a glitch (05/15/2001)
         PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
         PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
@@ -184,3 +143,35 @@ VOID  PrtMulPost_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
     usPrtSlipPageLine += usSlipLine + usSaveLine;        
 }
 
+/*
+*===========================================================================
+** Format  : VOID   PrtMultiPost(TRANINFORMATION  *pTran,ITEMMULTI *pItem)
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMMULTI        *pItem     -Item Data address
+*
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints multi check in post check.
+*===========================================================================
+*/
+VOID PrtMultiPost(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
+{
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+
+    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
+        PrtMulPost_SP(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
+        PrtMulPost_TH(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
+        PrtMulPost_EJ(pItem);
+    }
+
+}

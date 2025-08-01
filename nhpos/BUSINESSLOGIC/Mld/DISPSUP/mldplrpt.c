@@ -60,6 +60,7 @@
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
+#include <prt.h>
 #include <appllog.h>
 #include <mld.h>
 #include <mldsup.h>

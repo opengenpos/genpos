@@ -28,13 +28,7 @@
 *
 *      PrtChkCurSlip()
 *      PrtTraining()
-*      PrtTrain_TH()
-*      PrtTrain_EJ()
-*      PrtTrain_SP()
 *      PrtPVoid()
-*      PrtPVoid_TH()
-*      PrtPVoid_EJ()
-*      PrtPVoid_SP()
 *      PrtPostRct()
 *      PrtPostRct_TH()
 *      PrtPostRct_EJ()
@@ -119,13 +113,12 @@
 ;+                    S T A T I C    R A M s
 ;========================================================================
 **/
-extern VOID PrtSoftCHK(UCHAR uchMinorClass);
 
-CONST TCHAR FARCONST  aszPrtKP1Space[]= _T("%s");
+CONST TCHAR   aszPrtKP1Space[]= _T("%s");
 
-extern CONST TCHAR FARCONST  aszPrtTHMnemMnem[];
-extern CONST TCHAR FARCONST  aszPrtSPMnemMnem[];
-extern CONST TCHAR FARCONST  aszPrtEJMnemMnem[];
+extern CONST TCHAR   aszPrtTHMnemMnem[];
+extern CONST TCHAR   aszPrtSPMnemMnem[];
+extern CONST TCHAR   aszPrtEJMnemMnem[];
                                                  /* mnem. and mnem. */
 
 
@@ -141,11 +134,11 @@ extern CONST TCHAR FARCONST  aszPrtEJMnemMnem[];
 ** Synopsis: This function prints PreVoid line. ( thermal )
 *===========================================================================
 */
-VOID  PrtGivenMnemonic_TH(TRANINFORMATION   *pTran, TCHAR *asz24Mnem, BOOL bDouble)
+static VOID  PrtGivenMnemonic_TH(CONST TRANINFORMATION   *pTran, CONST TCHAR *asz24Mnem, BOOL bDouble)
 {
 	TCHAR   aszSDblMn[PARA_CHAR24_LEN * 2 + 1] = { 0 };
 
-    PrtTHHead(pTran);                             /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);      /* print header if necessary */
 
 	if (bDouble) {
         PrtSDouble(aszSDblMn, TCHARSIZEOF(aszSDblMn), asz24Mnem);
@@ -154,28 +147,28 @@ VOID  PrtGivenMnemonic_TH(TRANINFORMATION   *pTran, TCHAR *asz24Mnem, BOOL bDoub
 		aszSDblMn[PARA_CHAR24_LEN] = 0;      // ensure that string is terminated.
 	}
 
-    PrtPrint((USHORT)PMG_PRT_RECEIPT, aszSDblMn, tcharlen(aszSDblMn)); /* ### Mod (2171 for Win32) V1.0 */
+    PrtPrint(PMG_PRT_RECEIPT, aszSDblMn, tcharlen(aszSDblMn)); /* ### Mod (2171 for Win32) V1.0 */
 
     PrtFeed(PMG_PRT_RECEIPT, 1);                  /* 1 line feed */
 }
 
-VOID  Prt24Mnemonic_TH(TRANINFORMATION   *pTran, USHORT usP24MnemonicAdr, BOOL bDouble)
+static VOID  Prt24Mnemonic_TH(CONST TRANINFORMATION   *pTran, USHORT usP24MnemonicAdr, BOOL bDouble)
 {
 	TCHAR   aszSDblMn[PARA_CHAR24_LEN * 2 + 1] = { 0 };
 
-    PrtTHHead(pTran);                             /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);         /* print header if necessary */
 
 	if (bDouble) {
 		TCHAR   asz24Mnem[PARA_CHAR24_LEN + 1] = { 0 };
 
-		PrtGet24Mnem(asz24Mnem, usP24MnemonicAdr);                   /* get 24char mnem. */
+        RflGet24Mnem(asz24Mnem, usP24MnemonicAdr);                   /* get 24char mnem. */
         asz24Mnem[21] = '\0';            
         PrtSDouble(aszSDblMn, TCHARSIZEOF(aszSDblMn), asz24Mnem);
 	} else {
-		PrtGet24Mnem(aszSDblMn, usP24MnemonicAdr);   /* get 24char mnem. */
+        RflGet24Mnem(aszSDblMn, usP24MnemonicAdr);   /* get 24char mnem. */
 	}
 
-    PrtPrint((USHORT)PMG_PRT_RECEIPT, aszSDblMn, tcharlen(aszSDblMn)); /* ### Mod (2171 for Win32) V1.0 */
+    PrtPrint(PMG_PRT_RECEIPT, aszSDblMn, tcharlen(aszSDblMn)); /* ### Mod (2171 for Win32) V1.0 */
 
 	if (bDouble) {
 		PrtFeed(PMG_PRT_RECEIPT, 1);                  /* 1 line feed */
@@ -194,28 +187,28 @@ VOID  Prt24Mnemonic_TH(TRANINFORMATION   *pTran, USHORT usP24MnemonicAdr, BOOL b
 ** Synopsis: This function prints PreVoid line. ( electric journal )
 *===========================================================================
 */
-VOID  PrtGivenMnemonic_EJ(TRANINFORMATION *pTran, TCHAR *aszMnemonics)
+static VOID  PrtGivenMnemonic_EJ(CONST TRANINFORMATION *pTran, CONST TCHAR *aszMnemonics)
 {
     /* line printed only once on journal */
     if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TRAY ) {
         return;
     }
 
-    PrtPrint((USHORT)PMG_PRT_JOURNAL, aszMnemonics, tcharlen(aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
+    PrtPrint(PMG_PRT_JOURNAL, aszMnemonics, tcharlen(aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
 }
 
-VOID  Prt24Mnemonic_EJ(TRANINFORMATION *pTran, USHORT usP24MnemonicAdr)
+static VOID  Prt24Mnemonic_EJ(CONST TRANINFORMATION *pTran, USHORT usP24MnemonicAdr)
 {
 	TCHAR   aszMnemonics[PARA_CHAR24_LEN + 1] = { 0 };
 
-    PrtGet24Mnem(aszMnemonics, usP24MnemonicAdr);   /* get 24char mnem. */
+    RflGet24Mnem(aszMnemonics, usP24MnemonicAdr);   /* get 24char mnem. */
 
     /* line printed only once on journal */
     if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TRAY ) {
         return;
     }
 
-    PrtPrint((USHORT)PMG_PRT_JOURNAL, aszMnemonics, tcharlen(aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
+    PrtPrint(PMG_PRT_JOURNAL, aszMnemonics, tcharlen(aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
 }
 
 /*
@@ -231,7 +224,7 @@ VOID  Prt24Mnemonic_EJ(TRANINFORMATION *pTran, USHORT usP24MnemonicAdr)
 ** Synopsis: This function prints PreVoid line. ( Slip )
 *===========================================================================
 */
-VOID PrtGivenMnemonic_SP(TRANINFORMATION *pTran, TCHAR *aszMnemonics)
+static VOID PrtGivenMnemonic_SP(CONST TRANINFORMATION *pTran, CONST TCHAR *aszMnemonics)
 {
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
     USHORT  usSaveLine;                /* save slip lines to be added */
@@ -245,13 +238,13 @@ VOID PrtGivenMnemonic_SP(TRANINFORMATION *pTran, TCHAR *aszMnemonics)
 
     /* -- check if paper change is necessary or not -- */ 
     usSaveLine = PrtCheckLine(usSlipLine, pTran);
-    PrtPrint((USHORT)PMG_PRT_SLIP, aszMnemonics, (USHORT)_tcslen(aszMnemonics));
+    PrtPrint(PMG_PRT_SLIP, aszMnemonics, tcharlen(aszMnemonics));
 
     /* -- update current line No. -- */
     usPrtSlipPageLine += usSlipLine + usSaveLine;        
 }
 
-VOID Prt24Mnemonic_SP(TRANINFORMATION *pTran, USHORT usP24MnemonicAdr)
+static VOID Prt24Mnemonic_SP(CONST TRANINFORMATION *pTran, USHORT usP24MnemonicAdr)
 {
 	TCHAR   aszMnemonics[PARA_CHAR24_LEN + 1] = { 0 };
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
@@ -261,7 +254,7 @@ VOID Prt24Mnemonic_SP(TRANINFORMATION *pTran, USHORT usP24MnemonicAdr)
     }                                  /* line printed only once on slip */
 
     /* -- set preselect void mnemonic -- */
-    PrtGet24Mnem(aszMnemonics, usP24MnemonicAdr);
+    RflGet24Mnem(aszMnemonics, usP24MnemonicAdr);
 	PrtGivenMnemonic_SP (pTran, aszMnemonics);
 }
 
@@ -584,9 +577,8 @@ VOID   PrtItemPrint(TRANINFORMATION  *pTran, ITEMPRINT  *pItem)
 ** Synopsis: This function sets slip page No. and line No. 
 *===========================================================================
 */
-VOID   PrtChkCurSlip(TRANINFORMATION  *pTran)
+VOID   PrtChkCurSlip(CONST TRANINFORMATION  *pTran)
 {
-
 /*** bug fixed (95-7-12) ***
     if ( pTran->TranCurQual.flPrintStatus & CURQUAL_POSTRECT ) {
 *** bug fixed (95-7-12) ***/
@@ -630,7 +622,7 @@ VOID   PrtChkCurSlip(TRANINFORMATION  *pTran)
 *            print INVALID TRANSACTION line on receipt and in journal
 *===========================================================================
 */
-VOID  PrtTraining(TRANINFORMATION *pTran, SHORT fsPrintStatus)
+VOID  PrtTraining(CONST TRANINFORMATION *pTran, SHORT fsPrintStatus)
 {
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(fsPrintStatus);
@@ -667,7 +659,7 @@ VOID  PrtTraining(TRANINFORMATION *pTran, SHORT fsPrintStatus)
 ** Synopsis: This function prints PreVoid line. 
 *===========================================================================
 */
-VOID  PrtPVoid(TRANINFORMATION *pTran, SHORT fsPrintStatus)
+VOID  PrtPVoid(CONST TRANINFORMATION *pTran, SHORT fsPrintStatus)
 {
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(fsPrintStatus);
@@ -689,7 +681,7 @@ VOID  PrtPReturn(TRANINFORMATION *pTran, SHORT fsPrintStatus)
 {
 	USHORT usReturnType = CH24_PRETURN_ADR;
 	SHORT  i;
-	TCHAR  pcsUniqueIdentifier[sizeof(pTran->TranGCFQual.uchUniqueIdentifierReturn)/sizeof(pTran->TranGCFQual.uchUniqueIdentifierReturn[0])+1];
+    TCHAR  pcsUniqueIdentifier[sizeof(pTran->TranGCFQual.uchUniqueIdentifierReturn) / sizeof(pTran->TranGCFQual.uchUniqueIdentifierReturn[0]) + 1] = { 0 };
 
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(fsPrintStatus);
@@ -765,7 +757,7 @@ VOID  PrtPReturn(TRANINFORMATION *pTran, SHORT fsPrintStatus)
 ** Synopsis: This function prints Money Header.                 Saratoga 
 *===========================================================================
 */
-VOID    PrtMoneyHeader(TRANINFORMATION *pTran, SHORT fsPrintStatus)
+VOID    PrtMoneyHeader(CONST TRANINFORMATION *pTran, SHORT fsPrintStatus)
 {
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(fsPrintStatus);
@@ -784,6 +776,91 @@ VOID    PrtMoneyHeader(TRANINFORMATION *pTran, SHORT fsPrintStatus)
 
 /*
 *===========================================================================
+** Format  : VOID  PrtPostRct_TH(TRANINFORMATION *pTran);
+*
+*   Input  : TRANINFORMATION *pTran    -transaction information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints post receipt mnem. line. ( thermal )
+*===========================================================================
+*/
+static VOID  PrtPostRct_TH(CONST TRANINFORMATION *pTran)
+{
+	TCHAR   aszMnemonics[PARA_CHAR24_LEN + 1] = { 0 };
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);       /* print header if necessary */
+
+    RflGet24Mnem(aszMnemonics, CH24_POSTR_ADR);   /* get 24 char mnem. */
+
+    PrtPrint(PMG_PRT_RECEIPT, aszMnemonics, tcharlen(aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
+
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtPostRct_EJ(TRANINFORMATION *pTran);
+*
+*   Input  : TRANINFORMATION *pTran    -transaction information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints post receipt mnem. line. ( elctric journal )
+*===========================================================================
+*/
+static VOID  PrtPostRct_EJ(CONST TRANINFORMATION *pTran)
+{
+
+	TCHAR   aszMnemonics[PARA_CHAR24_LEN + 1] = { 0 };
+                                                
+    RflGet24Mnem(aszMnemonics, CH24_POSTR_ADR); /* get 24 char mnem. */
+
+    /* post receipt line printed only once on journal */
+    if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TRAY ) {
+        return;
+    }
+
+    PrtPrint(PMG_PRT_JOURNAL, aszMnemonics, tcharlen(aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
+
+}
+
+
+/*
+*===========================================================================
+** Format  : VOID  PrtPostRct_SP(TRANINFORMATION *pTran);
+*
+*   Input  : TRANINFORMATION *pTran    -transaction information
+*            ITEMPRINT       *pItem    -item information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints post receit mnem. line. ( Slip )
+*===========================================================================
+*/
+static VOID PrtPostRct_SP(CONST TRANINFORMATION *pTran)
+{
+	TCHAR   aszMnemonics[PARA_CHAR24_LEN + 1] = { 0 };
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    /* -- set post receipt mnemonic -- */
+    RflGet24Mnem(aszMnemonics, CH24_POSTR_ADR);
+    usSlipLine ++;
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+    PrtPrint(PMG_PRT_SLIP, aszMnemonics, tcharlen(aszMnemonics));
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+
+}
+
+/*
+*===========================================================================
 ** Format  : VOID  PrtPostRct(TRANINFORMATION *pTran, ITEMPRINT *pItem);
 *
 *   Input  : TRANINFORMATION *pTran    -transaction information
@@ -795,7 +872,7 @@ VOID    PrtMoneyHeader(TRANINFORMATION *pTran, SHORT fsPrintStatus)
 ** Synopsis: This function prints post receipt line. 
 *===========================================================================
 */
-VOID  PrtPostRct(TRANINFORMATION *pTran, ITEMPRINT *pItem)
+VOID  PrtPostRct(CONST TRANINFORMATION *pTran, CONST ITEMPRINT *pItem)
 {
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(pItem->fsPrintStatus);
@@ -816,86 +893,23 @@ VOID  PrtPostRct(TRANINFORMATION *pTran, ITEMPRINT *pItem)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtPostRct_TH(TRANINFORMATION *pTran);
+** Format  : VOID  PrtCPGusLine_TH(TRANINFORMATION *pTran, ITEMPRINT *pItem);
 *
 *   Input  : TRANINFORMATION *pTran    -transaction information
+*          : ITEMPRINT       *pItem    -item information
 *   Output : none
 *   InOut  : none
 ** Return  : none
 *
-** Synopsis: This function prints post receipt mnem. line. ( thermal )
+** Synopsis: This function prints charge posting guest line #. ( thermal )
 *===========================================================================
 */
-VOID  PrtPostRct_TH(TRANINFORMATION *pTran)
-{
-	TCHAR   aszMnemonics[PARA_CHAR24_LEN + 1] = { 0 };
-
-    PrtTHHead(pTran);                             /* print header if necessary */
-
-    PrtGet24Mnem(aszMnemonics, CH24_POSTR_ADR);   /* get 24 char mnem. */
-
-    PrtPrint((USHORT)PMG_PRT_RECEIPT, aszMnemonics, (USHORT)_tcslen(aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtPostRct_EJ(TRANINFORMATION *pTran);
-*
-*   Input  : TRANINFORMATION *pTran    -transaction information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints post receipt mnem. line. ( elctric journal )
-*===========================================================================
-*/
-VOID  PrtPostRct_EJ(TRANINFORMATION *pTran)
+static VOID  PrtCPGusLine_TH(CONST TRANINFORMATION *pTran, CONST ITEMPRINT *pItem)
 {
 
-	TCHAR   aszMnemonics[PARA_CHAR24_LEN + 1] = { 0 };
-                                                
-    PrtGet24Mnem(aszMnemonics, CH24_POSTR_ADR); /* get 24 char mnem. */
+    PrtTHHead(pTran->TranCurQual.usConsNo);      /* print header if necessary */
 
-    /* post receipt line printed only once on journal */
-    if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TRAY ) {
-        return;
-    }
-
-    PrtPrint((USHORT)PMG_PRT_JOURNAL, aszMnemonics, (USHORT)_tcslen(aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
-
-}
-
-
-/*
-*===========================================================================
-** Format  : VOID  PrtPostRct_SP(TRANINFORMATION *pTran);
-*
-*   Input  : TRANINFORMATION *pTran    -transaction information
-*            ITEMPRINT       *pItem    -item information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints post receit mnem. line. ( Slip )
-*===========================================================================
-*/
-VOID PrtPostRct_SP(TRANINFORMATION *pTran)
-{
-	TCHAR   aszMnemonics[PARA_CHAR24_LEN + 1] = { 0 };
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-
-    /* -- set post receipt mnemonic -- */
-    PrtGet24Mnem(aszMnemonics, CH24_POSTR_ADR);
-    usSlipLine ++;
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-    PrtPrint((USHORT)PMG_PRT_SLIP, aszMnemonics, (USHORT)_tcslen(aszMnemonics));
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+    PrtPrint(PMG_PRT_RECEIPT, pItem->aszCPText[0], tcharlen(pItem->aszCPText[0])); /* ### Mod (2171 for Win32) V1.0 */
 
 }
 
@@ -912,7 +926,7 @@ VOID PrtPostRct_SP(TRANINFORMATION *pTran)
 ** Synopsis: This function prints charge posting guest line #. 
 *===========================================================================
 */
-VOID  PrtCPGusLine(TRANINFORMATION *pTran, ITEMPRINT *pItem)
+VOID  PrtCPGusLine(CONST TRANINFORMATION *pTran, CONST ITEMPRINT *pItem)
 {
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(pItem->fsPrintStatus);
@@ -920,28 +934,6 @@ VOID  PrtCPGusLine(TRANINFORMATION *pTran, ITEMPRINT *pItem)
     if (fsPrtPrintPort & PRT_RECEIPT) {         /* receipt print */
         PrtCPGusLine_TH(pTran, pItem);
     }
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtCPGusLine_TH(TRANINFORMATION *pTran, ITEMPRINT *pItem);
-*
-*   Input  : TRANINFORMATION *pTran    -transaction information
-*          : ITEMPRINT       *pItem    -item information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints charge posting guest line #. ( thermal )
-*===========================================================================
-*/
-VOID  PrtCPGusLine_TH(TRANINFORMATION *pTran, ITEMPRINT *pItem)
-{
-
-    PrtTHHead(pTran);                      /* print header if necessary */
-
-    PrtPrint((USHORT)PMG_PRT_RECEIPT, pItem->aszCPText[0], (USHORT)_tcslen(pItem->aszCPText[0])); /* ### Mod (2171 for Win32) V1.0 */
-
 }
 
 /*
@@ -964,7 +956,7 @@ VOID  PrtCPGusLine_TH(TRANINFORMATION *pTran, ITEMPRINT *pItem)
 *             to generate the sErrorCode value.
 *===========================================================================
 */
-VOID  PrtCPFuncErrCode_EJ(ITEMPRINT *pItem)
+VOID  PrtCPFuncErrCode_EJ(CONST ITEMPRINT *pItem)
 {
 	CONST TCHAR *aszPrtEJCPFuncErrCode = _T("   F-CODE%5d E-CODE%3d");  /* function,error code for charge posting */
 
@@ -991,27 +983,6 @@ VOID  PrtEPTError(ITEMPRINT  *pItem)
 {
     PrtTHEPTError(pItem);
 }
-/*
-*===========================================================================
-** Format  : VOID  PrtEPTStub( TRANINFORMATION *pTran, ITEMPRINT  *pItem );
-*
-*   Input  : TRANINFORMATION *pTran    -transaction information
-*            ITEMPRINT       *pItem    -item information
-*             
-*   Output : none
-*   InOut  : none
-*            
-** Return  : 
-*            
-** Synopsis: 
-*===========================================================================
-*/
-VOID    PrtEPTStub( TRANINFORMATION *pTran, ITEMPRINT  *pItem )
-{
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-    PrtEPTStub_TH( pTran, pItem );
-}
 
 /*
 *===========================================================================
@@ -1028,11 +999,9 @@ VOID    PrtEPTStub( TRANINFORMATION *pTran, ITEMPRINT  *pItem )
 ** Synopsis: 
 *===========================================================================
 */
-VOID    PrtEPTStub_TH( TRANINFORMATION *pTran, ITEMPRINT *pItem )
+static VOID    PrtEPTStub_TH(CONST TRANINFORMATION *pTran, ITEMPRINT *pItem )
 {
-    USHORT  i;
-
-    PrtTHHead(pTran);                                   /* E-042 corr. 4/21 */
+    PrtTHHead(pTran->TranCurQual.usConsNo);             /* E-042 corr. 4/21 */
     PrtTHGuest(pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv);
     PrtTHOffTend(pItem->fbModifier);                    /* CP off line      */
     PrtTHVoid(pItem->fbModifier, 0);                       /* void line        */
@@ -1040,13 +1009,35 @@ VOID    PrtEPTStub_TH( TRANINFORMATION *pTran, ITEMPRINT *pItem )
     PrtTHOffline( pItem->fbModifier, pItem->auchExpiraDate, pItem->auchApproval );
     PrtTHCPRoomCharge(pItem->aszRoomNo, pItem->aszGuestID); /* for charge posting */
     PrtTHNumber(pItem->aszNumber[0]);	//US Customs    /* Acct number line *//
-    for (i = 0; i < NUM_CPRSPCO; i++) {
+    for (USHORT i = 0; i < NUM_CPRSPCO; i++) {
         PrtTHCPRspMsgText(pItem->aszCPText[i]);         /* for charge posting */
     }
 
 	if ((TrnInformation.TranCurQual.fbNoPrint & CURQUAL_NO_EPT_LOGO_SIG) == 0) {
 		PrtSoftCHK(SOFTCHK_EPT1_ADR);
 	}
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtEPTStub( TRANINFORMATION *pTran, ITEMPRINT  *pItem );
+*
+*   Input  : TRANINFORMATION *pTran    -transaction information
+*            ITEMPRINT       *pItem    -item information
+*             
+*   Output : none
+*   InOut  : none
+*            
+** Return  : 
+*            
+** Synopsis: 
+*===========================================================================
+*/
+VOID    PrtEPTStub(CONST TRANINFORMATION *pTran, ITEMPRINT  *pItem )
+{
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+    PrtEPTStub_TH( pTran, pItem );
 }
 
 /*
@@ -1064,20 +1055,18 @@ VOID    PrtEPTStub_TH( TRANINFORMATION *pTran, ITEMPRINT *pItem )
 ** Synopsis: 
 *===========================================================================
 */
-VOID    PrtEPTStubNoAcct( TRANINFORMATION *pTran, ITEMPRINT *pItem )
+VOID    PrtEPTStubNoAcct(CONST TRANINFORMATION *pTran, ITEMPRINT *pItem )
 {
-    USHORT  i;
-
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(pItem->fsPrintStatus);
 
-    PrtTHHead(pTran);                                   /* E-042 corr. 4/21 */
+    PrtTHHead(pTran->TranCurQual.usConsNo);             /* E-042 corr. 4/21 */
     PrtTHGuest(pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv);
     PrtTHOffTend(pItem->fbModifier);                    /* CP off line      */
     PrtTHVoid(pItem->fbModifier, 0);                       /* void line        */
     PrtTHZeroAmtMnem( TRN_AMTTL_ADR, pItem->lAmount );  /* total amount     */
     PrtTHCPRoomCharge(pItem->aszRoomNo, pItem->aszGuestID); /* for charge posting */
-    for (i = 0; i < NUM_CPRSPCO; i++) {
+    for (USHORT i = 0; i < NUM_CPRSPCO; i++) {
         PrtTHCPRspMsgText(pItem->aszCPText[i]);         /* for charge posting */
     }
 
@@ -1115,8 +1104,9 @@ VOID   PrtDispPrint(TRANINFORMATION  *pTran, ITEMPRINT  *pItem)
     case CLASS_EPT_TRAILER:               /* EPT Logo Message */ 
 
         /* -- set destination CRT -- */
-        PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-        PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+        PrtDflIfSetDestCrt(0x30, 0x30);
+//        PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//        PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
         /* -- set display data in the buffer -- */ 
         PrtDflIType(0, DFL_END); 
@@ -1198,6 +1188,94 @@ USHORT   PrtDispPrintForm(TRANINFORMATION  *pTran, ITEMPRINT  *pItem, TCHAR *puc
 
 /*
 *===========================================================================
+** Format  : VOID PrtParkReceipt_TH( TRANINFORMATION *pTran )
+*
+*   Input  : TRANINFORMATION *pTran - transaction information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints parking receipt on journal.
+*===========================================================================
+*/
+static VOID  PrtParkReceipt_TH( TRANINFORMATION *pTran )
+{
+	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
+    USHORT  usMnemLen;
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);
+
+	RflGetTranMnem( szMnemonic, TRN_PARKING_ADR );
+    usMnemLen = tcharlen( szMnemonic );
+
+    PrtPrint( PMG_PRT_RECEIPT, szMnemonic, usMnemLen );
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtParkReceipt_EJ( TRANINFORMATION *pTran )
+*
+*   Input  : TRANINFORMATION *pTran - transaction information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints parking receipt on electric journal.
+*===========================================================================
+*/
+static VOID PrtParkReceipt_EJ( TRANINFORMATION *pTran )
+{
+	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
+    USHORT  usMnemLen;
+                                                
+	RflGetTranMnem( szMnemonic, TRN_PARKING_ADR );
+    usMnemLen = tcharlen( szMnemonic );
+
+    /* --- parking receipt line printed only once on journal --- */
+
+    if ( ! ( pTran->TranCurQual.fsCurStatus & CURQUAL_TRAY )) {
+
+        PrtPrint( PMG_PRT_JOURNAL, szMnemonic, usMnemLen );
+    }
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtParkReceipt_SP( TRANINFORMATION *pTran )
+*
+*   Input  : TRANINFORMATION *pTran    -transaction information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints parking receipt on slip.
+*===========================================================================
+*/
+static VOID PrtParkReceipt_SP( TRANINFORMATION *pTran )
+{
+	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
+    USHORT  usMnemLen;
+    USHORT  usSlipLine = 0;             /* number of lines to be printed */
+    USHORT  usSaveLine = 0;                 /* save slip lines to be added */
+
+    /* --- check if paper change is necessary or not --- */ 
+
+    usSlipLine++;
+    usSaveLine = PrtCheckLine( usSlipLine, pTran );
+
+	RflGetTranMnem( szMnemonic, TRN_PARKING_ADR );
+    usMnemLen = tcharlen( szMnemonic );
+/*  --- fix a glitch (05/15/2001)
+    PmgPrint( PMG_PRT_SLIP, szMnemonic, usMnemLen ); */
+    PrtPrint( PMG_PRT_SLIP, szMnemonic, usMnemLen );
+
+    /* --- update current line No. --- */
+
+    usPrtSlipPageLine += ( usSlipLine + usSaveLine );
+}
+
+/*
+*===========================================================================
 ** Format  : VOID PrtPostRct( TRANINFORMATION *pTran, ITEMPRINT *pItem )
 *
 *   Input  : TRANINFORMATION *pTran - transaction information
@@ -1230,90 +1308,86 @@ VOID PrtParkReceipt( TRANINFORMATION *pTran, ITEMPRINT *pItem )
 
 /*
 *===========================================================================
-** Format  : VOID PrtParkReceipt_TH( TRANINFORMATION *pTran )
-*
-*   Input  : TRANINFORMATION *pTran - transaction information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints parking receipt on journal.
-*===========================================================================
-*/
-VOID  PrtParkReceipt_TH( TRANINFORMATION *pTran )
-{
-	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
-    USHORT  usMnemLen;
-
-    PrtTHHead( pTran );
-
-	RflGetTranMnem( szMnemonic, TRN_PARKING_ADR );
-    usMnemLen = tcharlen( szMnemonic );
-
-    PrtPrint( PMG_PRT_RECEIPT, szMnemonic, usMnemLen );
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtParkReceipt_EJ( TRANINFORMATION *pTran )
-*
-*   Input  : TRANINFORMATION *pTran - transaction information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints parking receipt on electric journal.
-*===========================================================================
-*/
-VOID PrtParkReceipt_EJ( TRANINFORMATION *pTran )
-{
-	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
-    USHORT  usMnemLen;
-                                                
-	RflGetTranMnem( szMnemonic, TRN_PARKING_ADR );
-    usMnemLen = tcharlen( szMnemonic );
-
-    /* --- parking receipt line printed only once on journal --- */
-
-    if ( ! ( pTran->TranCurQual.fsCurStatus & CURQUAL_TRAY )) {
-
-        PrtPrint( PMG_PRT_JOURNAL, szMnemonic, usMnemLen );
-    }
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtParkReceipt_SP( TRANINFORMATION *pTran )
+** Format  : VOID  PrtNumber_TH(TRANINFORMATION *pTran);
 *
 *   Input  : TRANINFORMATION *pTran    -transaction information
 *   Output : none
 *   InOut  : none
 ** Return  : none
 *
-** Synopsis: This function prints parking receipt on slip.
+** Synopsis: This function prints number line. ( thermal )
 *===========================================================================
 */
-VOID PrtParkReceipt_SP( TRANINFORMATION *pTran )
+static VOID  PrtNumber_TH(TRANINFORMATION *pTran, ITEMPRINT *pItem)
 {
 	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
-    USHORT  usMnemLen;
-    USHORT  usSlipLine = 0;             /* number of lines to be printed */
-    USHORT  usSaveLine;                 /* save slip lines to be added */
+	int numCounter; //US Customs
+                                                
+	RflGetTranMnem( szMnemonic, pItem->usFuncCode );
+    
+    PrtTHHead(pTran->TranCurQual.usConsNo);     /* print header if necessary */
 
-    /* --- check if paper change is necessary or not --- */ 
+	for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){ //cycle through all numbers US Customs cwunn
+		if(!pItem->aszNumber[numCounter][0]){
+			break; //stop looping on empty slot
+		}
+		PrtPrintf(PMG_PRT_RECEIPT, aszPrtTHMnemMnem, szMnemonic, pItem->aszNumber[numCounter]);
+	}
+}
 
-    usSlipLine++;
-    usSaveLine = PrtCheckLine( usSlipLine, pTran );
+/*
+*===========================================================================
+** Format  : VOID  PrtNumber_EJ(TRANINFORMATION *pTran);
+*
+*   Input  : TRANINFORMATION *pTran    -transaction information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints number line. ( elctric journal )
+*===========================================================================
+*/
+static VOID  PrtNumber_EJ(TRANINFORMATION *pTran, ITEMPRINT *pItem)
+{
 
-	RflGetTranMnem( szMnemonic, TRN_PARKING_ADR );
-    usMnemLen = tcharlen( szMnemonic );
-/*  --- fix a glitch (05/15/2001)
-    PmgPrint( PMG_PRT_SLIP, szMnemonic, usMnemLen ); */
-    PrtPrint( PMG_PRT_SLIP, szMnemonic, usMnemLen );
+	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
+                                                
+	RflGetTranMnem( szMnemonic, pItem->usFuncCode );
+    
+    PrtPrintf(PMG_PRT_JOURNAL, aszPrtEJMnemMnem, szMnemonic, pItem->aszNumber);
+    
+}
 
-    /* --- update current line No. --- */
 
-    usPrtSlipPageLine += ( usSlipLine + usSaveLine );
+/*
+*===========================================================================
+** Format  : VOID  PrtNumber_SP(TRANINFORMATION *pTran);
+*
+*   Input  : TRANINFORMATION *pTran    -transaction information
+*            ITEMPRINT       *pItem    -item information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints number line. ( Slip )
+*===========================================================================
+*/
+static VOID PrtNumber_SP(TRANINFORMATION *pTran, ITEMPRINT *pItem)
+{
+	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+                                                
+	RflGetTranMnem( szMnemonic, pItem->usFuncCode );
+    
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+    PrtPrintf(PMG_PRT_SLIP, aszPrtSPMnemMnem, szMnemonic, pItem->aszNumber);
+    usSlipLine ++;
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;        
+
 }
 
 /*
@@ -1350,90 +1424,6 @@ VOID  PrtNumber(TRANINFORMATION *pTran, ITEMPRINT *pItem)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtNumber_TH(TRANINFORMATION *pTran);
-*
-*   Input  : TRANINFORMATION *pTran    -transaction information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints number line. ( thermal )
-*===========================================================================
-*/
-VOID  PrtNumber_TH(TRANINFORMATION *pTran, ITEMPRINT *pItem)
-{
-	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
-	int numCounter; //US Customs
-                                                
-	RflGetTranMnem( szMnemonic, pItem->usFuncCode );
-    
-    PrtTHHead(pTran);                             /* print header if necessary */
-
-	for(numCounter=0; numCounter<NUM_OF_NUMTYPE_ENT; numCounter++){ //cycle through all numbers US Customs cwunn
-		if(!pItem->aszNumber[numCounter][0]){
-			break; //stop looping on empty slot
-		}
-		PrtPrintf(PMG_PRT_RECEIPT, aszPrtTHMnemMnem, szMnemonic, pItem->aszNumber[numCounter]);
-	}
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtNumber_EJ(TRANINFORMATION *pTran);
-*
-*   Input  : TRANINFORMATION *pTran    -transaction information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints number line. ( elctric journal )
-*===========================================================================
-*/
-VOID  PrtNumber_EJ(TRANINFORMATION *pTran, ITEMPRINT *pItem)
-{
-
-	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
-                                                
-	RflGetTranMnem( szMnemonic, pItem->usFuncCode );
-    
-    PrtPrintf(PMG_PRT_JOURNAL, aszPrtEJMnemMnem, szMnemonic, pItem->aszNumber);
-    
-}
-
-
-/*
-*===========================================================================
-** Format  : VOID  PrtNumber_SP(TRANINFORMATION *pTran);
-*
-*   Input  : TRANINFORMATION *pTran    -transaction information
-*            ITEMPRINT       *pItem    -item information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints number line. ( Slip )
-*===========================================================================
-*/
-VOID PrtNumber_SP(TRANINFORMATION *pTran, ITEMPRINT *pItem)
-{
-	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-                                                
-	RflGetTranMnem( szMnemonic, pItem->usFuncCode );
-    
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-    PrtPrintf(PMG_PRT_SLIP, aszPrtSPMnemMnem, szMnemonic, pItem->aszNumber);
-    usSlipLine ++;
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;        
-
-}
-
-/*
-*===========================================================================
 ** Format  : VOID  PrtDfDispNumber( TRANINFORMATION *pTran,
 *                                     ITEMPRINT    *pItem )
 *
@@ -1450,7 +1440,6 @@ VOID PrtDflDispNumber( TRANINFORMATION *pTran, ITEMPRINT *pItem )
 {
     USHORT  usLineNo;               /* number of lines to be displayed */
     USHORT  usOffset = 0;
-    USHORT  i;
 	TCHAR   aszDflBuff[6][PRT_DFL_LINE + 1] = { 0 };
 	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
                                                 
@@ -1470,13 +1459,14 @@ VOID PrtDflDispNumber( TRANINFORMATION *pTran, ITEMPRINT *pItem )
     usLineNo += PrtDflRandomNumber( aszDflBuff[ usLineNo ], szMnemonic, pItem->aszNumber[0] );//US Customs
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType( usLineNo, DFL_CUSTNAME );
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData( aszDflBuff[ i ], &usOffset );
         if ( aszDflBuff[ i ][ PRT_DFL_LINE ] != '\0' ) {
             i++;
@@ -1503,7 +1493,7 @@ VOID PrtDflDispNumber( TRANINFORMATION *pTran, ITEMPRINT *pItem )
 */
 USHORT PrtDflDispNumberForm( TRANINFORMATION *pTran, ITEMPRINT *pItem ,TCHAR *puchBuffer)
 {
-    USHORT  usLineNo=0, i;               /* number of lines to be displayed */
+    USHORT  usLineNo=0;               /* number of lines to be displayed */
 	TCHAR   aszDflBuff[6][PRT_DFL_LINE + 1] = { 0 };
 	TCHAR   szMnemonic[PARA_TRANSMNEMO_LEN + 1] = { 0 };
                                                 
@@ -1527,13 +1517,33 @@ USHORT PrtDflDispNumberForm( TRANINFORMATION *pTran, ITEMPRINT *pItem ,TCHAR *pu
 
     usLineNo += PrtDflRandomNumber( aszDflBuff[ usLineNo ], szMnemonic, pItem->aszNumber[0] );//US Customs
 
-    for (i=0; i<usLineNo; i++) {
-
+    for (USHORT i = 0; i < usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
     _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));
     
     return usLineNo;
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtAgeLog_EJ(ITEMPRINT *pItem);
+*
+*   Input  : ITEMPRINT *pItem    -item information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints boundary age log. ( elctric journal )
+*===========================================================================
+*/
+static VOID  PrtAgeLog_EJ(CONST ITEMPRINT *pItem)
+{
+    USHORT usMnemLen = tcharlen( pItem->aszNumber[0] );//US Customs
+
+    PrtPrint( PMG_PRT_JOURNAL, pItem->aszNumber[0], usMnemLen );//US Customs
+    
+    return;
 }
 
 /*
@@ -1549,40 +1559,14 @@ USHORT PrtDflDispNumberForm( TRANINFORMATION *pTran, ITEMPRINT *pItem ,TCHAR *pu
 ** Synopsis: This function prints boundary age log, 2172. 
 *===========================================================================
 */
-VOID  PrtAgeLog(TRANINFORMATION *pTran, ITEMPRINT *pItem)
+VOID  PrtAgeLog(CONST TRANINFORMATION *pTran, CONST ITEMPRINT *pItem)
 {
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(pItem->fsPrintStatus);
 
     if ( fsPrtPrintPort & PRT_JOURNAL ) {           /* electric journal */
-        PrtAgeLog_EJ(pTran, pItem);
+        PrtAgeLog_EJ(pItem);
     }
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtAgeLog_EJ(TRANINFORMATION *pTran);
-*
-*   Input  : TRANINFORMATION *pTran    -transaction information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints boundary age log. ( elctric journal )
-*===========================================================================
-*/
-VOID  PrtAgeLog_EJ(TRANINFORMATION *pTran, ITEMPRINT *pItem)
-{
-    USHORT usMnemLen;
-
-    usMnemLen = tcharlen( pItem->aszNumber[0] );//US Customs
-    
-    PrtPrint( PMG_PRT_JOURNAL, pItem->aszNumber[0], usMnemLen );//US Customs
-    
-    return;
-
-    pTran = pTran;
 }
 
 
@@ -1602,17 +1586,14 @@ VOID  PrtAgeLog_EJ(TRANINFORMATION *pTran, ITEMPRINT *pItem)
 */
 VOID PrtDflAgeLog( TRANINFORMATION *pTran, ITEMPRINT *pItem )
 {
-    TCHAR   aszDflBuff[ 6 ][ PRT_DFL_LINE + 1 ];
+    TCHAR   aszDflBuff[6][PRT_DFL_LINE + 1] = { 0 };
     USHORT  usLineNo;               /* number of lines to be displayed */
     USHORT  usOffset = 0;
-    USHORT  i;
                                                 
 
     if ( pItem->aszNumber[0] == '\0' ) {
         return;
     }
-
-    memset( aszDflBuff, 0x00, sizeof( aszDflBuff ));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader( aszDflBuff[ 0 ], pTran );
@@ -1624,17 +1605,15 @@ VOID PrtDflAgeLog( TRANINFORMATION *pTran, ITEMPRINT *pItem )
     usLineNo += PrtDflMnemonic( aszDflBuff[ usLineNo ], pItem->aszNumber[0] );//US Customs
 
     /* -- set destination CRT -- */
-
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType( usLineNo, DFL_CUSTNAME );
 
-    for ( i = 0; i < usLineNo; i++ ) {
-
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData( aszDflBuff[ i ], &usOffset );
-
         if ( aszDflBuff[ i ][ PRT_DFL_LINE ] != '\0' ) {
             i++;
         }        
@@ -1660,17 +1639,15 @@ VOID PrtDflAgeLog( TRANINFORMATION *pTran, ITEMPRINT *pItem )
 */
 USHORT PrtDflAgeLogForm( TRANINFORMATION *pTran, ITEMPRINT *pItem, TCHAR *puchBuffer)
 {
-    TCHAR   aszDflBuff[ 6 ][ PRT_DFL_LINE + 1 ];
-    USHORT  usLineNo=0, i;               /* number of lines to be displayed */
+    TCHAR   aszDflBuff[6][PRT_DFL_LINE + 1] = { 0 };
+    USHORT  usLineNo=0;               /* number of lines to be displayed */
                                                 
     if ( pItem->aszNumber[0] == '\0' ) {
         return 0;
     }
 
-    memset( aszDflBuff, 0x00, sizeof( aszDflBuff ));
-
-    /* -- set header -- */
 #if 0
+    /* -- set header -- */
     usLineNo = PrtDflHeader( aszDflBuff[ 0 ], pTran );
 
     /* -- set trailer -- */
@@ -1679,12 +1656,50 @@ USHORT PrtDflAgeLogForm( TRANINFORMATION *pTran, ITEMPRINT *pItem, TCHAR *puchBu
     /* -- set item data -- */
     usLineNo += PrtDflMnemonic( aszDflBuff[ usLineNo ], pItem->aszNumber[0] );//US Customs
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i = 0; i < usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
     _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));
     
     return usLineNo;
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtCPRespText_SP(TRANINFORMATION* pTran, ITEMPRINT *pItem)
+*
+*   Input  : TRNINFORMATION *pTran
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints EPT response message,         Saratoga
+*===========================================================================
+*/
+static VOID    PrtCPRespText_SP(CONST TRANINFORMATION *pTran, CONST ITEMPRINT *pItem)
+{
+    TCHAR   aszSPPrintBuff[NUM_CPRSPTEXT][PRT_SPCOLUMN + 1] = { 0 };
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    /* -- check if paper change is necessary or not -- */
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    if (pItem->uchPrintSelect != 0) {
+        for (USHORT i = 0; i < pItem->uchCPLineNo; i++) {
+            TCHAR   aszPrint[NUM_CPRSPTEXT + 1] = { 0 };
+
+            _tcsncpy(aszPrint, &pItem->aszCPText[0][0] + i * pItem->uchPrintSelect, pItem->uchPrintSelect);
+            usSlipLine += PrtSPCPRspMsgText(aszSPPrintBuff[usSlipLine], aszPrint);
+        }
+    }
+
+    for (USHORT i = 0; i < usSlipLine; i++) {
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += pItem->uchCPLineNo + usSaveLine;
 }
 
 /*
@@ -1702,7 +1717,7 @@ USHORT PrtDflAgeLogForm( TRANINFORMATION *pTran, ITEMPRINT *pItem, TCHAR *puchBu
 */
 VOID    PrtCPRespText(TRANINFORMATION *pTran, ITEMPRINT *pItem)
 {
-    USHORT  fsPrtStat;
+    USHORT  fsPrtStat = pItem->fsPrintStatus;
 
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(pItem->fsPrintStatus);
@@ -1710,8 +1725,6 @@ VOID    PrtCPRespText(TRANINFORMATION *pTran, ITEMPRINT *pItem)
     if (fsPrtStatus & PRT_REQKITCHEN) {         /* kitchen print */
         return;
     }
-
-    fsPrtStat = pItem->fsPrintStatus;
 
     if ( !(pTran->TranCurQual.flPrintStatus & ( CURQUAL_POSTRECT | CURQUAL_PARKING ))) {
    		/* not execute slip validation at duplicated receipt, 09/11/01 */
@@ -1735,45 +1748,6 @@ VOID    PrtCPRespText(TRANINFORMATION *pTran, ITEMPRINT *pItem)
     if (( fsPrtPrintPort & PRT_RECEIPT ) || ( fsPrtPrintPort & PRT_JOURNAL )) {     /* thermal print or electric journal */
         PrtTHCPRespText(pItem);
     }
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtCPRespText_SP(TRANINFORMATION* pTran, ITEMPRINT *pItem)
-*
-*   Input  : TRNINFORMATION *pTran
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints EPT response message,         Saratoga
-*===========================================================================
-*/
-VOID    PrtCPRespText_SP(TRANINFORMATION *pTran, ITEMPRINT *pItem)
-{
-    TCHAR   aszSPPrintBuff[NUM_CPRSPTEXT][PRT_SPCOLUMN + 1];
-    TCHAR   aszPrint[NUM_CPRSPTEXT + 1];
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;
-
-    /* -- check if paper change is necessary or not -- */
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    if (pItem->uchPrintSelect != 0) {
-        for (i = 0; i < pItem->uchCPLineNo; i++) {
-            memset(aszPrint, 0, sizeof(aszPrint));
-            _tcsncpy(aszPrint, &pItem->aszCPText[0][0] + i * pItem->uchPrintSelect, pItem->uchPrintSelect);
-            usSlipLine += PrtSPCPRspMsgText(aszSPPrintBuff[usSlipLine], aszPrint);
-        }
-    }
-
-    for (i = 0; i < usSlipLine; i++) {
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += pItem->uchCPLineNo + usSaveLine;
 }
 
 /*
@@ -1851,7 +1825,7 @@ VOID  PrtFSCredit(TRANINFORMATION *pTran, ITEMPRINT *pItem)
         PrtSPVLTrail(pTran);
 		PrtSlpRel(); //SR437
     } else if (pItem->fsPrintStatus & (PRT_RECEIPT | PRT_SPCL_PRINT)) {    /* Chit */
-        PrtTHHead(pTran);                           /* added 2000.07.11 start */
+        PrtTHHead(pTran->TranCurQual.usConsNo);      /* added 2000.07.11 start */
 
         if ( fbPrtShrStatus & PRT_SHARED_SYSTEM ) { 
             fbPrtAltrStatus |= PRT_TOTAL_STUB;
@@ -1937,7 +1911,7 @@ VOID    PrtEndorse(TRANINFORMATION *pTran, ITEMPRINT *pItem)
 		achWork[1] = _T('c');
 		achWork[2] = _T('0');
 		achWork[3] = 0x02;          /* return to receipt */
-		PmgPrint(PMG_PRT_RECEIPT, achWork, (USHORT)_tcslen(achWork));
+		PmgPrint(PMG_PRT_RECEIPT, achWork, tcharlen(achWork));
 #else
     achWork[0] = ESC;
     achWork[1] = _T('q');
@@ -1946,39 +1920,6 @@ VOID    PrtEndorse(TRANINFORMATION *pTran, ITEMPRINT *pItem)
     PmgPrint(PMG_PRT_SLIP, achWork, (USHORT)_tcslen(achWork));  /* praten open */
 #endif
     }
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtTHCPRespText(ITEMPRNT *pItem);
-*
-*   Input  : ITEMPRINT  *pItem
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints EPT response message,         Saratoga
-*===========================================================================
-*/
-VOID    PrtTHCPRespTextGiftCard(TRANINFORMATION *pTran, ITEMPRINT *pItem)
-{
-	TRANINFORMATION  pTranTmp;
-	memset(&pTranTmp,0,sizeof(TRANINFORMATION));
-	RflDecryptByteString((UCHAR *)&(pTran->TranGCFQual.TrnGiftCard[0].ItemTender.aszNumber[0]),
-		sizeof(pTran->TranGCFQual.TrnGiftCard[0].ItemTender.aszNumber));
-
-	if ( fsPrtPrintPort & PRT_SLIP ) {              /* slip print           */
-		PrtTender_SP(&pTranTmp, &pTran->TranGCFQual.TrnGiftCard[0].ItemTender, 0);              /* normal slip          */
-	}
-	if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
-		PrtTender_TH(&pTranTmp, &pTran->TranGCFQual.TrnGiftCard[0].ItemTender);
-	}
-	if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
-		PrtTender_EJ(&pTran->TranGCFQual.TrnGiftCard[0].ItemTender);
-	}
-
-	RflEncryptByteString((UCHAR *)&(pTran->TranGCFQual.TrnGiftCard[0].ItemTender.aszNumber[0]), sizeof(pTran->TranGCFQual.TrnGiftCard[0].ItemTender.aszNumber));
-
 }
 
 /* dollar tree */

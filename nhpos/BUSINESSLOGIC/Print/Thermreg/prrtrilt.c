@@ -102,11 +102,11 @@
 
 VOID  PrtBarCodeCheckNumber (TRANINFORMATION  *pTran, ITEMPRINT  *pItem)
 {
-	TCHAR  tcsBarCodeString [48];
+	TCHAR  tcsBarCodeString[48] = { 0 };
+
 	if( CliParaMDCCheckField(MDC_RECEIPT_RTN_ADR, MDC_PARAM_BIT_C) ) {
 		ULONG  ulBarcodeCode = PRT_BARCODE_CODE_CODE39;
 		if( CliParaMDCCheckField(MDC_RECEIPT_RTN_ADR, MDC_PARAM_BIT_D) ) {
-			SHORT  i;
 			UCHAR  *uchUniqueIdentifier;
 
 			if (pItem)
@@ -117,8 +117,7 @@ VOID  PrtBarCodeCheckNumber (TRANINFORMATION  *pTran, ITEMPRINT  *pItem)
 			// use the settings that are from PifMain.c that were read in from PARAMINI file.
 			// this allows us to change out the bar code symbology easier.
 			ulBarcodeCode = UifPrinterBarcodeSettings.ulSymbology;
-			memset (tcsBarCodeString, 0, sizeof(tcsBarCodeString));
-			for (i = 0; i < 24; i++) {
+			for (USHORT i = 0; i < NUM_BARCODE_LEN; i++) {
 				tcsBarCodeString[i] = (uchUniqueIdentifier[i] & 0x0f) + _T('0');
 			}
 		} else {
@@ -181,10 +180,10 @@ VOID PrtSoftCHK(UCHAR uchMinorClass)
 		}
 
 		if ((ST.aszMnemonics[0] == _T('x') || ST.aszMnemonics[0] == _T('X')) && ST.aszMnemonics[1] == _T('_')) {
-			TCHAR tchCardHolder[NUM_CPRSPTEXT + 1];
+			TCHAR tchCardHolder[NUM_CPRSPTEXT + 1] = { 0 };
 
             PrtFeed(PMG_PRT_RECEIPT, 2);            /* 2 line feed to provide space for signature     */
-			PrtPrint((USHORT)PMG_PRT_RECEIPT, (TCHAR *)ST.aszMnemonics, (USHORT)_tcslen(ST.aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
+			PrtPrint(PMG_PRT_RECEIPT, ST.aszMnemonics, (USHORT)_tcslen(ST.aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
 
 			tchCardHolder[0] = PRT_CENTERED;
 			TrnGetTransactionCardHolder(tchCardHolder+1);
@@ -194,7 +193,7 @@ VOID PrtSoftCHK(UCHAR uchMinorClass)
 				PrtFeed(PMG_PRT_RECEIPT, 1);            /* 1 line feed      */
 			}
 		} else {
-			PrtPrint((USHORT)PMG_PRT_RECEIPT, (TCHAR *)ST.aszMnemonics, (USHORT)_tcslen(ST.aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
+			PrtPrint(PMG_PRT_RECEIPT, ST.aszMnemonics, (USHORT)_tcslen(ST.aszMnemonics)); /* ### Mod (2171 for Win32) V1.0 */
 		}
     }
 
@@ -515,7 +514,7 @@ VOID PrtDoubleHeader(TRANINFORMATION  *pTran)
     
     PrtShrEnd();
 
-    PrtTHHead(pTran);                           /* print header if necessary */    
+    PrtTHHead(pTran->TranCurQual.usConsNo);     /* print header if necessary */
     
     PrtFeed(PMG_PRT_RECEIPT, 1);                /* 1 line feed */
 

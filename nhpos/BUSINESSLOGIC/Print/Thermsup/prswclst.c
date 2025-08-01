@@ -43,15 +43,12 @@
 =============================================================================
 **/
 #include	<tchar.h>
-
 #include <string.h>
+
 #include <ecr.h>
-/* #include <pif.h> */
 #include <rfl.h>
-/* #include <log.h> */
 #include <paraequ.h> 
 #include <para.h>
-/* #include <cswai.h> */
 #include <maint.h> 
 #include <regstrct.h>
 #include <transact.h>
@@ -59,7 +56,6 @@
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
-/* #include <appllog.h> */
 
 #include "prtrin.h"
 #include "prtsin.h"
@@ -85,21 +81,17 @@
 */
 VOID  PrtThrmSupWFClose( VOID *pData )
 {
-    static const TCHAR  auchPrtThrmSupWFClose[] = _T("%6s%-10s%13s%6s");    /* define thermal print format */
-    static const TCHAR  auchPrtSupWFClose[] = _T("%3s%-10s\t%6s");    /* define EJ print format */
     static const TCHAR  auchNumber[] = _T("%8.8Mu");    /* define thermal/EJ common print format */
 
-    TCHAR   aszPrtNull[1] = {_T('\0')};
-	TCHAR	aszDoubRepoNumb[8 * 2 + 1];
-	TCHAR	aszRepoNumb[8 + 1];
-    TCHAR   *uchMnemo;
-    UCHAR   uchMajorClass;
-    USHORT  usPrtControl;
-    ULONG   ulNumber;
+    TCHAR   aszPrtNull[1] = { 0 };
+	TCHAR	aszDoubRepoNumb[8 * 2 + 1] = { 0 };
+    TCHAR	aszRepoNumb[8 + 1] = { 0 };
+    TCHAR   *uchMnemo = aszPrtNull;       // initialize pointer to empty string
+    UCHAR   uchMajorClass = ITEMCLASSPTR(pData)->uchMajorClass;
+    USHORT  usPrtControl = 0;
+    ULONG   ulNumber = 0;
 
     /* check major class */
-    uchMajorClass = *(( UCHAR *)pData);
-
     switch(uchMajorClass) {
     case CLASS_RPTOPENCAS:
         ulNumber = RflTruncateEmployeeNumber((( RPTCASHIER *)pData)->ulCashierNumber); 
@@ -109,21 +101,22 @@ VOID  PrtThrmSupWFClose( VOID *pData )
 
     default:
 /*      PifLog(MODULE_PRINT_SUPPRG_ID, LOG_ERROR_PRT_SUPPRG_ERROR); */
-        break;
+        return;
     }            
 
     /* convert Cashier/Waiter No. to double wide */
     RflSPrintf(aszRepoNumb, TCHARSIZEOF(aszRepoNumb), auchNumber, ulNumber);
-    memset(aszDoubRepoNumb, '\0', sizeof(aszDoubRepoNumb));
     PrtDouble(aszDoubRepoNumb, TCHARSIZEOF(aszDoubRepoNumb), aszRepoNumb);
 
     /* check print control */
     if (usPrtControl & PRT_RECEIPT) {
+        static const TCHAR  auchPrtThrmSupWFClose[] = _T("%6s%-10s%13s%6s");    /* define thermal print format */
         /* print CASHIER/WAITER NAME/No. */
         PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupWFClose, aszPrtNull, uchMnemo, aszPrtNull, aszDoubRepoNumb);
     }
 
     if (usPrtControl & PRT_JOURNAL) {
+        static const TCHAR  auchPrtSupWFClose[] = _T("%3s%-10s\t%6s");    /* define EJ print format */
         /* print CASHIER/WAITER NAME/No. */
         PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupWFClose, aszPrtNull, uchMnemo, aszDoubRepoNumb);
     }

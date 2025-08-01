@@ -1,3 +1,12 @@
+
+#if defined(POSSIBLE_DEAD_CODE)
+
+// Since function PrtPLU() uses the same functions as function PrtDept()
+// the source code for the function has been moved to that file where the various functions used
+// by both are located. The idea is to consolidate source code where appropriate.
+//    Richard Chambers, July-07-2025
+
+
 /*
 ****************************************************************************
 **                                                                        **
@@ -128,5 +137,7 @@ VOID PrtPLU(TRANINFORMATION  *pTran, ITEMSALES  *pItem)
         PrtDeptPLU_EJ(pTran, pItem);
     }
 }
+
+#endif
 
 /* --- End of Source File --- */

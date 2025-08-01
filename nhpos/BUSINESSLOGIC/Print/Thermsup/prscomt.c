@@ -122,55 +122,32 @@ VOID  PrtThrmSupOutputLine( MAINTPRINTLINE *pData )
 *===========================================================================
 */
 
-VOID  PrtThrmSupHeader( MAINTHEADER *pData )
+VOID  PrtThrmSupHeader(MAINTHEADER *pData )
 {
-
     /* define thermal print format */
-
-    static const TCHAR FARCONST auchPrtThrmSupHead1[] = _T(" %-12s   %-6s   %-12s");
-    static const TCHAR FARCONST auchPrtThrmSupHead2[] = _T(" %-6s %2s %s %s");
+    static const TCHAR  auchPrtThrmSupHead1[] = _T(" %-12s   %-6s   %-12s");
+    static const TCHAR  auchPrtThrmSupHead2[] = _T(" %-6s %2s %s %s");
 
     /* define EJ print format */
-
-    static const TCHAR FARCONST auchPrtSupHead1[] = _T(" %-12s %s");
-    static const TCHAR FARCONST auchPrtSupHead2[] = _T("%s");
-    static const TCHAR FARCONST auchPrtSupHead3[] = _T("%-4s %s %s %s");
+    static const TCHAR  auchPrtSupHead1[] = _T(" %-12s %s");
+    static const TCHAR  auchPrtSupHead2[] = _T("%s");
+    static const TCHAR  auchPrtSupHead3[] = _T("%-4s %s %s %s");
 
     /* define thermal/EJ common print format */
+    static const TCHAR  auchNumber[] = _T("%3d");                     
 
-    static const TCHAR FARCONST auchNumber[] = _T("%3d");                     
+    static TRANINFORMATION     Tran = { 0 };    // temporary storage area to call a function. TBD: needs replacing probably with TranCurQual.
 
-    TCHAR   aszReportType[7] = { 0, 0, 0, 0, 0, 0, 0 };
-    TCHAR   aszResetType[7] = { 0, 0, 0, 0, 0, 0, 0 };
-    TCHAR   aszDoubRepoName1[PARA_REPORTNAME_LEN * 2 + 1];
-    TCHAR   aszDoubRepoName2[PARA_REPORTNAME_LEN * 2 + 1];
-    TCHAR   aszDoubRepoNumb[8 * 2 + 1];
-    TCHAR   aszRepoNumb[8 + 1];
-    TRANINFORMATION     Tran;
-    MAINTSPHEADER       SPHead;
+    TCHAR   aszReportType[8] = { 0 };
+    TCHAR   aszResetType[8] = { 0 };
+    TCHAR   aszDoubRepoName1[PARA_REPORTNAME_LEN * 2 + 1] = { 0 };
+    TCHAR   aszDoubRepoName2[PARA_REPORTNAME_LEN * 2 + 1] = { 0 };
+    TCHAR   aszDoubRepoNumb[8 * 2 + 1] = { 0 };
+    TCHAR   aszRepoNumb[8 + 1] = { 0 };
 
     /* set transaction information */
-	{
-		PARASTOREGNO   StRegNoRcvBuff;
-		ULONG          ulStoreRegNo;
-
-		StRegNoRcvBuff.uchMajorClass = CLASS_PARASTOREGNO;    /* get store/ reg No. */
-		StRegNoRcvBuff.uchAddress = SREG_NO_ADR;
-		CliParaRead(&StRegNoRcvBuff);
-	    
-		ulStoreRegNo = (ULONG) StRegNoRcvBuff.usStoreNo * 1000L + (ULONG) StRegNoRcvBuff.usRegisterNo;
-
-		Tran.TranCurQual.ulStoreregNo = ulStoreRegNo;
-	}
-
-	{
-	    PARASPCCO ParaSpcCo;
-
-		ParaSpcCo.uchMajorClass = CLASS_PARASPCCO;
-		ParaSpcCo.uchAddress = SPCO_CONSEC_ADR;                    
-		CliParaRead(&ParaSpcCo);                                     /* call ParaSpcCoRead() */
-		Tran.TranCurQual.usConsNo = ParaSpcCo.usCounter;
-	}
+    Tran.TranCurQual.ulStoreregNo = RflCombineStoreRegisterNo(RflGetStoreRegisterNo());;
+	Tran.TranCurQual.usConsNo = MaintCurrentSpcCo(SPCO_CONSEC_ADR);
 
     /* initialize EJ BUFFER & print PRT_RECEIPT HEADER */
 
@@ -178,23 +155,18 @@ VOID  PrtThrmSupHeader( MAINTHEADER *pData )
     PrtPortion(pData->usPrtControl);
     if ( fsPrtPrintPort & PRT_SLIP ) {              /* slip print           */
 /*    if (fsPrtCompul & PRT_SLIP) {       /* Optional Slip */
-        memset(&SPHead, 0, sizeof(SPHead));
+        MAINTSPHEADER       SPHead = { 0 };
         SPHead.usACNumber   = pData->uchPrgSupNo;
         PrtSupSPHead(&Tran, &SPHead);
     } else {
         if (pData->usPrtControl & PRT_RECEIPT){
 			PrtTransactionBegin(PRT_REGULARPRINTING,0);
-            PrtTHHead(&Tran);
+            PrtTHHead(Tran.TranCurQual.usConsNo);
         }
     }
 
-    PrtForceEJInit(&Tran);
+    PrtForceEJInit(NULL);     // use the default system data to init EJ data buffer.
 
-    /* initialize */
-    memset(aszRepoNumb, '\0', sizeof(aszRepoNumb));
-    memset(aszDoubRepoName1, '\0', sizeof(aszDoubRepoName1));
-    memset(aszDoubRepoNumb, '\0', sizeof(aszDoubRepoNumb));
-    memset(aszDoubRepoName2, '\0', sizeof(aszDoubRepoName2));
 
     /* make double wide for report name */
     PrtDouble(aszDoubRepoName1, TCHARSIZEOF(aszDoubRepoName1), pData->aszReportName1);
@@ -323,17 +295,17 @@ VOID PrtThrmSupFormTrailer(MAINTTRAILER *pData)
     /* print 1st line */
     /* check minor class */
     if (pData->uchMinorClass == CLASS_MAINTTRAILER_PRTPRG) {    /* program mode */
-		const TCHAR FARCONST auchPrtThrmSupTrailer1[] = _T("%-4s%04u\t%-4s%04u    %-4s%04u");               
+		static const TCHAR  auchPrtThrmSupTrailer1[] = _T("%-4s%04u\t%-4s%04u    %-4s%04u");               
         PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupTrailer1, pData->aszPrgCountMnemo, pData->usPrgCount, pData->aszPTDRstMnemo, pData->usPTDRstCount, pData->aszDayRstMnemo, pData->usDayRstCount);
     } else {                                                    /* supervisor mode */    
-		const TCHAR FARCONST auchPrtThrmSupTrailer2[] = _T("%8.8Mu\t%-4s%04u    %-4s%04u");
+		static const TCHAR  auchPrtThrmSupTrailer2[] = _T("%8.8Mu\t%-4s%04u    %-4s%04u");
         PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupTrailer2, RflTruncateEmployeeNumber(pData->ulSuperNumber), pData->aszPTDRstMnemo, pData->usPTDRstCount, pData->aszDayRstMnemo, pData->usDayRstCount);
     }
 
     /* print 2nd line */
     /* check time */
     if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT3)) {
-		const TCHAR FARCONST auchPrtThrmSupTrailer3[] = _T("%04u\t%2u:%02u   %02u/%02u/%02u    %04u-%03u");
+		static const TCHAR  auchPrtThrmSupTrailer3[] = _T("%04u\t%2u:%02u   %02u/%02u/%02u    %04u-%03u");
         /* check date */
         if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT2)) { /* MM/DD/YY */
             PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupTrailer3, pData->usConsCount, pData->usHour, pData->usMin, pData->usMDay, pData->usMonth, pData->usYear % 100, pData->usStoreNumber, pData->usRegNumber);
@@ -341,7 +313,7 @@ VOID PrtThrmSupFormTrailer(MAINTTRAILER *pData)
             PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupTrailer3, pData->usConsCount, pData->usHour, pData->usMin, pData->usMonth, pData->usMDay, pData->usYear % 100, pData->usStoreNumber, pData->usRegNumber);
         }
     } else {
-		const TCHAR FARCONST auchPrtThrmSupTrailer4[] = _T("%04u\t%2u:%02u%s   %02u/%02u/%02u    %04u-%03u");
+		static const TCHAR  auchPrtThrmSupTrailer4[] = _T("%04u\t%2u:%02u%s   %02u/%02u/%02u    %04u-%03u");
 		USHORT usHour;
 
         /* check if Hour is '0' */
@@ -385,24 +357,24 @@ VOID  PrtEJSupFormTrailer( MAINTTRAILER *pData )
 
     /* print 1st line */
 	{
-		const TCHAR FARCONST auchPrtSupTrailer1[] = _T("%-4s%04u\t%-4s%04u");
+		static const TCHAR  auchPrtSupTrailer1[] = _T("%-4s%04u\t%-4s%04u");
 		PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupTrailer1, pData->aszDayRstMnemo, pData->usDayRstCount, pData->aszPTDRstMnemo, pData->usPTDRstCount);
 	}
 
     /* print 2nd line */
     /* check minor class */
     if (pData->uchMinorClass == CLASS_MAINTTRAILER_PRTPRG) {    /* program mode */
-		const TCHAR FARCONST auchPrtSupTrailer5[] = _T("%-4s%04u\t%04u-%03u");
+		static const TCHAR  auchPrtSupTrailer5[] = _T("%-4s%04u\t%04u-%03u");
         PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupTrailer5, pData->aszPrgCountMnemo, pData->usPrgCount, pData->usStoreNumber, pData->usRegNumber);
     } else {    /* supervisor mode */
-		const TCHAR FARCONST auchPrtSupTrailer2[] = _T("%8.8Mu\t%04u-%03u");
+		static const TCHAR  auchPrtSupTrailer2[] = _T("%8.8Mu\t%04u-%03u");
         PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupTrailer2, pData->ulSuperNumber, pData->usStoreNumber, pData->usRegNumber);
     }
         
     /* print 3rd line */
     /* check time */
     if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT3)) {
-		const TCHAR FARCONST auchPrtSupTrailer3[] = _T("%04u\t%2u:%02u %02u/%02u/%02u");
+		static const TCHAR  auchPrtSupTrailer3[] = _T("%04u\t%2u:%02u %02u/%02u/%02u");
         /* check date */
         if (CliParaMDCCheck(MDC_DRAWER_ADR, EVEN_MDC_BIT2)) {
             PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupTrailer3, pData->usConsCount, pData->usHour, pData->usMin, pData->usMDay, pData->usMonth, pData->usYear % 100);
@@ -411,7 +383,7 @@ VOID  PrtEJSupFormTrailer( MAINTTRAILER *pData )
       
         }
     } else {
-		const TCHAR FARCONST auchPrtSupTrailer4[] = _T("%04u\t%2u:%02u%s %02u/%02u/%02u");
+		static const TCHAR  auchPrtSupTrailer4[] = _T("%04u\t%2u:%02u%s %02u/%02u/%02u");
 		USHORT  usHour;
 
         /* check if Hour is '0' */

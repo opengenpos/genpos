@@ -46,22 +46,16 @@
 #include <string.h>
 
 #include <ecr.h>
-/* #include <pif.h> */
-/* #include <rfl.h> */
 #include <paraequ.h> 
 #include <para.h>
 #include <csttl.h>
 #include <csop.h>
 #include <report.h>
-/* #include <cswai.h>  */
 #include <maint.h> 
-/* #include <regstrct.h> */
-/* #include <transact.h> */
 #include <rfl.h>
 #include <pmg.h>
+#include <prt.h>
 
-#include "prtcom.h"
-/* #include "prtrin.h" */
 #include "prtsin.h"
 #include "prrcolm_.h"
 
@@ -95,20 +89,16 @@ VOID PrtThrmSupMenuPLU( MAINTMENUPLUTBL *pData )
     static const TCHAR  auchPrtSupMenuPLU3[] = _T("%-s\n\t%s-%1u");
     static const TCHAR  auchPrtSupMenuPLU4[] = _T("%1u / %-s\n\t%s-%1u");
 
-    TCHAR  aszPLUNo[PLU_MAX_DIGIT+1];
+    TCHAR  aszPLUNo[PLU_MAX_DIGIT + 1] = { 0 };
     TCHAR  aszPrtNull[1] = {'\0'};
 
-	memset(aszPLUNo, 0x00, sizeof(aszPLUNo));
     RflConvertPLU(aszPLUNo, pData->SetPLU.aszPLUNumber);
     
     /* check print status */
-
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
 
         if (!(pData->uchArrayAddr)) {                       /* in case of parent PLU */
-        
             /* print PARENT PLU */
-        
             PrtPrintf(PMG_PRT_RECEIPT,                          /* printer type */
                       auchPrtThrmSupMenuPLU1,                   /* format */
                       pData->aszPLUMnemonics,                   /* PLU mnemonics */
@@ -116,11 +106,8 @@ VOID PrtThrmSupMenuPLU( MAINTMENUPLUTBL *pData )
                       aszPLUNo,
                       /* pData->SetPLU.usPLU,*/                      /* PLU number */
                      ( USHORT)pData->SetPLU.uchAdjective);      /* adjective number */
-
         } else {                                                /* in case of child PLU */
-        
             /* print CHILD PLU */
-        
             PrtPrintf(PMG_PRT_RECEIPT,                          /* printer type */
                       auchPrtThrmSupMenuPLU2,                   /* format */
                       aszPrtNull,                               /* null */
@@ -133,14 +120,10 @@ VOID PrtThrmSupMenuPLU( MAINTMENUPLUTBL *pData )
     } 
     
     if (pData->usPrintControl & PRT_JOURNAL) {  /* EJ */
-    
         if (!(pData->uchArrayAddr)) {                       /* in case of parent PLU */
-        
             /* print PARENT PLU */
-
             /* 2172 */
             if ((_tcslen(pData->aszPLUMnemonics) + _tcslen(aszPLUNo)) > PRT_EJCOLUMN-2) {
-
                 PrtPrintf(PMG_PRT_JOURNAL,                          /* printer type */
                           auchPrtSupMenuPLU3,                       /* format */
                           pData->aszPLUMnemonics,                   /* PLU mnemonics */
@@ -148,7 +131,6 @@ VOID PrtThrmSupMenuPLU( MAINTMENUPLUTBL *pData )
                           /* pData->SetPLU.usPLU,*/                      /* PLU number */
                           ( USHORT)pData->SetPLU.uchAdjective);      /* adjective number */
             } else {
-
                 PrtPrintf(PMG_PRT_JOURNAL,                          /* printer type */
                           auchPrtSupMenuPLU1,                       /* format */
                           pData->aszPLUMnemonics,                   /* PLU mnemonics */
@@ -158,12 +140,9 @@ VOID PrtThrmSupMenuPLU( MAINTMENUPLUTBL *pData )
             }
 
         } else {                                            /* in case of child PLU */
-        
             /* print CHILD PLU */
-        
             /* 2172 */
             if ((_tcslen(pData->aszPLUMnemonics) + _tcslen(aszPLUNo)) > (PRT_EJCOLUMN-6)) {
-
                 PrtPrintf(PMG_PRT_JOURNAL,                          /* printer type */
                           auchPrtSupMenuPLU4,                       /* format */
                           ( USHORT)pData->uchArrayAddr,             /* array number of set PLU */
@@ -172,7 +151,6 @@ VOID PrtThrmSupMenuPLU( MAINTMENUPLUTBL *pData )
                           /* pData->SetPLU.usPLU,*/                      /* PLU number */
                           ( USHORT)pData->SetPLU.uchAdjective);     /* adjective number */
             } else {
-
                 PrtPrintf(PMG_PRT_JOURNAL,                          /* printer type */
                           auchPrtSupMenuPLU2,                       /* format */
                           ( USHORT)pData->uchArrayAddr,             /* array number of set PLU */

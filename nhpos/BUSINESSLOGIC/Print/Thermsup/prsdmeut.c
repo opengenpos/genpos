@@ -13,10 +13,6 @@
 * Category    : Print, NCR 2170 US Hospitality Application Program        
 * Program Name: PRSDMEUT.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract: The provided function names are as follows:            
 * 
 *               PrtThrmSupDeptNoMenu()   : forms Set Dept No. on Menu Page print format     
@@ -44,20 +40,17 @@
 **/
 
 #include	<tchar.h>
+
 #include <ecr.h>
-/* #include <pif.h> */
 #include <paraequ.h> 
 #include <para.h>
 #include <csttl.h>
-/* #include <cswai.h> */
 #include <csop.h>
 #include <report.h> 
 #include <maint.h> 
-/* #include <regstrct.h> */
-/* #include <transact.h> */
 #include <pmg.h>
+#include <prt.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*

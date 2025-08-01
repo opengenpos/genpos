@@ -47,8 +47,8 @@
 
 #include	<tchar.h>
 #include <stdlib.h>
+
 #include <ecr.h>
-/* #include <pif.h> */
 #include <paraequ.h> 
 #include <para.h>
 #include <csttl.h>
@@ -59,9 +59,8 @@
 #include <regstrct.h>
 #include <transact.h>
 #include <pmg.h>
-/* #include <appllog.h> */
+#include <prt.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*
@@ -98,16 +97,12 @@
 
 VOID PrtThrmSupComData( VOID *pData )
 {
-    static const TCHAR  auchPrtThrmSupCom[] = _T("%18u  /  %8lu");    /* define thermal print format */
-    static const TCHAR  auchPrtSupCom[] = _T("%8u / %8lu");           /* define EJ print format */
-
-    UCHAR      uchMajorClass = *(( UCHAR *)(pData));  /* get major class */
     USHORT     usAddress;
     ULONG      ulData = 0;
     USHORT     usPrintControl = 0;
 
     /* distinguish major class */
-    switch(uchMajorClass) {
+    switch(ITEMCLASSPTR(pData)->uchMajorClass) {
     case CLASS_PARATONECTL:
 		{
 			PARATONECTL  *pParaToneCtl = pData;
@@ -236,16 +231,18 @@ VOID PrtThrmSupComData( VOID *pData )
 
     default:
 /*         PifLog(MODULE_PRINT_SUPPRG_ID, LOG_ERROR_PRT_SUPPRG_ERROR); */
-        break;
+        return;
     }
 
     /* check print control */
     if (usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
+		static const TCHAR  auchPrtThrmSupCom[] = _T("%18u  /  %8lu");    /* define thermal print format */
         /* print ADDRESS / DATA */
 		PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupCom, usAddress, ulData);
     } 
     
     if (usPrintControl & PRT_JOURNAL) {  /* EJ */
+		static const TCHAR  auchPrtSupCom[] = _T("%8u / %8lu");           /* define EJ print format */
         /* print ADDRESS / DATA */
 		PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupCom, usAddress, ulData);
     }
@@ -269,13 +266,11 @@ VOID PrtThrmSupOepData( PARAOEPTBL *pData )
     static const TCHAR  auchPrtSupOep[] = _T("%4s  %4u / %4u");
     static const TCHAR  auchPrtSupOepThrm[] = _T("%8s    %8u   /   %8u");
 
-    USHORT              usPrintControl;
-    TCHAR               aszTblNumStr[4] = {0,0,0,0};
+    TCHAR               aszTblNumStr[4] = {0};
 
     if(pData->uchTblNumber){
         _itot(pData->uchTblNumber, aszTblNumStr, 10);
     }
-    usPrintControl = pData->usPrintControl;
 
     /* check print control */
     switch(pData->usPrintControl) {

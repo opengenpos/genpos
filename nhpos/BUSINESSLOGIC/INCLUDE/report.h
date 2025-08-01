@@ -65,6 +65,7 @@
 
 #include <csttl.h>
 #include <csop.h>
+#include <csetk.h>
 #include <uie.h>
 
 extern    UCHAR   uchRptOpeCount;
@@ -424,14 +425,8 @@ extern    UCHAR   uchRptOpeCount;
       TCHAR     aszTimeoutMnemo[PARA_TRANSMNEMO_LEN+1]; /* Transaction Mnemonics */
       ULONG     ulEmployeeNumber;                   /* Employee Number */
       TCHAR     aszEmpMnemo[PARA_LEADTHRU_LEN+1];   /* Lead Through */
-      N_DATE      Date;                               /* Preiod Date */
-      USHORT    usMonth;                            /* Month to be time in */
-      USHORT    usDay;                              /* Day to be time in */
-      UCHAR     uchJobCode;                         /* Job Code to be time in */
-      USHORT    usTimeInTime;                       /* Time to be time in */
-      USHORT    usTimeInMinute;                     /* Minute to be time in */
-      USHORT    usTimeOutTime;                      /* Time to be time out */
-      USHORT    usTimeOutMinute;                    /* Minute to be time out */
+      N_DATE    Date;                               /* Preiod Date */
+      ETK_FIELD   EtkField;
       USHORT    usWorkTime;                         /* Time to be work time */
       USHORT    usWorkMinute;                       /* Minute to be work time */
       ULONG     ulWorkWage;                         /* Wage of work time R3.1 */

@@ -80,7 +80,6 @@
 /**------- 2170 local------**/
 #include <ecr.h>
 #include <paraequ.h>
-/* #include <para.h> */
 #include <regstrct.h>
 #include <transact.h>
 #include <pmg.h>
@@ -95,6 +94,242 @@
 ;+        P R O G R A M    D E C L A R A T I O N s 
 ;========================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID  PrtModTable_TH(TRANINFORMATION *pTran,
+*                                 ITEMMODIFIER *pItem,
+*                                 SHORT sWidthType )
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMMODIFIER     *pItem     -Item Data address
+*            SHORT            sWidthType - Type of Print Width
+*                   PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints table no. (thermal)
+*===========================================================================
+*/
+static VOID  PrtModTable_TH(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem, SHORT sWidthType)
+{
+    PrtTHHead(pTran->TranCurQual.usConsNo);         /* print header if necessarry */
+
+    PrtTHTblPerson(pItem->usTableNo, 0, sWidthType);/* print table mnemo. and number, "0" : not print no of person */
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtModTable_EJ(ITEMMODIFIER *pItem, SHORT sWidthType );      
+*
+*   Input  : ITEMMODIFIER     *pItem     -Item Data address
+*            SHORT  sWidthType - Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints table no. (electric journal)
+*===========================================================================
+*/
+static VOID  PrtModTable_EJ(CONST ITEMMODIFIER *pItem, SHORT sWidthType)
+{
+    PrtEJTblPerson(pItem->usTableNo, 0, 0, sWidthType);   /* print table mnemo. and number, "0" : not print no of person */
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtModTable_SP(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem,
+*                                   SHORT sWidthType
+*
+*   Input  : TRANINFORMATION  *pTran     - Transaction Data address
+*          : ITEMMODIFIER     *pItem     - Item Data address
+*            SHORT  sWidthType  -   Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints table no. (slip)
+*===========================================================================
+*/
+static VOID PrtModTable_SP(CONST TRANINFORMATION  *pTran, CONST ITEMMODIFIER *pItem, SHORT sWidthType)
+{
+    TCHAR   aszSPPrintBuff[PRT_SPCOLUMN + 1] = { 0 };   /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines */
+
+    /* -- set table No. and No. of person -- */
+    usSlipLine += PrtSPTblPerson(aszSPPrintBuff, pItem->usTableNo, 0, sWidthType);
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* if just after header printed, not print table No., No. of person */  
+    if (usSaveLine == 0) {
+        /* -- print the data in the buffer -- */ 
+        if (usSlipLine != 0) {
+            PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);
+        }
+    }
+
+    /* update current line No. */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;    
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtModPerson_TH(TRANINFORMATION *pTran, ITEMMODIFIER *pItem,
+*                                   SHORT sWidthType);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*   Input  : ITEMMODIFIER     *pItem     -Item Data address
+*            SHORT  sWidthType  -   Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints no. of person. (thermal)
+*===========================================================================
+*/
+static VOID  PrtModPerson_TH(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem, SHORT sWidthType)
+{
+    PrtTHHead(pTran->TranCurQual.usConsNo);            /* print header if necessarry */
+
+    PrtTHTblPerson(0, pItem->usNoPerson, sWidthType);  /* print no of person,  "0" : not print table no */
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtModPerson_EJ(ITEMMODIFIER *pItem, SHORT sWidthType)
+*
+*   Input  : ITEMMODIFIER     *pItem     -Item Data address
+*            SHORT  sWidthType  -   Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints no. of person. (electric journal)
+*===========================================================================
+*/
+static VOID  PrtModPerson_EJ(CONST ITEMMODIFIER *pItem, SHORT sWidthType )
+{
+    PrtEJTblPerson(0, pItem->usNoPerson, 0, sWidthType);  /* print no of person,  "0" : not print table no */
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtModPerson_SP(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem,
+*                                   SHORT sWidthType)
+*
+*   Input  : TRANINFORMATION  *pTran 
+*          : ITEMMODIFIER     *pItem     -Item Data address
+*            SHORT  sWidthType  -   Type of Print Width
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints no. of person. (slip)
+*===========================================================================
+*/
+static VOID PrtModPerson_SP(CONST TRANINFORMATION  *pTran, CONST ITEMMODIFIER *pItem, SHORT sWidthType)
+{
+    TCHAR  aszSPPrintBuff[PRT_SPCOLUMN + 1] = { 0 };   /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    /* -- set table No. and No. of person -- */
+    usSlipLine += PrtSPTblPerson(aszSPPrintBuff, 0, pItem->usNoPerson, sWidthType);
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* if just after header printed, not print table No., No. of person */  
+    if (usSaveLine == 0) {
+        /* -- print the data in the buffer -- */ 
+        if (usSlipLine != 0) {
+            PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);
+        }
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;    
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtModCustName_TH( TRANINFORMATION *pTran,
+                                      ITEMMODIFIER    *pItem )
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*   Input  : ITEMMODIFIER     *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints customer name. (thermal)
+*===========================================================================
+*/
+static VOID PrtModCustName_TH(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem )
+{
+    PrtTHHead(pTran->TranCurQual.usConsNo);
+    PrtTHCustomerName( pItem->aszName );
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtModCustName_EJ( ITEMMODIFIER *pItem )
+*
+*   Input  : ITEMMODIFIER   *pItem  - address of item modifier data
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints customer name on electric jounrnal.
+*===========================================================================
+*/
+static VOID PrtModCustName_EJ(CONST ITEMMODIFIER *pItem )
+{
+    PrtEJCustomerName( pItem->aszName );
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtModCustName_SP( TRANINFORMATION *pTran,
+*                                    ITEMMODIFIER    *pItem )
+*
+*   Input  : TRANINFORMATION *pTran - Transaction Data address
+*          : ITEMMODIFIER    *pItem - Item Data address
+*
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints customer name on slip.
+*===========================================================================
+*/
+static VOID PrtModCustName_SP(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem )
+{
+    TCHAR   szSPPrintBuff[PRT_SPCOLUMN + 1] = { 0 };
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines */
+
+    usSlipLine += PrtSPCustomerName( szSPPrintBuff, pItem->aszName );
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine( usSlipLine, pTran );
+
+    /* if just after header printed, not print table No., No. of person */  
+    if (( usSaveLine == 0 ) && ( usSlipLine != 0 )) {
+        PrtPrint( PMG_PRT_SLIP, szSPPrintBuff, PRT_SPCOLUMN );
+    }
+    usPrtSlipPageLine += ( usSlipLine + usSaveLine );
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtItemModifier(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem);      
@@ -108,7 +343,7 @@
 ** Synopsis: This function prints item modfier.
 *===========================================================================
 */
-VOID  PrtItemModifier(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem)
+VOID  PrtItemModifier(CONST TRANINFORMATION  *pTran, CONST ITEMMODIFIER *pItem)
 {
     SHORT   sWidthType;
 
@@ -170,7 +405,7 @@ VOID  PrtItemModifier(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem)
 
     case CLASS_SEATNO:
         if ( fsPrtPrintPort & ( PRT_RECEIPT | PRT_JOURNAL )) {
-            PrtTHHead(pTran);                   /* print header if necessary */
+            PrtTHHead(pTran->TranCurQual.usConsNo);    /* print header if necessary */
             PrtTHSeatNo( pItem->uchLineNo);
         }
         break;
@@ -181,296 +416,7 @@ VOID  PrtItemModifier(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem)
     }
 }
 
-/*
-*===========================================================================
-** Format  : VOID  PrtModTable_TH(TRANINFORMATION *pTran,
-*                                 ITEMMODIFIER *pItem,
-*                                 SHORT sWidthType )
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMMODIFIER     *pItem     -Item Data address
-*            SHORT            sWidthType - Type of Print Width
-*                   PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints table no. (thermal)
-*===========================================================================
-*/
-VOID  PrtModTable_TH(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthType)
-{
-    PrtTHHead(pTran);                      /* print header if necessarry */
-
-    PrtTHTblPerson(pItem->usTableNo, 0, sWidthType);/* print table mnemo. and number, "0" : not print no of person */
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtModTable_EJ(ITEMMODIFIER *pItem, SHORT sWidthType );      
-*
-*   Input  : ITEMMODIFIER     *pItem     -Item Data address
-*            SHORT  sWidthType - Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints table no. (electric journal)
-*===========================================================================
-*/
-VOID  PrtModTable_EJ(ITEMMODIFIER *pItem, SHORT sWidthType)
-{
-    PrtEJTblPerson(pItem->usTableNo, 0, 0, sWidthType);   /* print table mnemo. and number, "0" : not print no of person */
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtModTable_SP(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem,
-*                                   SHORT sWidthType
-*
-*   Input  : TRANINFORMATION  *pTran     - Transaction Data address
-*          : ITEMMODIFIER     *pItem     - Item Data address
-*            SHORT  sWidthType  -   Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints table no. (slip)
-*===========================================================================
-*/
-VOID PrtModTable_SP(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem, SHORT sWidthType)
-{
-    TCHAR   aszSPPrintBuff[PRT_SPCOLUMN + 1];   /* print data save area */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines */
-
-    /* -- initialize the area -- */
-    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));
-
-    /* -- set table No. and No. of person -- */
-    usSlipLine += PrtSPTblPerson(aszSPPrintBuff, pItem->usTableNo, 0, sWidthType);
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* if just after header printed, not print table No., No. of person */  
-    if (usSaveLine == 0) {
-        /* -- print the data in the buffer -- */ 
-        if (usSlipLine != 0) {
-            PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);
-        }
-    }
-
-    /* update current line No. */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;    
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtModPerson_TH(TRANINFORMATION *pTran, ITEMMODIFIER *pItem,
-*                                   SHORT sWidthType);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*   Input  : ITEMMODIFIER     *pItem     -Item Data address
-*            SHORT  sWidthType  -   Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints no. of person. (thermal)
-*===========================================================================
-*/
-VOID  PrtModPerson_TH(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthType)
-{
-    PrtTHHead(pTran);                      /* print header if necessarry */
-
-    PrtTHTblPerson(0, pItem->usNoPerson, sWidthType);  /* print no of person,  "0" : not print table no */
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtModPerson_EJ(ITEMMODIFIER *pItem, SHORT sWidthType)
-*
-*   Input  : ITEMMODIFIER     *pItem     -Item Data address
-*            SHORT  sWidthType  -   Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints no. of person. (electric journal)
-*===========================================================================
-*/
-VOID  PrtModPerson_EJ(ITEMMODIFIER *pItem, SHORT sWidthType )
-{
-    PrtEJTblPerson(0, pItem->usNoPerson, 0, sWidthType);  /* print no of person,  "0" : not print table no */
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtModPerson_SP(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem,
-*                                   SHORT sWidthType)
-*
-*   Input  : TRANINFORMATION  *pTran 
-*          : ITEMMODIFIER     *pItem     -Item Data address
-*            SHORT  sWidthType  -   Type of Print Width
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints no. of person. (slip)
-*===========================================================================
-*/
-VOID PrtModPerson_SP(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem, SHORT sWidthType)
-{
-    TCHAR  aszSPPrintBuff[PRT_SPCOLUMN + 1];   /* print data save area */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-
-
-    /* -- initialize the area -- */
-    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));
-
-    /* -- set table No. and No. of person -- */
-    usSlipLine += PrtSPTblPerson(aszSPPrintBuff, 0, pItem->usNoPerson, sWidthType);
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* if just after header printed, not print table No., No. of person */  
-    if (usSaveLine == 0) {
-        /* -- print the data in the buffer -- */ 
-        if (usSlipLine != 0) {
-            PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);
-        }
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;    
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtModCustName_TH( TRANINFORMATION *pTran,
-                                      ITEMMODIFIER    *pItem )
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*   Input  : ITEMMODIFIER     *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints customer name. (thermal)
-*===========================================================================
-*/
-VOID PrtModCustName_TH( TRANINFORMATION *pTran, ITEMMODIFIER *pItem )
-{
-    PrtTHHead( pTran );
-    PrtTHCustomerName( pItem->aszName );
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtModCustName_EJ( ITEMMODIFIER *pItem )
-*
-*   Input  : ITEMMODIFIER   *pItem  - address of item modifier data
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints customer name on electric jounrnal.
-*===========================================================================
-*/
-VOID PrtModCustName_EJ( ITEMMODIFIER *pItem )
-{
-    PrtEJCustomerName( pItem->aszName );
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtModCustName_SP( TRANINFORMATION *pTran,
-*                                    ITEMMODIFIER    *pItem )
-*
-*   Input  : TRANINFORMATION *pTran - Transaction Data address
-*          : ITEMMODIFIER    *pItem - Item Data address
-*
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints customer name on slip.
-*===========================================================================
-*/
-VOID PrtModCustName_SP( TRANINFORMATION *pTran, ITEMMODIFIER *pItem )
-{
-    TCHAR   szSPPrintBuff[ PRT_SPCOLUMN + 1 ];
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines */
-
-    /* -- initialize the area -- */
-    memset( szSPPrintBuff, '\0', sizeof( szSPPrintBuff ));
-
-    usSlipLine += PrtSPCustomerName( szSPPrintBuff, pItem->aszName );
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine( usSlipLine, pTran );
-
-    /* if just after header printed, not print table No., No. of person */  
-    if (( usSaveLine == 0 ) && ( usSlipLine != 0 )) {
-        PrtPrint( PMG_PRT_SLIP, szSPPrintBuff, PRT_SPCOLUMN );
-    }
-    usPrtSlipPageLine += ( usSlipLine + usSaveLine );
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtDispModifier(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem)
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMMODIFIER     *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints item modfier.
-*===========================================================================
-*/
-VOID  PrtDispModifier(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem )
-{
-    SHORT   sWidthType;
-
-    /* --- if current system uses unique transaction no.,
-        print it in double width character. --- */
-    if ( pTran->TranCurQual.flPrintStatus & CURQUAL_UNIQUE_TRANS_NO ) {
-        sWidthType = PRT_DOUBLE;
-    } else {
-        sWidthType = PRT_SINGLE;
-    }
-
-    switch (pItem->uchMinorClass) {
-
-    case CLASS_TABLENO:
-        PrtDflModTable(pTran, pItem, sWidthType);
-        break;
-
-    case CLASS_NOPERSON:
-        PrtDflModPerson(pTran, pItem, sWidthType);
-        break;
-
-    case CLASS_ALPHATENT:
-    case CLASS_ALPHANAME:
-        PrtDflModCustName( pTran, pItem );
-        break;
-
-    default:
-        break; 
-
-    }
-}
+// --------------------------------------------------------------------
 
 /*
 *===========================================================================
@@ -488,18 +434,15 @@ VOID  PrtDispModifier(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem )
 ** Synopsis: This function displays table no. 
 *===========================================================================
 */
-VOID  PrtDflModTable(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthType)
+VOID  PrtDflModTable(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem, SHORT sWidthType)
 {
 
-    TCHAR  aszDflBuff[5][PRT_DFL_LINE + 1];   /* display data save area */
+    TCHAR  aszDflBuff[5][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -511,13 +454,14 @@ VOID  PrtDflModTable(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthTy
     usLineNo += PrtDflTblPerson(aszDflBuff[usLineNo], pItem->usTableNo, 0, sWidthType);
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_MODIFIER); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -545,19 +489,16 @@ VOID  PrtDflModTable(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthTy
 ** Synopsis: This function displays no. of person.
 *===========================================================================
 */
-VOID  PrtDflModPerson(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthType)
+VOID  PrtDflModPerson(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem, SHORT sWidthType)
 {
 
-    TCHAR  aszDflBuff[5][PRT_DFL_LINE + 1];   /* display data save area */
+    TCHAR  aszDflBuff[5][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
 
     /* --- if this frame is 1st frame, display customer name --- */
 
     PrtDflCustHeader( pTran );
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -569,13 +510,14 @@ VOID  PrtDflModPerson(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthT
     usLineNo += PrtDflTblPerson(aszDflBuff[usLineNo], 0, pItem->usNoPerson, sWidthType); 
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_MODIFIER); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -600,18 +542,15 @@ VOID  PrtDflModPerson(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthT
 ** Synopsis: This function displays customer name.
 *===========================================================================
 */
-VOID PrtDflModCustName( TRANINFORMATION *pTran, ITEMMODIFIER *pItem )
+VOID PrtDflModCustName(CONST TRANINFORMATION *pTran, CONST TCHAR *pszCustomerName )
 {
-    TCHAR   aszDflBuff[ 6 ][ PRT_DFL_LINE + 1 ];
+    TCHAR   aszDflBuff[6][PRT_DFL_LINE + 1] = { 0 };
     USHORT  usLineNo;               /* number of lines to be displayed */
     USHORT  usOffset = 0;
-    USHORT  i;
 
-    if ( pItem->aszName[0] == '\0' ) {
+    if (pszCustomerName[0] == '\0' ) {
         return;
     }
-
-    memset( aszDflBuff, 0x00, sizeof( aszDflBuff ));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader( aszDflBuff[ 0 ], pTran );
@@ -620,16 +559,17 @@ VOID PrtDflModCustName( TRANINFORMATION *pTran, ITEMMODIFIER *pItem )
     usLineNo += PrtDflTrailer( aszDflBuff[ usLineNo ], pTran, pTran->TranCurQual.ulStoreregNo );
 
     /* -- set item data -- */
-    usLineNo += PrtDflCustName( aszDflBuff[ usLineNo ], pItem->aszName );
+    usLineNo += PrtDflCustName( aszDflBuff[ usLineNo ], pszCustomerName);
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType( usLineNo, DFL_CUSTNAME );
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData( aszDflBuff[ i ], &usOffset );
         if ( aszDflBuff[ i ][ PRT_DFL_LINE ] != '\0' ) {
             i++;
@@ -653,10 +593,9 @@ VOID PrtDflModCustName( TRANINFORMATION *pTran, ITEMMODIFIER *pItem )
 ** Synopsis: This function prints item modfier.
 *===========================================================================
 */
-USHORT  PrtDispModifierForm(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem, TCHAR *puchBuffer)
+VOID  PrtDispModifier(CONST TRANINFORMATION  *pTran, CONST ITEMMODIFIER *pItem )
 {
     SHORT   sWidthType;
-    USHORT usLine;
 
     /* --- if current system uses unique transaction no.,
         print it in double width character. --- */
@@ -669,34 +608,26 @@ USHORT  PrtDispModifierForm(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem, TCHAR 
     switch (pItem->uchMinorClass) {
 
     case CLASS_TABLENO:
-        usLine = PrtDflModTableForm(pTran, pItem, sWidthType, puchBuffer);
+        PrtDflModTable(pTran, pItem, sWidthType);
         break;
 
     case CLASS_NOPERSON:
-        usLine = PrtDflModPersonForm(pTran, pItem, sWidthType, puchBuffer);
+        PrtDflModPerson(pTran, pItem, sWidthType);
         break;
 
     case CLASS_ALPHATENT:
     case CLASS_ALPHANAME:
-        usLine = PrtDflModCustNameForm( pTran, pItem, puchBuffer);
-        break;
-
-    case CLASS_TAXMODIFIER:
-        usLine = PrtDflModTaxForm( pTran, pItem, puchBuffer);
-        break;
-
-    case CLASS_SEATNO:
-        usLine = PrtDflModSeatForm( pTran, pItem, puchBuffer);
+        PrtDflModCustName( pTran, pItem->aszName );
         break;
 
     default:
-        usLine = 0;
         break; 
 
     }
-    
-    return usLine;
 }
+
+
+// --------------------------------------------------------------------
 
 /*
 *===========================================================================
@@ -714,12 +645,11 @@ USHORT  PrtDispModifierForm(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem, TCHAR 
 ** Synopsis: This function displays table no. 
 *===========================================================================
 */
-USHORT  PrtDflModTableForm(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthType, TCHAR *puchBuffer)
+static USHORT  PrtDflModTableForm(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem, SHORT sWidthType, TCHAR *puchBuffer)
 {
-    TCHAR  aszDflBuff[5][PRT_DFL_LINE + 1];   /* display data save area */
-    USHORT  usLineNo=0, i;                       /* number of lines to be displayed */
+    TCHAR  aszDflBuff[5][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
+    USHORT  usLineNo=0;                       /* number of lines to be displayed */
 
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -730,11 +660,12 @@ USHORT  PrtDflModTableForm(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sW
     /* -- set item data -- */
     usLineNo += PrtDflTblPerson(aszDflBuff[usLineNo], pItem->usTableNo, 0, sWidthType);
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i=0; i<usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
-    _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));
-    
+//    _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));
+    memcpy(puchBuffer, aszDflBuff, (usLineNo * (PRT_DFL_LINE + 1) * sizeof(TCHAR)));
+
     return usLineNo;
 
 }
@@ -755,16 +686,15 @@ USHORT  PrtDflModTableForm(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sW
 ** Synopsis: This function displays no. of person.
 *===========================================================================
 */
-USHORT  PrtDflModPersonForm(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT sWidthType, TCHAR *puchBuffer)
+static USHORT  PrtDflModPersonForm(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem, SHORT sWidthType, TCHAR *puchBuffer)
 {
 
-    TCHAR  aszDflBuff[5][PRT_DFL_LINE + 1];   /* display data save area */
-    USHORT  usLineNo=0, i;                       /* number of lines to be displayed */
+    TCHAR  aszDflBuff[5][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
+    USHORT  usLineNo=0;                       /* number of lines to be displayed */
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
 
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -775,11 +705,12 @@ USHORT  PrtDflModPersonForm(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT s
     /* -- set item data -- */
     usLineNo += PrtDflTblPerson(aszDflBuff[usLineNo], 0, pItem->usNoPerson, sWidthType); 
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i=0; i<usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
-    _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));
-    
+//    _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));
+    memcpy(puchBuffer, aszDflBuff, (usLineNo * (PRT_DFL_LINE + 1) * sizeof(TCHAR)));
+
     return usLineNo;
 
 }
@@ -798,9 +729,9 @@ USHORT  PrtDflModPersonForm(TRANINFORMATION *pTran, ITEMMODIFIER *pItem, SHORT s
 ** Synopsis: This function displays customer name.
 *===========================================================================
 */
-USHORT PrtDflModCustNameForm( TRANINFORMATION *pTran, ITEMMODIFIER *pItem, TCHAR *puchBuffer )
+static USHORT PrtDflModCustNameForm(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem, TCHAR *puchBuffer )
 {
-    USHORT  usLineNo=0, i;               /* number of lines to be displayed */
+    USHORT  usLineNo=0;               /* number of lines to be displayed */
 	TCHAR   aszDflBuff[6][PRT_DFL_LINE + 1] = { 0 };
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = { 0 };
 
@@ -825,7 +756,7 @@ USHORT PrtDflModCustNameForm( TRANINFORMATION *pTran, ITEMMODIFIER *pItem, TCHAR
     /* -- set item data -- */
     usLineNo += PrtDflCustName( aszDflBuff[ usLineNo ], pItem->aszName );
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i=0; i<usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
 	//Changed from _tcsncpy to memcpy becasue it is processing two lines
@@ -850,16 +781,15 @@ USHORT PrtDflModCustNameForm( TRANINFORMATION *pTran, ITEMMODIFIER *pItem, TCHAR
 ** Synopsis: This function displays tax modifier, 2172
 *===========================================================================
 */
-USHORT PrtDflModTaxForm( TRANINFORMATION *pTran, ITEMMODIFIER *pItem, TCHAR *puchBuffer )
+static USHORT PrtDflModTaxForm(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem, TCHAR *puchBuffer )
 {
-    TCHAR   aszDflBuff[ 6 ][ PRT_DFL_LINE + 1 ];
-    USHORT  usLineNo=0, i;               /* number of lines to be displayed */
+    TCHAR   aszDflBuff[6][PRT_DFL_LINE + 1] = { 0 };
+    USHORT  usLineNo=0;               /* number of lines to be displayed */
 
     if ( pItem->uchLineNo == 0 ) {
         return 0;
     }
 
-    memset( aszDflBuff, 0x00, sizeof( aszDflBuff ));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader( aszDflBuff[ 0 ], pTran );
@@ -870,10 +800,10 @@ USHORT PrtDflModTaxForm( TRANINFORMATION *pTran, ITEMMODIFIER *pItem, TCHAR *puc
     /* -- set item data -- */
     usLineNo += PrtDflTaxMod2(aszDflBuff[usLineNo], pTran->TranModeQual.fsModeStatus, pItem->uchLineNo);
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i=0; i<usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
-    memcpy(puchBuffer, aszDflBuff, usLineNo*(PRT_DFL_LINE+1));
+    memcpy(puchBuffer, aszDflBuff, (usLineNo * (PRT_DFL_LINE + 1)*sizeof(TCHAR)));
     
     return usLineNo;
 }
@@ -892,16 +822,15 @@ USHORT PrtDflModTaxForm( TRANINFORMATION *pTran, ITEMMODIFIER *pItem, TCHAR *puc
 ** Synopsis: This function displays tax modifier, 2172
 *===========================================================================
 */
-USHORT PrtDflModSeatForm( TRANINFORMATION *pTran, ITEMMODIFIER *pItem, TCHAR *puchBuffer )
+static USHORT PrtDflModSeatForm(CONST TRANINFORMATION *pTran, CONST ITEMMODIFIER *pItem, TCHAR *puchBuffer )
 {
-    TCHAR   aszDflBuff[ 6 ][ PRT_DFL_LINE + 1 ];
-    USHORT  usLineNo=0, i;               /* number of lines to be displayed */
+    TCHAR   aszDflBuff[6][PRT_DFL_LINE + 1] = { 0 };
+    USHORT  usLineNo=0;               /* number of lines to be displayed */
 
     if ( pItem->uchLineNo == 0 ) {
         return 0;
     }
 
-    memset( aszDflBuff, 0x00, sizeof( aszDflBuff ));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader( aszDflBuff[ 0 ], pTran );
@@ -912,12 +841,72 @@ USHORT PrtDflModSeatForm( TRANINFORMATION *pTran, ITEMMODIFIER *pItem, TCHAR *pu
     /* -- set item data -- */
     usLineNo += PrtDflModSeatNo(aszDflBuff[usLineNo], pItem->uchLineNo);
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i=0; i<usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
-    _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));
-    
+//    _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));
+    memcpy(puchBuffer, aszDflBuff, (usLineNo * (PRT_DFL_LINE + 1) * sizeof(TCHAR)));
+
     return usLineNo;
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtDispModifier(TRANINFORMATION  *pTran, ITEMMODIFIER *pItem)
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMMODIFIER     *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints item modfier.
+*===========================================================================
+*/
+USHORT  PrtDispModifierForm(CONST TRANINFORMATION* pTran, CONST ITEMMODIFIER* pItem, TCHAR* puchBuffer)
+{
+    SHORT   sWidthType;
+    USHORT usLine;
+
+    /* --- if current system uses unique transaction no.,
+        print it in double width character. --- */
+    if (pTran->TranCurQual.flPrintStatus & CURQUAL_UNIQUE_TRANS_NO) {
+        sWidthType = PRT_DOUBLE;
+    }
+    else {
+        sWidthType = PRT_SINGLE;
+    }
+
+    switch (pItem->uchMinorClass) {
+
+    case CLASS_TABLENO:
+        usLine = PrtDflModTableForm(pTran, pItem, sWidthType, puchBuffer);
+        break;
+
+    case CLASS_NOPERSON:
+        usLine = PrtDflModPersonForm(pTran, pItem, sWidthType, puchBuffer);
+        break;
+
+    case CLASS_ALPHATENT:
+    case CLASS_ALPHANAME:
+        usLine = PrtDflModCustNameForm(pTran, pItem, puchBuffer);
+        break;
+
+    case CLASS_TAXMODIFIER:
+        usLine = PrtDflModTaxForm(pTran, pItem, puchBuffer);
+        break;
+
+    case CLASS_SEATNO:
+        usLine = PrtDflModSeatForm(pTran, pItem, puchBuffer);
+        break;
+
+    default:
+        usLine = 0;
+        break;
+
+    }
+
+    return usLine;
 }
 
 /***** End Of Source *****/

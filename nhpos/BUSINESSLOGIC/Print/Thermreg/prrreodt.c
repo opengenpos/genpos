@@ -72,6 +72,178 @@
 #include "prrcolm_.h"
 #include "csstbpar.h"
 
+
+/*
+*===========================================================================
+** Format  : VOID  PrtReorder_TH( TRANINFORMATION *pTran,
+*                                 ITEMTRANSOPEN   *pItem,
+*                                 SHORT           sWidthType )
+*
+*   Input  : TRANINFORMATION *pTran     -   Transaction Information address
+*            ITEMTRANSOPEN   *pItem     -   Item Data address
+*            SHORT           sWidthType -   Type of Print Character Width
+*                               PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints in re-order operation (thermal).
+*===========================================================================
+*/
+static VOID PrtReorder_TH( TRANINFORMATION *pTran, ITEMTRANSOPEN *pItem, SHORT sWidthType )
+{
+    USHORT usTable = 0;
+    USHORT usNoPer = 0;
+
+    /* --- determine print type is single width or double width --- */
+    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
+        /* --- store table no., if guest moved other table --- */
+        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
+            usTable = pTran->TranGCFQual.usTableNo;
+        }
+    } else {                            /* double width print */
+        /* --- store unique transaction number --- */
+        usTable = pTran->TranGCFQual.usTableNo;
+    }
+
+    /* --- store no. of person, if no. of person is changed --- */
+    if ( pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE ) {
+        usNoPer = pTran->TranGCFQual.usNoPerson;
+    }
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);
+
+    PrtTHCustomerName( pTran->TranGCFQual.aszName );
+    PrtTHTblPerGC( usTable, usNoPer, pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv, 0, sWidthType );
+
+    PrtTHAmtTaxMnem( TRN_PB_ADR, pTran->TranModeQual.fsModeStatus, pItem->fbModifier, pItem->lAmount); 
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtReorder_EJ( TRANINFORMATION *pTran,
+*                                 ITEMTRANSOPEN   *pItem,
+*                                 SHORT           sWidthType )
+*
+*   Input  : TRANINFORMATION *pTran     -   Transaction Information address
+*            ITEMTRANSOPEN   *pItem     -   Item Data address
+*            SHORT           sWidthType -   Type of Print Character Width
+*                               PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints in re-order operation (electric journal).
+*===========================================================================
+*/
+static VOID PrtReorder_EJ( TRANINFORMATION *pTran, ITEMTRANSOPEN *pItem, SHORT sWidthType )
+{
+    USHORT usTable = 0;
+    USHORT usNoPer = 0;
+
+    /* --- determine print type is single width or double width --- */
+    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
+        /* --- store table no., if guest moved other table --- */
+        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
+            usTable = pTran->TranGCFQual.usTableNo;
+        }
+    } else {                            /* double width print */
+        /* --- store unique transaction number --- */
+        usTable = pTran->TranGCFQual.usTableNo;
+    }
+
+    /* --- store no. of person, if no. of person is changed --- */
+    if ( pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE ) {
+        usNoPer = pTran->TranGCFQual.usNoPerson;
+    }
+
+    PrtEJCustomerName( pTran->TranGCFQual.aszName );
+    PrtEJTblPerson( usTable, usNoPer, 0, sWidthType );
+
+    PrtEJGuest( pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv );
+
+    if (((pTran->TranCurQual.flPrintStatus & CURQUAL_GC_SYS_MASK ) == CURQUAL_POSTCHECK ) &&
+        ( CliParaMDCCheck( MDC_GCNO_ADR, EVEN_MDC_BIT3 ) == 0) &&
+        ( CliParaMDCCheck( MDC_SPLIT_GCF_ADR, EVEN_MDC_BIT2 ) == 0)) {
+
+        ;   /* not print PB amount at split guest check system */
+    } else {
+        PrtEJTaxMod( pTran->TranModeQual.fsModeStatus, pItem->fbModifier );
+        PrtEJAmtMnem( TRN_PB_ADR, pItem->lAmount );
+    }
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtReorder_SP(TRANINFORMATION  *pTran,
+*                               ITEMTRANSOPEN *pItem,
+*                               SHORT sWidthType )
+*               PRT_DOUBLE, PRT_SINGLE
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTRANSOPEN    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints in re-order operation (slip).
+*===========================================================================
+*/
+static VOID PrtReorder_SP(TRANINFORMATION *pTran, ITEMTRANSOPEN *pItem, SHORT sWidthType)
+{
+    TCHAR   aszSPPrintBuff[ 3 ][ PRT_SPCOLUMN + 1 ];    /* print data save area */
+    USHORT  usSlipLine = 0;             /* number of lines to be printed */
+    USHORT  usSaveLine;                 /* save slip lines */
+    USHORT  i;
+    USHORT  usTable = 0;
+    USHORT  usNoPer = 0;
+
+    memset( aszSPPrintBuff[ 0 ], 0x00, sizeof( aszSPPrintBuff ));
+
+    /* --- determine print type is single width or double width --- */
+    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
+        /* --- store table no., if guest moved other table --- */
+        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
+            usTable = pTran->TranGCFQual.usTableNo;
+        }
+    } else {                            /* double width print */
+        /* --- store unique transaction number --- */
+        usTable = pTran->TranGCFQual.usTableNo;
+    }
+
+    /* --- store no. of person, if no. of person is changed --- */
+    if ( pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE ) {
+        usNoPer = pTran->TranGCFQual.usNoPerson;
+    }
+
+    /* --- prepare table no.(unique trans #) and no. of person string --- */
+    usSlipLine += PrtSPCustomerName( aszSPPrintBuff[ 0 ], pTran->TranGCFQual.aszName );
+    usSlipLine += PrtSPTblPerson( aszSPPrintBuff[ usSlipLine ], usTable, usNoPer, sWidthType );
+
+    /* --- set P/B, tax# 1-3 mnemonic and amount --- */
+    usSlipLine += PrtSPMnemTaxAmt( aszSPPrintBuff[ usSlipLine ], TRN_PB_ADR, pTran->TranModeQual.fsModeStatus, pItem->fbModifier, pItem->lAmount );
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine( usSlipLine, pTran );
+
+    /* --- if just after header printed,
+        do not print table No. and No. of person --- */
+    if ( usSaveLine != 0 ) {
+        if ( usNoPer || usTable ) {
+            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 1 ], PRT_SPCOLUMN );
+        } else {
+            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 0 ], PRT_SPCOLUMN );
+        }
+    } else {
+        /* -- print all data in the buffer -- */ 
+        for ( i = 0; i < usSlipLine; i++ ) {
+            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ i ], PRT_SPCOLUMN );
+        }
+    }
+
+    /* --- update current line No. --- */
+    usPrtSlipPageLine += ( usSlipLine + usSaveLine );
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtReorder( TRANINFORMATION *pTran,
@@ -131,178 +303,6 @@ VOID PrtReorder( TRANINFORMATION *pTran, ITEMTRANSOPEN *pItem )
 
 /*
 *===========================================================================
-** Format  : VOID  PrtReorder_TH( TRANINFORMATION *pTran,
-*                                 ITEMTRANSOPEN   *pItem,
-*                                 SHORT           sWidthType )
-*
-*   Input  : TRANINFORMATION *pTran     -   Transaction Information address
-*            ITEMTRANSOPEN   *pItem     -   Item Data address
-*            SHORT           sWidthType -   Type of Print Character Width
-*                               PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints in re-order operation (thermal).
-*===========================================================================
-*/
-VOID PrtReorder_TH( TRANINFORMATION *pTran, ITEMTRANSOPEN *pItem, SHORT sWidthType )
-{
-    USHORT usTable = 0;
-    USHORT usNoPer = 0;
-
-    /* --- determine print type is single width or double width --- */
-    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
-        /* --- store table no., if guest moved other table --- */
-        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
-            usTable = pTran->TranGCFQual.usTableNo;
-        }
-    } else {                            /* double width print */
-        /* --- store unique transaction number --- */
-        usTable = pTran->TranGCFQual.usTableNo;
-    }
-
-    /* --- store no. of person, if no. of person is changed --- */
-    if ( pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE ) {
-        usNoPer = pTran->TranGCFQual.usNoPerson;
-    }
-
-    PrtTHHead( pTran );
-
-    PrtTHCustomerName( pTran->TranGCFQual.aszName );
-    PrtTHTblPerGC( usTable, usNoPer, pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv, 0, sWidthType );
-
-    PrtTHAmtTaxMnem( TRN_PB_ADR, pTran->TranModeQual.fsModeStatus, pItem->fbModifier, pItem->lAmount); 
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtReorder_EJ( TRANINFORMATION *pTran,
-*                                 ITEMTRANSOPEN   *pItem,
-*                                 SHORT           sWidthType )
-*
-*   Input  : TRANINFORMATION *pTran     -   Transaction Information address
-*            ITEMTRANSOPEN   *pItem     -   Item Data address
-*            SHORT           sWidthType -   Type of Print Character Width
-*                               PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints in re-order operation (electric journal).
-*===========================================================================
-*/
-VOID PrtReorder_EJ( TRANINFORMATION *pTran, ITEMTRANSOPEN *pItem, SHORT sWidthType )
-{
-    USHORT usTable = 0;
-    USHORT usNoPer = 0;
-
-    /* --- determine print type is single width or double width --- */
-    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
-        /* --- store table no., if guest moved other table --- */
-        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
-            usTable = pTran->TranGCFQual.usTableNo;
-        }
-    } else {                            /* double width print */
-        /* --- store unique transaction number --- */
-        usTable = pTran->TranGCFQual.usTableNo;
-    }
-
-    /* --- store no. of person, if no. of person is changed --- */
-    if ( pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE ) {
-        usNoPer = pTran->TranGCFQual.usNoPerson;
-    }
-
-    PrtEJCustomerName( pTran->TranGCFQual.aszName );
-    PrtEJTblPerson( usTable, usNoPer, 0, sWidthType );
-
-    PrtEJGuest( pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv );
-
-    if (((pTran->TranCurQual.flPrintStatus & CURQUAL_GC_SYS_MASK ) == CURQUAL_POSTCHECK ) &&
-        ( CliParaMDCCheck( MDC_GCNO_ADR, EVEN_MDC_BIT3 ) == 0) &&
-        ( CliParaMDCCheck( MDC_SPLIT_GCF_ADR, EVEN_MDC_BIT2 ) == 0)) {
-
-        ;   /* not print PB amount at split guest check system */
-    } else {
-        PrtEJTaxMod( pTran->TranModeQual.fsModeStatus, pItem->fbModifier );
-        PrtEJAmtMnem( TRN_PB_ADR, pItem->lAmount );
-    }
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtReorder_SP(TRANINFORMATION  *pTran,
-*                               ITEMTRANSOPEN *pItem,
-*                               SHORT sWidthType )
-*               PRT_DOUBLE, PRT_SINGLE
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTRANSOPEN    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints in re-order operation (slip).
-*===========================================================================
-*/
-VOID PrtReorder_SP(TRANINFORMATION *pTran, ITEMTRANSOPEN *pItem, SHORT sWidthType)
-{
-    TCHAR   aszSPPrintBuff[ 3 ][ PRT_SPCOLUMN + 1 ];    /* print data save area */
-    USHORT  usSlipLine = 0;             /* number of lines to be printed */
-    USHORT  usSaveLine;                 /* save slip lines */
-    USHORT  i;
-    USHORT  usTable = 0;
-    USHORT  usNoPer = 0;
-
-    memset( aszSPPrintBuff[ 0 ], 0x00, sizeof( aszSPPrintBuff ));
-
-    /* --- determine print type is single width or double width --- */
-    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
-        /* --- store table no., if guest moved other table --- */
-        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
-            usTable = pTran->TranGCFQual.usTableNo;
-        }
-    } else {                            /* double width print */
-        /* --- store unique transaction number --- */
-        usTable = pTran->TranGCFQual.usTableNo;
-    }
-
-    /* --- store no. of person, if no. of person is changed --- */
-    if ( pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE ) {
-        usNoPer = pTran->TranGCFQual.usNoPerson;
-    }
-
-    /* --- prepare table no.(unique trans #) and no. of person string --- */
-    usSlipLine += PrtSPCustomerName( aszSPPrintBuff[ 0 ], pTran->TranGCFQual.aszName );
-    usSlipLine += PrtSPTblPerson( aszSPPrintBuff[ usSlipLine ], usTable, usNoPer, sWidthType );
-
-    /* --- set P/B, tax# 1-3 mnemonic and amount --- */
-    usSlipLine += PrtSPMnemTaxAmt( aszSPPrintBuff[ usSlipLine ], TRN_PB_ADR, pTran->TranModeQual.fsModeStatus, pItem->fbModifier, pItem->lAmount );
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine( usSlipLine, pTran );
-
-    /* --- if just after header printed,
-        do not print table No. and No. of person --- */
-    if ( usSaveLine != 0 ) {
-        if ( usNoPer || usTable ) {
-            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 1 ], PRT_SPCOLUMN );
-        } else {
-            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 0 ], PRT_SPCOLUMN );
-        }
-    } else {
-        /* -- print all data in the buffer -- */ 
-        for ( i = 0; i < usSlipLine; i++ ) {
-            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ i ], PRT_SPCOLUMN );
-        }
-    }
-
-    /* --- update current line No. --- */
-    usPrtSlipPageLine += ( usSlipLine + usSaveLine );
-}
-
-
-/*
-*===========================================================================
 ** Format  : VOID    PrtDflReorder(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem);      
 *
 *   Input  : TRANINFORMATION  *pTran     -Transaction Information address
@@ -316,15 +316,12 @@ VOID PrtReorder_SP(TRANINFORMATION *pTran, ITEMTRANSOPEN *pItem, SHORT sWidthTyp
 */
 VOID PrtDflReorder(TRANINFORMATION  *pTran, ITEMTRANSOPEN  *pItem)
 {
-    TCHAR   aszDflBuff[ 6 ][ PRT_DFL_LINE + 1 ];    /* display data save area */
+    TCHAR   aszDflBuff[6][PRT_DFL_LINE + 1] = { 0 };    /* display data save area */
     USHORT  usLineNo;                   /* number of lines to be displayed */
     USHORT  usOffset = 0;
-    USHORT  i;
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
-
-    memset( aszDflBuff, 0x00, sizeof( aszDflBuff ));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader( aszDflBuff[ 0 ], pTran );
@@ -338,13 +335,14 @@ VOID PrtDflReorder(TRANINFORMATION  *pTran, ITEMTRANSOPEN  *pItem)
     usLineNo += PrtDflAmtMnem( aszDflBuff[ usLineNo ], TRN_PB_ADR, pItem->lAmount);
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */
     PrtDflIType( usLineNo, DFL_TRANOPEN );
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData( aszDflBuff[ i ], &usOffset );
         if ( aszDflBuff[ i ][ PRT_DFL_LINE ] != '\0' ) {
             i++;

@@ -78,81 +78,94 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;============================================================================
 **/
+
+
 /*
 *===========================================================================
-** Format  : VOID  PrtSupLoanPickup(VOID *pData1, MAINTLOANPICKUP *pData2)
+** Format  : VOID  PrtSupForeignTender_EJ(MAINTLOANPICKUP *pData);
 *
-*   Input  : TRNINFORMATION   *pTran     -Transaction Information address
-*            MAINTLOANPICKUP  *pItem     -Loan/Pickup Data address
+*   Input  : MAINTLOANPICKUP      *pData     -loan/pick up data
 *   Output : none
 *   InOut  : none
 ** Return  : none
 *
-** Synopsis: This function checks receipt/jurnal/validation/slip status.
+** Synopsis: This function prints foreign tender loan/pickup
 *===========================================================================
 */
-VOID    PrtSupLoanPickup(VOID *pData1, MAINTLOANPICKUP *pData2)
+static VOID PrtSupForeignTender_EJ(MAINTLOANPICKUP* pData)
 {
-    SHORT  sPrintType = PRT_SLIP;
-    TRANINFORMATION *pTran = pData1;
+    UCHAR     uchSymAdr;
+    USHORT    usTrnsAdr;
 
-    switch (pData2->uchMinorClass) {
-    case CLASS_MAINTTENDER1:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER2:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER3:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER4:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER5:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER6:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER7:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER8:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER9:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER10:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER11:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER12:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER13:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER14:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER15:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER16:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER17:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
-    case CLASS_MAINTTENDER18:         // function Thermsup:: PrtSupLoanPickup) for AC10/AC11.
-    case CLASS_MAINTTENDER19:         // function Thermsup:: PrtSupLoanPickup) for AC10/AC11.
-    case CLASS_MAINTTENDER20:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    /* R2.0 Start */
+    switch (pData->uchMinorClass) {
     case CLASS_MAINTFOREIGN1:
+        uchSymAdr = (UCHAR)(SPC_CNSYMFC1_ADR);
+        usTrnsAdr = (TRN_FT1_ADR);
+        break;
+
     case CLASS_MAINTFOREIGN2:
+        uchSymAdr = (UCHAR)(SPC_CNSYMFC2_ADR);
+        usTrnsAdr = (TRN_FT2_ADR);
+        break;
+
     case CLASS_MAINTFOREIGN3:
+        uchSymAdr = (UCHAR)(SPC_CNSYMFC3_ADR);
+        usTrnsAdr = (TRN_FT3_ADR);
+        break;
+
     case CLASS_MAINTFOREIGN4:
+        uchSymAdr = (UCHAR)(SPC_CNSYMFC4_ADR);
+        usTrnsAdr = (TRN_FT4_ADR);
+        break;
+
     case CLASS_MAINTFOREIGN5:
+        uchSymAdr = (UCHAR)(SPC_CNSYMFC5_ADR);
+        usTrnsAdr = (TRN_FT5_ADR);
+        break;
+
     case CLASS_MAINTFOREIGN6:
+        uchSymAdr = (UCHAR)(SPC_CNSYMFC6_ADR);
+        usTrnsAdr = (TRN_FT6_ADR);
+        break;
+
     case CLASS_MAINTFOREIGN7:
+        uchSymAdr = (UCHAR)(SPC_CNSYMFC7_ADR);
+        usTrnsAdr = (TRN_FT7_ADR);
+        break;
+
     case CLASS_MAINTFOREIGN8:
-    case CLASS_MAINTCOUNTUP:
-	//US Customs SCER cwunn 4/8/03
-	case CLASS_MAINTLOAN:
-	case CLASS_MAINTPICKUP:
-	//End US Customs SCER cwunn
+        uchSymAdr = (UCHAR)(SPC_CNSYMFC8_ADR);
+        usTrnsAdr = (TRN_FT8_ADR);
         break;
 
     default:
+        NHPOS_ASSERT(pData->uchMinorClass == CLASS_MAINTFOREIGN1);  // trigger assert
         return;
-    }
 
-    /* -- set print portion to static area "fsPrtPrintPort",    Saratoga -- */
-    PrtPortion(pData2->HeadTrail.usPrintControl);
+    }
+    /* R2.0 End   */
+    PrtEJForeign1(pData->lAmount, uchSymAdr, pData->uchFCMDC);
+    PrtEJForeign2(pData->ulFCRate, pData->uchFCMDC2);                /* foreign tender */
+    PrtEJAmtSym(TRN_FT_EQUIVALENT, pData->lNativeAmount, PRT_SINGLE);      /* native tender */
+}
 
-	/* modified for slip printer is not connected case, 09/19/01 */
-    if ( fsPrtPrintPort & PRT_SLIP ) {              /* slip print           */
-/*    if ((pData2->HeadTrail.usPrintControl & PRT_SLIP) ||            / slip print /
-        (fsPrtCompul & PRT_SLIP)) { */
-        PrtSupLoanPickup_SP(pTran, pData2);
-	}
-    /*} else {*/
-    if (fsPrtPrintPort & PRT_RECEIPT) {
-        PrtSupLoanPickup_TH(pData2);
-    }
-    /*}*/
-    if (fsPrtPrintPort & PRT_JOURNAL) {
-        PrtSupLoanPickup_EJ(pData2);
-    }
+/*
+*===========================================================================
+** Format  : VOID  PrtSupForeignTender_TH(MAINTLOANPICKUP *pData);
+*
+*   Input  : MAINTLOANPICKUP      *pData     -loan/pick up data
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints foreign tender loan/pickup
+*===========================================================================
+*/
+static VOID    PrtSupForeignTender_TH(CONST MAINTLOANPICKUP* pData)
+{
+    PrtTHForeign(pData->lAmount, pData->uchMinorClass, pData->uchFCMDC, pData->ulFCRate, pData->uchLoanPickStatus);
+    PrtTHAmtSym(TRN_FT_EQUIVALENT, pData->lNativeAmount, PRT_SINGLE);      /* native tender */
 }
 
 /*
@@ -176,10 +189,8 @@ VOID    PrtSupLoanPickup(VOID *pData1, MAINTLOANPICKUP *pData2)
 *            See also functions PrtSupLoanPickup_EJ() and PrtSupLoanPickup_SP().
 *===========================================================================
 */
-VOID    PrtSupLoanPickup_TH(MAINTLOANPICKUP *pData)
+static VOID    PrtSupLoanPickup_TH(MAINTLOANPICKUP *pData)
 {
-    static const TCHAR   aszPrtTHLPQty[]   = _T(" %5ld X\t%s ");
-/*    static const TCHAR   aszPrtRJLPFor[]   = _T(" %5ld /");*/
     static const TCHAR   aszPrtTHLPAmount[] = _T("%s\t%s%l$");
 
 	TCHAR      aszSpecAmt[PARA_SPEMNEMO_LEN +PRT_AMOUNT_LEN + 1] = {0};
@@ -198,6 +209,7 @@ VOID    PrtSupLoanPickup_TH(MAINTLOANPICKUP *pData)
 
     /* qty print */
     if(pData->usModifier & MAINT_MODIFIER_QTY){
+        static const TCHAR   aszPrtTHLPQty[]   = _T(" %5ld X\t%s ");
 		UCHAR      uchFCAdr = 0;
 
         memset(&aszSpecAmt, 0x00, sizeof(aszSpecAmt));
@@ -278,62 +290,6 @@ VOID    PrtSupLoanPickup_TH(MAINTLOANPICKUP *pData)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtSupForeignTender_TH(MAINTLOANPICKUP *pData);
-*
-*   Input  : MAINTLOANPICKUP      *pData     -loan/pick up data
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints foreign tender loan/pickup
-*===========================================================================
-*/
-VOID    PrtSupForeignTender_TH(CONST MAINTLOANPICKUP *pData)
-{
-	PrtTHForeign(pData->lAmount, pData->uchMinorClass, pData->uchFCMDC,pData->ulFCRate, pData->uchLoanPickStatus);
-    PrtTHAmtSym(TRN_FT_EQUIVALENT, pData->lNativeAmount, PRT_SINGLE);      /* native tender */
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtSupLoanPickup_VL(VOID *pData1, MAINTLOANPICKUP *pData2)
-*
-*   Input  : TRNINFORMATION   *pTran,    -transaction information
-*            MAINTLOANPICKUP  *pData     -Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints loan/pickup amount (validation)
-*===========================================================================
-*/
-#if 0
-VOID  PrtSupLoanPickup_VL(VOID *pData1, MAINTLOANPICKUP *pData2)
-{
-    USHORT usACNumber;
-    TRANINFORMATION *pTran;
-
-    pTran = (TRANINFORMATION *)pData1;
-
-    PmgBeginValidation(PMG_PRT_RCT_JNL);        /* begin validation */
-
-    /* -- in case of 24 char printer -- */
-    if (usPrtVLColumn == PRT_VL_24) {
-        if(pData2->uchMajorClass == CLASS_MAINTLOAN){
-            usACNumber = 10;
-        } else {
-            usACNumber = 11;
-        }
-        PrtSupVLHead(&pData2->HeadTrail);           /* send header line */
-        PrtSupVLLoanPickup(pTran, pData2);          /* loan/pickup line */
-        PrtSupVLTrail(pTran, &pData2->HeadTrail);   /* send trailer lines */
-    }
-
-    PrtEndValidation(PMG_PRT_RCT_JNL);          /* end validation */
-}
-#endif
-/*
-*===========================================================================
 ** Format  : VOID  PrtSupLoanPickup_SP(VOID *pData1, MAINTLOANPICKUP *pData2)
 *
 *   Input  : TRNINFORMATION   *pTran,    -transaction information
@@ -351,16 +307,14 @@ VOID  PrtSupLoanPickup_VL(VOID *pData1, MAINTLOANPICKUP *pData2)
 *            See also functions PrtSupLoanPickup_EJ() and PrtSupLoanPickup_TH().
 *===========================================================================
 */
-VOID    PrtSupLoanPickup_SP(VOID *pData1, MAINTLOANPICKUP *pData2)
+static VOID    PrtSupLoanPickup_SP(CONST TRANINFORMATION* pTran, CONST MAINTLOANPICKUP *pData2)
 {
 	TCHAR            aszSPPrintBuff[5][PRT_SPCOLUMN + 1] = {0}; /* print data save area */
     TCHAR            aszNum[NUM_NUMBER] = {0};
     USHORT           usSlipLine = 0;            /* number of lines to be printed */
     USHORT           usSaveLine;                /* save slip lines to be added */
-    USHORT           i;
     LONG             lQTY = 0;
     UCHAR            uchSymAdr = 0, uchTrnsAdr = 0;
-    TRANINFORMATION  *pTran = pData1;
 
     /* -- set void mnemonic  -- */
     usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pData2->usModifier, 0, aszNum);
@@ -445,13 +399,217 @@ VOID    PrtSupLoanPickup_SP(VOID *pData1, MAINTLOANPICKUP *pData2)
     usSaveLine = PrtCheckLine(usSlipLine, pTran);
 
     /* -- print all data in the buffer -- */
-    for ( i = 0; i < usSlipLine; i++ ) {
+    for (USHORT i = 0; i < usSlipLine; i++ ) {
         PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
     }
 
     /* -- update current line No. -- */
     usPrtSlipPageLine += usSlipLine + usSaveLine;
 }
+
+/*
+*===========================================================================
+** Format  : VOID  PrtSupLoanPickup_EJ(MAINTLOANPICKUP *pData);
+*
+*   Input  : MAINTLOANPICKUP      *pData     -Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints loan/pickup amount (receipt & journal)
+*
+*            See function PrtSupLoanPickup() which calls into here along with
+*            calls to other versions of this function depending on the printer
+*            setting.
+*
+*            See also functions PrtSupLoanPickup_SP() and PrtSupLoanPickup_TH().
+*===========================================================================
+*/
+static VOID    PrtSupLoanPickup_EJ(MAINTLOANPICKUP* pData)
+{
+    /*    static const UCHAR   aszPrtRJLPFor[]   = " %5ld /";*/
+    static const TCHAR   aszPrtTHLPAmount[] = _T("%s\t%l$");
+
+    TCHAR      aszTransBuff[PARA_TRANSMNEMO_LEN + 1] = { 0 };
+    DCURRENCY  lAmount = 0;
+    USHORT     usPrtType = PRT_JOURNAL;    /*    usPrtType = (PRT_RECEIPT | PRT_JOURNAL);*/
+
+    /* void, e/c print */
+    /*PrtEJModifier( pData->usModifier );         /* common to reg. */
+
+    PrtEJVoid(pData->usModifier, 0);
+
+    /* e/c print */
+    if (pData->usModifier & MAINT_MODIFIER_EC) {
+        PrtEJMnem(TRN_EC_ADR, PRT_DOUBLE);     /* E/C with double wide */
+    }
+
+    /* qty print */
+    if (pData->usModifier & MAINT_MODIFIER_QTY) {
+        static const TCHAR   aszPrtTHLPQty[] = _T(" %5ld X\t%s ");
+        TCHAR      aszSpecAmt[PARA_SPEMNEMO_LEN + PRT_AMOUNT_LEN + 1] = { 0 };
+        UCSPCADRS  uchFCAdr;
+
+        switch (pData->uchMinorClass) {
+        case CLASS_MAINTFOREIGN1:
+            uchFCAdr = SPC_CNSYMFC1_ADR;
+            /* -- adjust foreign mnemonic and amount sign(+.-) -- */
+            PrtAdjustForeign(aszSpecAmt, pData->lUnitAmount, uchFCAdr, pData->uchFCMDC);
+            break;
+
+        case CLASS_MAINTFOREIGN2:
+            uchFCAdr = SPC_CNSYMFC2_ADR;
+            /* -- adjust foreign mnemonic and amount sign(+.-) -- */
+            PrtAdjustForeign(aszSpecAmt, pData->lUnitAmount, uchFCAdr, pData->uchFCMDC);
+            break;
+
+        case CLASS_MAINTFOREIGN3:
+            uchFCAdr = SPC_CNSYMFC3_ADR;
+            /* -- adjust foreign mnemonic and amount sign(+.-) -- */
+            PrtAdjustForeign(aszSpecAmt, pData->lUnitAmount, uchFCAdr, pData->uchFCMDC);
+            break;
+
+        case CLASS_MAINTFOREIGN4:
+            uchFCAdr = SPC_CNSYMFC4_ADR;
+            /* -- adjust foreign mnemonic and amount sign(+.-) -- */
+            PrtAdjustForeign(aszSpecAmt, pData->lUnitAmount, uchFCAdr, pData->uchFCMDC);
+            break;
+
+        case CLASS_MAINTFOREIGN5:
+            uchFCAdr = (SPC_CNSYMFC5_ADR);
+            /* -- adjust foreign mnemonic and amount sign(+.-) -- */
+            PrtAdjustForeign(aszSpecAmt, pData->lUnitAmount, uchFCAdr, pData->uchFCMDC);
+            break;
+
+        case CLASS_MAINTFOREIGN6:
+            uchFCAdr = SPC_CNSYMFC6_ADR;
+            /* -- adjust foreign mnemonic and amount sign(+.-) -- */
+            PrtAdjustForeign(aszSpecAmt, pData->lUnitAmount, uchFCAdr, pData->uchFCMDC);
+            break;
+
+        case CLASS_MAINTFOREIGN7:
+            uchFCAdr = SPC_CNSYMFC7_ADR;
+            /* -- adjust foreign mnemonic and amount sign(+.-) -- */
+            PrtAdjustForeign(aszSpecAmt, pData->lUnitAmount, uchFCAdr, pData->uchFCMDC);
+            break;
+
+        case CLASS_MAINTFOREIGN8:
+            uchFCAdr = SPC_CNSYMFC8_ADR;
+            /* -- adjust foreign mnemonic and amount sign(+.-) -- */
+            PrtAdjustForeign(aszSpecAmt, pData->lUnitAmount, uchFCAdr, pData->uchFCMDC);
+            break;
+
+        default:
+            /* -- adjust native mnemonic and amount sign(+.-) -- */
+            PrtAdjustNative(aszSpecAmt, pData->lUnitAmount);
+            break;
+        }
+
+        PrtPrintf(usPrtType, aszPrtTHLPQty, pData->lForQty, aszSpecAmt);                      /* unit amount */
+    }
+
+    /* amount print */
+    lAmount = pData->lAmount;
+
+    switch (pData->uchMinorClass) {
+    case CLASS_MAINTFOREIGN1:
+    case CLASS_MAINTFOREIGN2:
+    case CLASS_MAINTFOREIGN3:                       /* R2.0 Start */
+    case CLASS_MAINTFOREIGN4:
+    case CLASS_MAINTFOREIGN5:
+    case CLASS_MAINTFOREIGN6:
+    case CLASS_MAINTFOREIGN7:
+    case CLASS_MAINTFOREIGN8:                       /* R2.0 End   */
+        PrtSupForeignTender_EJ(pData);
+        break;
+
+    case CLASS_MAINTCOUNTUP:
+        lAmount = pData->lTotal;                    /* set total amount */
+
+    default:
+        RflGetTranMnem(aszTransBuff, PrtChkLoanPickupAdr(pData->uchMajorClass, pData->uchMinorClass));
+
+        PrtPrintf(usPrtType, aszPrtTHLPAmount, aszTransBuff, lAmount);
+        break;
+    }
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtSupLoanPickup(VOID *pData1, MAINTLOANPICKUP *pData2)
+*
+*   Input  : TRNINFORMATION   *pTran     -Transaction Information address
+*            MAINTLOANPICKUP  *pItem     -Loan/Pickup Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function checks receipt/jurnal/validation/slip status.
+*===========================================================================
+*/
+VOID    PrtSupLoanPickup(TRANINFORMATION* pTran, MAINTLOANPICKUP *pData2)
+{
+    SHORT  sPrintType = PRT_SLIP;
+
+    switch (pData2->uchMinorClass) {
+    case CLASS_MAINTTENDER1:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER2:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER3:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER4:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER5:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER6:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER7:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER8:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER9:          // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER10:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER11:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER12:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER13:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER14:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER15:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER16:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER17:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTTENDER18:         // function Thermsup:: PrtSupLoanPickup) for AC10/AC11.
+    case CLASS_MAINTTENDER19:         // function Thermsup:: PrtSupLoanPickup) for AC10/AC11.
+    case CLASS_MAINTTENDER20:         // function Thermsup:: PrtSupLoanPickup() for AC10/AC11.
+    case CLASS_MAINTFOREIGN1:
+    case CLASS_MAINTFOREIGN2:
+    case CLASS_MAINTFOREIGN3:
+    case CLASS_MAINTFOREIGN4:
+    case CLASS_MAINTFOREIGN5:
+    case CLASS_MAINTFOREIGN6:
+    case CLASS_MAINTFOREIGN7:
+    case CLASS_MAINTFOREIGN8:
+    case CLASS_MAINTCOUNTUP:
+	//US Customs SCER cwunn 4/8/03
+	case CLASS_MAINTLOAN:
+	case CLASS_MAINTPICKUP:
+	//End US Customs SCER cwunn
+        break;
+
+    default:
+        return;
+    }
+
+    /* -- set print portion to static area "fsPrtPrintPort",    Saratoga -- */
+    PrtPortion(pData2->HeadTrail.usPrintControl);
+
+	/* modified for slip printer is not connected case, 09/19/01 */
+    if ( fsPrtPrintPort & PRT_SLIP ) {              /* slip print           */
+/*    if ((pData2->HeadTrail.usPrintControl & PRT_SLIP) ||            / slip print /
+        (fsPrtCompul & PRT_SLIP)) { */
+        PrtSupLoanPickup_SP(pTran, pData2);
+	}
+    /*} else {*/
+    if (fsPrtPrintPort & PRT_RECEIPT) {
+        PrtSupLoanPickup_TH(pData2);
+    }
+    /*}*/
+    if (fsPrtPrintPort & PRT_JOURNAL) {
+        PrtSupLoanPickup_EJ(pData2);
+    }
+}
+
 
 /*
 *===========================================================================
@@ -465,11 +623,11 @@ VOID    PrtSupLoanPickup_SP(VOID *pData1, MAINTLOANPICKUP *pData2)
 ** Synopsis: This function checks transaction mnemonics address of each media
 *===========================================================================
 */
-USHORT   PrtChkLoanPickupAdr(UCHAR uchMajorClass, UCHAR uchMinorClass)
+USTRNADRS   PrtChkLoanPickupAdr(UCHAR uchMajorClass, UCHAR uchMinorClass)
 {
 	struct {
-		UCHAR  uchMinorClass;
-		USHORT  uchAddress;           // address of the mnemonic
+		UCHAR       uchMinorClass;
+        USTRNADRS   uchAddress;           // address of the mnemonic
 	}  MyMnemonicList[] = {
 		{CLASS_MAINTTENDER1, TRN_TEND1_ADR},
 		{CLASS_MAINTTENDER2, TRN_TEND2_ADR},
@@ -501,10 +659,9 @@ USHORT   PrtChkLoanPickupAdr(UCHAR uchMajorClass, UCHAR uchMinorClass)
 		{CLASS_MAINTFOREIGN8, TRN_FT8_ADR},
 		{0, 0}
 	};
-    USHORT  usAdr = 0;
-	SHORT  sIndex;
+    USTRNADRS  usAdr = 0;
 
-	for (sIndex = 0; MyMnemonicList[sIndex].uchMinorClass > 0; sIndex++) {
+	for (SHORT sIndex = 0; MyMnemonicList[sIndex].uchMinorClass > 0; sIndex++) {
 		if (MyMnemonicList[sIndex].uchMinorClass == uchMinorClass) {
 			usAdr = MyMnemonicList[sIndex].uchAddress;
 			break;

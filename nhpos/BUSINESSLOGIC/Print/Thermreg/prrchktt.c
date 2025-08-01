@@ -71,34 +71,6 @@
 ;+        P R O G R A M    D E C L A R A T I O N s                      +
 ;========================================================================
 **/
-/*
-*===========================================================================
-** Format  : VOID  PrtCheckTran(TRANINFORMATION  *pTran, ITEMMISC *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMMISC         *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints check transfer.
-*===========================================================================
-*/
-VOID PrtCheckTran(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
-{
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-
-    if ( fsPrtPrintPort & PRT_SLIP ) {     /* slip print */
-        PrtCheckTran_SP(pTran, pItem);
-    }
-    if ( fsPrtPrintPort & PRT_RECEIPT ) {  /* thermal print */
-        PrtCheckTran_TH(pTran, pItem);
-    }
-    if ( fsPrtPrintPort & PRT_JOURNAL ) {  /* eleectric journal */
-        PrtCheckTran_EJ(pItem);
-    }
-}
 
 /*
 *===========================================================================
@@ -113,11 +85,11 @@ VOID PrtCheckTran(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
 ** Synopsis: This function prints check transfer. (thermal)         V3.3
 *===========================================================================
 */
-VOID  PrtCheckTran_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
+static VOID  PrtCheckTran_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
 {
     UCHAR   uchAdr;
 
-    PrtTHHead(pTran);                            /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);      /* print header if necessary */
     PrtTHNumber(pItem->aszNumber);               /* number line */
     if (pItem->uchMinorClass == CLASS_CHECKTRANS_FROM) {
         uchAdr = TRN_CKFRM_ADR;
@@ -142,7 +114,7 @@ VOID  PrtCheckTran_TH(TRANINFORMATION *pTran, ITEMMISC *pItem)
 ** Synopsis: This function prints check transfer. (electric journal)    V3.3
 *===========================================================================
 */
-VOID  PrtCheckTran_EJ(ITEMMISC *pItem)
+static VOID  PrtCheckTran_EJ(ITEMMISC *pItem)
 {
     UCHAR   uchAdr;
 
@@ -175,7 +147,7 @@ VOID  PrtCheckTran_EJ(ITEMMISC *pItem)
 ** Synopsis: This function prints check transfer.               V3.3
 *===========================================================================
 */
-VOID PrtCheckTran_SP(TRANINFORMATION  *pTran, ITEMMISC *pItem)
+static VOID PrtCheckTran_SP(TRANINFORMATION  *pTran, ITEMMISC *pItem)
 {
     TCHAR  aszSPPrintBuff[3][PRT_SPCOLUMN + 1]; /* print data save area */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
@@ -214,6 +186,34 @@ VOID PrtCheckTran_SP(TRANINFORMATION  *pTran, ITEMMISC *pItem)
     usPrtSlipPageLine += usSlipLine + usSaveLine;        
 }
 
+/*
+*===========================================================================
+** Format  : VOID  PrtCheckTran(TRANINFORMATION  *pTran, ITEMMISC *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMMISC         *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints check transfer.
+*===========================================================================
+*/
+VOID PrtCheckTran(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
+{
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+
+    if ( fsPrtPrintPort & PRT_SLIP ) {     /* slip print */
+        PrtCheckTran_SP(pTran, pItem);
+    }
+    if ( fsPrtPrintPort & PRT_RECEIPT ) {  /* thermal print */
+        PrtCheckTran_TH(pTran, pItem);
+    }
+    if ( fsPrtPrintPort & PRT_JOURNAL ) {  /* eleectric journal */
+        PrtCheckTran_EJ(pItem);
+    }
+}
 
 
 /*
@@ -266,8 +266,9 @@ VOID PrtDflCheckTran(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
     usLineNo += PrtDflAmtMnem(aszDflBuff[usLineNo], TRN_TRNSB_ADR, pItem->lAmount);
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_SINGLE); 

@@ -108,19 +108,20 @@
 ;+                    S T A T I C    R A M s
 ;========================================================================
 **/
-CONST TCHAR FARCONST  aszPrtKPGuest_CD[]= _T(" %4d%02d");         /* guest check no and check digit */
-CONST TCHAR FARCONST  aszPrtKPGuest[]   = _T(" %4d");             /* guest check no */
-CONST TCHAR FARCONST  aszPrtKPHeader[]  = _T("%-4s %-4s %-4s%s"); /* kitchen printer header */
-CONST TCHAR FARCONST  aszPrtKPCustName[] = _T("%-19s");          /* customer name */
-CONST TCHAR FARCONST  aszPrtKPTrailer[] = _T("%04d %-4s%8.8Mu %04lu-%03lu %s"); /* kitchen printer trailer */
-CONST TCHAR FARCONST  aszPrtKPWeight[]  = _T("%.*l$%s");        /* weight */
-CONST TCHAR FARCONST  aszPrtKPQuant[]   = _T("%ld X");          /* quantity */
-CONST TCHAR FARCONST  aszPrtKPSeat[]    = _T("%-4s %1d"); //SR206 //_T("%-4s %2d");       /* seat no. */
-CONST TCHAR FARCONST  aszPrtKPTotal[]   = _T("%s  %s");       /* total, V3.3 */
-/* CONST TCHAR FARCONST  aszPrtKPTotal[]   = _T("%s    %s");       / total */
-CONST TCHAR FARCONST  aszPrtKPOperator[] = _T("%-4s %-s");      /* operator */
-CONST TCHAR FARCONST  aszPrtKPOperator2[] = _T("%-4s\n%-10s"); /* operator */
-UCHAR	fchPrintDown;		/* save status of printer up or down */
+CONST TCHAR   aszPrtKPGuest_CD[]= _T(" %4d%02d");         /* guest check no and check digit */
+CONST TCHAR   aszPrtKPGuest[]   = _T(" %4d");             /* guest check no */
+CONST TCHAR   aszPrtKPHeader[]  = _T("%-4s %-4s %-4s%s"); /* kitchen printer header */
+CONST TCHAR   aszPrtKPCustName[] = _T("%-19s");          /* customer name */
+CONST TCHAR   aszPrtKPTrailer[] = _T("%04d %-4s%8.8Mu %04lu-%03lu %s"); /* kitchen printer trailer */
+CONST TCHAR   aszPrtKPWeight[]  = _T("%.*l$%s");        /* weight */
+CONST TCHAR   aszPrtKPQuant[]   = _T("%ld X");          /* quantity */
+CONST TCHAR   aszPrtKPSeat[]    = _T("%-4s %1d"); //SR206 //_T("%-4s %2d");       /* seat no. */
+CONST TCHAR   aszPrtKPTotal[]   = _T("%s  %s");       /* total, V3.3 */
+/* CONST TCHAR   aszPrtKPTotal[]   = _T("%s    %s");       / total */
+CONST TCHAR   aszPrtKPOperator[] = _T("%-4s %-s");      /* operator */
+CONST TCHAR   aszPrtKPOperator2[] = _T("%-4s\n%-10s"); /* operator */
+
+static UCHAR  fchPrintDown;		/* save status of printer up or down */
 
 /**
 ;============================================================================
@@ -129,12 +130,13 @@ UCHAR	fchPrintDown;		/* save status of printer up or down */
 **/
 
 /* -- for message (sent Kitchen printer) control -- */  
-UCHAR   uchPrtKPFrameNo[MAX_DEST_SIZE];                     /* message frame counter (seq. #) */     /* V1.0.0.3 */
-USHORT  usPrtKPOffset[MAX_DEST_SIZE];                       /* message area offset in bytes not characters,    Saratoga */
-TCHAR   auchPrtKPMessage[MAX_DEST_SIZE][KPS_FRAME_SIZE];    /* message area, Saratoga, should be same size as KPS_FRAME_SIZE */
-UCHAR   fbPrtKPState;                                               /* save outputed kp number */
+static UCHAR   uchPrtKPFrameNo[MAX_DEST_SIZE];                     /* message frame counter (seq. #) */     /* V1.0.0.3 */
+static USHORT  usPrtKPOffset[MAX_DEST_SIZE];                       /* message area offset in bytes not characters,    Saratoga */
+static TCHAR   auchPrtKPMessage[MAX_DEST_SIZE][KPS_FRAME_SIZE];    /* message area, Saratoga, should be same size as KPS_FRAME_SIZE */
+
 UCHAR   fbPrtKPSeatState;                                           /* save outputed kp number for Seat No, R3.1 */
-UCHAR   fbPrtKPAbortState;                                          /* save outputed kp number */
+static UCHAR   fbPrtKPState;                                        /* save outputed kp number */
+static UCHAR   fbPrtKPAbortState;                                   /* save outputed kp number */
 
 /*
 *===========================================================================
@@ -168,6 +170,14 @@ VOID   PrtKPInit(VOID)
     }
 }
 
+UCHAR  PrtKPSeatStateNotFeed(void)
+{
+    UCHAR  save = fbPrtKPSeatState;         // return the current state
+
+    fbPrtKPSeatState = 0xFF;                /* not feed first item at non seat# trans. */
+    return save;
+}
+
 /*
 *===========================================================================
 ** Format  : VOID PrtKPOperatorName( TRANINFORMATION *pTran )
@@ -180,11 +190,10 @@ VOID   PrtKPInit(VOID)
 ** Synopsis: This function set operator mnemonic to kitchen printer buffer.
 *===========================================================================
 */
-VOID    PrtKPOperatorName(TRANINFORMATION *pTran)
+VOID    PrtKPOperatorName(CONST TRANINFORMATION *pTran)
 {
     TCHAR   aszMnem[PARA_SPEMNEMO_LEN + 1] = {0};
     TCHAR   aszOpeMnem[NUM_OPERATOR + 1] = {0};
-    USHORT  i;
 
     /*  --  get cashier or waiter's name and mnemonics -- */
     if ( PRT_CASHIER == PrtChkCasWai(aszMnem, pTran->TranModeQual.ulCashierID, pTran->TranModeQual.ulWaiterID) ) {
@@ -192,9 +201,9 @@ VOID    PrtKPOperatorName(TRANINFORMATION *pTran)
     } else {
         _tcsncpy(aszOpeMnem, pTran->TranModeQual.aszWaiterMnem, NUM_OPERATOR);
     }
-
-    if (_tcslen(aszOpeMnem) > PRT_CASNAMEKP_LEN) {
-        for (i = 0; i < MAX_DEST_SIZE; i++) {
+    aszOpeMnem[NUM_OPERATOR] = 0;
+    if (tcharlen(aszOpeMnem) > PRT_CASNAMEKP_LEN) {
+        for (USHORT i = 0; i < MAX_DEST_SIZE; i++) {
             RflSPrintf(&auchPrtKPMessage[i][(usPrtKPOffset[i]/sizeof(TCHAR))],
                     (TCHARSIZEOF(auchPrtKPMessage[i]) - (usPrtKPOffset[i]/sizeof(TCHAR))),
                     aszPrtKPOperator2,  /* with CR */
@@ -202,16 +211,16 @@ VOID    PrtKPOperatorName(TRANINFORMATION *pTran)
         }
 
     } else {
-        for (i = 0; i < MAX_DEST_SIZE; i++) {
+        for (USHORT i = 0; i < MAX_DEST_SIZE; i++) {
             RflSPrintf(&auchPrtKPMessage[i][(usPrtKPOffset[i]/sizeof(TCHAR))],
                     (TCHARSIZEOF(auchPrtKPMessage[i]) - (usPrtKPOffset[i]/sizeof(TCHAR))),
                     aszPrtKPOperator, aszMnem, aszOpeMnem);
         }
     }
     /* -- fill space with kp column number, Saratoga -- */
-    for (i = 0; i < MAX_DEST_SIZE; i++) {
+    for (USHORT i = 0; i < MAX_DEST_SIZE; i++) {
         PrtFillSpace(&auchPrtKPMessage[i][(usPrtKPOffset[i]/sizeof(TCHAR))], PRT_KPS_OPERATOR_LEN);
-        auchPrtKPMessage[i][(usPrtKPOffset[i]/sizeof(TCHAR)) + PARA_SPEMNEMO_LEN + 1 + (UCHAR)_tcslen(aszOpeMnem)] = '\0';
+        auchPrtKPMessage[i][(usPrtKPOffset[i]/sizeof(TCHAR)) + PARA_SPEMNEMO_LEN + 1 + tcharlen(aszOpeMnem)] = '\0';
         usPrtKPOffset[i] += PRT_KPS_OPERATOR_LEN * sizeof(TCHAR);
     }
 }
@@ -243,14 +252,13 @@ VOID    PrtKPOperatorName(TRANINFORMATION *pTran)
 *            than using the New Check Key to start a transaction.
 *===========================================================================
 */
-VOID    PrtKPHeader(TRANINFORMATION *pTran)
+VOID    PrtKPHeader(CONST TRANINFORMATION *pTran)
 {
 	TCHAR   aszTableMnem[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     TCHAR   aszGuestMnem[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     TCHAR   aszTableNo[PRT_ID_LEN + 1] = {0};
     TCHAR   aszGuestNo[PRT_KPCOLUMN + 1] = {0};
     TCHAR   aszWork[PRT_KPCOLUMN + 1] = {0};
-    USHORT  i;
 
     if (pTran->TranGCFQual.usTableNo != 0) {
         _itot(pTran->TranGCFQual.usTableNo, aszTableNo, 10);    /* convert table number to ascii, PrtKPHeader() */
@@ -278,7 +286,7 @@ VOID    PrtKPHeader(TRANINFORMATION *pTran)
 
     if ((pTran->TranGCFQual.usTableNo != 0) || (aszGuestNo[0] != 0)) {
         /* -- write table no & no of person,    Saratoga */
-        for (i = 0; i < MAX_DEST_SIZE; i++) {
+        for (USHORT i = 0; i < MAX_DEST_SIZE; i++) {
             RflSPrintf(&auchPrtKPMessage[i][(usPrtKPOffset[i]/sizeof(TCHAR))],
                    (TCHARSIZEOF(auchPrtKPMessage[i]) - (usPrtKPOffset[i]/sizeof(TCHAR))),
                    aszPrtKPHeader, aszTableMnem, aszTableNo, aszGuestMnem, aszGuestNo);
@@ -286,7 +294,7 @@ VOID    PrtKPHeader(TRANINFORMATION *pTran)
     }
 
     /* -- fill space with kp column number -- */ /* if space fills header area, kpmanager doesnot print header */
-    for (i = 0; i < MAX_DEST_SIZE; i++) {
+    for (USHORT i = 0; i < MAX_DEST_SIZE; i++) {
         PrtFillSpace(&auchPrtKPMessage[i][(usPrtKPOffset[i]/sizeof(TCHAR))], PRT_KPCOLUMN);
 
         /* -- increment buffer write offset -- */
@@ -306,17 +314,26 @@ VOID    PrtKPHeader(TRANINFORMATION *pTran)
 ** Synopsis: This function sets customer name to KP's message buffer.
 *===========================================================================
 */
-VOID    PrtKPCustomerName(TCHAR *pszCustomerName)
+VOID    PrtKPCustomerName(CONST TCHAR *pszCustomerName)
 {
-    USHORT  i;
+    TCHAR  aszCustomerName[NUM_NAME + 1] = { 0 };
 
-    if ( *( pszCustomerName + NUM_NAME - 2 ) == PRT_DOUBLE ) {
-        *( pszCustomerName + NUM_NAME - 2 ) = '\0';
+    if (*pszCustomerName == '\0') {
+        return;
     }
-    for (i = 0; i < MAX_DEST_SIZE; i++) {               /* Saratoga */
+
+#if 1
+    PrtTruncDoubleString(aszCustomerName, NUM_NAME, pszCustomerName);
+#else
+    if (*(pszCustomerName + NUM_NAME - 2) == PRT_DOUBLE) {
+        *(pszCustomerName + NUM_NAME - 2) = '\0';
+    }
+#endif
+
+    for (USHORT i = 0; i < MAX_DEST_SIZE; i++) {               /* Saratoga */
         RflSPrintf(&auchPrtKPMessage[i][(usPrtKPOffset[i]/sizeof(TCHAR))],
                 (TCHARSIZEOF(auchPrtKPMessage[i]) - (usPrtKPOffset[i]/sizeof(TCHAR))),
-                aszPrtKPCustName, pszCustomerName);
+                aszPrtKPCustName, aszCustomerName);
         PrtFillSpace(&auchPrtKPMessage[i][usPrtKPOffset[i]/sizeof(TCHAR)], NUM_NAME - 1);
         usPrtKPOffset[i] += (NUM_NAME - 1) * sizeof(TCHAR);
     }
@@ -335,7 +352,7 @@ VOID    PrtKPCustomerName(TCHAR *pszCustomerName)
 ** Synopsis: This function set KP trailer.
 *===========================================================================
 */
-VOID    PrtKPTrailer(TRANINFORMATION *pTran, ULONG ulStReg)
+VOID    PrtKPTrailer(CONST TRANINFORMATION *pTran, ULONG ulStReg)
 {
     TCHAR  aszMnem[PARA_SPEMNEMO_LEN + 1] = {0};
     TCHAR  aszDate[PRT_DATETIME_LEN + 1] = {0};
@@ -374,9 +391,9 @@ VOID    PrtKPTrailer(TRANINFORMATION *pTran, ULONG ulStReg)
 ** Synopsis: This function set total mnemonic to kitchen printer buffer.
 *===========================================================================
 */
-VOID    PrtKPTotal(ITEMTOTAL *pItem)
+VOID    PrtKPTotal(CONST ITEMTOTAL *pItem)
 {
-    USHORT  usTtlAddr;
+    USTRNADRS  usTtlAddr;
     USHORT  fchKP, fchMask = 0x01;
     TCHAR   szTranMnem[ PARA_TRANSMNEMO_LEN + 1 ] = {0};
     TCHAR   szAmount[ PARA_SPEMNEMO_LEN + PRT_AMOUNT_LEN + 1 ] = {0};
@@ -607,7 +624,7 @@ VOID   PrtKPSetMenuItem(TRANINFORMATION *pTran, ITEMSALES *pItem)
 
     /* check setmenu children plu's kp portion */
     for ( j = 0; j < pItem->uchChildNo; j++ ) {
-		UCHAR   fbStatWork;                          /* print status for kp */
+		UCHAR   fbStatWork = 0;                          /* print status for kp */
 
         /* check child PLU exist or not */
         if (_tcsncmp(pItem->Condiment[j].auchPLUNo, auchDummy, NUM_PLU_LEN) == 0) {
@@ -902,7 +919,8 @@ USHORT PrtKPNumber(TCHAR *pszDest, USHORT usDestLen,TCHAR  *pszNumber)
         usNoLen = tcharlen(pszNumber);
 
 		_tcsncpy(&aszNumLine[usMnemoLen + 1], pszNumber, usNoLen);
-		_tcsncpy(pszDest,aszNumLine,usMnemoLen+usNoLen+1);
+        aszNumLine[usMnemoLen + usNoLen + 1] = 0;
+		_tcsncpy(pszDest, aszNumLine, usMnemoLen + usNoLen + 1);
 
 		pszDest[usMnemoLen+usNoLen+1] = PRT_RETURN;
 		return (usMnemoLen+usNoLen+2);
@@ -1219,8 +1237,6 @@ SHORT   PrtChkKPStorageEx(TCHAR *pszBuff,
 */
 VOID PrtKPEnd(VOID)
 {
-    USHORT          fchMask;
-    USHORT          i;
     USHORT          usKPStateWork;       /* work area to update usKPState */
     USHORT          usKPState = 0x0000;  /* status save area for all KP# */
 
@@ -1228,7 +1244,7 @@ VOID PrtKPEnd(VOID)
         return ;                         /* "== 0" means that there is no item to send. */
     }
 
-    for (i = 0, fchMask = 0x01; i < MAX_DEST_SIZE; i++, fchMask <<= 1) {
+    for (USHORT i = 0, fchMask = 0x01; i < MAX_DEST_SIZE; i++, fchMask <<= 1) {
 		PARASHAREDPRT   SharedPrt = {0};
 		USHORT          usRet;
 		SHORT           sReturn, sError;
@@ -1352,9 +1368,8 @@ SHORT  PrtSetFailKP(USHORT usKPState)
 /*    usKPState &= PRT_KPMASK;          / mask */
 
     if (usKPState) {
-		int  i;
 		USHORT usBit = 0x01;
-		for (i = 0; i < MAX_DEST_SIZE; i++, usBit <<= 1) {
+		for (USHORT i = 0; i < MAX_DEST_SIZE; i++, usBit <<= 1) {
 			// look over the bit map of failed kitchen printers and mark those
 			// that are failed or clear those that are not failed.
 			// See also PrtPrintTran() which clears the auchPrtFailKP[] array.
@@ -1389,7 +1404,7 @@ SHORT  PrtSetFailKP(USHORT usKPState)
 *            MDC(0110) Item(1001) -> PORT(1100)
 *===========================================================================
 */
-VOID PrtChkTotalKP(TRANINFORMATION *pTran, UCHAR *puchState, UCHAR  fbType)
+VOID PrtChkTotalKP(CONST TRANINFORMATION *pTran, UCHAR *puchState, UCHAR  fbType)
 {
     /* -- check total keys status -- */
     if (pTran->TranCurQual.auchTotalStatus[3] & CURQUAL_TOTAL_KITPRT_MENU_SEND) {   /* "and" logic */
@@ -1423,19 +1438,15 @@ VOID PrtChkTotalKP(TRANINFORMATION *pTran, UCHAR *puchState, UCHAR  fbType)
 *            for printer #5 - #8. R3.1
 *===========================================================================
 */
-VOID PrtChkTotalKP2(TRANINFORMATION *pTran, UCHAR *puchState, UCHAR  fbType)
+VOID PrtChkTotalKP2(CONST TRANINFORMATION *pTran, UCHAR *puchState, UCHAR  fbType)
 {
-    UCHAR fbWork1;
-    PARAMDC MDC;
+    UCHAR   fbWork1 = (UCHAR)(*puchState & 0xF0);  /* save kp#1 - #4 */
+    PARAMDC MDC = { 0 };
 
     /* -- check total keys status -- */
-    fbWork1 = (UCHAR)(*puchState & 0xF0);  /* save kp#1 - #4 */
     if (pTran->TranCurQual.auchTotalStatus[3] & CURQUAL_TOTAL_KITPRT_MENU_SEND) {   /* "and" logic */
-
         fbWork1 &= ((pTran->TranCurQual.auchTotalStatus[5] & CURQUAL_TOTAL_KITPRT_PRINTER_MASK) << 4);
-
     } else {                                                 /* "or" logic  */
-
         fbWork1 |= ((pTran->TranCurQual.auchTotalStatus[5] & CURQUAL_TOTAL_KITPRT_PRINTER_MASK) << 4);
     }
     *puchState = (UCHAR)(*puchState & 0x0F);
@@ -1452,6 +1463,72 @@ VOID PrtChkTotalKP2(TRANINFORMATION *pTran, UCHAR *puchState, UCHAR  fbType)
 
     fbWork1 = (UCHAR)~(MDC.uchMDCData);
     *puchState = *puchState & fbWork1;  /* clear each bit associated to KDS */
+}
+
+/*
+*===========================================================================
+** Format  : USHORT   PrtChkKPPortToUse (UCHAR  *auchPluStatus, TRANINFORMATION  *pTran, fbType)
+*
+*    Input : UCHAR            *auchPluStatus   -PLU status array which contains remote device indicators
+*            TRANINFORMATION  *pTran           -Transaction information address
+*            UCHAR            fbType           -set type
+*                                                PRT_MDC: remove any remote CRTs
+*                                                PRT_NOT_MDC: do not remove any remote CRTs
+*   Output : none
+*    InOut : none
+** Return  : usKpPorts             - bit map of which remote devices are kitchen printers.
+*
+** Synopsis: This function determines which remote devices are used for kitchen printing
+*            for a PLU. The PLU status array contains which remote devices are to be used
+*            when processing the PLU and generating kitchen printer output.
+*
+*            This function generates a bit map of which remote devices to output to by
+*            looking at the remote devices specified in the PLU status array then filtering
+*            based on the Total Key settings specified in the P60 Total Key settings.
+*
+*            A Total Key can be provisioned to include additional remote printers by either
+*            using a logical AND with the PLU status array or a logical OR with the PLU status array.
+*
+*            A logical AND means that a PLU is only sent to a remote device if BOTH the
+*            PLU status array and the Total Key provisioning indicates the remote device.
+*
+*            A logical OR means that a PLU is sent to a remote device if EITHER the
+*            PLU status array and the Total Key provisioning indicates a remote device.
+
+**===========================================================================
+*/
+static UCHAR   PrtChkKPPortToUse (CONST UCHAR  *auchPluStatus, CONST TRANINFORMATION  *pTran, UCHAR fbType)
+{
+    UCHAR  usKpPorts = 0;
+    UCHAR  usKpTotalPorts = 0;
+
+	usKpPorts  = auchPluStatus[2] >> 4;
+	usKpPorts |= auchPluStatus[6] << 4;
+
+    usKpTotalPorts = (pTran->TranCurQual.auchTotalStatus[3] & CURQUAL_TOTAL_KITPRT_PRINTER_MASK);
+    usKpTotalPorts |= ((pTran->TranCurQual.auchTotalStatus[5] & CURQUAL_TOTAL_KITPRT_PRINTER_MASK) << 4);
+
+	/* -- check total keys status -- */
+    if (pTran->TranCurQual.auchTotalStatus[3] & CURQUAL_TOTAL_KITPRT_MENU_SEND) {   /* "and" logic */
+        usKpPorts &= usKpTotalPorts;
+    } else {                                                 /* "or" logic  */
+        usKpPorts |= usKpTotalPorts;
+    }
+
+    if (fbType == PRT_MDC) {
+		PARAMDC MDC = {0};
+
+		/* -- check MDC of KDS-- */
+		MDC.uchMajorClass = CLASS_PARAMDC;
+		MDC.usAddress = MDC_DSP_ON_FLY;     // getting full byte on odd MDC address so both MDC_DSP_ON_FLY and MDC_DSP_ON_FLY2
+		CliParaRead(&MDC);
+
+		// clear each bit associated to remote CRT (KDS).
+		// invert MDC data to make remote printer 1 and remote CRT 0
+		usKpPorts = usKpPorts & ( ~ MDC.uchMDCData );
+    }
+
+    return(usKpPorts);
 }
 
 /*
@@ -1474,7 +1551,7 @@ VOID PrtChkTotalKP2(TRANINFORMATION *pTran, UCHAR *puchState, UCHAR  fbType)
 *
 *===========================================================================
 */
-SHORT  PrtChkKPPort(TRANINFORMATION *pTran, ITEMSALES *pItem, UCHAR *puchPort, UCHAR fbType)
+SHORT  PrtChkKPPort(CONST TRANINFORMATION *pTran, CONST ITEMSALES *pItem, UCHAR *puchPort, UCHAR fbType)
 {
     /* normal item without condiment or PM,  does not print */
     if (  (pItem->fsPrintStatus & PRT_SPCL_PRINT) && (pItem->uchCondNo + pItem->uchPrintModNo == 0) ) {
@@ -1540,72 +1617,6 @@ SHORT   PrtChkKPPortSub(UCHAR *puchPortion,  UCHAR  fbPrtState,
     }
 
     return(PRT_KPITEM);
-}
-
-/*
-*===========================================================================
-** Format  : USHORT   PrtChkKPPortToUse (UCHAR  *auchPluStatus, TRANINFORMATION  *pTran, fbType)
-*
-*    Input : UCHAR            *auchPluStatus   -PLU status array which contains remote device indicators
-*            TRANINFORMATION  *pTran           -Transaction information address
-*            UCHAR            fbType           -set type
-*                                                PRT_MDC: remove any remote CRTs
-*                                                PRT_NOT_MDC: do not remove any remote CRTs
-*   Output : none
-*    InOut : none
-** Return  : usKpPorts             - bit map of which remote devices are kitchen printers.
-*
-** Synopsis: This function determines which remote devices are used for kitchen printing
-*            for a PLU. The PLU status array contains which remote devices are to be used
-*            when processing the PLU and generating kitchen printer output.
-*
-*            This function generates a bit map of which remote devices to output to by
-*            looking at the remote devices specified in the PLU status array then filtering
-*            based on the Total Key settings specified in the P60 Total Key settings.
-*
-*            A Total Key can be provisioned to include additional remote printers by either
-*            using a logical AND with the PLU status array or a logical OR with the PLU status array.
-*
-*            A logical AND means that a PLU is only sent to a remote device if BOTH the
-*            PLU status array and the Total Key provisioning indicates the remote device.
-*
-*            A logical OR means that a PLU is sent to a remote device if EITHER the
-*            PLU status array and the Total Key provisioning indicates a remote device.
-
-**===========================================================================
-*/
-USHORT   PrtChkKPPortToUse (UCHAR  *auchPluStatus, TRANINFORMATION  *pTran, UCHAR fbType)
-{
-	USHORT  usKpPorts = 0;
-	USHORT  usKpTotalPorts = 0;
-
-	usKpPorts  = auchPluStatus[2] >> 4;
-	usKpPorts |= auchPluStatus[6] << 4;
-
-    usKpTotalPorts = (pTran->TranCurQual.auchTotalStatus[3] & CURQUAL_TOTAL_KITPRT_PRINTER_MASK);
-    usKpTotalPorts |= ((pTran->TranCurQual.auchTotalStatus[5] & CURQUAL_TOTAL_KITPRT_PRINTER_MASK) << 4);
-
-	/* -- check total keys status -- */
-    if (pTran->TranCurQual.auchTotalStatus[3] & CURQUAL_TOTAL_KITPRT_MENU_SEND) {   /* "and" logic */
-        usKpPorts &= usKpTotalPorts;
-    } else {                                                 /* "or" logic  */
-        usKpPorts |= usKpTotalPorts;
-    }
-
-    if (fbType == PRT_MDC) {
-		PARAMDC MDC = {0};
-
-		/* -- check MDC of KDS-- */
-		MDC.uchMajorClass = CLASS_PARAMDC;
-		MDC.usAddress = MDC_DSP_ON_FLY;     // getting full byte on odd MDC address so both MDC_DSP_ON_FLY and MDC_DSP_ON_FLY2
-		CliParaRead(&MDC);
-
-		// clear each bit associated to remote CRT (KDS).
-		// invert MDC data to make remote printer 1 and remote CRT 0
-		usKpPorts = usKpPorts & ( ~ MDC.uchMDCData );
-    }
-
-    return(usKpPorts);
 }
 
 /*
@@ -1772,8 +1783,7 @@ VOID PrtTakeToKP(TRANINFORMATION *pTran, SHORT hsStorage)
 		// we process the transaction data to generate a list of PLU tickets to print and
 		// then we print them.
 		BOOL            freeMalloced;
-		PluChitInfoAll  PluChit;
-		PluChitInfo     PluChitInfoList[25] = {0};
+        PluChitInfoAll  PluChit = { 0 };
 
 		fsPrtStatus = PRT_TAKETOKIT;      /* take to kitchen status */
 		fsPrtCompul = 0;                  /* no printing of the receipt, only collect list of PLU tickets */
@@ -1786,6 +1796,11 @@ VOID PrtTakeToKP(TRANINFORMATION *pTran, SHORT hsStorage)
 		PluChit.nPluChitInfoSize = 75;
 		freeMalloced = ((PluChit.pPluChitInfo = calloc (PluChit.nPluChitInfoSize, sizeof(PluChitInfo))) != 0);
 		if (! freeMalloced) {
+            // memory allocation failed so provide some amount of backup that is static.
+            // this function should not be used by more than one thread at a time.
+		    static PluChitInfo     PluChitInfoList[25] = {0};
+
+            memset(PluChitInfoList, 0, sizeof(PluChitInfoList));
 			PluChit.pPluChitInfo = PluChitInfoList;
 			PluChit.nPluChitInfoSize = sizeof(PluChitInfoList)/sizeof(PluChitInfoList[0]);
 		}
@@ -1823,7 +1838,7 @@ VOID PrtTakeToKP(TRANINFORMATION *pTran, SHORT hsStorage)
 
 				uchPrtCurKP = (UCHAR)(0x01 << i);   /* for interface to "PrtChkKPItem */
 
-				PrtTHHead(pTran);
+				PrtTHHead(pTran->TranCurQual.usConsNo);
 
 				if (pTran->TranCurQual.fsCurStatus & CURQUAL_PVOID) {
 					PrtPVoid(pTran, PRT_SINGLE_RECPT);  /* print preselect void line */

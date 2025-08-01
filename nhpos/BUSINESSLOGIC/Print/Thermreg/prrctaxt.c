@@ -76,60 +76,7 @@
 #include "prtdfl.h"
 #include "prrcolm_.h"
 
-/*
-*===========================================================================
-** Format  : VOID   PrtCanadaTax(TRANINFORMATION  *pTran,
-*                                     ITEMAFFECTION *pItem);   
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMAFFECTION    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints canada tax.
-*===========================================================================
-*/      
-VOID   PrtCanadaTax(TRANINFORMATION  *pTran, ITEMAFFECTION  *pItem)
-{
-    if (pTran->TranCurQual.flPrintStatus & CURQUAL_CANADA_GST_PST) {
-         PrtCanGst(pTran, pItem);
-    }  else if (pTran->TranCurQual.flPrintStatus & CURQUAL_CANADA_INDI) {
-         PrtCanInd(pTran, pItem);
-    }  else {
-         PrtCanAll(pTran, pItem);
-    }
-}
 
-/*
-*===========================================================================
-** Format  : VOID   PrtCanGst(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem);
-*                                        
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMAFFECTION    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints canada Gst Pst tax.
-*===========================================================================
-*/
-VOID   PrtCanGst(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
-{
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-
-    if ( fsPrtPrintPort & PRT_SLIP ) {     /* slip print */
-        PrtCanGst_SP(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_RECEIPT ) {  /* thermal print */
-        PrtCanGst_TH(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_JOURNAL ) {  /* electric journal */
-        PrtCanGst_EJ(pItem);
-    }
-}
 
 /*
 *===========================================================================
@@ -144,14 +91,11 @@ VOID   PrtCanGst(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
 ** Synopsis: This function prints canada tax. (thermal)
 *===========================================================================
 */
-VOID   PrtCanGst_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
+static VOID   PrtCanGst_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
 {
-    USCANTAX    *pUSCanTax;
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
 
-    /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
-
-    PrtTHHead(pTran);                       /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);   /* print header if necessary */
 
     /* -- print subtotal line R3.1 -- */
     if (pItem->lAmount) {
@@ -162,12 +106,8 @@ VOID   PrtCanGst_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
         }
     }
 
-    /* -- GST tax -- */
-    PrtTHZeroAmtMnem(TRN_TX1_ADR, pUSCanTax->lTaxAmount[0]);
-
-    /* -- PST tax -- */
-    PrtTHZeroAmtMnem(TRN_TX2_ADR, pUSCanTax->lTaxAmount[1]);
-
+    PrtTHZeroAmtMnem(TRN_TX1_ADR, pUSCanTax->lTaxAmount[0]);    /* -- GST tax -- */
+    PrtTHZeroAmtMnem(TRN_TX2_ADR, pUSCanTax->lTaxAmount[1]);    /* -- PST tax -- */
 }
 
 /*
@@ -182,12 +122,9 @@ VOID   PrtCanGst_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
 ** Synopsis: This function prints canada tax. (eelectric journal)
 *===========================================================================
 */
-VOID   PrtCanGst_EJ(ITEMAFFECTION *pItem)
+static VOID   PrtCanGst_EJ(ITEMAFFECTION *pItem)
 {
-    USCANTAX    *pUSCanTax;
-
-    /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
 
     /* -- print subtotal line R3.1 -- */
     if (pItem->lAmount) {
@@ -224,19 +161,13 @@ VOID   PrtCanGst_EJ(ITEMAFFECTION *pItem)
 ** Synopsis: This function prints canada tax. (slip)
 *===========================================================================
 */
-VOID  PrtCanGst_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
+static VOID  PrtCanGst_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
 {
-    TCHAR  aszSPPrintBuff[3][PRT_SPCOLUMN + 1]; /* print data save area */
+    TCHAR  aszSPPrintBuff[3][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
     USHORT  usSaveLine;                /* save slip lines to be added */
     USHORT  i;   
-    USCANTAX    *pUSCanTax;
-
-    /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
 
     /* -- print subtotal line R3.1 -- */
     if (pItem->lAmount) { 
@@ -267,39 +198,39 @@ VOID  PrtCanGst_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
     /* -- update current line No. -- */
     usPrtSlipPageLine += usSlipLine + usSaveLine;       
 }
+
 /*
 *===========================================================================
-** Format  : VOID   PrtCanInd(TRANINFORMATION  *pTran,
-*                                     ITEMAFFECTION *pItem);   
+** Format  : VOID   PrtCanGst(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem);
+*                                        
 *   Input  : TRANINFORMATION  *pTran     -Transaction information address
 *            ITEMAFFECTION    *pItem     -Item Data address
 *   Output : none
 *   InOut  : none
 ** Return  : none
 *            
-** Synopsis: This function prints canada individual tax.
+** Synopsis: This function prints canada Gst Pst tax.
 *===========================================================================
 */
-VOID  PrtCanInd(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
+VOID   PrtCanGst(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
 {
-
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(pItem->fsPrintStatus);
 
-
     if ( fsPrtPrintPort & PRT_SLIP ) {     /* slip print */
-        PrtCanInd_SP(pTran, pItem);
+        PrtCanGst_SP(pTran, pItem);
     }
 
     if ( fsPrtPrintPort & PRT_RECEIPT ) {  /* thermal print */
-        PrtCanInd_TH(pTran, pItem);
+        PrtCanGst_TH(pTran, pItem);
     }
 
     if ( fsPrtPrintPort & PRT_JOURNAL ) {  /* electric journal */
-        PrtCanInd_EJ(pItem);
+        PrtCanGst_EJ(pItem);
     }
-
 }
+
+//        ---------------------------
 
 /*
 *===========================================================================
@@ -314,13 +245,12 @@ VOID  PrtCanInd(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
 ** Synopsis: This function prints canada individual tax. (thermal)
 *===========================================================================
 */
-VOID  PrtCanInd_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
+static VOID  PrtCanInd_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
 {
-    USCANTAX    *pUSCanTax;
-
     /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
-    PrtTHHead(pTran);                       /* print header if neccesary */
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);     /* print header if neccesary */
 
     /* -- print subtotal line R3.1 -- */
     if (pItem->lAmount) {
@@ -357,12 +287,9 @@ VOID  PrtCanInd_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
 ** Synopsis: This function prints canada individual tax. (electric journal)
 *===========================================================================
 */
-VOID  PrtCanInd_EJ(ITEMAFFECTION *pItem)
+static VOID  PrtCanInd_EJ(ITEMAFFECTION *pItem)
 {
-    USCANTAX    *pUSCanTax;
-
-    /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
 
     /* -- print subtotal line R3.1 -- */
     if (pItem->lAmount) {
@@ -410,19 +337,13 @@ VOID  PrtCanInd_EJ(ITEMAFFECTION *pItem)
 ** Synopsis: This function prints canada individual tax.
 *===========================================================================
 */
-VOID  PrtCanInd_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
+static VOID  PrtCanInd_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
 {
-    TCHAR  aszSPPrintBuff[5][PRT_SPCOLUMN + 1]; /* print data save area */
+    TCHAR  aszSPPrintBuff[5][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
     USHORT  usSaveLine;                /* save slip lines to be added */
     USHORT  i;   
-    USCANTAX    *pUSCanTax;
-
-    /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
-
-    /* -- initialize the buffer -- */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
 
     /* -- print subtotal line R3.1 -- */
     if (pItem->lAmount) { 
@@ -467,6 +388,152 @@ VOID  PrtCanInd_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
 
 /*
 *===========================================================================
+** Format  : VOID   PrtCanInd(TRANINFORMATION  *pTran,
+*                                     ITEMAFFECTION *pItem);   
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMAFFECTION    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints canada individual tax.
+*===========================================================================
+*/
+VOID  PrtCanInd(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
+{
+
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+
+
+    if ( fsPrtPrintPort & PRT_SLIP ) {     /* slip print */
+        PrtCanInd_SP(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_RECEIPT ) {  /* thermal print */
+        PrtCanInd_TH(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_JOURNAL ) {  /* electric journal */
+        PrtCanInd_EJ(pItem);
+    }
+
+}
+
+//        ---------------------------
+
+/*
+*===========================================================================
+** Format  : VOID  PrtCanAll_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem);
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMAFFECTION    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints canada all tax. (thermal)
+*===========================================================================
+*/
+static VOID  PrtCanAll_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
+{
+    /* -- set US tax structuer, V3.3 -- */
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);    /* print header if necessary */
+
+    /* -- print subtotal line R3.1 -- */
+    if (pItem->lAmount) {
+        if (pUSCanTax->lTaxAmount[0]) {
+
+            PrtFeed(PMG_PRT_RECEIPT, 1);              /* 1 line feed(Receipt) */
+            PrtTHAmtMnem(TRN_TTL1_ADR, pItem->lAmount);
+        }
+    }
+
+    /* -- CanAll Tax -- */
+    PrtTHZeroAmtMnem(TRN_CONSTX_ADR, pUSCanTax->lTaxAmount[0]);
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtCanAll_EJ(ITEMAFFECTION *pItem);
+*
+*   Input  : ITEMAFFECTION    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints canada all tax. (electric journal)
+*===========================================================================
+*/
+static VOID  PrtCanAll_EJ(ITEMAFFECTION *pItem)
+{
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
+
+    /* -- print subtotal line R3.1 -- */
+    if (pItem->lAmount) {
+        if (pUSCanTax->lTaxAmount[0]) {
+
+            PrtEJAmtMnem(TRN_TTL1_ADR, pItem->lAmount);
+        }
+    }
+
+    PrtEJZeroAmtMnem(TRN_TXEXM1_ADR, pUSCanTax->lTaxExempt[0]);    /* -- GST exempt -- */
+    PrtEJZeroAmtMnem(TRN_TXEXM2_ADR, pUSCanTax->lTaxExempt[1]);    /* -- PST exempt -- */
+    PrtEJZeroAmtMnem(TRN_TXBL1_ADR, pUSCanTax->lTaxable[0]);       /* -- CanAll taxable -- */
+    PrtEJZeroAmtMnem(TRN_CONSTX_ADR, pUSCanTax->lTaxAmount[0]);    /* -- CanAll Tax -- */
+    PrtEJZeroAmtMnem(TRN_NONTX_ADR, pUSCanTax->lTaxable[4]);       /* -- non taxable -- */
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtCanAll_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem);
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*          : ITEMAFFECTION    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints canada all tax.
+*===========================================================================
+*/
+static VOID  PrtCanAll_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
+{
+    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    USHORT  usSlipLine = 0;         /* number of lines to be printed */
+    USHORT  usSaveLine;             /* save slip lines to be added */
+    USHORT  i;   
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);    /* -- set US tax structuer, V3.3 -- */
+
+    /* -- print subtotal line R3.1 -- */
+    if (pItem->lAmount) { 
+        if (pUSCanTax->lTaxAmount[0]) {
+            usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[0], TRN_TTL1_ADR, pItem->lAmount);
+        }
+    }
+    /* -- set Can All Tax mnemonic and amount -- */
+    if (pUSCanTax->lTaxAmount[0]) {
+        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_CONSTX_ADR, pUSCanTax->lTaxAmount[0]);
+    }
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print the data in the buffer -- */ 
+    for (i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;
+} 
+
+/*
+*===========================================================================
 ** Format  : VOID   PrtCanAll(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem);   
 *            
 *   Input  : TRANINFORMATION  *pTran     -Transaction information address
@@ -501,134 +568,27 @@ VOID  PrtCanAll(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtCanAll_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem);
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+** Format  : VOID   PrtCanadaTax(TRANINFORMATION  *pTran,
+*                                     ITEMAFFECTION *pItem);   
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
 *            ITEMAFFECTION    *pItem     -Item Data address
 *   Output : none
 *   InOut  : none
 ** Return  : none
 *            
-** Synopsis: This function prints canada all tax. (thermal)
+** Synopsis: This function prints canada tax.
 *===========================================================================
-*/
-VOID  PrtCanAll_TH(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
+*/      
+VOID   PrtCanadaTax(TRANINFORMATION  *pTran, ITEMAFFECTION  *pItem)
 {
-    USCANTAX    *pUSCanTax;
-
-    /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
-
-    PrtTHHead(pTran);                       /* print header if necessary */
-
-    /* -- print subtotal line R3.1 -- */
-    if (pItem->lAmount) {
-        if (pUSCanTax->lTaxAmount[0]) {
-
-            PrtFeed(PMG_PRT_RECEIPT, 1);              /* 1 line feed(Receipt) */
-            PrtTHAmtMnem(TRN_TTL1_ADR, pItem->lAmount);
-        }
+    if (pTran->TranCurQual.flPrintStatus & CURQUAL_CANADA_GST_PST) {
+         PrtCanGst(pTran, pItem);
+    }  else if (pTran->TranCurQual.flPrintStatus & CURQUAL_CANADA_INDI) {
+         PrtCanInd(pTran, pItem);
+    }  else {
+         PrtCanAll(pTran, pItem);
     }
-
-    /* -- CanAll Tax -- */
-    PrtTHZeroAmtMnem(TRN_CONSTX_ADR, pUSCanTax->lTaxAmount[0]);
 }
-
-/*
-*===========================================================================
-** Format  : VOID  PrtCanAll_EJ(ITEMAFFECTION *pItem);
-*
-*   Input  : ITEMAFFECTION    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints canada all tax. (electric journal)
-*===========================================================================
-*/
-VOID  PrtCanAll_EJ(ITEMAFFECTION *pItem)
-{
-    USCANTAX    *pUSCanTax;
-
-    /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
-
-    /* -- print subtotal line R3.1 -- */
-    if (pItem->lAmount) {
-        if (pUSCanTax->lTaxAmount[0]) {
-
-            PrtEJAmtMnem(TRN_TTL1_ADR, pItem->lAmount);
-        }
-    }
-
-    /* -- GST exempt -- */
-    PrtEJZeroAmtMnem(TRN_TXEXM1_ADR, pUSCanTax->lTaxExempt[0]);
-
-    /* -- PST exempt -- */
-    PrtEJZeroAmtMnem(TRN_TXEXM2_ADR, pUSCanTax->lTaxExempt[1]);
-
-    /* -- CanAll taxable -- */
-    PrtEJZeroAmtMnem(TRN_TXBL1_ADR, pUSCanTax->lTaxable[0]);
-
-    /* -- CanAll Tax -- */
-    PrtEJZeroAmtMnem(TRN_CONSTX_ADR, pUSCanTax->lTaxAmount[0]);
-
-    /* -- non taxable -- */
-    PrtEJZeroAmtMnem(TRN_NONTX_ADR, pUSCanTax->lTaxable[4]);
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtCanAll_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem);
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*          : ITEMAFFECTION    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints canada all tax.
-*===========================================================================
-*/
-VOID  PrtCanAll_SP(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
-{
-    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0;         /* number of lines to be printed */
-    USHORT  usSaveLine;             /* save slip lines to be added */
-    USHORT  i;   
-    USCANTAX    *pUSCanTax;
-
-    /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
-
-    /* -- initialize the area -- */
-    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));
-
-    /* -- print subtotal line R3.1 -- */
-    if (pItem->lAmount) { 
-        if (pUSCanTax->lTaxAmount[0]) {
-            usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[0], TRN_TTL1_ADR, pItem->lAmount);
-        }
-    }
-    /* -- set Can All Tax mnemonic and amount -- */
-    if (pUSCanTax->lTaxAmount[0]) {
-        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_CONSTX_ADR, pUSCanTax->lTaxAmount[0]);
-    }
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print the data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;
-} 
-
 
 /*
 *===========================================================================
@@ -673,16 +633,10 @@ VOID   PrtDflCanadaTax(TRANINFORMATION  *pTran, ITEMAFFECTION  *pItem)
 */
 VOID   PrtDflCanGst(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
 {
-    TCHAR  aszDflBuff[11][PRT_DFL_LINE + 1];   /* display data save area */
+    TCHAR  aszDflBuff[11][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
     USHORT  usLineNo, usSav;                   /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
-    USCANTAX    *pUSCanTax;
-
-    /* -- set US tax structuer, V3.3 -- */
-    pUSCanTax = &(pItem->USCanVAT.USCanTax);
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
+    USCANTAX    *pUSCanTax = &(pItem->USCanVAT.USCanTax);
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -711,13 +665,14 @@ VOID   PrtDflCanGst(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
     }
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TAX); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -790,8 +745,9 @@ VOID  PrtDflCanInd(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
     }
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TAX); 
@@ -857,8 +813,9 @@ VOID  PrtDflCanAll(TRANINFORMATION *pTran, ITEMAFFECTION *pItem)
     }
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TAX); 

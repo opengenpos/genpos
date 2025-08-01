@@ -58,12 +58,163 @@
 #include <ecr.h>
 #include <pmg.h>
 #include <paraequ.h>
-/* #include <para.h> */
 #include <regstrct.h>
 #include <transact.h>
 #include <prt.h>
 #include "prtrin.h"
 #include "prrcolm_.h"
+
+/*
+*===========================================================================
+** Format  : VOID  PrtAddChk1_TH(TRANINFORMATION  *pTran, SHORT sWidthType);
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            SHORT  sWidthType      -   Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints in add check. (thermal)
+*===========================================================================
+*/
+static VOID  PrtAddChk1_TH(TRANINFORMATION  *pTran, SHORT sWidthType)
+{
+    USHORT usTable = 0;
+    USHORT usNoPer = 0;
+                                              
+    if (pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE) {
+        usNoPer = pTran->TranGCFQual.usNoPerson;
+    }
+
+    /* --- determine print type is single width or double width --- */
+    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
+        /* --- store table no., if guest moved other table --- */
+        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
+            usTable = pTran->TranGCFQual.usTableNo;
+        }
+    } else {                            /* double width print */
+        /* --- store unique transaction number --- */
+        usTable = pTran->TranGCFQual.usTableNo;
+    }
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);    /* print header if necessary */
+
+    PrtTHCustomerName( pTran->TranGCFQual.aszName );
+    PrtTHTblPerGC(usTable, usNoPer,pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv, 0, sWidthType);
+                               /* Table No., No. of person, guest check no mnemo */
+
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtAddChk1_EJ(TRANINFORMATION  *pTran, SHORT sWidthType);
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            SHORT  sWidthType      -   Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints in add check. (electric journal)
+*===========================================================================
+*/
+static VOID  PrtAddChk1_EJ(TRANINFORMATION  *pTran, SHORT sWidthType )
+{
+    USHORT usTable = 0;
+    USHORT usNoPer = 0;
+                                              
+    if (pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE) {
+        usNoPer = pTran->TranGCFQual.usNoPerson;
+    }
+
+    /* --- determine print type is single width or double width --- */
+    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
+        /* --- store table no., if guest moved other table --- */
+        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
+            usTable = pTran->TranGCFQual.usTableNo;
+        }
+    } else {                            /* double width print */
+        /* --- store unique transaction number --- */
+        usTable = pTran->TranGCFQual.usTableNo;
+    }
+
+    PrtEJCustomerName( pTran->TranGCFQual.aszName );
+    PrtEJTblPerson(usTable, usNoPer, 0, sWidthType);   /* Table no.,  no. of person */
+                                               /* guest check no mnemo */
+    PrtEJGuest(pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv);
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtAddChk1_SP(TRANINFORMATION  *pTran, SHORT sWidthType);
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            SHORT  sWidthType      -   Type of Print Width
+*                       PRT_DOUBLE, PRT_SINGLE
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints dept sales. (slip)
+*===========================================================================
+*/
+static VOID  PrtAddChk1_SP(TRANINFORMATION  *pTran, SHORT sWidthType)
+{
+    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 };   /* print data save area */
+    USHORT usTable = 0;
+    USHORT usNoPer = 0;
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    /* -- set table No., No. of person mnemonic and amount -- */
+    if (pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE) {
+        usNoPer = pTran->TranGCFQual.usNoPerson;
+    }
+
+    /* --- determine print type is single width or double width --- */
+    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
+        /* --- store table no., if guest moved other table --- */
+        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
+            usTable = pTran->TranGCFQual.usTableNo;
+        }
+    } else {                            /* double width print */
+        /* --- store unique transaction number --- */
+        usTable = pTran->TranGCFQual.usTableNo;
+    }
+
+    /* -- set table No. and No. of person -- */
+    usSlipLine += PrtSPCustomerName( aszSPPrintBuff[ 0 ], pTran->TranGCFQual.aszName );
+    usSlipLine += PrtSPTblPerson( aszSPPrintBuff[ usSlipLine ], usTable, usNoPer, sWidthType);
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+ 
+    /* if just after header printed, not print table No., No. of person */  
+    if ( usSaveLine != 0 ) {
+        if ( usNoPer || usTable ) {
+/*  --- fix a glitch (05/15/2001)
+            PmgPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 1 ], PRT_SPCOLUMN ); */
+            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 1 ], PRT_SPCOLUMN );
+        } else {
+/*  --- fix a glitch (05/15/2001)
+            PmgPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 0 ], PRT_SPCOLUMN );*/
+            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 0 ], PRT_SPCOLUMN );
+        }
+    } else {
+        /* -- print all data in the buffer -- */ 
+        for (USHORT i = 0; i < usSlipLine; i++ ) {
+
+/*  --- fix a glitch (05/15/2001)
+            PmgPrint( PMG_PRT_SLIP, aszSPPrintBuff[ i ], PRT_SPCOLUMN );*/
+            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ i ], PRT_SPCOLUMN );
+        }
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;    
+}
 
 /*
 *===========================================================================
@@ -123,205 +274,6 @@ VOID   PrtAddChk1(TRANINFORMATION  *pTran, ITEMTRANSOPEN  *pItem)
         PrtAddChk1_EJ(pTran, sWidthType);
         fsPrtPrintPort = fsPortSave;
     }
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtAddChk1_TH(TRANINFORMATION  *pTran, SHORT sWidthType);
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            SHORT  sWidthType      -   Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints in add check. (thermal)
-*===========================================================================
-*/
-VOID  PrtAddChk1_TH(TRANINFORMATION  *pTran, SHORT sWidthType)
-{
-
-    USHORT usTable = 0;
-    USHORT usNoPer = 0;
-                                              
-
-    if (pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE) {
-
-        usNoPer = pTran->TranGCFQual.usNoPerson;
-
-    }
-
-    /* --- determine print type is single width or double width --- */
-
-    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
-
-        /* --- store table no., if guest moved other table --- */
-
-        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
-
-            usTable = pTran->TranGCFQual.usTableNo;
-        }
-
-    } else {                            /* double width print */
-
-        /* --- store unique transaction number --- */
-
-        usTable = pTran->TranGCFQual.usTableNo;
-    }
-
-
-    PrtTHHead(pTran);                      /* print header if necessary */
-
-    PrtTHCustomerName( pTran->TranGCFQual.aszName );
-    PrtTHTblPerGC(usTable,
-                  usNoPer,pTran->TranGCFQual.usGuestNo,
-                  pTran->TranGCFQual.uchCdv,
-                  0,
-                  sWidthType);
-                               /* Table No., No. of person, guest check no mnemo */
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtAddChk1_EJ(TRANINFORMATION  *pTran, SHORT sWidthType);
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            SHORT  sWidthType      -   Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints in add check. (electric journal)
-*===========================================================================
-*/
-VOID  PrtAddChk1_EJ(TRANINFORMATION  *pTran, SHORT sWidthType )
-{
-    USHORT usTable = 0;
-    USHORT usNoPer = 0;
-                                              
-
-    if (pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE) {
-
-        usNoPer = pTran->TranGCFQual.usNoPerson;
-
-    }
-
-    /* --- determine print type is single width or double width --- */
-
-    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
-
-        /* --- store table no., if guest moved other table --- */
-
-        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
-
-            usTable = pTran->TranGCFQual.usTableNo;
-        }
-
-    } else {                            /* double width print */
-
-        /* --- store unique transaction number --- */
-
-        usTable = pTran->TranGCFQual.usTableNo;
-    }
-
-    PrtEJCustomerName( pTran->TranGCFQual.aszName );
-    PrtEJTblPerson(usTable, usNoPer, 0, sWidthType);   /* Table no.,  no. of person */
-                                               /* guest check no mnemo */
-    PrtEJGuest(pTran->TranGCFQual.usGuestNo, pTran->TranGCFQual.uchCdv);
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtAddChk1_SP(TRANINFORMATION  *pTran, SHORT sWidthType);
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            SHORT  sWidthType      -   Type of Print Width
-*                       PRT_DOUBLE, PRT_SINGLE
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints dept sales. (slip)
-*===========================================================================
-*/
-VOID  PrtAddChk1_SP(TRANINFORMATION  *pTran, SHORT sWidthType)
-{
-    TCHAR  aszSPPrintBuff[2][PRT_SPCOLUMN + 1];   /* print data save area */
-    USHORT usTable = 0;
-    USHORT usNoPer = 0;
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;
-
-    /* -- initialize the area -- */
-    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));
-
-    /* -- set table No., No. of person mnemonic and amount -- */
-    if (pTran->TranCurQual.fsCurStatus & CURQUAL_PERSONCHANGE) {
-        usNoPer = pTran->TranGCFQual.usNoPerson;
-    }
-
-    /* --- determine print type is single width or double width --- */
-
-    if ( sWidthType == PRT_SINGLE ) {   /* single width print */
-
-        /* --- store table no., if guest moved other table --- */
-
-        if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TABLECHANGE ) {
-
-            usTable = pTran->TranGCFQual.usTableNo;
-        }
-
-    } else {                            /* double width print */
-
-        /* --- store unique transaction number --- */
-
-        usTable = pTran->TranGCFQual.usTableNo;
-    }
-
-    /* -- set table No. and No. of person -- */
-    usSlipLine += PrtSPCustomerName( aszSPPrintBuff[ 0 ],
-                                     pTran->TranGCFQual.aszName );
-    usSlipLine += PrtSPTblPerson( aszSPPrintBuff[ usSlipLine ],
-                                  usTable, usNoPer, sWidthType);
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
- 
-    /* if just after header printed, not print table No., No. of person */  
-    if ( usSaveLine != 0 ) {
-
-        if ( usNoPer || usTable ) {
-
-/*  --- fix a glitch (05/15/2001)
-            PmgPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 1 ], PRT_SPCOLUMN ); */
-            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 1 ], PRT_SPCOLUMN );
-
-        } else {
-
-/*  --- fix a glitch (05/15/2001)
-            PmgPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 0 ], PRT_SPCOLUMN );*/
-            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ 0 ], PRT_SPCOLUMN );
-        }
-
-    } else {
-
-        /* -- print all data in the buffer -- */ 
-
-        for ( i = 0; i < usSlipLine; i++ ) {
-
-/*  --- fix a glitch (05/15/2001)
-            PmgPrint( PMG_PRT_SLIP, aszSPPrintBuff[ i ], PRT_SPCOLUMN );*/
-            PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ i ], PRT_SPCOLUMN );
-        }
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;    
 }
 
 /* ===== End of File ( PrRAdd1T.C ) ===== */

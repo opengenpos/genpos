@@ -23,6 +23,7 @@
 ** OpenGENPOS **
 *
 * Jul-05-23 : 02.04.00 : R.Chambers : using ITEMCLASSHEADER instead of MLDITEMDATA.
+* Jul-27-23 : 02.04.00 : R.Chambers : single definition of PRT_MAX_PERCENT in prt.h.
 \*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*\
 :   PVCS ENTRY
@@ -61,8 +62,6 @@ typedef struct _MLDMENU {
     USHORT  usAddress;                         /* address of PARAMLDMNEMO */
     TCHAR   *aszData;                         /* entry data mnemonics    */
 } MLDMENU;
-
-#define PRT_MAX_PERCENT  60000  
 
 #define MLD_MENU_COLUMN 39
 
@@ -153,6 +152,6 @@ UCHAR  UifACPGMLDDispCom(CONST MLDMENU * *);
 VOID   UifACPGMLDClear(VOID); 
 VOID   UifACMenu(UCHAR uchPageNumber);
 VOID   UifPGMenu(UCHAR uchPageNumber);
-VOID   PrtDouble(TCHAR *pszDest, USHORT   usDestLen, TCHAR *pszSource); 
+//VOID   PrtDouble(TCHAR *pszDest, USHORT   usDestLen, TCHAR *pszSource); 
 
 #endif

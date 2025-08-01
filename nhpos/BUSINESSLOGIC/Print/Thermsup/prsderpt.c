@@ -13,10 +13,6 @@
 * Category    : Print, NCR 2170 US Hospitality Application Program        
 * Program Name: PRSDERPT.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract: The provided function names are as follows: 
 * 
 *               PrtThrmSupDEPTFile() : forms DEPT/MDEPT File print format.       
@@ -46,12 +42,9 @@
 #include	<tchar.h>
 #include <string.h>
 #include <ecr.h>
-/* #include <pif.h> */
 #include <rfl.h>
-/* #include <log.h> */
 #include <paraequ.h> 
 #include <para.h>
-/* #include <cswai.h> */
 #include <maint.h> 
 #include <regstrct.h>
 #include <transact.h>
@@ -59,7 +52,7 @@
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
-/* #include <appllog.h> */
+#include <prt.h>
 
 #include "prtrin.h"
 #include "prtsin.h"
@@ -95,15 +88,13 @@ VOID  PrtThrmSupDEPTFile( RPTDEPT *pData )
     static const TCHAR  auchPrtThrmSupDEPTFile50[] = _T("%-8s\t%6ld   %12l$");
     static const TCHAR  auchNumber[] = _T("%4d");                   /* Saratoga */
 
-    TCHAR  aszPrtNull[1] = {'\0'};
-	TCHAR  aszDoubRepoNumb[8 * 2 + 1] = { 0 };
-	TCHAR  aszRepoNumb[8 + 1] = { 0 };
 
     /* check print control */
     if (pData->usPrintControl & PRT_RECEIPT) {
-        /* initialize */
-        memset(aszDoubRepoNumb, '\0', sizeof(aszDoubRepoNumb));
-       
+        TCHAR  aszPrtNull[1] = {'\0'};
+	    TCHAR  aszRepoNumb[8 + 1] = { 0 };
+ 	    TCHAR  aszDoubRepoNumb[8 * 2 + 1] = { 0 };
+      
         /* check minor class */
         switch(pData->uchMinorClass) {
         case CLASS_RPTDEPT_PRTMAJOR:                
@@ -176,10 +167,14 @@ VOID  PrtThrmSupDEPTFile( RPTDEPT *pData )
         }
     }
 
+#if 0
+    // not sure why this is here however it's not needed
+    //    Richard Chambers, Jul-28-2025
     /* check print control */
     if (pData->usPrintControl & PRT_JOURNAL) {
         return;
     }
+#endif
 }
 
 /***** End of Source *****/

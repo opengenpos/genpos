@@ -29,6 +29,10 @@
 *
 * Oct-05-99 : 01.00.00 : M.Teraki   : Added #pragma(...)
 *
+*
+** OpenGENPOS **
+*
+* Jul-05-25 : 02.04.00 : R.Chambers : added new function PrtShrPrintMeta().
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -124,8 +128,9 @@ extern UCHAR   fbPrtShrPrint;                          /* not print status */
 ;========================================================================
 **/
 
-VOID    PrtShrInit(TRANINFORMATION  *pTran);
-VOID    PrtShrPrint(TCHAR *pszBuff, USHORT  usLen);
+VOID    PrtShrInit(USHORT usConsNo);
+VOID    PrtShrPrintMeta(CONST VOID * pszBuff, USHORT  usUcharLen);      // used to provide meta data such as font info
+VOID    PrtShrPrint(CONST TCHAR *pszBuff, USHORT  usLen);               // used to print a text string
 SHORT   PrtShrSupSend(VOID);
 SHORT   PrtShrRegSend(SHORT sSuccess);
 SHORT   PrtShrWriteRetry(USHORT  usError, SHORT  sSuccess, SHORT  sRet);

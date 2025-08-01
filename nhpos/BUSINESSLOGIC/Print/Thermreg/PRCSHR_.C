@@ -40,6 +40,9 @@
 * Sep-07-93 : 02.00.00 :  K.You     : bug fixed E-85 (mod. PrtShrInitReverse())
 * Sep-08-93 : 02.00.00 :  K.You     : bug fixed E-87 (mod. PrtShrInitReverse())
 * Apr-21-94 : 02.00.00 :  M.Suzuki  : add PrtShrWriteFirstRetry(),PrtShrFirstRetryPrc()
+* 
+** OpenGenPOS
+* Jul-09-25 : 02.04.00 : R.Chambers : modify PrtShrPrint() to convert usLen from TCHAR len to UCHAR len
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -98,13 +101,8 @@ static UCHAR   uchPrtTrgTerm = 0;             /* target terminal w/ shared print
 VOID    PrtShrInitReverse( VOID )
 {
 
-    TRANINFORMATION TransWork;
-
-    TransWork.TranCurQual.ulStoreregNo = 0L;
-    TransWork.TranCurQual.usConsNo = 0;
-
     fbPrtShrStatus |= PRT_SHARED_SYSTEM;
-    PrtShrInit(&TransWork);
+    PrtShrInit(0);  // use Tran.TranCurQual.usConsNo = 0.
 }
 
 /*
@@ -119,7 +117,7 @@ VOID    PrtShrInitReverse( VOID )
 ** Synopsis: This function sets shared print initial data.
 *===========================================================================
 */
-VOID    PrtShrInit(TRANINFORMATION  *pTran)
+VOID    PrtShrInit(USHORT usConsNo)
 {
 
     /* -- set terminal unique address -- */
@@ -127,7 +125,7 @@ VOID    PrtShrInit(TRANINFORMATION  *pTran)
 
     /* -- set consecutive No. -- */
     uchPrtReceiptCo ++;
-    PrtShrInf.HdInf.usConsNo = pTran->TranCurQual.usConsNo + uchPrtReceiptCo;
+    PrtShrInf.HdInf.usConsNo = usConsNo + uchPrtReceiptCo;
 
     /* -- set frame name -- */
     PrtShrInf.HdInf.fbFrame = SHR_FIRST_FRAME;
@@ -145,14 +143,22 @@ VOID    PrtShrInit(TRANINFORMATION  *pTran)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtShrPrint(UCHAR *pszBuff);
+** Format  : VOID  PrtShrPrintMeta(VOID *pszBuff, USHORT  usUcharLen);
 *
-*   Input  : UCHAR  *pszBuff     -print data buffer pointer
+*   Input  : VOID   *pszBuff     -pointer to a print data buffer containing text or meta data
+*            USHORT  usUcharLen  - number of UCHAR elements in pszBuff
 *   Output : none
 *   InOut  : none
 ** Return  : none
 *
-** Synopsis: This function sets shared print data in the buffer.
+** Synopsis: This function sets shared print data in the buffer. Print data may
+**           be text strings, see function PrtShrPrint() below, or it may be meta data
+**           such as a printer font change.
+**
+**           See PrtChangeFont() and use of struct SHRFONTMSG.
+**
+**           See ShrCallPmg() which pulls the share print data out of the shared print area.
+**
 **
 **			 The buffer is stored within the global variable 'PrtShrInf'.
 **			 This variable is a structure with two parts, the header
@@ -173,21 +179,21 @@ VOID    PrtShrInit(TRANINFORMATION  *pTran)
 **			 this function will state how many characters are within the buffer.
 *===========================================================================
 */
-VOID    PrtShrPrint(TCHAR *pszBuff, USHORT  usLen)
+VOID    PrtShrPrintMeta(CONST VOID *ucBuff, USHORT  usUcharLen)
 {
 	SHORT  sRetStatus;
+    CONST UCHAR *pszBuff = ucBuff;
 
     /* -- return, if once abort key entered or go to alternation later -- */
-    if ( ( fbPrtAbortStatus & PRT_ABORTED )
-            || ( fbPrtAltrStatus & PRT_WRITE_ABORT ) ) {
+    if ( ( fbPrtAbortStatus & PRT_ABORTED ) || ( fbPrtAltrStatus & PRT_WRITE_ABORT ) ) {
         return;
     }
 
-	if (usLen < 1)  // ignore any print lines with zero characters
+	if (usUcharLen < 1)  // ignore any print lines with zero characters
 		return;
 
     /* -- check whether print buffer full or not -- */
-    if ( (PrtShrInf.HdInf.usILI + usLen + 1) > sizeof(PrtShrInf) ) {
+    if ( (PrtShrInf.HdInf.usILI + usUcharLen + 1) > sizeof(PrtShrInf) ) {
         /* -- for super mode -- */
         if ( fbPrtLockChk & PRT_SUPPRG_MODE )
 		{
@@ -222,12 +228,40 @@ VOID    PrtShrPrint(TCHAR *pszBuff, USHORT  usLen)
 		one after the other as the line length in bytes followed by
 		the characters of the print line.
 	 */
-    PrtShrInf.auchPrtData[usPrtShrOffset] = (UCHAR)usLen;
-	usPrtShrOffset++;
+    // check that the len is within the size limit and whether the warning eliminating cast is needed or not.
+    NHPOS_ASSERT(usUcharLen < 256);
+    switch (0) { case 0: break; case sizeof(PrtShrInf.auchPrtData[usPrtShrOffset]) == sizeof(UCHAR) : break; }  // is the cast below needed?
+    PrtShrInf.auchPrtData[usPrtShrOffset] = (UCHAR)usUcharLen;
+	usPrtShrOffset ++;
     PrtShrInf.HdInf.usILI ++;
-	memcpy(&PrtShrInf.auchPrtData[usPrtShrOffset], pszBuff, usLen);
-	usPrtShrOffset += usLen;
-    PrtShrInf.HdInf.usILI += usLen;
+	memcpy(&PrtShrInf.auchPrtData[usPrtShrOffset], pszBuff, usUcharLen);
+	usPrtShrOffset += usUcharLen;
+    PrtShrInf.HdInf.usILI += usUcharLen;
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtShrPrint(TCHAR *pszBuff, USHORT  usLen);
+*
+*   Input  : TCHAR  *pszBuff     -print data buffer pointer
+*            USHORT  usLen       - number of TCHAR elements in pszBuff
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function sets a text string into the shared print data. This
+*            function uses function PrtShrPrintMeta() above to actully put the
+*            text string into the shared print area.
+* 
+*            The function PrtShrPrintMeta() is a more general purpose function
+*            used for both text strings and meta data such as font changes.
+*===========================================================================
+*/
+VOID    PrtShrPrint(CONST TCHAR* pszBuff, USHORT  usLen)
+{
+    USHORT usUcharLen = usLen * sizeof(TCHAR);   // shared printer buffer is in UCHAR so convert usLen from sizeof(TCHAR) to sizeof(UCHAR);
+
+    PrtShrPrintMeta(pszBuff, usUcharLen);
 }
 
 /*
@@ -470,7 +504,7 @@ VOID    PrtShrPartialSend(USHORT usPrintControl)
 */
 SHORT  PrtShrWriteRetry(USHORT  usError, SHORT  sSuccess, SHORT sRet)
 {
-    SHORT   sReturn, i;
+    SHORT   sReturn;
 
     /* -- in case of 'buffer full' -- */
     if ( sRet == SHR_BUFFER_FULL ) {
@@ -492,7 +526,7 @@ SHORT  PrtShrWriteRetry(USHORT  usError, SHORT  sSuccess, SHORT sRet)
 	// to print then abort the print.
 	sReturn = PRT_SUCCESS;
 
-    for ( i = 0; i < PRT_SHR_RET_CO; i ++ ) {
+    for (USHORT i = 0; i < PRT_SHR_RET_CO; i ++ ) {
         sReturn = PrtShrRetryPrc ( usError, sSuccess );
         if ( sReturn == PRT_CONT || sReturn == PRT_CONT_COND ) {
 			sReturn = PRT_ABORTED;  // aborted return status in case we drop through
@@ -698,14 +732,13 @@ UCHAR    PrtCheckShr(UCHAR  uchTrgPrt)
     USHORT  usTrgAddr;              /* target terminal address */
     USHORT  usUAddr;                /* termnal unique address */
     USHORT   i;
-    PARASHAREDPRT   ParaBuffShr;    /* to get terminal address */
+    PARASHAREDPRT   ParaBuffShr = { 0 };    /* to get terminal address */
 
     /* -- set terminal unique address -- */
-    usUAddr = (USHORT)CliReadUAddr();
+    usUAddr = CliReadUAddr();
 
     /* get target terminal address -- */
     for ( i = usTrgAddr = 1; i <= PRT_SHR_MAX_TERM; i++, usTrgAddr+=2 ) {
-
         if ( i == usUAddr ) {
             break;
         }
@@ -717,7 +750,6 @@ UCHAR    PrtCheckShr(UCHAR  uchTrgPrt)
     }
 
     /* get target terminal No. */
-/*    memset(&ParaBuffShr, '\0', sizeof(PARASHAREDPRT)); */
     ParaBuffShr.uchMajorClass = CLASS_PARASHRPRT;
     ParaBuffShr.uchAddress = (UCHAR)usTrgAddr;
     CliParaRead(&ParaBuffShr);
@@ -726,8 +758,8 @@ UCHAR    PrtCheckShr(UCHAR  uchTrgPrt)
         uchPrtTrgTerm = ParaBuffShr.uchTermNo;
 
         if ( uchTrgPrt == PRT_WITHALTR ) {
-            fbPrtAltrStatus |= (PRT_NEED_ALTR | PRT_BUFFERING_ALTR);
-        }                               /* go to alternative printer */
+            fbPrtAltrStatus |= (PRT_NEED_ALTR | PRT_BUFFERING_ALTR);    /* go to alternative printer */
+        }
     }
 
     return(ParaBuffShr.uchTermNo);
@@ -771,15 +803,10 @@ UCHAR    PrtChkFrame(VOID)
 */
 SHORT  PrtCheckAbort(VOID)
 {
-
     if ( fbPrtAbortStatus & PRT_ABORTED ) {
-
         return ( PRT_ABORTED );
-
     } else {
-
         return ( 0 );
-
     }
 }
 
@@ -822,20 +849,16 @@ UCHAR    PrtAltrMsg(VOID)
 */
 VOID PrtChangeFont(USHORT usType)
 {
-    SHRFONTMSG  FontMsg;
+    SHRFONTMSG  FontMsg = { 0 };
 
     FontMsg.uchHead1 = SHR_FONT_MSG_1;
     FontMsg.uchHead2 = SHR_FONT_MSG_2;
     FontMsg.usType   = usType;
 
     if ( fbPrtShrStatus & PRT_SHARED_SYSTEM ) {
-
-        PrtShrPrint((USHORT *)&FontMsg, sizeof(FontMsg));
-
+        PrtShrPrintMeta(&FontMsg, sizeof(FontMsg));
     }  else {
-
         PmgFont(PMG_PRT_RECEIPT, usType);
-
     }
 }
 
@@ -861,7 +884,6 @@ SHORT PrtShrTermLock(UCHAR uchPrtStatus)
 {
     UCHAR    uchKeyMsg;
     SHORT    sReturn;
-    TRANINFORMATION  Tran;
 
     /* initialize not print flag */
     fbPrtShrPrint = 0;
@@ -873,9 +895,7 @@ SHORT PrtShrTermLock(UCHAR uchPrtStatus)
 
     fbPrtShrStatus |= PRT_SHARED_SYSTEM;        /* set shared status */
 
-    Tran.TranCurQual.ulStoreregNo = 0L;
-    Tran.TranCurQual.usConsNo = 0;
-    PrtShrInit(&Tran);                          /* initialize shared printer buffer */
+    PrtShrInit(0);      /* initialize shared printer buffer, use Tran.TranCurQual.usConsNo = 0 */
 
     if ((sReturn = CliShrTermLock(uchPrtTrgTerm)) == SHR_TIMERON) {
                                                 /* terminal lock */
@@ -1018,28 +1038,6 @@ VOID PrtShrTermUnLock( VOID )
 
 /*
 *===========================================================================
-** Format  : UCHAR	PrtSetPrintMode(VOID);
-*
-*   Input  : none
-*   Output : none
-*   InOut  : none
-** Return  : UCHAR
-*
-** Synopsis: This function sets the print mode.to file on terminal or
-*			 printer
-*===========================================================================
-*/ //ESMITH PRTFILE
-VOID	PrtSetPrintMode(UCHAR uchMode)
-{
-	if ((uchMode & PRT_SENDTO_MASKFUNC) ||
-		(uchMode == PRT_SENDTO_PRINTER)) {
-
-			fbPrtSendToStatus = uchMode;
-	}
-}
-
-/*
-*===========================================================================
 ** Format  : SHORT  PrtShrWriteFirstRetry(SHORT sSuccess, SHORT sRet);
 *
 *   Input  : SHORT      sSuccess        - return value in case of success
@@ -1055,7 +1053,7 @@ VOID	PrtSetPrintMode(UCHAR uchMode)
 */
 SHORT  PrtShrWriteFirstRetry(SHORT  sSuccess, SHORT sRet)
 {
-    SHORT   sReturn, i;
+    SHORT   sReturn;
 
     /* -- in case of 'buffer full' -- */
     if ( sRet == SHR_BUFFER_FULL ) {
@@ -1077,12 +1075,11 @@ SHORT  PrtShrWriteFirstRetry(SHORT  sSuccess, SHORT sRet)
         /* in case of the terminal without printer */
         } else {
 
-            for ( i = 0; i < PRT_SHR_RET_CO; i ++ ) {
+            for (USHORT i = 0; i < PRT_SHR_RET_CO; i ++ ) {
 
                 sReturn = PrtShrFirstRetryPrc( sSuccess );
                 if ( sReturn == PRT_CONT ) {
                     continue;
-
                 } else {
                     return( sReturn );
                 }
@@ -1115,20 +1112,14 @@ SHORT  PrtShrFirstRetryPrc( SHORT  sSuccess)
     SHORT   sReturn;
 
     /* -- write success ? -- */
-    sReturn = CliShrPrint( uchPrtTrgTerm, &PrtShrInf,
-                                    PrtShrInf.HdInf.usILI );
+    sReturn = CliShrPrint( uchPrtTrgTerm, &PrtShrInf, PrtShrInf.HdInf.usILI );
 
     if ( sReturn == sSuccess ) {
-
         return( PRT_SUCCESS );
-
     } else if ( sReturn == SHR_BUFFER_FULL ) {
-
         PifSleep( PRT_SHR_SLEEP_TIME );
         return( PRT_CONT );
-
     } else {
-
         return( sReturn );
     }
 }

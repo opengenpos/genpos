@@ -47,12 +47,9 @@
 #include	<tchar.h>
 #include <string.h>
 #include <ecr.h>
-/* #include <pif.h> */
 #include <rfl.h>
-/* #include <log.h> */
 #include <paraequ.h> 
 #include <para.h>
-/* #include <cswai.h> */
 #include <maint.h> 
 #include <regstrct.h>
 #include <transact.h>
@@ -60,7 +57,7 @@
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
-/* #include <appllog.h> */
+#include <prt.h>
 
 #include "prtrin.h"
 #include "prtsin.h"

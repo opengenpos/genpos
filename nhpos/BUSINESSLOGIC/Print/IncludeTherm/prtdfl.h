@@ -37,6 +37,9 @@
 *
 * Oct-05-99 : 01.00.00 : M.Teraki   : Added #pragma(...)
 *
+** OpenGENPOS **
+*
+* Jul-05-25 : 02.04.00 : R.Chambers : removed zombie function declarations. localized printer specific functions.
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -106,8 +109,6 @@ typedef struct {
 ============================================================================
 */
 extern PRTDFLIF    PrtDflIf;          /* display data buffer */
-extern UCHAR    fbPrtDflErr;          /* error displayed or not */
-extern UCHAR   uchPrtDflTypeSav;      /* save transaction type */
 
 /**
 ;========================================================================
@@ -116,50 +117,49 @@ extern UCHAR   uchPrtDflTypeSav;      /* save transaction type */
 **/
 
 /* -- PrDDfl_.c -- */
-VOID PrtDflInit(TRANINFORMATION  *pTran);
-VOID PrtDflCustHeader(TRANINFORMATION  *pTran);
-USHORT PrtDflHeader(TCHAR *pszWork, TRANINFORMATION  *pTran);
-USHORT PrtDflTrailer(TCHAR *pszWork, const TRANINFORMATION *pTran, ULONG  ulStReg);
-VOID PrtDflTrType(TRANINFORMATION *pTran);
+VOID PrtDflInit(CONST TRANINFORMATION  *pTran);
+int  PrtDflIfSetDestCrt(UCHAR uchCrtNo0, UCHAR uchCrtNo1);    // set the destination CRT for Display on the Fly. See also PrtDflSetCRTNo().
+int  PrtDflIfSetFrameType(UCHAR uchFrameType);                // set the data frame type for Display on the Fly.
+VOID PrtDflCustHeader(CONST TRANINFORMATION  *pTran);
+USHORT PrtDflHeader(TCHAR *pszWork, CONST TRANINFORMATION  *pTran);
+USHORT PrtDflTrailer(TCHAR *pszWork, CONST TRANINFORMATION *pTran, ULONG  ulStReg);
+VOID PrtDflTrType(CONST TRANINFORMATION *pTran);
 VOID PrtDflCheckVoid(USHORT fbMod);
-VOID PrtDflSetCRTNo(TRANINFORMATION *pTran, ITEMSALES *pItem);
-VOID PrtDflSetTtlNo(TRANINFORMATION *pTran);
+VOID PrtDflSetCRTNo(CONST TRANINFORMATION *pTran, CONST ITEMSALES *pItem);
+VOID PrtDflSetTtlNo(CONST TRANINFORMATION *pTran);
 UCHAR PrtDflGetNo(UCHAR uchCRTNo);
 VOID PrtDflIType(USHORT usLineNo, UCHAR uchItemType);
 VOID PrtDflSetData(TCHAR *pszData, USHORT *pusOff);
 VOID PrtDflSend(VOID);
-UCHAR PrtDflXor(VOID *puchStart, USHORT usLen);
+UCHAR PrtDflXor(CONST VOID *puchStart, USHORT usLen);
 
 /* -- PrDCmn_.c -- */
 USHORT  PrtDflVoid(TCHAR *pszWork, USHORT  fbMod, USHORT usReasonCode);
-USHORT  PrtDflNumber(TCHAR *pszWork, TCHAR  *pszNumber);
-USHORT  PrtDflMnemNumber(TCHAR *pszWork, USHORT usTranAdr, TCHAR  *pszNumber);
+USHORT  PrtDflNumber(TCHAR *pszWork, CONST TCHAR  *pszNumber);
+USHORT  PrtDflMnemNumber(TCHAR *pszWork, USTRNADRS usTranAdr, TCHAR  *pszNumber);
 USHORT  PrtDflTaxMod(TCHAR *pszWork, USHORT fsTax, USHORT  fbMod);
-USHORT  PrtDflSeatNo(TCHAR *pszWork, ITEMSALES *pItem);
-USHORT  PrtDflWeight(TCHAR *pszWork, TRANINFORMATION  *pTran, ITEMSALES  *pItem);
-USHORT  PrtDflQty(TCHAR *pszWork, ITEMSALES  *pItem);
-USHORT  PrtDflLinkQty(TCHAR *pszWork, ITEMSALES  *pItem);
+USHORT  PrtDflSeatNo(TCHAR *pszWork, CONST ITEMSALES *pItem);
+USHORT  PrtDflWeight(TCHAR *pszWork, CONST TRANINFORMATION  *pTran, CONST ITEMSALES  *pItem);
+USHORT  PrtDflQty(TCHAR *pszWork, CONST ITEMSALES  *pItem);
+USHORT  PrtDflLinkQty(TCHAR *pszWork, CONST ITEMSALES  *pItem);
 USHORT  PrtDflItems(TCHAR *pszWork, ITEMSALES  *pItem);
 USHORT  PrtDflChild(TCHAR *pszWork, UCHAR uchAdj, TCHAR *pszMnem);
-USHORT  PrtDflLinkPLU(TCHAR *pszWork, USHORT fsModified, UCHAR uchAdj, TCHAR *pszMnem, DCURRENCY lPrice);
-USHORT  PrtDflMnem(TCHAR *pszWork, USHORT usAdr, BOOL fsType);
-USHORT  PrtDflPerDisc(TCHAR *pszWork, USHORT usAdr, UCHAR uchRate, DCURRENCY lAmount);
+USHORT  PrtDflLinkPLU(TCHAR *pszWork, USHORT fsModified, UCHAR uchAdj, CONST TCHAR *pszMnem, DCURRENCY lPrice);
+USHORT  PrtDflMnem(TCHAR *pszWork, USTRNADRS usAdr, BOOL fsType);
+USHORT  PrtDflPerDisc(TCHAR *pszWork, USTRNADRS usAdr, UCHAR uchRate, DCURRENCY lAmount);
 USHORT  PrtDflWaiTaxMod(TCHAR *pszWork, ULONG ulID, USHORT  fsTax, USHORT  fbMod);
-USHORT  PrtDflAmtMnem(TCHAR *pszWork, USHORT usAdr, DCURRENCY lAmount);
+USHORT  PrtDflAmtMnem(TCHAR *pszWork, USTRNADRS usAdr, DCURRENCY lAmount);
 USHORT  PrtDflWaiter(TCHAR *pszWork, ULONG  ulWaiID);
 USHORT  PrtDflGuest(TCHAR *pszWork, USHORT usGuestNo, UCHAR uchCDV);
 USHORT  PrtDflTranNum(TCHAR *pszWork, USHORT usTranAdr, ULONG ulNumber);
-USHORT  PrtDflEtkCode(TCHAR *pszWork, ITEMMISC  *pItem);
-USHORT  PrtDflJobTimeIn(TCHAR *pszWork, TRANINFORMATION  *pTran, ITEMMISC  *pItem);
-USHORT  PrtDflJobTimeOut(TCHAR *pszWork, TRANINFORMATION  *pTran, ITEMMISC  *pItem);
-USHORT  PrtDflAmtSym(TCHAR *pszWork, USHORT usAdr, DCURRENCY lAmount, BOOL fsType);
-USHORT  PrtDflMnemCount(TCHAR *pszWork, USHORT usAdr, SHORT sCount);
-USHORT  PrtDflZeroAmtMnem(TCHAR *pszWork, USHORT usAddress, DCURRENCY lAmount);
-USHORT  PrtDflForeign1(TCHAR *pszWork, DCURRENCY lForeign, UCHAR uchAdr, UCHAR fbStatus);
+USHORT  PrtDflAmtSym(TCHAR *pszWork, USTRNADRS usAdr, DCURRENCY lAmount, BOOL fsType);
+USHORT  PrtDflMnemCount(TCHAR *pszWork, USTRNADRS usAdr, SHORT sCount);
+USHORT  PrtDflZeroAmtMnem(TCHAR *pszWork, USTRNADRS usAddress, DCURRENCY lAmount);
+USHORT  PrtDflForeign1(TCHAR *pszWork, DCURRENCY lForeign, UCSPCADRS uchAdr, UCHAR fbStatus);
 USHORT  PrtDflForeign2(TCHAR *pszWork, ULONG ulRate, UCHAR fbStatus2);
-USHORT  PrtDflForeign3(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lForeign, UCHAR uchAdr, UCHAR fbStatus);
+USHORT  PrtDflForeign3(TCHAR *pszWork, USTRNADRS usTranAdr, DCURRENCY lForeign, UCHAR uchAdr, UCHAR fbStatus);
 USHORT  PrtDflTblPerson(TCHAR *pszWork, USHORT usTblNo, USHORT usNoPerson, SHORT sWidthType);
-USHORT  PrtDflCustName( TCHAR *pszDest, TCHAR *pszCustomerName );
+USHORT  PrtDflCustName( TCHAR *pszDest, CONST TCHAR *pszCustomerName );
 USHORT  PrtDflMulChk(TCHAR *pszWork, USHORT usGuestNo, UCHAR uchCDV);
 USHORT  PrtDflOffTend(TCHAR *pszWork, USHORT fbMod);
 USHORT  PrtDflCPRoomCharge(TCHAR *pszWork, TCHAR *pRoomNo, TCHAR *pGuestID);
@@ -169,16 +169,16 @@ USHORT  PrtDflCPRspMsgText(TCHAR *pszWork, TCHAR *pRspMsgText);
 
 USHORT  PrtDflCpnItem( TCHAR *pszWork, TCHAR *pszMnemonic, DCURRENCY lAmount );
 
-USHORT  PrtDflZAMnemShift(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lAmount, USHORT usColumn);
-USHORT  PrtDflAmtMnemShift(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lAmount, USHORT usColumn);
+USHORT  PrtDflZAMnemShift(TCHAR *pszWork, USTRNADRS usTranAdr, DCURRENCY lAmount, USHORT usColumn);
+USHORT  PrtDflAmtMnemShift(TCHAR *pszWork, USTRNADRS usTranAdr, DCURRENCY lAmount, USHORT usColumn);
 USHORT  PrtDflPLUNo(TCHAR *pszDest, TCHAR *puchPLUCpn); /* 2172 */
 USHORT PrtDflRandomNumber( TCHAR *pszDest, TCHAR *pszMnemonic, TCHAR *pszNumber );
 USHORT  PrtDflMnemonic(TCHAR *pszWork, TCHAR  *pszMnemonic);
-USHORT  PrtDflPrtMod(TCHAR *pszWork, UCHAR uchAdr, DCURRENCY lAmount); /* 2172 */
+USHORT  PrtDflPrtMod(TCHAR *pszWork, USHORT usAdr, DCURRENCY lAmount); /* 2172 */
 USHORT  PrtDflTaxMod2(TCHAR *pszWork, USHORT fsTax, UCHAR  uchMinorClass); /* 2172 */
-USHORT    PrtDflModSeatNo(TCHAR *pszWork, TCHAR uchSeatNo); /* 2172 */
+USHORT  PrtDflModSeatNo(TCHAR *pszWork, TCHAR uchSeatNo); /* 2172 */
 
-USHORT  PrtDflItemsEx(TCHAR *pszWork, ITEMSALES  *pItem);	/* for enhanced KDS */
+USHORT  PrtDflItemsEx(TCHAR *pszWork, CONST ITEMSALES  *pItem);	/* for enhanced KDS */
 
 /* -- PrRSETT.c -- */
 UCHAR PrtDflSETChkChildKP(TRANINFORMATION  *pTran, ITEMSALES *pItem);

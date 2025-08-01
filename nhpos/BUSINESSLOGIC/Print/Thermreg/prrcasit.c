@@ -65,43 +65,6 @@
 
 /*
 *===========================================================================
-** Format  : VOID  PrtCasIn(TRANINFORMATION  *pTran,
-*                             ITEMTRANSOPEN *pItem);   
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTRANSOPEN    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints in new check operation.
-*===========================================================================
-*/
-VOID   PrtCasIn(TRANINFORMATION  *pTran, ITEMTRANSOPEN  *pItem)
-{
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-
-    if ( fsPrtPrintPort & PRT_SLIP ) {     /* slip print */
-        PrtCasIn_SP(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_RECEIPT && !(pTran->TranCurQual.flPrintStatus & CURQUAL_EPAY_BALANCE)) {  /* thermal print */
-        PrtCasIn_TH(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_JOURNAL && !(pTran->TranCurQual.flPrintStatus & CURQUAL_EPAY_BALANCE)) {  /* electric journal */
-        PrtCasIn_EJ(pTran, pItem);
-    } else if ( fsPrtStatus & PRT_SERV_JOURNAL ) {
-		SHORT   fsPortSave = fsPrtPrintPort;
-
-        fsPrtPrintPort = PRT_JOURNAL;
-        PrtCasIn_EJ(pTran, pItem);
-        fsPrtPrintPort = fsPortSave;
-    }
-}
-
-/*
-*===========================================================================
 ** Format  : VOID  PrtCasIn_TH(TRANINFORMATION  *pTran,
 *                             ITEMTRANSOPEN *pItem);   
 *   Input  : TRANINFORMATION  *pTran     -Transaction Information address
@@ -113,9 +76,9 @@ VOID   PrtCasIn(TRANINFORMATION  *pTran, ITEMTRANSOPEN  *pItem)
 ** Synopsis: This function prints in cashier in operation (thermal).
 *===========================================================================
 */
-VOID  PrtCasIn_TH(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
+static VOID  PrtCasIn_TH(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
 {
-    PrtTHHead( pTran );                     /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);    /* print header if necessary */
 
     PrtTHCustomerName( pTran->TranGCFQual.aszName );
 
@@ -149,7 +112,7 @@ VOID  PrtCasIn_TH(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
 ** Synopsis: This function prints in cashier in operation (electric journal).
 *===========================================================================
 */
-VOID  PrtCasIn_EJ(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
+static VOID  PrtCasIn_EJ(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
 {
     /* --- determine system uses unique transaction no. --- */
     PrtEJCustomerName( pTran->TranGCFQual.aszName );
@@ -188,14 +151,13 @@ VOID  PrtCasIn_EJ(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
 ** Synopsis: This function prints in cashier in operation (slip).
 *===========================================================================
 */
-VOID  PrtCasIn_SP(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
+static VOID  PrtCasIn_SP(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
 {
-    TCHAR  aszSPPrintBuff[ 2 ][PRT_SPCOLUMN + 1];   /* print data save area */
+    TCHAR   aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 };   /* print data save area */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
     USHORT  usSaveLine;                /* save slip lines to be added */
     USHORT  usTableNo;
     SHORT   sWidthType;
-    USHORT  i;
 
     /* --- if current system uses unique transaction no.,
         print it in double width character. --- */
@@ -206,9 +168,6 @@ VOID  PrtCasIn_SP(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
         usTableNo  = 0;
         sWidthType = PRT_SINGLE;
     }
-
-    /* -- initialize the area -- */
-    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));
 
     /* -- set table No. and No. of person -- */
     usSlipLine += PrtSPCustomerName( aszSPPrintBuff[ 0 ], pTran->TranGCFQual.aszName );
@@ -235,7 +194,7 @@ VOID  PrtCasIn_SP(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
         }
     } else {
         /* -- print all data in the buffer -- */ 
-        for ( i = 0; i < usSlipLine; i++ ) {
+        for (USHORT  i = 0; i < usSlipLine; i++ ) {
 /*  --- fix a glitch (05/15/2001)
             PmgPrint( PMG_PRT_SLIP, aszSPPrintBuff[ i ], PRT_SPCOLUMN );*/
             PrtPrint( PMG_PRT_SLIP, aszSPPrintBuff[ i ], PRT_SPCOLUMN );
@@ -245,6 +204,43 @@ VOID  PrtCasIn_SP(TRANINFORMATION  *pTran, ITEMTRANSOPEN *pItem)
     /* -- update current line No. -- */
     usPrtSlipPageLine += usSlipLine + usSaveLine;    
 
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtCasIn(TRANINFORMATION  *pTran,
+*                             ITEMTRANSOPEN *pItem);   
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTRANSOPEN    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints in new check operation.
+*===========================================================================
+*/
+VOID   PrtCasIn(TRANINFORMATION  *pTran, ITEMTRANSOPEN  *pItem)
+{
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+
+    if ( fsPrtPrintPort & PRT_SLIP ) {     /* slip print */
+        PrtCasIn_SP(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_RECEIPT && !(pTran->TranCurQual.flPrintStatus & CURQUAL_EPAY_BALANCE)) {  /* thermal print */
+        PrtCasIn_TH(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_JOURNAL && !(pTran->TranCurQual.flPrintStatus & CURQUAL_EPAY_BALANCE)) {  /* electric journal */
+        PrtCasIn_EJ(pTran, pItem);
+    } else if ( fsPrtStatus & PRT_SERV_JOURNAL ) {
+		SHORT   fsPortSave = fsPrtPrintPort;
+
+        fsPrtPrintPort = PRT_JOURNAL;
+        PrtCasIn_EJ(pTran, pItem);
+        fsPrtPrintPort = fsPortSave;
+    }
 }
 
 /* ===== End of File ( PrRCasIT.C ) ===== */

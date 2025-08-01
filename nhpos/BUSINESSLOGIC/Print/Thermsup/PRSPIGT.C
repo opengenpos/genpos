@@ -57,9 +57,9 @@
 #include "regstrct.h"
 #include "transact.h"
 #include "pmg.h"
+#include "prt.h"
 #include "appllog.h"
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*

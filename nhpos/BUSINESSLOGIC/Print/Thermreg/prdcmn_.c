@@ -100,6 +100,7 @@
 #include <para.h>
 #include <rfl.h>
 #include <dfl.h>
+#include <prt.h>
 #include "prtrin.h"
 #include "prrcolm_.h"
 #include "prtdfl.h"
@@ -198,7 +199,7 @@ USHORT PrtDflVoid(TCHAR *pszWork, USHORT  fbMod, USHORT usReasonCode)
 *            if "number = 0", does not set.
 *===========================================================================
 */
-USHORT  PrtDflNumber(TCHAR *pszWork, TCHAR  *pszNumber)
+USHORT  PrtDflNumber(TCHAR *pszWork, CONST TCHAR  *pszNumber)
 {
     if (*pszNumber != 0) {
 		USHORT  usLen;
@@ -238,7 +239,7 @@ USHORT  PrtDflNumber(TCHAR *pszWork, TCHAR  *pszNumber)
 *            if "number = 0", does not set.
 *===========================================================================
 */
-USHORT  PrtDflMnemNumber(TCHAR *pszWork, USHORT usTranAdr, TCHAR  *pszNumber)
+USHORT  PrtDflMnemNumber(TCHAR *pszWork, USTRNADRS usTranAdr, TCHAR  *pszNumber)
 {
     if (*pszNumber != 0) {
 		TCHAR   aszNumLine[PRT_DFL_LINE * 2 + 1] = { 0 };
@@ -305,7 +306,7 @@ USHORT  PrtDflTaxMod(TCHAR *pszWork, USHORT fsTax, USHORT  fbMod)
 ** Synopsis: This function formats seat no. line to . R3.1
 *===========================================================================
 */
-USHORT    PrtDflSeatNo(TCHAR *pszWork, ITEMSALES *pItem)
+USHORT    PrtDflSeatNo(TCHAR *pszWork, CONST ITEMSALES *pItem)
 {
 	TCHAR   aszSpecMnem[PARA_SPEMNEMO_LEN + 1] = { 0 };   /* PARA_... defined in "paraequ.h" */
 	TCHAR   aszSrc[PRT_DFL_LINE + 1] = { 0 };
@@ -337,14 +338,14 @@ USHORT    PrtDflSeatNo(TCHAR *pszWork, ITEMSALES *pItem)
 ** Synopsis: This function sets weight and unit price line.
 *===========================================================================
 */
-USHORT  PrtDflWeight(TCHAR *pszWork, TRANINFORMATION  *pTran, ITEMSALES  *pItem)
+USHORT  PrtDflWeight(TCHAR *pszWork, CONST TRANINFORMATION  *pTran, CONST ITEMSALES  *pItem)
 {
 
 	TCHAR  aszWeightSym[PARA_SPEMNEMO_LEN + 1] = { 0 }; /* PARA_... defined in "paraequ.h" */
 	TCHAR  aszManuMnem[PARA_TRANSMNEMO_LEN + 1] = { 0 }; /* PARA_... defined in "paraequ.h" */
+    TCHAR   aszSrc[PRT_DFL_LINE + 1] = { 0 };
     SHORT  sDecPoint;                           /* decimal point */
     LONG   lModQty;                             /* modified qty */
-    TCHAR   aszSrc[PRT_DFL_LINE + 1];
 
     /* -- get scalable symbol and adjust weight -- */
     PrtGetScale(aszWeightSym, &sDecPoint, &lModQty, pTran, pItem);
@@ -355,8 +356,6 @@ USHORT  PrtDflWeight(TCHAR *pszWork, TRANINFORMATION  *pTran, ITEMSALES  *pItem)
     } else {
         aszManuMnem[0] = '\0';
     }
-
-    memset(aszSrc, '\0', sizeof(aszSrc));
 
     /* -- send "weight " and Manual weight mnemonics -- */
     RflSPrintf(aszSrc, TCHARSIZEOF(aszSrc), aszPrtEJWeight1, sDecPoint, lModQty, aszWeightSym, aszManuMnem);
@@ -386,18 +385,18 @@ USHORT  PrtDflWeight(TCHAR *pszWork, TRANINFORMATION  *pTran, ITEMSALES  *pItem)
 ** Synopsis: This function sets Qty and unit price line.
 *===========================================================================
 */
-USHORT  PrtDflQty(TCHAR *pszWork, ITEMSALES *pItem)
+USHORT  PrtDflQty(TCHAR *pszWork, CONST ITEMSALES *pItem)
 {
     DCURRENCY  lPrice = 0;
-    USHORT     i;
-    TCHAR      aszSrc[PRT_DFL_LINE + 1];
+    TCHAR      aszSrc[PRT_DFL_LINE + 1] = { 0 };
 	TCHAR      auchDummy[NUM_PLU_LEN] = {0};
-    USHORT     usNoOfChild;
+    USHORT     usNoOfChild, i;
 
     /* --- consolidate condiment PLU's price --- */
     usNoOfChild = pItem->uchCondNo + pItem->uchPrintModNo + pItem->uchChildNo;
 
-    for ( i = pItem->uchChildNo, lPrice = pItem->lUnitPrice; i < usNoOfChild; i++) {
+    NHPOS_ASSERT(usNoOfChild <= sizeof(pItem->Condiment) / sizeof(pItem->Condiment[0]));
+    for (i = pItem->uchChildNo, lPrice = pItem->lUnitPrice; i < usNoOfChild; i++) {
         if (_tcsncmp(pItem->Condiment[ i ].auchPLUNo, auchDummy, NUM_PLU_LEN) != 0) {
             lPrice += pItem->Condiment[i].lUnitPrice;
         }
@@ -430,7 +429,7 @@ USHORT  PrtDflQty(TCHAR *pszWork, ITEMSALES *pItem)
 ** Synopsis: This function sets Qty and unit price line.
 *===========================================================================
 */
-USHORT  PrtDflLinkQty(TCHAR *pszWork, ITEMSALES *pItem)
+USHORT  PrtDflLinkQty(TCHAR *pszWork, CONST ITEMSALES *pItem)
 {
     if (labs(pItem->lQTY) == PLU_BASE_UNIT) {
         return(0);
@@ -502,7 +501,6 @@ USHORT  PrtDflItems(TCHAR *pszWork, ITEMSALES  *pItem)
     /* get the length of mnemonics */
     usMnemLen = tcharlen(pszStart);
 
-    memset(aszAmt, '\0', sizeof(aszAmt));
     RflSPrintf(aszAmt, TCHARSIZEOF(aszAmt), aszItemAmt, lProduct);
     usAmtLen = tcharlen(aszAmt);
     
@@ -533,7 +531,7 @@ USHORT  PrtDflItems(TCHAR *pszWork, ITEMSALES  *pItem)
 ** Synopsis: This function sets adjective, noun mnemo.,  print modifier, conidiment line.
 *===========================================================================
 */
-USHORT  PrtDflItemsEx(TCHAR *pszWork, ITEMSALES  *pItem)
+USHORT  PrtDflItemsEx(TCHAR *pszWork, CONST ITEMSALES  *pItem)
 {
     TCHAR       aszItem[PRT_MAXITEM + PRT_DFL_LINE] = {0};   /* "+PRT_DFL_LINE" for PrtGet1Line */
 	TCHAR       aszAmt[PRT_AMOUNT_LEN + 1] = {0};
@@ -624,7 +622,7 @@ USHORT  PrtDflChild(TCHAR *pszWork, UCHAR uchAdj, TCHAR *pszMnem)
 *            
 *===========================================================================
 */
-USHORT  PrtDflLinkPLU(TCHAR *pszWork, USHORT fsModified, UCHAR uchAdj, TCHAR *pszMnem, DCURRENCY lPrice)
+USHORT  PrtDflLinkPLU(TCHAR *pszWork, USHORT fsModified, UCHAR uchAdj, CONST TCHAR *pszMnem, DCURRENCY lPrice)
 {
     if (uchAdj != 0) {
 		TCHAR    aszAdjMnem[PARA_ADJMNEMO_LEN + 1] = {0};
@@ -671,7 +669,7 @@ USHORT  PrtDflLinkPLU(TCHAR *pszWork, USHORT fsModified, UCHAR uchAdj, TCHAR *ps
 ** Synopsis: This function sets transaction mnemonics  line.
 *===========================================================================
 */
-USHORT  PrtDflMnem(TCHAR *pszWork, USHORT usAdr, BOOL fsType)
+USHORT  PrtDflMnem(TCHAR *pszWork, USTRNADRS usAdr, BOOL fsType)
 {
     TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
 
@@ -711,7 +709,7 @@ USHORT  PrtDflMnem(TCHAR *pszWork, USHORT usAdr, BOOL fsType)
 ** Synopsis: This function sets % discount line.
 *===========================================================================
 */
-USHORT  PrtDflPerDisc(TCHAR *pszWork, USHORT usAdr, UCHAR uchRate, DCURRENCY lAmount)
+USHORT  PrtDflPerDisc(TCHAR *pszWork, USTRNADRS usAdr, UCHAR uchRate, DCURRENCY lAmount)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
     TCHAR  aszSrc[PRT_DFL_LINE + 1 + 1] = {0};
@@ -825,7 +823,7 @@ USHORT  PrtDflWaiTaxMod(TCHAR *pszWork, ULONG ulID, USHORT  fsTax, USHORT  fbMod
 *            and Amount line.
 *===========================================================================
 */
-USHORT  PrtDflAmtMnem(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lAmount)
+USHORT  PrtDflAmtMnem(TCHAR *pszWork, USTRNADRS usTranAdr, DCURRENCY lAmount)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = { 0 };  /* PARA_... defined in "paraequ.h" */
 	TCHAR  aszSrc[PRT_DFL_LINE * 2] = { 0 };
@@ -950,7 +948,7 @@ USHORT  PrtDflTranNum(TCHAR *pszWork, USHORT usTranAdr, ULONG ulNumber)
 ** Synopsis: This function sets transaction mnemonic, native mnemonic  line.
 *===========================================================================
 */
-USHORT  PrtDflAmtSym(TCHAR *pszWork, USHORT usAdr, DCURRENCY lAmount, BOOL fsType)
+USHORT  PrtDflAmtSym(TCHAR *pszWork, USTRNADRS usAdr, DCURRENCY lAmount, BOOL fsType)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
     TCHAR  aszSpecAmtS[PARA_SPEMNEMO_LEN +PRT_AMOUNT_LEN + 1] = {0};         /* spec. mnem & amount save area */
@@ -1017,7 +1015,7 @@ USHORT  PrtDflAmtSym(TCHAR *pszWork, USHORT usAdr, DCURRENCY lAmount, BOOL fsTyp
 ** Synopsis: This function sets Trans. Menm.  and short value.
 *===========================================================================
 */
-USHORT  PrtDflMnemCount(TCHAR *pszWork, USHORT usAdr, SHORT sCount)
+USHORT  PrtDflMnemCount(TCHAR *pszWork, USTRNADRS usAdr, SHORT sCount)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = { 0 };  /* PARA_... defined in "paraequ.h" */
 	TCHAR  aszSrc[PRT_DFL_LINE + 1] = { 0 };
@@ -1045,7 +1043,7 @@ USHORT  PrtDflMnemCount(TCHAR *pszWork, USHORT usAdr, SHORT sCount)
 ** Synopsis: This function sets change line.
 *===========================================================================
 */
-USHORT  PrtDflZeroAmtMnem(TCHAR *pszWork, USHORT usAddress, DCURRENCY lAmount)
+USHORT  PrtDflZeroAmtMnem(TCHAR *pszWork, USTRNADRS usAddress, DCURRENCY lAmount)
 {
     if (lAmount == 0L) {
         return(0);
@@ -1074,7 +1072,7 @@ USHORT  PrtDflZeroAmtMnem(TCHAR *pszWork, USHORT usAddress, DCURRENCY lAmount)
 *            
 *===========================================================================
 */
-USHORT  PrtDflForeign1(TCHAR *pszWork, DCURRENCY lForeign, UCHAR uchAdr, UCHAR fbStatus)
+USHORT  PrtDflForeign1(TCHAR *pszWork, DCURRENCY lForeign, UCSPCADRS uchAdr, UCHAR fbStatus)
 {
 	TCHAR  aszFMnem[PARA_SPEMNEMO_LEN + 1] = {0};
     TCHAR  aszFAmt[ PRT_DFL_LINE + 1] = {0};
@@ -1099,15 +1097,17 @@ USHORT  PrtDflForeign1(TCHAR *pszWork, DCURRENCY lForeign, UCHAR uchAdr, UCHAR f
     usStrLen = tcharlen(aszFMnem);
 
     /* -- format foreign amount -- */
-    RflSPrintf(&aszFAmt[usStrLen], TCHARSIZEOF(aszFAmt), aszPrtEJForeign1, sDecPoint, lForeign);
+    RflSPrintf(&aszFAmt[usStrLen], TCHARSIZEOF(aszFAmt) - usStrLen, aszPrtEJForeign1, sDecPoint, lForeign);
 
     /* -- adjust sign ( + , - ) -- */
     if (lForeign < 0) {
         aszFAmt[0] = _T('-');
-        _tcsncpy(&aszFAmt[1], aszFMnem, PRT_DFL_LINE);
+        _tcsncpy(&aszFAmt[1], aszFMnem, PRT_DFL_LINE - 1);
     } else {
         _tcsncpy(aszFAmt, aszFMnem, PRT_DFL_LINE);
     }
+    aszFAmt[PRT_DFL_LINE] = 0;  // reassure compiler that there is an end of string.
+
 /***  modified '93-5-27 
     PmgPrint(PrtChkPort(), aszFAmt, usPrtEJColumn);
 ***/
@@ -1135,11 +1135,8 @@ USHORT  PrtDflForeign2(TCHAR *pszWork, ULONG ulRate, UCHAR fbStatus2)
 
     /* 6 digit decimal point for Euro, V3.4 */
     if (fbStatus2 & ODD_MDC_BIT0) {
-
         sDecPoint = PRT_6DECIMAL;
-
     } else {
-
         sDecPoint = PRT_5DECIMAL;
     }
 
@@ -1167,7 +1164,7 @@ USHORT  PrtDflForeign2(TCHAR *pszWork, ULONG ulRate, UCHAR fbStatus2)
 *            
 *===========================================================================
 */
-USHORT  PrtDflForeign3(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lForeign, UCHAR uchAdr, UCHAR fbStatus)
+USHORT  PrtDflForeign3(TCHAR *pszWork, USTRNADRS usTranAdr, DCURRENCY lForeign, UCHAR uchAdr, UCHAR fbStatus)
 {
 	TCHAR  aszFMnem[PARA_SPEMNEMO_LEN + 1] = {0};
     TCHAR  aszFAmt[ PRT_DFL_LINE + 1] = {0};
@@ -1197,15 +1194,16 @@ USHORT  PrtDflForeign3(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lForeign, UCH
     usStrLen = tcharlen(aszFMnem);
 
     /* -- format foreign amount -- */
-    RflSPrintf(&aszFAmt[usStrLen], TCHARSIZEOF(aszFAmt), aszPrtEJForeign1, sDecPoint, lForeign);
+    RflSPrintf(&aszFAmt[usStrLen], TCHARSIZEOF(aszFAmt) - usStrLen, aszPrtEJForeign1, sDecPoint, lForeign);
 
     /* -- adjust sign ( + , - ) -- */
     if (lForeign < 0) {
         aszFAmt[0] = _T('-');
-        _tcsncpy(&aszFAmt[1], aszFMnem, PRT_DFL_LINE);
+        _tcsncpy(&aszFAmt[1], aszFMnem, PRT_DFL_LINE - 1);
     } else {
         _tcsncpy(aszFAmt, aszFMnem, PRT_DFL_LINE);
     }
+    aszFAmt[PRT_DFL_LINE] = 0;  // reassure compiler that there is an end of string.
 
     /* -- send mnemoncis and amount -- */
     RflSPrintf(aszSrc, (PRT_DFL_LINE*2) + 1, aszPrtEJMnemMnem, aszTranMnem, aszFAmt);
@@ -1300,17 +1298,23 @@ USHORT PrtDflTblPerson( TCHAR *pszWork, USHORT usTblNo, USHORT usNoPerson, SHORT
 ** Synopsis : This function sets customer name to destination buffer.
 *===========================================================================
 */
-USHORT PrtDflCustName( TCHAR *pszDest, TCHAR *pszCustomerName )
+USHORT PrtDflCustName( TCHAR *pszDest, CONST TCHAR *pszCustomerName )
 {
+    TCHAR  aszCustomerName[NUM_NAME + 1] = { 0 };
+
     if ( *pszCustomerName == '\0' ) {
         return ( 0 );
     }
 
+#if 1
+    PrtTruncDoubleString(aszCustomerName, NUM_NAME, pszCustomerName);
+#else
     if ( *( pszCustomerName + NUM_NAME - 2 ) == PRT_DOUBLE ) {
         *( pszCustomerName + NUM_NAME - 2 ) = '\0';
     }
+#endif
 
-    RflSPrintf( pszDest, ( PRT_DFL_LINE + 1 ), aszPrtEJCustomerName, pszCustomerName );
+    RflSPrintf( pszDest, ( PRT_DFL_LINE + 1 ), aszPrtEJCustomerName, aszCustomerName);
 
     return ( 1 );
 }
@@ -1543,7 +1547,7 @@ USHORT  PrtDflCPRspMsgText(TCHAR *pszWork, TCHAR *pRspMsgText)
 ** Synopsis: This function prints mnemonics. and amount V3.3
 *===========================================================================
 */
-USHORT PrtDflZAMnemShift(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lAmount, USHORT usColumn)
+USHORT PrtDflZAMnemShift(TCHAR *pszWork, USTRNADRS usTranAdr, DCURRENCY lAmount, USHORT usColumn)
 {
     if (lAmount != 0L) {
         return (PrtDflAmtMnemShift(pszWork, usTranAdr, lAmount, usColumn));
@@ -1568,7 +1572,7 @@ USHORT PrtDflZAMnemShift(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lAmount, US
 *            and Amount line. V3.3
 *===========================================================================
 */
-USHORT  PrtDflAmtMnemShift(TCHAR *pszWork, USHORT usTranAdr, DCURRENCY lAmount, USHORT usColumn)
+USHORT  PrtDflAmtMnemShift(TCHAR *pszWork, USTRNADRS usTranAdr, DCURRENCY lAmount, USHORT usColumn)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     TCHAR  aszSrc[PRT_DFL_LINE*2 + 1] = {0};
@@ -1697,13 +1701,13 @@ USHORT  PrtDflMnemonic(TCHAR *pszWork, TCHAR  *pszMnemonic)
 *            and Amount line.
 *===========================================================================
 */
-USHORT  PrtDflPrtMod(TCHAR *pszWork, UCHAR uchAdr, DCURRENCY lAmount)
+USHORT  PrtDflPrtMod(TCHAR *pszWork, USHORT usAdr, DCURRENCY lAmount)
 {
 	TCHAR  aszPrtModMnem[PARA_PRTMODI_LEN + 1] = {0};
     TCHAR  aszSrc[PRT_DFL_LINE + 1] = {0};
 
     /* -- get print modifier  mnemonics -- */
-	RflGetMnemonicByClass(CLASS_PARAPRTMODI, aszPrtModMnem, uchAdr);
+	RflGetMnemonicByClass(CLASS_PARAPRTMODI, aszPrtModMnem, usAdr);
 
     /* -- send mnemoncis and amount -- */
     RflSPrintf(aszSrc, PRT_DFL_LINE + 1, aszPrtEJAmtMnem, aszPrtModMnem, lAmount);

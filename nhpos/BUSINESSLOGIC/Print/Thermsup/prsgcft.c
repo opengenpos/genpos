@@ -46,24 +46,19 @@
 
 #include	<tchar.h>
 #include <stdlib.h>
+
 #include <ecr.h>
-/* #include <pif.h> */
-/* #include <log.h> */
 #include <paraequ.h> 
 #include <para.h>
-/* #include <cswai.h> */
 #include <maint.h> 
-/* #include <regstrct.h> */
-/* #include <transact.h> */
 #include <csttl.h>
 #include <csop.h>
 #include <report.h>
 #include <csstbpar.h>
 #include <pmg.h>
+#include <prt.h>
 #include <rfl.h>
-/* #include <appllog.h> */
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*

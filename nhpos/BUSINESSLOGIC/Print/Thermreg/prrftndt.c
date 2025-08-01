@@ -72,6 +72,116 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;============================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID  PrtForeignTender_TH(TRANINFORMATION *pTran, ITEMTENDER *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTENDER       *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none 
+*            
+** Synopsis: This function prints foreign tender operation (thermal)
+*===========================================================================
+*/
+static VOID PrtForeignTender_TH(CONST TRANINFORMATION  *pTran, CONST ITEMTENDER  *pItem)
+{
+    PrtTHHead(pTran->TranCurQual.usConsNo);     /* print header if necessary */
+
+    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);               /* void line */
+
+    PrtTHNumber(pItem->aszNumber);              /* number line */
+
+	if (CliParaMDCCheckField(MDC_TAX2_ADR, MDC_PARAM_BIT_A) == 0) {
+		PrtTHForeign(pItem->lForeignAmount, pItem->uchMinorClass, pItem->auchTendStatus[0], pItem->ulFCRate, pItem->auchTendStatus[1]);    /* foreign tender */
+		PrtTHAmtMnem(TRN_FT_EQUIVALENT, pItem->lTenderAmount);          /* normal tender */
+	} else {
+		PrtTHForeign(pItem->lForeignAmount, pItem->uchMinorClass, pItem->auchTendStatus[0], pItem->ulFCRate, pItem->auchTendStatus[1]);    /* foreign tender */
+	}
+
+    PrtTHZeroAmtMnem(TRN_REGCHG_ADR, pItem->lChange);     /* change */
+} 
+
+/*
+*===========================================================================
+** Format  : VOID  PrtForeignTender_EJ(ITEMTENDER *pItem);      
+*
+*   Input  : ITEMTENDER       *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none 
+*            
+** Synopsis: This function prints foreign tender operation (electric journal)
+*===========================================================================
+*/
+static VOID PrtForeignTender_EJ(CONST ITEMTENDER  *pItem)
+{
+    UCSPCADRS  uchAdr1;                    /* set foreign symbol and mnem. */
+    USTRNADRS usTranAdr2;                 /* set foreign symbol and mnem. */
+
+	PrtGetMoneyMnem (pItem->uchMinorClass, &usTranAdr2, &uchAdr1);
+
+    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);               /* void line */
+    PrtEJNumber(pItem->aszNumber);              /* number line */
+    PrtEJForeign1(pItem->lForeignAmount, uchAdr1, pItem->auchTendStatus[0]);
+    PrtEJForeign2(pItem->ulFCRate, pItem->auchTendStatus[1]);    /* foreign tender */
+    PrtEJAmtMnem(TRN_FT_EQUIVALENT, pItem->lTenderAmount);          /* normal tender */
+    PrtEJZeroAmtMnem(TRN_REGCHG_ADR, pItem->lChange);        /* change */
+} 
+
+/*
+*===========================================================================
+** Format  : VOID  PrtForeignTender_SP(TRANINFORMATION *pTran, 
+*                                                   ITEMTENDER *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTENDER       *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints foreign tender operation
+*===========================================================================
+*/
+static VOID PrtForeignTender_SP(CONST TRANINFORMATION  *pTran, CONST ITEMTENDER *pItem) 
+{
+    TCHAR  aszSPPrintBuff[4][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    UCSPCADRS  uchAdr1;                    /* set foreign symbol and mnem. */
+    USTRNADRS usTranAdr2;                 /* set foreign symbol and mnem. */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+	PrtGetMoneyMnem (pItem->uchMinorClass, &usTranAdr2, &uchAdr1);
+
+    /* -- set void mnemonic and number -- */
+    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
+    /* -- set foreign amount and rate -- */
+    usSlipLine += PrtSpForeign(aszSPPrintBuff[usSlipLine], pItem->lForeignAmount, uchAdr1, pItem->auchTendStatus[0], pItem->ulFCRate, pItem->auchTendStatus[1]);
+                            
+    /* -- set foreign tender mnemonic and amount -- */
+    usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], usTranAdr2, pItem->lTenderAmount);
+
+    /* -- set change mnemonic and amount -- */
+    if (pItem->lChange) { 
+        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_REGCHG_ADR, pItem->lChange);
+    }
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (USHORT i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;    
+}
+
 /*
 *===========================================================================
 ** Format  : VOID  PrtForeignTender(TRANINFORMATION *pTran, ITEMTENDER *pItem);      
@@ -85,7 +195,7 @@
 ** Synopsis: This function prints foreign tender operation
 *===========================================================================
 */
-VOID PrtForeignTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
+VOID PrtForeignTender(CONST TRANINFORMATION  *pTran, CONST ITEMTENDER  *pItem)
 {
     /* -- set print portion to static area "fsPrtPrintPort" -- */
     PrtPortion(pItem->fsPrintStatus);
@@ -121,120 +231,6 @@ VOID PrtForeignTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtForeignTender_TH(TRANINFORMATION *pTran, ITEMTENDER *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTENDER       *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none 
-*            
-** Synopsis: This function prints foreign tender operation (thermal)
-*===========================================================================
-*/
-VOID PrtForeignTender_TH(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
-{
-    PrtTHHead(pTran);                           /* print header if necessary */
-
-    PrtTHVoid(pItem->fbModifier, pItem->usReasonCode);               /* void line */
-
-    PrtTHNumber(pItem->aszNumber);              /* number line */
-
-	if (CliParaMDCCheckField(MDC_TAX2_ADR, MDC_PARAM_BIT_A) == 0) {
-		PrtTHForeign(pItem->lForeignAmount, pItem->uchMinorClass, pItem->auchTendStatus[0], pItem->ulFCRate, pItem->auchTendStatus[1]);    /* foreign tender */
-		PrtTHAmtMnem(TRN_FT_EQUIVALENT, pItem->lTenderAmount);          /* normal tender */
-	} else {
-		PrtTHForeign(pItem->lForeignAmount, pItem->uchMinorClass, pItem->auchTendStatus[0], pItem->ulFCRate, pItem->auchTendStatus[1]);    /* foreign tender */
-	}
-
-    PrtTHZeroAmtMnem(TRN_REGCHG_ADR, pItem->lChange);     /* change */
-} 
-
-/*
-*===========================================================================
-** Format  : VOID  PrtForeignTender_EJ(ITEMTENDER *pItem);      
-*
-*   Input  : ITEMTENDER       *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none 
-*            
-** Synopsis: This function prints foreign tender operation (electric journal)
-*===========================================================================
-*/
-VOID PrtForeignTender_EJ(ITEMTENDER  *pItem)
-{
-    UCHAR  uchAdr1;
-	USHORT usTranAdr2;
-
-	PrtGetMoneyMnem (pItem->uchMinorClass, &usTranAdr2, &uchAdr1);
-
-    PrtEJVoid(pItem->fbModifier, pItem->usReasonCode);               /* void line */
-    PrtEJNumber(pItem->aszNumber);              /* number line */
-    PrtEJForeign1(pItem->lForeignAmount, uchAdr1, pItem->auchTendStatus[0]);
-    PrtEJForeign2(pItem->ulFCRate, pItem->auchTendStatus[1]);    /* foreign tender */
-    PrtEJAmtMnem(TRN_FT_EQUIVALENT, pItem->lTenderAmount);          /* normal tender */
-    PrtEJZeroAmtMnem(TRN_REGCHG_ADR, pItem->lChange);        /* change */
-} 
-
-/*
-*===========================================================================
-** Format  : VOID  PrtForeignTender_SP(TRANINFORMATION *pTran, 
-*                                                   ITEMTENDER *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTENDER       *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints foreign tender operation
-*===========================================================================
-*/
-VOID PrtForeignTender_SP(TRANINFORMATION  *pTran, ITEMTENDER *pItem) 
-{
-    TCHAR  aszSPPrintBuff[4][PRT_SPCOLUMN + 1]; /* print data save area */
-    UCHAR  uchAdr1;                    /* set foreign symbol and mnem. */
-	USHORT usTranAdr2;                 /* set foreign symbol and mnem. */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
-
-	PrtGetMoneyMnem (pItem->uchMinorClass, &usTranAdr2, &uchAdr1);
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
-
-    /* -- set void mnemonic and number -- */
-    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
-    /* -- set foreign amount and rate -- */
-    usSlipLine += PrtSpForeign(aszSPPrintBuff[usSlipLine], pItem->lForeignAmount, uchAdr1, pItem->auchTendStatus[0], pItem->ulFCRate, pItem->auchTendStatus[1]);
-                            
-    /* -- set foreign tender mnemonic and amount -- */
-    usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], usTranAdr2, pItem->lTenderAmount);
-
-    /* -- set change mnemonic and amount -- */
-    if (pItem->lChange) { 
-        usSlipLine += PrtSPMnemAmt(aszSPPrintBuff[usSlipLine], TRN_REGCHG_ADR, pItem->lChange);
-    }
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;    
-}
-
-
-/*
-*===========================================================================
 ** Format  : VOID  PrtDflForeignTender(TRANINFORMATION *pTran, ITEMTENDER *pItem);      
 *
 *   Input  : TRANINFORMATION  *pTran     -Transaction Information address
@@ -246,21 +242,18 @@ VOID PrtForeignTender_SP(TRANINFORMATION  *pTran, ITEMTENDER *pItem)
 ** Synopsis: This function prints foreign tender operation
 *===========================================================================
 */
-VOID PrtDflForeignTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
+VOID PrtDflForeignTender(CONST TRANINFORMATION  *pTran, CONST ITEMTENDER  *pItem)
 {
-    TCHAR  aszDflBuff[11][PRT_DFL_LINE + 1];   /* display data save area */
+    TCHAR  aszDflBuff[11][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
     UCHAR   uchAdr1;
-	USHORT  usTranAdr2;
+	USTRNADRS  usTranAdr2;
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
 
 	PrtGetMoneyMnem (pItem->uchMinorClass, &usTranAdr2, &uchAdr1);
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -285,8 +278,9 @@ VOID PrtDflForeignTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
     usLineNo += PrtDflZeroAmtMnem(aszDflBuff[usLineNo], TRN_REGCHG_ADR, pItem->lChange);
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- check void status -- */
     PrtDflCheckVoid(pItem->fbModifier);
@@ -294,7 +288,7 @@ VOID PrtDflForeignTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TENDER); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -304,38 +298,6 @@ VOID PrtDflForeignTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
     /* -- send display data -- */
     PrtDflSend();
 
-}
-
-
-/*
-*===========================================================================
-** Format  : VOID  PrtEuroTender(TRANINFORMATION *pTran, ITEMTENDER *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTENDER       *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints Euro tender operation, V3.4
-*===========================================================================
-*/
-VOID PrtEuroTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
-{
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-
-    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
-        PrtEuroTender_SP(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
-        PrtEuroTender_TH(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
-        PrtEuroTender_EJ(pItem);
-    }
 }
 
 
@@ -352,12 +314,12 @@ VOID PrtEuroTender(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
 ** Synopsis: This function prints Euro tender operation (thermal) V3.4
 *===========================================================================
 */
-VOID PrtEuroTender_TH(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
+static VOID PrtEuroTender_TH(CONST TRANINFORMATION  *pTran, CONST ITEMTENDER  *pItem)
 {
-    UCHAR  uchAdr1, uchAdr2, uchAdr3;
+    UCSPCADRS  uchAdr1 = SPC_CNSYMNTV_ADR;           /* set foreign symbol and mnem. */
+    UCSPCADRS  uchAdr2 = SPC_CNSYMFC1_ADR;           /* set foreign symbol and mnem. */
+    UCSPCADRS  uchAdr3 = SPC_CNSYMFC1_ADR;           /* set foreign symbol and mnem. */
 
-    uchAdr1 = SPC_CNSYMNTV_ADR;
-    uchAdr2 = SPC_CNSYMFC1_ADR;
 /****
     if (CliParaMDCCheck(MDC_EURO_ADR, ODD_MDC_BIT2)) {
 
@@ -371,9 +333,8 @@ VOID PrtEuroTender_TH(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
         uchAdr2 = SPC_CNSYMFC1_ADR;
     }
 ****/
-    uchAdr3 = SPC_CNSYMFC1_ADR;
 
-    PrtTHHead(pTran);                           /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);   /* print header if necessary */
 
     PrtFeed(PMG_PRT_RECEIPT, 1);              /* 1 line feed(Receipt) */
 
@@ -395,26 +356,11 @@ VOID PrtEuroTender_TH(TRANINFORMATION  *pTran, ITEMTENDER  *pItem)
 ** Synopsis: This function prints Euro tender operation (electric journal) V3.4
 *===========================================================================
 */
-VOID PrtEuroTender_EJ(ITEMTENDER  *pItem)
+static VOID PrtEuroTender_EJ(CONST ITEMTENDER  *pItem)
 {
-    UCHAR  uchAdr1, uchAdr2, uchAdr3;
-
-    uchAdr1 = SPC_CNSYMNTV_ADR;
-    uchAdr2 = SPC_CNSYMFC1_ADR;
-/****
-    if (CliParaMDCCheck(MDC_EURO_ADR, ODD_MDC_BIT2)) {
-
-        / after transition to Euro /
-        uchAdr1 = SPC_CNSYMFC1_ADR;
-        uchAdr2 = SPC_CNSYMNTV_ADR;
-
-    } else {
-
-        uchAdr1 = SPC_CNSYMNTV_ADR;
-        uchAdr2 = SPC_CNSYMFC1_ADR;
-    }
-****/
-    uchAdr3 = SPC_CNSYMFC1_ADR;
+    UCSPCADRS  uchAdr1 = SPC_CNSYMNTV_ADR;           /* set foreign symbol and mnem. */
+    UCSPCADRS  uchAdr2 = SPC_CNSYMFC1_ADR;           /* set foreign symbol and mnem. */
+    UCSPCADRS  uchAdr3 = SPC_CNSYMFC1_ADR;           /* set foreign symbol and mnem. */
 
     PrtEJEuro(uchAdr1, 1L, uchAdr2, pItem->ulFCRate, pItem->auchTendStatus[1]);
 
@@ -436,17 +382,15 @@ VOID PrtEuroTender_EJ(ITEMTENDER  *pItem)
 ** Synopsis: This function prints Euro tender operation V3.4
 *===========================================================================
 */
-VOID PrtEuroTender_SP(TRANINFORMATION  *pTran, ITEMTENDER *pItem) 
+static VOID PrtEuroTender_SP(CONST TRANINFORMATION  *pTran, CONST ITEMTENDER *pItem) 
 {
-    TCHAR  aszSPPrintBuff[4][PRT_SPCOLUMN + 1]; /* print data save area */
-    UCHAR  uchAdr1, uchAdr2, uchAdr3;           /* set foreign symbol and mnem. */
+    TCHAR  aszSPPrintBuff[4][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    UCSPCADRS  uchAdr1 = SPC_CNSYMNTV_ADR;           /* set foreign symbol and mnem. */
+    UCSPCADRS  uchAdr2 = SPC_CNSYMFC1_ADR;           /* set foreign symbol and mnem. */
+    UCSPCADRS  uchAdr3 = SPC_CNSYMFC1_ADR;           /* set foreign symbol and mnem. */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
     USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
 
-    /* get foreign 1 or 2 */
-    uchAdr1 = SPC_CNSYMNTV_ADR;
-    uchAdr2 = SPC_CNSYMFC1_ADR;
 /****
     if (CliParaMDCCheck(MDC_EURO_ADR, ODD_MDC_BIT2)) {
 
@@ -460,10 +404,6 @@ VOID PrtEuroTender_SP(TRANINFORMATION  *pTran, ITEMTENDER *pItem)
         uchAdr2 = SPC_CNSYMFC1_ADR;
     }
 ****/
-    uchAdr3 = SPC_CNSYMFC1_ADR;
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
 
     /* -- set foreign amount and rate -- */
     usSlipLine += PrtSPEuro(aszSPPrintBuff[usSlipLine], uchAdr1, 1L, uchAdr2, pItem->ulFCRate, pItem->auchTendStatus[1]);
@@ -474,7 +414,7 @@ VOID PrtEuroTender_SP(TRANINFORMATION  *pTran, ITEMTENDER *pItem)
     usSaveLine = PrtCheckLine(usSlipLine, pTran);
 
     /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
+    for (USHORT i = 0; i < usSlipLine; i++) {
 /*  --- fix a glitch (05/15/2001)
         PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
         PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
@@ -482,6 +422,38 @@ VOID PrtEuroTender_SP(TRANINFORMATION  *pTran, ITEMTENDER *pItem)
 
     /* -- update current line No. -- */
     usPrtSlipPageLine += usSlipLine + usSaveLine;    
+}
+
+
+/*
+*===========================================================================
+** Format  : VOID  PrtEuroTender(TRANINFORMATION *pTran, ITEMTENDER *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTENDER       *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints Euro tender operation, V3.4
+*===========================================================================
+*/
+VOID PrtEuroTender(CONST TRANINFORMATION  *pTran, CONST ITEMTENDER  *pItem)
+{
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+
+    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
+        PrtEuroTender_SP(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
+        PrtEuroTender_TH(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
+        PrtEuroTender_EJ(pItem);
+    }
 }
 
 /*
@@ -497,20 +469,18 @@ VOID PrtEuroTender_SP(TRANINFORMATION  *pTran, ITEMTENDER *pItem)
 ** Synopsis: This function prints foreign tender operation
 *===========================================================================
 */
-USHORT PrtDflForeignTenderForm(TRANINFORMATION  *pTran, ITEMTENDER  *pItem, TCHAR *puchBuffer)
+USHORT PrtDflForeignTenderForm(CONST TRANINFORMATION  *pTran, CONST ITEMTENDER  *pItem, TCHAR *puchBuffer)
 {
-    TCHAR  aszDflBuff[11][PRT_DFL_LINE + 1];   /* display data save area */
-    USHORT  usLineNo=0, i;                       /* number of lines to be displayed */
+    TCHAR  aszDflBuff[11][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
+    USHORT  usLineNo=0;                                /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
     UCHAR   uchAdr1;
-	USHORT  usTranAdr2;
+	USTRNADRS  usTranAdr2;
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
 
 	PrtGetMoneyMnem (pItem->uchMinorClass, &usTranAdr2, &uchAdr1);
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
 #if 0
     /* -- set header -- */
@@ -535,7 +505,7 @@ USHORT PrtDflForeignTenderForm(TRANINFORMATION  *pTran, ITEMTENDER  *pItem, TCHA
 
     usLineNo += PrtDflZeroAmtMnem(aszDflBuff[usLineNo], TRN_REGCHG_ADR, pItem->lChange);
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i = 0; i < usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
     _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));

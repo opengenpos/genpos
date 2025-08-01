@@ -61,7 +61,193 @@
 **/
 /*
 *===========================================================================
-** Format  : VOID    PrtPLU(TRANINFORMATION  *pTran, ITEMSALES *pItem);      
+** Format  : VOID PrtOrderDec_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*   Input  : ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints Order Declare text  (thermal)
+*===========================================================================
+*/
+static VOID  PrtOrderDec_TH(CONST TRANINFORMATION *pTran, CONST ITEMSALES *pItem)
+{
+	USHORT usTrnAdr = TRN_ORDER_DEC_OFFSET;
+
+	// the order declare number of CLASS_ITEMORDERDEC is stored in the uchAdjective value.
+	usTrnAdr += pItem->uchAdjective;
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);   /* print header if necessary */
+
+    PrtFeed(PMG_PRT_RECEIPT, 1);              /* 1 line feed(Receipt) */
+
+    PrtTHOrderDec(usTrnAdr);
+	if (pItem->aszNumber[0][0]) {
+		// if there is #/Type text with this Order Declare then print it.
+		// used with AGR # printing for Amtrak
+		TCHAR  aszTranMnem[(PARA_CHAR24_LEN) + 1];
+//		TCHAR  aszTranMnemD[(PARA_CHAR24_LEN)* 2 + 1];
+
+		memset (aszTranMnem, 0, sizeof(aszTranMnem));
+		_tcsncpy (aszTranMnem, pItem->aszNumber[0], PARA_CHAR24_LEN);
+		/* -- convert to double -- */
+//		PrtDouble(aszTranMnemD, sizeof(aszTranMnem), aszTranMnem);
+
+ 		PrtPrintf(PMG_PRT_RECEIPT, _T("%20s"), aszTranMnem, _T(" "));
+	}
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTotalKP_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem )
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints Order Declare text on kitchen printer
+*===========================================================================
+*/
+static VOID PrtKPOrderDec(CONST TRANINFORMATION *pTran, CONST ITEMSALES *pItem )
+{
+	if (pItem->uchMinorClass == CLASS_ITEMORDERDEC && pItem->uchAdjective) {
+		TCHAR   aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = { 0 };  /* NUM_... defined in "regstrct.h" */
+		TCHAR   aszItem[PRT_KPCOLUMN + 1] = {0};
+		USHORT  usStrLen = 0;
+        USTRNADRS  usTrnAdr = TRN_ORDER_DEC_OFFSET;
+		UCHAR	fbPrtStatus = 0;
+
+		// the order declare number of CLASS_ITEMORDERDEC is stored in the uchAdjective value.
+		usTrnAdr += pItem->uchAdjective;
+
+		RflGetTranMnem( aszTranMnem, usTrnAdr );    /* seat no. mnemonic */
+        RflSPrintf(aszItem, PRT_KPCOLUMN, L"%-18s", aszTranMnem);
+        usStrLen = tcharlen(aszItem);
+		aszItem[usStrLen] = PRT_RETURN;   /* write return */
+
+		for (USHORT i = 0; i < MAX_DEST_SIZE; i++) {
+			PrtChkKPStorageEx(aszItem, usStrLen + 1, fbPrtStatus, 0, i);
+		}
+    }
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTotal_EJ(ITEMTOTAL *pItem);      
+*
+*   Input  : ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints total key  (elctric journal)
+*===========================================================================
+*/
+static VOID  PrtOrderDec_EJ(CONST ITEMSALES *pItem)
+{
+    USTRNADRS usTrnAdr = TRN_ORDER_DEC_OFFSET;
+
+	// the order declare number of CLASS_ITEMORDERDEC is stored in the uchAdjective value.
+	usTrnAdr += pItem->uchAdjective;
+
+    PrtEJOrderDec(usTrnAdr, 0, PRT_DOUBLE);
+	if (pItem->aszNumber[0][0]) {
+		// if there is #/Type text with this Order Declare then print it.
+		// used with AGR # printing for Amtrak
+        TCHAR  aszTranMnem[(PARA_CHAR24_LEN)+1] = { 0 };
+//		TCHAR  aszTranMnemD[(PARA_CHAR24_LEN)* 2 + 1];
+
+		_tcsncpy (aszTranMnem, pItem->aszNumber[0], PARA_CHAR24_LEN);
+		/* -- convert to double -- */
+//		PrtDouble(aszTranMnemD, sizeof(aszTranMnem), aszTranMnem);
+
+ 		PrtPrintf(PMG_PRT_JOURNAL, _T("%20s"), aszTranMnem, _T(" "));
+	}
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTotal_SP(TRANINFORMATION  *pTran, ITEMTOTAL *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints total key  (slip)
+*===========================================================================
+*/
+static VOID PrtOrderDec_SP(CONST TRANINFORMATION *pTran, CONST ITEMSALES *pItem)
+{
+	TCHAR   aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = {0}; /* print data save area */
+    USHORT  usSlipLine = 0;             /* number of lines to be printed */
+    USHORT  usSaveLine;                 /* save slip lines to be added */
+    USTRNADRS usTrnAdr = TRN_ORDER_DEC_OFFSET;
+
+	// the order declare number of CLASS_ITEMORDERDEC is stored in the uchAdjective value.
+	usTrnAdr += pItem->uchAdjective;
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (USHORT i = 0; i < usSlipLine; i++) {
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);       
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTotal_SP(TRANINFORMATION  *pTran, ITEMTOTAL *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints total key  (slip)
+*===========================================================================
+*/
+SHORT PrtOrderDecSearch(CONST TRANINFORMATION *pTran, ITEMSALES *pItem)
+{
+    SHORT         sType;
+    TRANCURQUAL   *pWorkCur = TrnGetCurQualPtr();
+
+    /*--- System is Postcheck or Store/Recall ---*/
+    switch (pWorkCur->flPrintStatus & CURQUAL_GC_SYS_MASK) {
+    case CURQUAL_STORE_RECALL:
+        sType = TRN_TYPE_CONSSTORAGE;
+        break;
+    case CURQUAL_POSTCHECK:
+        if ((pWorkCur->fsCurStatus & CURQUAL_OPEMASK) == CURQUAL_CASHIER) {
+            sType = TRN_TYPE_ITEMSTORAGE;
+        } else {
+            sType = TRN_TYPE_CONSSTORAGE;
+        }
+        break;
+    case CURQUAL_PRE_BUFFER:
+    case CURQUAL_PRE_UNBUFFER:
+    default:
+        sType = TRN_TYPE_ITEMSTORAGE;
+        break;
+    }
+
+	return TrnStoOrderDecSearch(pItem,sType);
+
+}
+
+/*
+*===========================================================================
+** Format  : VOID    PrtOrderDec(TRANINFORMATION  *pTran, ITEMSALES *pItem);      
 *               
 *    Input : TRANINFORMATION  *pTran     -Transaction Information address
 *            ITEMSALES        *pItem     -Item Data address
@@ -132,194 +318,5 @@ VOID PrtOrderDec(TRANINFORMATION  *pTran, ITEMSALES  *pItem)
     if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
         PrtOrderDec_EJ(pItem);
     }
-
-}
-/*
-*===========================================================================
-** Format  : VOID PrtOrderDec_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*   Input  : ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints Order Declare text  (thermal)
-*===========================================================================
-*/
-VOID  PrtOrderDec_TH(TRANINFORMATION *pTran, ITEMSALES *pItem)
-{
-	USHORT usTrnAdr = TRN_ORDER_DEC_OFFSET;
-
-	// the order declare number of CLASS_ITEMORDERDEC is stored in the uchAdjective value.
-	usTrnAdr += pItem->uchAdjective;
-
-    PrtTHHead(pTran);                         /* print header if necessary */
-
-    PrtFeed(PMG_PRT_RECEIPT, 1);              /* 1 line feed(Receipt) */
-
-    PrtTHOrderDec(usTrnAdr);
-	if (pItem->aszNumber[0][0]) {
-		// if there is #/Type text with this Order Declare then print it.
-		// used with AGR # printing for Amtrak
-		TCHAR  aszTranMnem[(PARA_CHAR24_LEN) + 1];
-//		TCHAR  aszTranMnemD[(PARA_CHAR24_LEN)* 2 + 1];
-
-		memset (aszTranMnem, 0, sizeof(aszTranMnem));
-		_tcsncpy (aszTranMnem, pItem->aszNumber[0], PARA_CHAR24_LEN);
-		/* -- convert to double -- */
-//		PrtDouble(aszTranMnemD, sizeof(aszTranMnem), aszTranMnem);
-
- 		PrtPrintf(PMG_PRT_RECEIPT, _T("%20s"), aszTranMnem, _T(" "));
-	}
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtTotalKP_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem )
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints Order Declare text on kitchen printer
-*===========================================================================
-*/
-VOID PrtKPOrderDec(TRANINFORMATION *pTran, ITEMSALES *pItem )
-{
-	if (pItem->uchMinorClass == CLASS_ITEMORDERDEC && pItem->uchAdjective) {
-		TCHAR   aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = { 0 };  /* NUM_... defined in "regstrct.h" */
-		TCHAR   aszItem[PRT_KPCOLUMN + 1] = {0};
-		USHORT  usStrLen = 0;
- 		USHORT  usTrnAdr = TRN_ORDER_DEC_OFFSET;
-		UCHAR	fbPrtStatus = 0;
-		USHORT  i;
-
-		// the order declare number of CLASS_ITEMORDERDEC is stored in the uchAdjective value.
-		usTrnAdr += pItem->uchAdjective;
-
-		RflGetTranMnem( aszTranMnem, usTrnAdr );    /* seat no. mnemonic */
-        RflSPrintf(aszItem, PRT_KPCOLUMN, L"%-18s", aszTranMnem);
-        usStrLen = tcharlen(aszItem);
-		aszItem[usStrLen] = PRT_RETURN;   /* write return */
-
-		for (i = 0; i < MAX_DEST_SIZE; i++) {
-			PrtChkKPStorageEx(aszItem, usStrLen + 1, fbPrtStatus, 0, i);
-		}
-    }
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtTotal_EJ(ITEMTOTAL *pItem);      
-*
-*   Input  : ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints total key  (elctric journal)
-*===========================================================================
-*/
-VOID  PrtOrderDec_EJ(ITEMSALES *pItem)
-{
- 	USHORT usTrnAdr = TRN_ORDER_DEC_OFFSET;
-
-	// the order declare number of CLASS_ITEMORDERDEC is stored in the uchAdjective value.
-	usTrnAdr += pItem->uchAdjective;
-
-    PrtEJOrderDec(usTrnAdr, 0, PRT_DOUBLE);
-	if (pItem->aszNumber[0][0]) {
-		// if there is #/Type text with this Order Declare then print it.
-		// used with AGR # printing for Amtrak
-		TCHAR  aszTranMnem[(PARA_CHAR24_LEN) + 1];
-//		TCHAR  aszTranMnemD[(PARA_CHAR24_LEN)* 2 + 1];
-
-		memset (aszTranMnem, 0, sizeof(aszTranMnem));
-		_tcsncpy (aszTranMnem, pItem->aszNumber[0], PARA_CHAR24_LEN);
-		/* -- convert to double -- */
-//		PrtDouble(aszTranMnemD, sizeof(aszTranMnem), aszTranMnem);
-
- 		PrtPrintf(PMG_PRT_JOURNAL, _T("%20s"), aszTranMnem, _T(" "));
-	}
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtTotal_SP(TRANINFORMATION  *pTran, ITEMTOTAL *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints total key  (slip)
-*===========================================================================
-*/
-VOID PrtOrderDec_SP(TRANINFORMATION *pTran, ITEMSALES *pItem)
-{
-	TCHAR   aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = {0}; /* print data save area */
-    USHORT  usSlipLine = 0;             /* number of lines to be printed */
-    USHORT  usSaveLine;                 /* save slip lines to be added */
-    USHORT  i;
- 	USHORT usTrnAdr = TRN_ORDER_DEC_OFFSET;
-
-	// the order declare number of CLASS_ITEMORDERDEC is stored in the uchAdjective value.
-	usTrnAdr += pItem->uchAdjective;
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);       
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;
-}
-/*
-*===========================================================================
-** Format  : VOID PrtTotal_SP(TRANINFORMATION  *pTran, ITEMTOTAL *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints total key  (slip)
-*===========================================================================
-*/
-SHORT PrtOrderDecSearch(TRANINFORMATION *pTran, ITEMSALES *pItem)
-{
-    SHORT   sType;
-    TRANCURQUAL     WorkCur;
-
-    TrnGetCurQual(&WorkCur);
-
-    /*--- System is Postcheck or Store/Recall ---*/
-    switch (WorkCur.flPrintStatus & CURQUAL_GC_SYS_MASK) {
-    case CURQUAL_STORE_RECALL:
-        sType = TRN_TYPE_CONSSTORAGE;
-        break;
-    case CURQUAL_POSTCHECK:
-        if ((WorkCur.fsCurStatus & CURQUAL_OPEMASK) == CURQUAL_CASHIER) {
-            sType = TRN_TYPE_ITEMSTORAGE;
-        } else {
-            sType = TRN_TYPE_CONSSTORAGE;
-        }
-        break;
-    case CURQUAL_PRE_BUFFER:
-    case CURQUAL_PRE_UNBUFFER:
-    default:
-        sType = TRN_TYPE_ITEMSTORAGE;
-        break;
-    }
-
-	return TrnStoOrderDecSearch(pItem,sType);
 
 }

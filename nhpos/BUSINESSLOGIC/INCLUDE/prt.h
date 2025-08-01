@@ -71,6 +71,12 @@
 /* -- shared printer abort key entry status -- */
 #define PRT_ABORTED            -1                      /* abort key entered */
 
+#define PRT_MAX_PERCENT  60000          /* used to check if PERCENT is illegal in RPTDEPT -> usPercent. used in MLD and Thermsup */
+
+
+extern const TCHAR aszPrtAM[];
+extern const TCHAR aszPrtPM[];
+
 /**
 ;========================================================================
 ;+          P R O T O T Y P E    D E C L A R A T I O N s 
@@ -143,9 +149,9 @@ extern VOID    ThermPrtShrTermUnLock( VOID );
     PROGRPT PRINT (PRRCOMN_.C)
 -----------------------------------*/
 USHORT PrtFeed(USHORT  usPrtType, USHORT usLineNum);
-USHORT PrtPrint(USHORT usPrtType, TCHAR *puchBuff, USHORT usLen);
-USHORT PrtPrintf(USHORT usPrtType, const TCHAR FAR *pszFormat, ...);
-VOID   PrtDouble(TCHAR *pszDest, USHORT usDestLen, TCHAR *pszSource);
+USHORT PrtPrint(USHORT usPrtType, CONST TCHAR *puchBuff, USHORT usLen);
+USHORT PrtPrintf(USHORT usPrtType, const TCHAR *pszFormat, ...);
+VOID   PrtDouble(TCHAR *pszDest, USHORT usDestLen, CONST TCHAR *pszSource);
 VOID   PrtSupItoa( UCHAR uchData, TCHAR auchString[] );    /* prscomt.c  */
 
 /* -- PrCTran_.c -- */

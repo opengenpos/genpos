@@ -127,17 +127,15 @@ VOID  PrtSupVLHead(MAINTSPHEADER *pData)
 {
     const TCHAR  *auchNumber = _T("%3d");
     const TCHAR  *auchIdNumber = _T("%8.8Md");
-    PARAREPORTNAME ParaReportName;
+    TCHAR   aszRepoName[PARA_REPORTNAME_LEN + 1] = { 0 };
 	TCHAR   aszDoubRepoName[PARA_REPORTNAME_LEN * 2 + 1] = { 0 };
 	TCHAR   aszDoubRepoNumb[8 * 2 + 1] = { 0 };
-	TCHAR   aszRepoNumb[8 + 1] = { 0 };
-	TCHAR  aszDoubCashNumb[8 * 2 + 1] = { 0 };
+    TCHAR   aszRepoNumb[8 + 1] = { 0 };
+    TCHAR  aszDoubCashNumb[8 * 2 + 1] = { 0 };
 	TCHAR  aszCashNumb[8 + 1] = { 0 };
 
-    ParaReportName.uchMajorClass = CLASS_PARAREPORTNAME;
-    ParaReportName.uchAddress = RPT_ACT_ADR;
-    CliParaRead(&ParaReportName);
-    PrtDouble(aszDoubRepoName, TCHARSIZEOF(aszDoubRepoName), ParaReportName.aszMnemonics);
+    RflGetReportMnem(aszRepoName, RPT_ACT_ADR);
+    PrtDouble(aszDoubRepoName, TCHARSIZEOF(aszDoubRepoName), aszRepoName);
 
     /* make double wide for report number */
     RflSPrintf(aszRepoNumb, TCHARSIZEOF(aszRepoNumb), auchNumber, pData->usACNumber);
@@ -251,8 +249,8 @@ VOID    PrtSupVLLoanPickup(TRANINFORMATION *pTran, MAINTLOANPICKUP *pData)
 VOID  PrtSupVLForQty(MAINTLOANPICKUP *pData)
 {
     if ( pData->usModifier & MAINT_MODIFIER_QTY ) {
-		TCHAR  aszSpecAmt[PARA_SPEMNEMO_LEN + PRT_AMOUNT_LEN + 1] = { 0 };
-		UCHAR  uchFCAdr;
+		TCHAR      aszSpecAmt[PARA_SPEMNEMO_LEN + PRT_AMOUNT_LEN + 1] = { 0 };
+        UCSPCADRS  uchFCAdr;
 
                                                                 /* R2.0 End   */
         switch ( pData->uchMinorClass ) {
@@ -328,8 +326,8 @@ VOID  PrtSupVLForQty(MAINTLOANPICKUP *pData)
 */
 VOID  PrtSupVLForeignTend(MAINTLOANPICKUP *pData)
 {
-    UCHAR  uchSymAdr;
-    USHORT usTrnsAdr;
+    UCSPCADRS  uchSymAdr = 0;
+    USTRNADRS  usTrnsAdr = 0;
     USHORT usStrLen;
 	TCHAR  aszFAmt[PRT_VLCOLUMN] = { 0 };
 	TCHAR  aszFSym[PARA_SPEMNEMO_LEN + 1] = { 0 };          /* PARA_... defined in "paraequ.h" */
@@ -429,10 +427,8 @@ VOID  PrtSupVLForeignTend(MAINTLOANPICKUP *pData)
 */
 VOID    PrtSupVLModifier(TRANINFORMATION *pTran, USHORT fbMod, USHORT usReasonCode)
 {
-    TCHAR   aszVoid[PARA_CHAR24_LEN + 1];      /* void */
-    TCHAR   aszHead3[PARA_CHAR24_LEN + 1];     /* valid. header 1st line */
-
-    *aszVoid = '\0';    
+    TCHAR   aszVoid[PARA_CHAR24_LEN + 1] = { 0 };      /* void */
+    TCHAR   aszHead3[PARA_CHAR24_LEN + 1] = { 0 };     /* valid. header 1st line */
 
     /* --- void ? -- */
     if (fbMod & VOID_MODIFIER) {
@@ -442,7 +438,7 @@ VOID    PrtSupVLModifier(TRANINFORMATION *pTran, USHORT fbMod, USHORT usReasonCo
 		}
     }
 
-    PrtGet24Mnem(aszHead3,    CH24_3RDVAL_ADR);    /* get validation head */
+    RflGet24Mnem(aszHead3, CH24_3RDVAL_ADR);    /* get validation head */
     PrtPrintf(PMG_PRT_RCT_JNL, aszPrtVLHead, aszVoid, aszHead3);
 }
 
@@ -473,10 +469,10 @@ VOID    PrtSupVLModifier(TRANINFORMATION *pTran, USHORT fbMod, USHORT usReasonCo
 *       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *===========================================================================
 */
-VOID    PrtVLMnemAmt(USHORT usAdr, DCURRENCY lAmount, BOOL fsType)
+VOID    PrtVLMnemAmt(USTRNADRS usAdr, DCURRENCY lAmount, BOOL fsType)
 {
     TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
-    TCHAR  aszTranMnemD[PARA_TRANSMNEMO_LEN*2 + 1] = {0};
+    TCHAR  aszTranMnemD[PARA_TRANSMNEMO_LEN * 2 + 1] = {0};
     TCHAR  aszAmountS[PRT_AMOUNT_LEN + 1] = {0};
 	TCHAR  aszAmountD[PRT_AMOUNT_LEN*2 + 1] = {0};
 

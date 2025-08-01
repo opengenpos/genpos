@@ -46,23 +46,18 @@
 **/
 
 #include	<tchar.h>
-#include <ecr.h>
 #include <stdlib.h>
-/* #include <pif.h> */
-/* #include <log.h> */
+
+#include <ecr.h>
 #include <paraequ.h> 
 #include <para.h>
-/* #include <cswai.h> */
 #include <maint.h> 
-/* #include <regstrct.h> */
-/* #include <transact.h> */
 #include <csttl.h>
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
-/* #include <appllog.h> */
+#include <prt.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*
@@ -86,32 +81,22 @@
 
 VOID  PrtThrmSupMDC( VOID *pData )
 {
-    static const TCHAR  auchPrtThrmSupMDC[] = _T("%18u  /  %s");       /* define thermal print format */        
-    static const TCHAR  auchPrtSupMDC[] = _T("%8u / %s");     /* define EJ print format */            
-
-    TCHAR           aszBuffer[5];
-    UCHAR           uchMajorClass;
+    TCHAR           aszBuffer[8] = { 0 };
+    UCHAR           uchMajorClass = ITEMCLASSPTR(pData)->uchMajorClass;
     USHORT          usAddress;
     USHORT          usPrintControl;
-    PARAMDC         *pParaMDC;
-    PARAACTCODESEC  *pParaActCode;
-
-    /* get major class */
-
-    uchMajorClass = *(( UCHAR *)(pData));                           
+    PARAMDC         *pParaMDC = pData;
+    PARAACTCODESEC  *pParaActCode = pData;
 
     /* distinguish major class */ 
-   
     switch (uchMajorClass) {
     case CLASS_PARAMDC:                                             /* MDC */
-        pParaMDC = ( PARAMDC *)pData;
         usAddress = pParaMDC->usAddress;
         PrtSupItoa(pParaMDC->uchMDCData, aszBuffer);                /* convert status data to binary ASCII data */
         usPrintControl = pParaMDC->usPrintControl;
         break;
 
     case CLASS_PARAACTCODESEC:                                      /* Action Code Security */
-        pParaActCode = ( PARAACTCODESEC *)pData;
         usAddress = pParaActCode->usAddress;
         PrtSupItoa(pParaActCode->uchSecurityBitPatern, aszBuffer);  /* convert status data to binary ASCII data */
         usPrintControl = pParaActCode->usPrintControl;
@@ -124,25 +109,16 @@ VOID  PrtThrmSupMDC( VOID *pData )
     }
 
     /* check print status */
-
     if (usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-
+        static const TCHAR  auchPrtThrmSupMDC[] = _T("%18u  /  %s");       /* define thermal print format */        
         /* print ADDRESS / BIT PATTERN */
-
-        PrtPrintf(PMG_PRT_RECEIPT,              /* printer type */
-                  auchPrtThrmSupMDC,            /* format */
-                  usAddress,                    /* address */
-                  aszBuffer);                   /* status */
+        PrtPrintf(PMG_PRT_RECEIPT,  auchPrtThrmSupMDC, usAddress, aszBuffer);                   /* status */
     } 
     
     if (usPrintControl & PRT_JOURNAL) {  /* EJ */
-
+        static const TCHAR  auchPrtSupMDC[] = _T("%8u / %s");     /* define EJ print format */            
         /* print ADDRESS / BIT PATTERN */
-
-        PrtPrintf(PMG_PRT_JOURNAL,              /* printer type */
-                  auchPrtSupMDC,                /* format */
-                  usAddress,                    /* address */
-                  aszBuffer);                   /* status */
+        PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupMDC, usAddress, aszBuffer);                   /* status */
     }
 }
 /***** End of Source *****/

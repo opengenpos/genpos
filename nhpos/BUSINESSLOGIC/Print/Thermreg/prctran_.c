@@ -171,7 +171,8 @@ USHORT PrtPrintTran(TRANINFORMATION *pTran)
         memset (auchPrtSeatCtl, 0, sizeof(auchPrtSeatCtl));
     }
     uchPrtSeatNo = 0;
-    fbPrtKPSeatState = 0xFF;                /* not feed first item at non seat# trans. */
+//    fbPrtKPSeatState = 0xFF;                /* not feed first item at non seat# trans. */
+    PrtKPSeatStateNotFeed();                /* not feed first item at non seat# trans. */
 
     memset(auchPrtFailKP, '\0', sizeof(auchPrtFailKP));   /* fail kitchen printer no initial. */
 
@@ -224,15 +225,16 @@ USHORT PrtPrintTran(TRANINFORMATION *pTran)
 
 			fsPrtStatus |= PRT_REC_SLIP;
 			if (CliParaMDCCheckField(MDC_PLU_TICKET, MDC_PARAM_BIT_A)) {
+				static PluChitInfo     PluChitInfoList[25] = {0};    // used only if malloc() fails.
 				BOOL            freeMalloced;
-				PluChitInfoAll  PluChit;
-				PluChitInfo     PluChitInfoList[25] = {0};
+                PluChitInfoAll  PluChit = { 0 };
 
 				PluChit.nPluChitInfoSize = 75;
 				freeMalloced = ((PluChit.pPluChitInfo = calloc (PluChit.nPluChitInfoSize, sizeof(PluChitInfo))) != 0);
 				if (! freeMalloced) {
 					PluChit.pPluChitInfo = PluChitInfoList;
 					PluChit.nPluChitInfoSize = sizeof(PluChitInfoList)/sizeof(PluChitInfoList[0]);
+                    memset(PluChitInfoList, 0, sizeof(PluChitInfoList));
 				}
 				PluChit.iOrderDeclareAdr = 0;
 				PrtCallIPDTicketInfo ( pTran, hsRead1, &PluChit );
@@ -273,7 +275,8 @@ USHORT PrtPrintTran(TRANINFORMATION *pTran)
         fsPrtStatus    = PRT_KPONLY;
         fsPrtStatus   |= PRT_REQKITCHEN;      /* set "request kitchen" */
         uchPrtSeatNo = 0;                       /* continuous seat no print */
-        fbPrtKPSeatState = 0xFF;                /* not feed first item at non seat# trans. */
+//        fbPrtKPSeatState = 0xFF;                /* not feed first item at non seat# trans. */
+        PrtKPSeatStateNotFeed();                /* not feed first item at non seat# trans. */
 
         hsRead1 = hsRead2;                    /* copy file handle */
                                               /* for take to kitchen */
@@ -499,7 +502,7 @@ USHORT PrtPrintSplit(TRANINFORMATION *pTran, TRANINFSPLIT *pSplit,
 *            TPM prints sends data to kitchen printer, then sends to other printer.
 *===========================================================================
 */
-SHORT PrtChkStorage( PifFileHandle * hsRead1, PifFileHandle * hsRead2, TRANINFORMATION *pTran )
+SHORT PrtChkStorage( PifFileHandle * hsRead1, PifFileHandle * hsRead2,  CONST TRANINFORMATION *pTran )
 {
     UCHAR  uchPrtStorage = pTran->TranCurQual.uchPrintStorage;
     UCHAR  uchKitStorage = pTran->TranCurQual.uchKitchenStorage;
@@ -661,9 +664,8 @@ VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo
 	}
 
 	for (i = 0; PluChitInfoList[i].aszMnemonic[0]; i++) {
-		int j;
 		SHORT  sQtyLoop;
-		TCHAR  aszPrintLine[44];
+        TCHAR  aszPrintLine[44] = { 0 };
 
 		if ((ulPrintOptions & PLUCHITINFO_FLAG_PRINT_TICKET) != 0 && PluChitInfoList[i].usFamilyCode < 990) {
 			continue;
@@ -707,11 +709,11 @@ VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo
 
 			if (ulPrintOptions & PLUCHITINFO_FLAG_PRINT_TICKET) {
 				// Print the standard P57 address 8 and 9 receipt header in double size if set
-				for ( j = CH24_1STRH_ADR; j <= CH24_2NDRH_ADR; j++) {
+				for (USHORT j = CH24_1STRH_ADR; j <= CH24_2NDRH_ADR; j++) {
 					TCHAR asz24Mnem[PARA_CHAR24_LEN + 1] = {0};
 					TCHAR asz24MnemDouble[PARA_CHAR24_LEN * 2 + 1] = {0};
 
-					PrtGet24Mnem(asz24Mnem, j);
+                    RflGet24Mnem(asz24Mnem, j);
 					asz24Mnem[21] = '\0';         // truncate the mnemonic to max of 20 characters
 					if (asz24Mnem[0]) {
 						/* -- convert to square double -- */
@@ -744,7 +746,7 @@ VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo
 				TCHAR asz24MnemDouble[PARA_CHAR24_LEN * 2 + 1] = {0};
 
 				// Print the PLU ticket (chit) first header line from P57 address 23 in double size if set
-				PrtGet24Mnem(asz24Mnem, CH24_PLU_TICKET_01);
+                RflGet24Mnem(asz24Mnem, CH24_PLU_TICKET_01);
 				if (asz24Mnem[0]) {
 					asz24Mnem[21] = '\0';
 					/* -- convert to square double -- */
@@ -754,7 +756,7 @@ VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo
 				}
 
 				// Print the PLU ticket (chit) second header line from P57 address 24 in standard size, both sides
-				PrtGet24Mnem(asz24Mnem, CH24_PLU_TICKET_02);
+                RflGet24Mnem(asz24Mnem, CH24_PLU_TICKET_02);
 				if (asz24Mnem[0]) {
 					/* -- convert to square double -- */
 					if (ulPrintOptions & PLUCHITINFO_FLAG_PRINT_PLUCOLUMN) {
@@ -776,7 +778,7 @@ VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo
 
 				// Print the PLU ticket (chit) #/Type entered data in standard size, both sides
 				// for admission ticket type prints we print the #/Type information before the PLU info.
-				for ( j = 0; j < NUM_OF_NUMTYPE_ENT; j++) {
+				for (USHORT j = 0; j < NUM_OF_NUMTYPE_ENT; j++) {
 					if (PluChitInfoList[i].aszNumber[j][0]) {
 						if (ulPrintOptions & PLUCHITINFO_FLAG_PRINT_PLUCOLUMN) {
 							PluChitInfoList[i].aszNumber[j][21] = 0;
@@ -820,7 +822,7 @@ VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo
 					PrtPrint(PMG_PRT_RECEIPT, aszPrintLine, tcharlen(aszPrintLine));
 				}
 
-				for ( j = 0; j < STD_MAX_COND_NUM; j++) {
+				for (USHORT j = 0; j < STD_MAX_COND_NUM; j++) {
 					if (PluChitInfoList[i].aszCondMnemonic[j][0]) {
 						if (ulPrintOptions & PLUCHITINFO_FLAG_PRINT_PLUCOLUMN) {
 							RflFormatLineTwoColumn (aszPrintLine, &(PluChitInfoList[i].aszCondMnemonic[j][0]), &(PluChitInfoList[i].aszCondMnemonic[j][0]), PRT_THCOLUMN);
@@ -838,7 +840,7 @@ VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo
 
 				// Print the PLU ticket (chit) #/Type entered data in standard size, both sides
 				// for non admission ticket type prints we print the #/Type information after the PLU info.
-				for ( j = 0; j < NUM_OF_NUMTYPE_ENT; j++) {
+				for (USHORT j = 0; j < NUM_OF_NUMTYPE_ENT; j++) {
 					if (PluChitInfoList[i].aszNumber[j][0]) {
 						if (ulPrintOptions & PLUCHITINFO_FLAG_PRINT_PLUCOLUMN) {
 							PluChitInfoList[i].aszNumber[j][21] = 0;
@@ -862,27 +864,18 @@ VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo
 	}
 }
 
-VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, SHORT hsStorage, PluChitInfoAll *PluChit )
+VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, PifFileHandle hsStorage, PluChitInfoAll *PluChit )
 {
-    static UCHAR    auchItemData[ TRN_TEMPBUFF_SIZE ];
 	PluChitInfo     *PluChitInfoList = 0;
-    PRTIDX          *pPrtIdxHighest;
-    PRTIDX          *pPrtIdxCurrent;
-    ITEMSALES       *pItemSales;
-    ITEMDISC        *pItemDisc;
     BOOL            fConsoli;
 	BOOL			fAffectionDetected = FALSE;
 	ULONG			ulActualBytesRead;
     ULONG           ulStorageActSize;
-    ULONG           ulStorageReadOffset;
-    ULONG           ulStorageReadSize;
     ULONG           ulTtlIdxReadSize;
-    ULONG           ulCurIdxReadSize;
     PifFileHandle   hsIndexFile;
     USHORT          usItemReadLen;
 	SHORT           PluChitInfoListIndex = 0;
     PRTIDXHDR       IdxFileInfo;
-    UCHAR           auchStorageWork[ TRN_TEMPBUFF_SIZE ];   /*endo update(fig->macro) 2000/1/7*/
     UCHAR           auchIdxWork[ sizeof( PRTIDX ) * FLEX_ITEMSTORAGE_MIN ];
     UCHAR           uchTtlItemCo;
     UCHAR           uchCurItemCo;
@@ -916,6 +909,12 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, SHORT hsStorage, PluChitInfo
     uchCurItemCo     = ( sizeof( auchIdxWork ) / sizeof( PRTIDX ));
 
     while ( ulTtlIdxReadSize < IdxFileInfo.usIndexVli ) {
+        ULONG           ulStorageReadOffset;
+        ULONG           ulStorageReadSize;
+        ULONG           ulCurIdxReadSize;
+        PRTIDX          *pPrtIdxHighest;
+        PRTIDX          *pPrtIdxCurrent;
+
         TrnReadFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize), auchIdxWork, sizeof( auchIdxWork ), hsIndexFile, &ulCurIdxReadSize);
         if ( IdxFileInfo.usIndexVli < ( ulTtlIdxReadSize + ulCurIdxReadSize )) {
             ulCurIdxReadSize = IdxFileInfo.usIndexVli - ulTtlIdxReadSize;
@@ -936,6 +935,18 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, SHORT hsStorage, PluChitInfo
         ulStorageReadSize   = 0;
 
         for ( uchItemCo = 0; uchItemCo < uchCurItemCo; uchItemCo++, pPrtIdxCurrent++ ) {
+            static UCHAR    auchItemData[sizeof(ITEMDATASIZEUNION)];
+            static UCHAR    auchStorageWork[CONSOLIMAXSIZE];   /*endo update(fig->macro) 2000/1/7*/
+            ITEMSALES       *pItemSales = NULL;
+
+#if defined(_DEBUG)
+            // compile time check that the buffer sizes for reading compressed transaction data and
+            // converting to uncompressed transaction data are still appropriate.
+            switch (0) {
+            case 0: break;
+            case sizeof(ITEMDATASIZEUNION) < CONSOLIMAXSIZE: break;
+            }
+#endif
 			ulStorageReadOffset = pPrtIdxCurrent->usItemOffset;
 			if (ulStorageReadOffset < 1) continue;  // if the offset is zero, invalid, then skip this index and go to next.
 			TrnReadFile( ulStorageReadOffset, auchStorageWork, sizeof( auchStorageWork ), hsStorage, &ulStorageReadSize);
@@ -1058,6 +1069,9 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, SHORT hsStorage, PluChitInfo
 			}
 			fAffectionDetected = (fAffectionDetected || (auchItemData[ 0 ] == CLASS_ITEMAFFECTION));
 #endif
+
+            if (pItemSales == NULL) continue;
+
             if ( pTran->TranCurQual.uchPrintStorage == PRT_CONSOL_CP_EPT ) {
                 PrtPrintCpEpt( pTran, auchItemData );
             } else {
@@ -1084,7 +1098,7 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, SHORT hsStorage, PluChitInfo
 					// See the logic in function PrtPortion2() which determines if the item
 					// is to be printed.
                     if (sQTYSave == 0 && CliParaMDCCheck(MDC_DEPT3_ADR, ODD_MDC_BIT2) != 0) {
-                        pItemDisc    = ( ITEMDISC * )auchItemData;
+                        ITEMDISC   *pItemDisc = ( ITEMDISC * )auchItemData;
                         pItemDisc->fsPrintStatus &= ~(PRT_RECEIPT|PRT_SLIP);
                     }
                 }
@@ -1099,35 +1113,22 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, SHORT hsStorage, PluChitInfo
     }
 }
 
-VOID PrtCallIPD ( TRANINFORMATION *pTran, SHORT hsStorage )
+VOID PrtCallIPD ( TRANINFORMATION *pTran, PifFileHandle hsStorage )
 {
 	PrtCallIPDTicketInfo ( pTran, hsStorage, NULL );
 }
 
-VOID PrtPrintItemPrints ( TRANINFORMATION *pTran, SHORT hsStorage )
+static VOID PrtPrintItemPrints ( TRANINFORMATION *pTran, PifFileHandle hsStorage )
 {
-    SHORT           hsIndexFile;
-    ULONG           ulStorageActSize;
-    UCHAR           auchIdxWork[ sizeof( PRTIDX ) * FLEX_ITEMSTORAGE_MIN ];
-    PRTIDXHDR       IdxFileInfo;
-    PRTIDX          *pPrtIdxHighest;
-    PRTIDX          *pPrtIdxCurrent;
-    UCHAR           uchItemCo;
-    ULONG           ulStorageReadOffset;
-    ULONG           ulStorageReadSize;
-    UCHAR           auchStorageWork[ TRN_TEMPBUFF_SIZE ];   /*endo update(fig->macro) 2000/1/7*/
-    UCHAR           auchItemData[ sizeof( ITEMDATASIZEUNION ) ];
-    USHORT          usItemReadLen;
-    ULONG           ulTtlIdxReadSize;
-    ULONG           ulCurIdxReadSize;
-    UCHAR           uchTtlItemCo;
-    UCHAR           uchCurItemCo;
-    BOOL            fConsoli;
-	ULONG			ulActualBytesRead;
-	//11-11-03 SR 201 JHHJ
-
     /* --- determine total key status for consolidate print option */
-    fConsoli = ( pTran->TranCurQual.auchTotalStatus[ 4 ] & CURQUAL_TOTAL_NOCONSOLIDATE_PRINT ) ? FALSE : TRUE;
+    BOOL            fConsoli = ( pTran->TranCurQual.auchTotalStatus[ 4 ] & CURQUAL_TOTAL_NOCONSOLIDATE_PRINT ) ? FALSE : TRUE;
+    PifFileHandle   hsIndexFile;
+    ULONG           ulStorageActSize;
+    ULONG           ulTtlIdxReadSize;
+	ULONG			ulActualBytesRead;
+    UCHAR           uchTtlItemCo;
+    PRTIDXHDR       IdxFileInfo;
+	//11-11-03 SR 201 JHHJ
 
     /* --- retrieve index file handle to print item data --- */
     if ( hsStorage == pTran->hsTranItemStorage ) {
@@ -1145,9 +1146,13 @@ VOID PrtPrintItemPrints ( TRANINFORMATION *pTran, SHORT hsStorage )
 
     ulTtlIdxReadSize = 0;
     uchTtlItemCo     = 0;
-    uchCurItemCo     = ( sizeof( auchIdxWork ) / sizeof( PRTIDX ));
-
     while ( ulTtlIdxReadSize < IdxFileInfo.usIndexVli ) {
+        UCHAR           auchIdxWork[ sizeof( PRTIDX ) * FLEX_ITEMSTORAGE_MIN ];
+        UCHAR           uchCurItemCo = ( sizeof( auchIdxWork ) / sizeof( PRTIDX ));
+        PRTIDX          *pPrtIdxHighest = ( PRTIDX * )( auchIdxWork );
+        PRTIDX          *pPrtIdxCurrent = ( PRTIDX * )( auchIdxWork );
+        ULONG           ulCurIdxReadSize;
+
         TrnReadFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize), auchIdxWork, sizeof( auchIdxWork ), hsIndexFile, &ulCurIdxReadSize);
         if ( IdxFileInfo.usIndexVli < ( ulTtlIdxReadSize + ulCurIdxReadSize )) {
             ulCurIdxReadSize = IdxFileInfo.usIndexVli - ulTtlIdxReadSize;
@@ -1156,23 +1161,29 @@ VOID PrtPrintItemPrints ( TRANINFORMATION *pTran, SHORT hsStorage )
         ulTtlIdxReadSize += ulCurIdxReadSize;
 
         /* --- retrieve item data in storage and print its data --- */
-        pPrtIdxHighest = ( PRTIDX * )( auchIdxWork );
-        pPrtIdxCurrent = ( PRTIDX * )( auchIdxWork );
-
         if ( IdxFileInfo.uchNoOfItem < ( uchTtlItemCo + uchCurItemCo )) {
             uchCurItemCo = IdxFileInfo.uchNoOfItem - uchTtlItemCo;
         }
         uchTtlItemCo += uchCurItemCo;
 
-        ulStorageReadOffset = 0;
-        ulStorageReadSize   = 0;
+        for (UCHAR uchItemCo = 0; uchItemCo < uchCurItemCo; uchItemCo++, pPrtIdxCurrent++ ) {
+            ULONG           ulStorageReadOffset = pPrtIdxCurrent->usItemOffset;
+            ULONG           ulStorageReadSize = 0;
+            USHORT          usItemReadLen;
+            UCHAR           auchStorageWork[CONSOLIMAXSIZE];   /*endo update(fig->macro) 2000/1/7*/
+            UCHAR           auchItemData[sizeof(ITEMDATASIZEUNION)] = { 0 };
 
-        for ( uchItemCo = 0; uchItemCo < uchCurItemCo; uchItemCo++, pPrtIdxCurrent++ ) {
-			ulStorageReadOffset = pPrtIdxCurrent->usItemOffset;
-			if (ulStorageReadOffset < 1) continue;  // if the offset is zero, invalid, then skip this index and go to next.
+#if defined(_DEBUG)
+            // compile time check that the buffer sizes for reading compressed transaction data and
+            // converting to uncompressed transaction data are still appropriate.
+            switch (0) {
+            case 0: break;
+            case sizeof(ITEMDATASIZEUNION) < CONSOLIMAXSIZE: break;
+            }
+#endif
+            if (ulStorageReadOffset < 1) continue;  // if the offset is zero, invalid, then skip this index and go to next.
 			TrnReadFile( ulStorageReadOffset, auchStorageWork, sizeof( auchStorageWork ), hsStorage, &ulStorageReadSize);
 
-			memset(&auchItemData, 0, sizeof(auchItemData));
 			usItemReadLen = RflGetStorageItem( auchItemData, auchStorageWork, RFL_WITH_MNEM );
             if (auchItemData[ 0 ] == CLASS_ITEMPRINT) {
 				PrtItemPrint(pTran, (ITEMPRINT *)auchItemData);
@@ -1183,6 +1194,7 @@ VOID PrtPrintItemPrints ( TRANINFORMATION *pTran, SHORT hsStorage )
     }
 }
 
+#if defined(POSSIBLE_DEAD_CODE)
 /*
 *===========================================================================
 ** Format   : BOOL PrtIsItemInWorkBuff( USHORT usItemOffset,
@@ -1272,6 +1284,7 @@ BOOL PrtIsIDiscInWorkBuff( USHORT usItemOffset,
     }
     return ( TRUE );
 }
+#endif
 
 /*
 *===========================================================================
@@ -1289,9 +1302,9 @@ BOOL PrtIsIDiscInWorkBuff( USHORT usItemOffset,
 */
 VOID PrtPrintDemand(TRANINFORMATION *pTran)
 {
+    PifFileHandle  hsRead1, hsRead2;           /* storage file handle */
     TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
 	TCHAR  aszDemand[PARA_TRANSMNEMO_LEN * 2 + 1] = {0};
-    SHORT   hsRead1, hsRead2;           /* storage file handle */
     SHORT  sRet;
 
 	RflGetTranMnem(aszTranMnem, TRN_DEMAND_ADR);  /* get transaction mnem. */
@@ -1416,7 +1429,7 @@ VOID PrtPrintSummaryReceipt(TRANINFORMATION *pTran, ITEMTENDER *pItemTender, int
 ** Synopsis: 
 *===========================================================================
 */
-VOID PrtSetSalesCouponQTY(TRANINFORMATION *pTran, ITEMSALES *pItem, SHORT sFileHandle)
+VOID PrtSetSalesCouponQTY(CONST TRANINFORMATION *pTran, ITEMSALES *pItem, PifFileHandle sFileHandle)
 {
     if (pItem->ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
         pItem->sCouponQTY = 1;      /* always print */

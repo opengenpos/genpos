@@ -83,20 +83,19 @@
 VOID  PrtThrmSupEmployeeNo( PARAEMPLOYEENO *pData )
 {
     /* define thermal print format */
-    static const TCHAR FARCONST auchPrtThrmSupEmployee[] = _T("%18s\t%02u %02u %02u\n%-16s");
+    static const TCHAR  auchPrtThrmSupEmployee[] = _T("%18s\t%02u %02u %02u\n%-16s");
 
     /* define EJ print format */
-    static const TCHAR FARCONST auchPrtSupEmployee[] = _T("%8.8Mu\t%02u %02u %02u\n%-16s");
+    static const TCHAR  auchPrtSupEmployee[] = _T("%8.8Mu\t%02u %02u %02u\n%-16s");
 
     /* define thermal/EJ common print format */
-    const TCHAR FARCONST *auchNumber = _T("%8.8Mu");
+    const TCHAR  *auchNumber = _T("%8.8Mu");
 
-	TCHAR	aszDoubRepoNumb[9 * 2 + 1];
-	TCHAR	aszRepoNumb[9 + 1];
+    TCHAR	aszDoubRepoNumb[9 * 2 + 1] = { 0 };
+	TCHAR	aszRepoNumb[9 + 1] = { 0 };
 
     /* convert Employee No. to double wide */
     RflSPrintf(aszRepoNumb, TCHARSIZEOF(aszRepoNumb), auchNumber, RflTruncateEmployeeNumber(pData->ulEmployeeNo));
-    memset(aszDoubRepoNumb, '\0', sizeof(aszDoubRepoNumb));
     PrtDouble(aszDoubRepoNumb, TCHARSIZEOF(aszDoubRepoNumb), aszRepoNumb);
 
     /* check print control */

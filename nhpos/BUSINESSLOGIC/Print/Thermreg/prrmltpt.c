@@ -62,39 +62,6 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;========================================================================
 **/
-/*
-*===========================================================================
-** Format  : VOID   PrtMultiPostTotal(TRANINFORMATION  *pTran,ITEMMULTI *pItem)
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMMULTI        *pItem     -Item Data address
-*
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints multi check grand total in post check.
-*===========================================================================
-*/
-VOID PrtMultiPostTotal(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
-{
-
-    /* -- set print portion to static area "fsPrtPrintPort" -- */
-    PrtPortion(pItem->fsPrintStatus);
-
-    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
-        PrtMulPostTotal_SP(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
-        PrtMulPostTotal_TH(pTran, pItem);
-    }
-
-    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
-        PrtMulPostTotal_EJ(pItem);
-    }
-
-}
 
 /*
 *===========================================================================
@@ -111,9 +78,9 @@ VOID PrtMultiPostTotal(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 *
 *===========================================================================
 */
-VOID   PrtMulPostTotal_TH(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+static VOID   PrtMulPostTotal_TH(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
-    PrtTHHead(pTran);                              /* print header if necessary */ 
+    PrtTHHead(pTran->TranCurQual.usConsNo);        /* print header if necessary */
 
     PrtTHMulChk(pItem->usGuestNo, pItem->uchCdv);  /* checkpaid mnemo, GCF# */
 
@@ -134,7 +101,7 @@ VOID   PrtMulPostTotal_TH(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 *
 *===========================================================================
 */
-VOID   PrtMulPostTotal_EJ(ITEMMULTI *pItem)
+static VOID   PrtMulPostTotal_EJ(CONST ITEMMULTI *pItem)
 {
     PrtEJMulChk(pItem->usGuestNo, pItem->uchCdv);  /* checkpaid mnemo, GCF# */
 
@@ -157,25 +124,20 @@ VOID   PrtMulPostTotal_EJ(ITEMMULTI *pItem)
 *
 *===========================================================================
 */
-VOID  PrtMulPostTotal_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
+static VOID  PrtMulPostTotal_SP(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
 {
-    TCHAR   aszSPPrintBuff[PRT_SPCOLUMN + 1]; /* print data save area */
+    TCHAR   aszSPPrintBuff[PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
     USHORT  usSlipLine = 0;            /* number of lines to be printed */
     USHORT  usSaveLine;                /* save slip lines to be added */
-    USHORT  i;   
-
-    /* -- initialize the buffer -- */
-    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));
 
     /* -- set grand total mnemonic and amount -- */
-    usSlipLine += PrtSPMnemNativeAmt(aszSPPrintBuff, 
-        TRN_AMTTL_ADR, pItem->lMI, PRT_DOUBLE);
+    usSlipLine += PrtSPMnemNativeAmt(aszSPPrintBuff, TRN_AMTTL_ADR, pItem->lMI, PRT_DOUBLE);
 
     /* -- check if paper change is necessary or not -- */
     usSaveLine = PrtCheckLine(usSlipLine, pTran);
 
     /* -- print the data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
+    for (USHORT i = 0; i < usSlipLine; i++) {
 /*  --- fix a glitch (05/15/2001)
         PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN); */
         PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);
@@ -183,5 +145,39 @@ VOID  PrtMulPostTotal_SP(TRANINFORMATION  *pTran, ITEMMULTI *pItem)
 
     /* -- update current line No. -- */
     usPrtSlipPageLine += usSlipLine + usSaveLine;        
+}
+
+/*
+*===========================================================================
+** Format  : VOID   PrtMultiPostTotal(TRANINFORMATION  *pTran,ITEMMULTI *pItem)
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMMULTI        *pItem     -Item Data address
+*
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints multi check grand total in post check.
+*===========================================================================
+*/
+VOID PrtMultiPostTotal(CONST TRANINFORMATION  *pTran, CONST ITEMMULTI *pItem)
+{
+
+    /* -- set print portion to static area "fsPrtPrintPort" -- */
+    PrtPortion(pItem->fsPrintStatus);
+
+    if ( fsPrtPrintPort & PRT_SLIP ) {        /* slip print */
+        PrtMulPostTotal_SP(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_RECEIPT ) {     /* thermal print */
+        PrtMulPostTotal_TH(pTran, pItem);
+    }
+
+    if ( fsPrtPrintPort & PRT_JOURNAL ) {     /* electric journal */
+        PrtMulPostTotal_EJ(pItem);
+    }
+
 }
 

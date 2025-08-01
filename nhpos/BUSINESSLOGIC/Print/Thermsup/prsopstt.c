@@ -48,17 +48,14 @@
 #include <ecr.h>
 #include <paraequ.h> 
 #include <para.h>
-/* #include <cswai.h> */
 #include <maint.h> 
-/* #include <regstrct.h> */
-/* #include <transact.h> */
 #include <csttl.h>
 #include <csop.h>
 #include <report.h>
 #include <pmg.h>
+#include <prt.h>
 #include <rfl.h>
 
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*
@@ -85,10 +82,10 @@
 
 VOID  PrtThrmSupOpeStatus( MAINTOPESTATUS *pData )
 {
-    const TCHAR  *auchPrtThrmSupOpeStatus = _T("                %8.8Mu");   /* define thermal print format for Operator/Waiter Id */
-    const TCHAR  *auchPrtThrmSupOpeStatus1 = _T("               %4.4u");    /* define thermal print format for guest check Id */
-    const TCHAR  *auchPrtSupOpeStatus = _T("   %8.8Mu");                    /* define EJ print format for Operator/Waiter Id */
-    const TCHAR  *auchPrtSupOpeStatus1 = _T("  %4.4u");                     /* define EJ print format for guest check Id */
+    static const TCHAR  auchPrtThrmSupOpeStatus[] = _T("                %8.8Mu");   /* define thermal print format for Operator/Waiter Id */
+    static const TCHAR  auchPrtThrmSupOpeStatus1[] = _T("               %4.4u");    /* define thermal print format for guest check Id */
+    static const TCHAR  auchPrtSupOpeStatus[] = _T("   %8.8Mu");                    /* define EJ print format for Operator/Waiter Id */
+    static const TCHAR  auchPrtSupOpeStatus1[] = _T("  %4.4u");                     /* define EJ print format for guest check Id */
 
     /* check print control */
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */

@@ -81,6 +81,134 @@
 ;+        P R O G R A M    D E C L A R A T I O N s                      +
 ;========================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID PrtItemRegDisc_TH(TRANINFORMATION *pTran, ITEMDISC *pItem);      
+*               
+*    Input : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMDISC         *pItem     -Item Data address   
+*   Output : none
+*    InOut : none
+** Return  : none
+*
+** Synopsis: This function prints discount item. (thermal)
+*===========================================================================
+*/
+static VOID  PrtItemRegDisc_TH(CONST TRANINFORMATION *pTran, CONST ITEMDISC *pItem)
+{
+    USTRNADRS usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);    /* print header if necessary */
+
+    PrtTHVoid(pItem->fbDiscModifier, pItem->usReasonCode);      /* void line */
+
+    PrtTHNumber(pItem->aszNumber);     /* number line */
+
+    PrtTHTaxMod(pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);  /* tax modifier */
+
+	/* SI symnbol, before mnemonics 21RFC05437 */
+	if ( CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT1) ) {
+        TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN + 1] = { 0 };  /* PARA_... defined in "paraequ.h" */
+
+	    if (PrtGetSISymDisc(aszSpecMnem, pItem)) {						/* si symbol for item disc. */
+		    PrtTHPerDiscSISym(usAdr, pItem->uchRate, pItem->lAmount, aszSpecMnem, CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT2) );  /* % discount */
+		} else {
+		    PrtTHPerDisc(usAdr, pItem->uchRate, pItem->lAmount);  /* % discount */
+		}
+	} else {
+	    PrtTHPerDisc(usAdr, pItem->uchRate, pItem->lAmount);  /* % discount */
+	}
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtItemRegDisc_EJ(TRANINFORMATION *pTran, ITEMDISC *pItem);      
+*               
+*    Input : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMDISC         *pItem     -Item Data address   
+*   Output : none
+*    InOut : none
+** Return  : none
+*
+** Synopsis: This function prints discount item. (electric journal)
+*===========================================================================
+*/
+static VOID  PrtItemRegDisc_EJ(CONST TRANINFORMATION *pTran, CONST ITEMDISC *pItem)
+{
+    USTRNADRS usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
+
+    PrtEJVoid(pItem->fbDiscModifier, pItem->usReasonCode);      /* void line */
+
+    PrtEJNumber(pItem->aszNumber);     /* number line */
+
+    PrtEJTaxMod(pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);  /* tax modifier */
+
+	if ( CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT1) ) {
+        TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN + 1] = { 0 };  /* PARA_... defined in "paraequ.h" */
+
+	    if (PrtGetSISymDisc(aszSpecMnem, pItem)) {						/* si symbol for item disc. */
+		    PrtEJPerDiscSISym(usAdr, pItem->uchRate, pItem->lAmount, aszSpecMnem, CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT2) );  /* % discount */
+		} else {
+		    PrtEJPerDisc(usAdr, pItem->uchRate, pItem->lAmount);  /* % discount */
+		}
+	} else {
+    	PrtEJPerDisc(usAdr, pItem->uchRate, pItem->lAmount);  /* % discount */
+	}
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtItemRegDisc_SP(TRANINFORMATION *pTran, ITEMDISC *pItem);      
+*               
+*    Input : TRANINFORMATION  *pTran     -Transaction information address
+*            ITEMDISC         *pItem     -Item Data address   
+*   Output : none
+*    InOut : none
+** Return  : none
+*
+** Synopsis: This function prints discount item. (slip)
+*===========================================================================
+*/
+static VOID PrtItemRegDisc_SP(CONST TRANINFORMATION  *pTran, CONST ITEMDISC  *pItem)
+{
+    TCHAR  aszSPPrintBuff[3][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    USHORT  usSlipLine = 0;       /* number of lines to be printed */
+    USHORT  usSaveLine;           /* save slip lines to be added */
+    USTRNADRS  usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
+
+    /* -- set void mnemonic and number -- */
+    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbDiscModifier, pItem->usReasonCode, pItem->aszNumber);
+    /* -- set tax modifier mnemonic -- */
+    usSlipLine += PrtSPTaxMod(aszSPPrintBuff[usSlipLine], pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);
+
+    /* -- set discount mnemonic, rate, and amount -- */
+	if ( CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT1) ) {
+        TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN + 1] = { 0 };  /* PARA_... defined in "paraequ.h" */
+
+	    if (PrtGetSISymDisc(aszSpecMnem, pItem)) {						/* si symbol for item disc. */
+		    usSlipLine += PrtSPDiscountSISym(aszSPPrintBuff[usSlipLine], usAdr, pItem->uchRate, pItem->lAmount, aszSpecMnem, CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT2) );  /* % discount */
+		} else {
+	    	usSlipLine += PrtSPDiscount(aszSPPrintBuff[usSlipLine], usAdr, pItem->uchRate, pItem->lAmount);
+		}
+	} else {
+	    usSlipLine += PrtSPDiscount(aszSPPrintBuff[usSlipLine], usAdr, pItem->uchRate, pItem->lAmount);
+	}
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (USHORT i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
+    }
+
+   /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;         
+}
+
 /*
 *===========================================================================
 ** Format  : VOID PrtItemRegDisc(TRANINFORMATION *pTran, ITEMDISC *pItem);      
@@ -94,7 +222,7 @@
 ** Synopsis: This function prints item / regular discount.
 *===========================================================================
 */
-VOID PrtItemRegDisc(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
+VOID PrtItemRegDisc(CONST TRANINFORMATION  *pTran, CONST ITEMDISC  *pItem)
 {
 
     if (fsPrtStatus & PRT_TAKETOKIT) {  /* take to kitchen status */
@@ -131,140 +259,6 @@ VOID PrtItemRegDisc(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
 
 }
 
-/*
-*===========================================================================
-** Format  : VOID PrtItemRegDisc_TH(TRANINFORMATION *pTran, ITEMDISC *pItem);      
-*               
-*    Input : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMDISC         *pItem     -Item Data address   
-*   Output : none
-*    InOut : none
-** Return  : none
-*
-** Synopsis: This function prints discount item. (thermal)
-*===========================================================================
-*/
-VOID  PrtItemRegDisc_TH(TRANINFORMATION *pTran, ITEMDISC *pItem)
-{
-    USHORT usAdr;
-    TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN + 1];  /* PARA_... defined in "paraequ.h" */
-    
-    usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
-
-    PrtTHHead(pTran);                  /* print header if necessary */
-
-    PrtTHVoid(pItem->fbDiscModifier, pItem->usReasonCode);      /* void line */
-
-    PrtTHNumber(pItem->aszNumber);     /* number line */
-
-    PrtTHTaxMod(pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);  /* tax modifier */
-
-	/* SI symnbol, before mnemonics 21RFC05437 */
-	if ( CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT1) ) {
-	    if (PrtGetSISymDisc(aszSpecMnem, pItem)) {						/* si symbol for item disc. */
-		    PrtTHPerDiscSISym(usAdr, pItem->uchRate, pItem->lAmount, aszSpecMnem, CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT2) );  /* % discount */
-		} else {
-		    PrtTHPerDisc(usAdr, pItem->uchRate, pItem->lAmount);  /* % discount */
-		}
-	} else {
-	    PrtTHPerDisc(usAdr, pItem->uchRate, pItem->lAmount);  /* % discount */
-	}
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtItemRegDisc_EJ(TRANINFORMATION *pTran, ITEMDISC *pItem);      
-*               
-*    Input : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMDISC         *pItem     -Item Data address   
-*   Output : none
-*    InOut : none
-** Return  : none
-*
-** Synopsis: This function prints discount item. (electric journal)
-*===========================================================================
-*/
-VOID  PrtItemRegDisc_EJ(TRANINFORMATION *pTran, ITEMDISC *pItem)
-{
-    USHORT usAdr;
-    TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN + 1];  /* PARA_... defined in "paraequ.h" */
-
-    usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
-
-    PrtEJVoid(pItem->fbDiscModifier, pItem->usReasonCode);      /* void line */
-
-    PrtEJNumber(pItem->aszNumber);     /* number line */
-
-    PrtEJTaxMod(pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);  /* tax modifier */
-
-	if ( CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT1) ) {
-	    if (PrtGetSISymDisc(aszSpecMnem, pItem)) {						/* si symbol for item disc. */
-		    PrtEJPerDiscSISym(usAdr, pItem->uchRate, pItem->lAmount, aszSpecMnem, CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT2) );  /* % discount */
-		} else {
-		    PrtEJPerDisc(usAdr, pItem->uchRate, pItem->lAmount);  /* % discount */
-		}
-	} else {
-    	PrtEJPerDisc(usAdr, pItem->uchRate, pItem->lAmount);  /* % discount */
-	}
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtItemRegDisc_SP(TRANINFORMATION *pTran, ITEMDISC *pItem);      
-*               
-*    Input : TRANINFORMATION  *pTran     -Transaction information address
-*            ITEMDISC         *pItem     -Item Data address   
-*   Output : none
-*    InOut : none
-** Return  : none
-*
-** Synopsis: This function prints discount item. (slip)
-*===========================================================================
-*/
-VOID PrtItemRegDisc_SP(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
-{
-    TCHAR  aszSPPrintBuff[3][PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0;       /* number of lines to be printed */
-    USHORT  usSaveLine;           /* save slip lines to be added */
-    USHORT  usAdr;               /* set the adrress for spec. mnemonic */
-    USHORT  i;   
-    TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN + 1];  /* PARA_... defined in "paraequ.h" */
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
-
-    usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
-
-    /* -- set void mnemonic and number -- */
-    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbDiscModifier, pItem->usReasonCode, pItem->aszNumber);
-    /* -- set tax modifier mnemonic -- */
-    usSlipLine += PrtSPTaxMod(aszSPPrintBuff[usSlipLine], pTran->TranModeQual.fsModeStatus, pItem->fbDiscModifier);
-
-    /* -- set discount mnemonic, rate, and amount -- */
-	if ( CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT1) ) {
-	    if (PrtGetSISymDisc(aszSpecMnem, pItem)) {						/* si symbol for item disc. */
-		    usSlipLine += PrtSPDiscountSISym(aszSPPrintBuff[usSlipLine], usAdr, pItem->uchRate, pItem->lAmount, aszSpecMnem, CliParaMDCCheck(MDC_TAX2_ADR, EVEN_MDC_BIT2) );  /* % discount */
-		} else {
-	    	usSlipLine += PrtSPDiscount(aszSPPrintBuff[usSlipLine], usAdr, pItem->uchRate, pItem->lAmount);
-		}
-	} else {
-	    usSlipLine += PrtSPDiscount(aszSPPrintBuff[usSlipLine], usAdr, pItem->uchRate, pItem->lAmount);
-	}
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
-    }
-
-   /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;         
-}
-
 
 /*
 *===========================================================================
@@ -279,20 +273,15 @@ VOID PrtItemRegDisc_SP(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
 ** Synopsis: This function prints item / regular discount.
 *===========================================================================
 */
-VOID PrtDflRegDisc(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
+VOID PrtDflRegDisc(CONST TRANINFORMATION  *pTran, CONST ITEMDISC  *pItem)
 {
-    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1]; /* display data save area */
+    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
-    USHORT  usAdr;
+    USHORT  usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
-
-    usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -310,8 +299,9 @@ VOID PrtDflRegDisc(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
     usLineNo += PrtDflPerDisc(aszDflBuff[usLineNo], usAdr, pItem->uchRate, pItem->lAmount);  
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- check void status -- */
     PrtDflCheckVoid(pItem->fbDiscModifier);
@@ -319,7 +309,7 @@ VOID PrtDflRegDisc(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_DISC); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
@@ -344,16 +334,13 @@ VOID PrtDflRegDisc(TRANINFORMATION  *pTran, ITEMDISC  *pItem)
 ** Synopsis: This function prints item / regular discount.
 *===========================================================================
 */
-USHORT PrtDflRegDiscForm(TRANINFORMATION  *pTran, ITEMDISC  *pItem, TCHAR *puchBuffer)
+USHORT PrtDflRegDiscForm(CONST TRANINFORMATION  *pTran, CONST ITEMDISC  *pItem, TCHAR *puchBuffer)
 {
-    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1]; /* display data save area */
-    USHORT  usLineNo=0, i;                       /* number of lines to be displayed */
+    TCHAR  aszDflBuff[9][PRT_DFL_LINE + 1] = { 0 }; /* display data save area */
+    USHORT  usLineNo=0;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  usAdr;
+    USHORT  usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
 
-    usAdr = RflChkDiscAdr(pItem);  /* set discount mnemonic */
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 #if 0
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -370,7 +357,7 @@ USHORT PrtDflRegDiscForm(TRANINFORMATION  *pTran, ITEMDISC  *pItem, TCHAR *puchB
 
     usLineNo += PrtDflPerDisc(aszDflBuff[usLineNo], usAdr, pItem->uchRate, pItem->lAmount);  
 
-    for (i=0; i<usLineNo; i++) {
+    for (USHORT i = 0; i < usLineNo; i++) {
         aszDflBuff[i][PRT_DFL_LINE] = PRT_RETURN;
     }
     _tcsncpy(puchBuffer, aszDflBuff[0], usLineNo*(PRT_DFL_LINE+1));

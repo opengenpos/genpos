@@ -46,11 +46,11 @@
 /*--- for THERMAL PRINTER ---*/
 #define PRT_HEADER_PRINTED   1   /* receipt header is printed */
 
-extern const TCHAR aszPrtAM[];
-extern const TCHAR aszPrtPM[];
+//extern const TCHAR aszPrtAM[];
+//extern const TCHAR aszPrtPM[];
 
 extern UCHAR fbPrtTHHead;
 
-USHORT    PrtPrint(USHORT usPrtType, TCHAR *puchBuff, USHORT usLen);
-USHORT    PrtPrintf(USHORT usPrtType, const TCHAR FAR *pszFormat, ...);
+//USHORT    PrtPrint(USHORT usPrtType, CONST TCHAR *puchBuff, USHORT usLen);
+//USHORT    PrtPrintf(USHORT usPrtType, CONST TCHAR *pszFormat, ...);
 

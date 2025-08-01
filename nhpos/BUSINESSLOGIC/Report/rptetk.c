@@ -694,20 +694,14 @@ static SHORT RptEtkPrint(UCHAR uchMinorClass, RPTEMPLOYEE *pRptEmployee,
         if ((sStatus != ETK_SUCCESS) && (sStatus != ETK_CONTINUE)) {
             return sStatus;
         }
-        pRptEmployee->usMonth = EtkField.usMonth;
-        pRptEmployee->usDay = EtkField.usDay;
-        pRptEmployee->usTimeInTime = EtkField.usTimeinTime;
-        pRptEmployee->usTimeInMinute = EtkField.usTimeinMinute;
-        pRptEmployee->usTimeOutTime = EtkField.usTimeOutTime;
-        pRptEmployee->usTimeOutMinute = EtkField.usTimeOutMinute;
-        pRptEmployee->uchJobCode = EtkField.uchJobCode;
+        pRptEmployee->EtkField = EtkField;
 
 		// In the following we determine if we have the time in and time out
 		// for a complete shift.  If we have a partial shift then we can't
 		// calculate the shift hours and costs.
-        if (pRptEmployee->usTimeInTime == ETK_TIME_NOT_IN) {
+        if (pRptEmployee->EtkField.usTimeinTime == ETK_TIME_NOT_IN) {
             pRptEmployee->uchMinorClass = CLASS_RPTEMPLOYEE_PRTNOIN;
-        } else if (pRptEmployee->usTimeOutTime == ETK_TIME_NOT_IN) {
+        } else if (pRptEmployee->EtkField.usTimeOutTime == ETK_TIME_NOT_IN) {
             pRptEmployee->uchMinorClass = CLASS_RPTEMPLOYEE_PRTNOOUT;
         } else {
             pRptEmployee->uchMinorClass = CLASS_RPTEMPLOYEE_PRTTIME;
@@ -717,7 +711,7 @@ static SHORT RptEtkPrint(UCHAR uchMinorClass, RPTEMPLOYEE *pRptEmployee,
             RptCalWorkTime(pRptEmployee, &pRptEmployee->usWorkTime, &pRptEmployee->usWorkMinute);
             RptCalTotalTime( pRptEmployee );
             RptRndWorkTime(&pRptEmployee->usWorkTime, &pRptEmployee->usWorkMinute);
-            RptCalWageTotal(pRptEmployee->uchJobCode, pRptEmployee->usWorkTime, pRptEmployee->usWorkMinute, &pRptEmployee->ulWorkWage, &usLaborCost);
+            RptCalWageTotal(pRptEmployee->EtkField.uchJobCode, pRptEmployee->usWorkTime, pRptEmployee->usWorkMinute, &pRptEmployee->ulWorkWage, &usLaborCost);
             MaintCalcIndTtl(1, pRptEmployee->usWorkTime, pRptEmployee->usWorkMinute, &usTotalTime, &usTotalMinute);
             ulTotalWage += pRptEmployee->ulWorkWage;
         }
@@ -740,7 +734,7 @@ static SHORT RptEtkPrint(UCHAR uchMinorClass, RPTEMPLOYEE *pRptEmployee,
 		{
 			int i;
 			for (i = 0; i < ETK_JOBCODE_RECORD_SIZE && timeinjobtotals[i].uchJobCode != RPT_JCSUMMARY_EMPTY; i++) {
-				if (timeinjobtotals[i].uchJobCode == pRptEmployee->uchJobCode) {
+				if (timeinjobtotals[i].uchJobCode == pRptEmployee->EtkField.uchJobCode) {
 					timeinjobtotals[i].ulTotalWage += pRptEmployee->ulWorkWage;
 					timeinjobtotals[i].usTotalTime += pRptEmployee->usWorkTime;
 					timeinjobtotals[i].usTotalMinute += pRptEmployee->usWorkMinute;
@@ -748,7 +742,7 @@ static SHORT RptEtkPrint(UCHAR uchMinorClass, RPTEMPLOYEE *pRptEmployee,
 				}
 			}
 			if ( i < ETK_JOBCODE_RECORD_SIZE && timeinjobtotals[i].uchJobCode == RPT_JCSUMMARY_EMPTY) {
-				timeinjobtotals[i].uchJobCode = pRptEmployee->uchJobCode;
+				timeinjobtotals[i].uchJobCode = pRptEmployee->EtkField.uchJobCode;
 				timeinjobtotals[i].ulTotalWage = pRptEmployee->ulWorkWage;
 				timeinjobtotals[i].usLaborCost = usLaborCost;
 				timeinjobtotals[i].usTotalTime = pRptEmployee->usWorkTime;
@@ -937,20 +931,20 @@ static VOID RptCalWorkTime( RPTEMPLOYEE *pRptEmployee,
                      USHORT *pusWorkTime,
                      USHORT *pusWorkMinute)
 {
-    if (pRptEmployee->usTimeInTime > pRptEmployee->usTimeOutTime) {
+    if (pRptEmployee->EtkField.usTimeinTime > pRptEmployee->EtkField.usTimeOutTime) {
         /* Over 1 day work */
-        *pusWorkTime = (pRptEmployee->usTimeOutTime + 24) - pRptEmployee->usTimeInTime;
-    } else if ((pRptEmployee->usTimeInTime == pRptEmployee->usTimeOutTime) &&
-              (pRptEmployee->usTimeInMinute > pRptEmployee->usTimeOutMinute)) {
+        *pusWorkTime = (pRptEmployee->EtkField.usTimeOutTime + 24) - pRptEmployee->EtkField.usTimeinTime;
+    } else if ((pRptEmployee->EtkField.usTimeinTime == pRptEmployee->EtkField.usTimeOutTime) &&
+              (pRptEmployee->EtkField.usTimeinTime > pRptEmployee->EtkField.usTimeOutMinute)) {
         *pusWorkTime = 24;
     } else {
-        *pusWorkTime = pRptEmployee->usTimeOutTime - pRptEmployee->usTimeInTime;
+        *pusWorkTime = pRptEmployee->EtkField.usTimeOutTime - pRptEmployee->EtkField.usTimeinTime;
     }
-    if (pRptEmployee->usTimeInMinute > pRptEmployee->usTimeOutMinute) {
-        *pusWorkMinute = (pRptEmployee->usTimeOutMinute + 60) - pRptEmployee->usTimeInMinute;
+    if (pRptEmployee->EtkField.usTimeinTime > pRptEmployee->EtkField.usTimeOutMinute) {
+        *pusWorkMinute = (pRptEmployee->EtkField.usTimeOutMinute + 60) - pRptEmployee->EtkField.usTimeinTime;
         (*pusWorkTime)--;
     } else {
-        *pusWorkMinute =  pRptEmployee->usTimeOutMinute - pRptEmployee->usTimeInMinute;
+        *pusWorkMinute =  pRptEmployee->EtkField.usTimeOutMinute - pRptEmployee->EtkField.usTimeinTime;
     }
 }
 /*
@@ -1034,7 +1028,7 @@ static VOID RptRndWorkTime( USHORT *pusWorkTime,
 */
 static VOID RptResetTimePrint( ULONG ulEmployeeNo, UCHAR uchMinorClass )
 {
-    N_DATE          FromDate, ToDate;
+    N_DATE          FromDate = { 0 }, ToDate = { 0 };
     ETK_FIELD       EtkField = {0};
 	ETK_TIME        EtkTime = {0};
     USHORT          usFieldNo = 0;
@@ -1245,7 +1239,7 @@ static VOID    RptETKCalHourlyTotalSub(LONG ulEmployeeNo, UCHAR uchMinorClass,
 
 	usFieldNo = 0;   // this value is incremented for each field to iterate over the fields.
     for (usCount = 0; usCount < ETK_MAX_FIELD; usCount++, ulEtk1 = 0UL) {
-		RPTETKWORKFIELD  WorkEtk;
+        RPTETKWORKFIELD  WorkEtk = { 0 };
 		ETK_FIELD   EtkField = {0};
 		ETK_TIME    EtkTime = {0};
 
@@ -1339,10 +1333,10 @@ static VOID    RptETKCalHourlyTotalSub(LONG ulEmployeeNo, UCHAR uchMinorClass,
 static VOID RptETKCalHourlyTotalField(RPTETKWORKFIELD *pWorkEtk,
                         RPTHOURLYETK *pRptHourlyEtk)
 {
-    UCHAR   auchParaHourly[MAX_HOUR_NO+1][MAX_HM_DATA];
-    USHORT  ausHour[MAX_HOUR_NO];
+    UCHAR   auchParaHourly[MAX_HOUR_NO + 1][MAX_HM_DATA] = { 0 };
+    USHORT  ausHour[MAX_HOUR_NO] = { 0 };
     USHORT  usDummy;
-    USHORT  usHourlyBlock, i;
+    USHORT  usHourlyBlock;
     USHORT  usCalcEnd = 0;
     USHORT  usWorkMinute = 0;
 
@@ -1355,11 +1349,11 @@ static VOID RptETKCalHourlyTotalField(RPTETKWORKFIELD *pWorkEtk,
     auchParaHourly[usHourlyBlock+1][1] = auchParaHourly[1][1];
 
     /* convert HH:MM to minute */
-    for (i = 0; i < (usHourlyBlock + 1); i++) {
+    for (USHORT i = 0; i < (usHourlyBlock + 1); i++) {
         ausHour[i] = (USHORT)(auchParaHourly[i+1][0] * 60 + auchParaHourly[i+1][1]);
     }
 
-    for (i = 0; i < usHourlyBlock; i++, usWorkMinute = 0) {
+    for (USHORT i = 0; i < usHourlyBlock; i++, usWorkMinute = 0) {
         if (ausHour[i+1] < ausHour[i]) {
             if (pWorkEtk->usInMinute <= ausHour[i+1] && pWorkEtk->usOutMinute > ausHour[i+1]) {
                 usWorkMinute = ausHour[i+1] - pWorkEtk->usInMinute;
@@ -1470,8 +1464,8 @@ static VOID    RptETKCalHourlyTotalSub2(USHORT usWorkMinute, USHORT i,
                 RPTETKWORKFIELD *pWorkEtk, RPTHOURLYETK *pRptHourlyEtk)
 {
     USHORT  usTime, usMinute;
-    LONG    ulWage;
-	USHORT  usLaborCost;
+    LONG    ulWage = 0;
+	USHORT  usLaborCost = 0;
 
     /* convert HH:MM for rounding & wage calculation */
     usMinute = usWorkMinute;

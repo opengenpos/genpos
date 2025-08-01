@@ -89,6 +89,74 @@ extern CONST TCHAR   aszPrtKPGuest[];
 extern CONST TCHAR   aszPrtKPTrailer[];
 CONST TCHAR  aszPrtDflHeader[] = _T("%-4s %-3s  %-8.8s %-3s  %-4s %s");/*8 characters JHHJ*/
 
+UCHAR   fbPrtDflErr;                            /* error displayed or not */
+UCHAR   uchPrtDflTypeSav;                       /* save transaction type */
+
+/* -- for display on the fly -- */
+PRTDFLIF    PrtDflIf;                           /* display data buffer */
+
+
+/*
+*===========================================================================
+** Format  : int PrtDflIfSetDestCrt(UCHAR uchCrtNo0, UCHAR uchCrtNo1)
+*
+*   Input  : UCHAR uchCrtNo0         -CRT bit map in the form of digit such as 0x31 or 0x35
+*            UCHAR uchCrtNo1         -CRT bit map in the form of digit such as 0x3A
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function sets the CRT number designating the CRTs that are the target
+*            of a call to function PrtDflSend(). The CRT targets are designated by the
+*            total key provisioning.
+* 
+*            A value of 0x30 means no CRTs. A value of 0x35 means CRTs 1 and 4.
+* 
+*            This function merely sets the data structure. It is not the same as
+*            function PrtDflSetCRTNo().
+* 
+*            See function PrtDflSetCRTNo().
+* 
+*            This is part of the Display on the Fly functionality for displaying text.
+*===========================================================================
+*/
+int  PrtDflIfSetDestCrt(UCHAR uchCrtNo0, UCHAR uchCrtNo1)
+{
+    if (uchCrtNo0 > 0) PrtDflIf.Dfl.DflHead.auchCRTNo[0] = uchCrtNo0;   /* CRT#1 - #4 */
+    if (uchCrtNo1 > 0) PrtDflIf.Dfl.DflHead.auchCRTNo[1] = uchCrtNo1;   /* CRT#5 - #8 */
+
+    return 0;
+}
+
+/*
+*===========================================================================
+** Format  : int PrtDflIfSetFrameType(UCHAR uchFrameType)
+*
+*   Input  : UCHAR uchFrameType         -frame type to be used with Display on the Fly
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function sets the frame type for the data being sent via a call
+*            to function PrtDflSend().
+*
+*            See function PrtDispPrint() for setting frame type.
+* 
+*            See the frame types list such as:
+*              - PRT_DFL_FIRST_FRAME        first frame
+*              - PRT_DFL_NOT_FIRST_FRAME    not first frame 
+*              - RT_DFL_END_FRAME           end frame
+*              - PRT_DFL_SERVICE_END_FRAME  end frame for service total
+* 
+*            This is part of the Display on the Fly functionality for displaying text.
+*===========================================================================
+*/
+int PrtDflIfSetFrameType(UCHAR uchFrameType)
+{
+    PrtDflIf.Dfl.DflHead.uchFrameType = uchFrameType;
+
+    return 0;
+}
 
 /*
 *===========================================================================
@@ -102,10 +170,10 @@ CONST TCHAR  aszPrtDflHeader[] = _T("%-4s %-3s  %-8.8s %-3s  %-4s %s");/*8 chara
 ** Synopsis: This function sets initial data. ( for display on the fly )
 *===========================================================================
 */
-VOID    PrtDflInit(TRANINFORMATION  *pTran)
+VOID    PrtDflInit(CONST TRANINFORMATION  *pTran)
 {
-    TCHAR   aszConsNo[5];
-    TCHAR   aszTermNo[3];
+    TCHAR   aszConsNo[5] = { 0 };
+    TCHAR   aszTermNo[3] = { 0 };
     USHORT  usLen;
 
     /* -- initialize dfl data area -- */
@@ -115,8 +183,7 @@ VOID    PrtDflInit(TRANINFORMATION  *pTran)
     PrtDflIf.Dfl.DflHead.uchSTX = DFL_STX;
 
     /* -- set terminal unique address -- */
-    memset(aszTermNo, '\0', sizeof(aszTermNo));
-    _itot((USHORT)CliReadUAddr(), aszTermNo, 10);        
+    _itot(CliReadUAddr(), aszTermNo, 10);        
     usLen = tcharlen(aszTermNo);
     tcharnset(PrtDflIf.Dfl.DflHead.aszTermAdr, _T('0'), PRT_DFL_TMLEN - usLen);
     _tcsncpy(&PrtDflIf.Dfl.DflHead.aszTermAdr[PRT_DFL_TMLEN - usLen], aszTermNo, usLen);
@@ -124,7 +191,6 @@ VOID    PrtDflInit(TRANINFORMATION  *pTran)
     //memcpy(&PrtDflIf.Dfl.DflHead.aszTermAdr[PRT_DFL_TMLEN - usLen], aszTermNo, usLen);
 
     /* -- set consecutive No. -- */
-    memset(aszConsNo, '\0', sizeof(aszConsNo));
     _itot(pTran->TranCurQual.usConsNo, aszConsNo, 10);
     usLen = tcharlen(aszConsNo);
     tcharnset(PrtDflIf.Dfl.DflHead.aszConsNo, '0', PRT_DFL_CONSLEN - usLen);
@@ -134,7 +200,6 @@ VOID    PrtDflInit(TRANINFORMATION  *pTran)
 
     /* -- set transaction type (normal, p-void, training) -- */
     PrtDflTrType(pTran);
-
 }
 
 /*
@@ -149,9 +214,8 @@ VOID    PrtDflInit(TRANINFORMATION  *pTran)
 ** Synopsis: This function set kitchen CRT's header.
 *===========================================================================
 */
-VOID PrtDflCustHeader( TRANINFORMATION *pTran )
+VOID PrtDflCustHeader(CONST TRANINFORMATION *pTran )
 {
-    ITEMMODIFIER    ItemModifier;
 /*    UCHAR           aszDflBuff[ 7 ][ PRT_DFL_LINE + 1 ]; */
 /*    USHORT          usLineNo; */
 /*    USHORT          usOffset = 0; */
@@ -167,18 +231,10 @@ VOID PrtDflCustHeader( TRANINFORMATION *pTran )
     /* --- initialize Dfl Buffer before set data (9-26-95) --- */
 	/*    memset( aszDflBuff, 0x00, sizeof( aszDflBuff )); */
     if ( pTran->TranGCFQual.aszName[ 0 ] != '\0' ) {
+        TCHAR  aszCustomerName[NUM_NAME + 1] = { 0 };
 
-        memset( &ItemModifier, 0x00, sizeof( ItemModifier ));
-
-        ItemModifier.uchMajorClass = CLASS_ITEMMODIFIER;
-        ItemModifier.uchMinorClass = CLASS_ALPHANAME;
-
-        _tcsncpy( ItemModifier.aszName, pTran->TranGCFQual.aszName, NUM_NAME );
-
-        if ( ItemModifier.aszName[ NUM_NAME - 2 ] == PRT_DOUBLE ) {
-            ItemModifier.aszName[ NUM_NAME - 2 ] = '\0';
-        }
-        PrtDflModCustName( pTran, &ItemModifier );
+        PrtTruncDoubleString(aszCustomerName, NUM_NAME, pTran->TranGCFQual.aszName);
+        PrtDflModCustName( pTran, aszCustomerName);
     }
 
 /********   Not send Unique Transaction No for ISV KDS trouble
@@ -235,26 +291,19 @@ VOID PrtDflCustHeader( TRANINFORMATION *pTran )
 ** Synopsis: This function set kitchen CRT's header.
 *===========================================================================
 */
-USHORT   PrtDflHeader(TCHAR *pszWork, TRANINFORMATION *pTran)
+USHORT   PrtDflHeader(TCHAR *pszWork, CONST TRANINFORMATION *pTran)
 {
-    TCHAR  aszTableMnem[PARA_SPEMNEMO_LEN + 1];/* PARA_... defined in "paraequ.h" */
-    TCHAR  aszGuestMnem[PARA_SPEMNEMO_LEN + 1];  /* PARA_... defined in "paraequ.h" */
-    TCHAR  aszPersonMnem[PARA_TRANSMNEMO_LEN + 1];  /* PARA_... defined in "paraequ.h" */
-    TCHAR  aszTableNo[PRT_ID_LEN + 1];
-    TCHAR  aszNoPerson[PRT_ID_LEN + 1];
-    TCHAR  aszGuestNo[PRT_DFL_LINE + 1];
-    TCHAR  aszWork[PRT_DFL_LINE * 2 + 1];
+    TCHAR  aszTableMnem[PARA_SPEMNEMO_LEN + 1] = { 0 };/* PARA_... defined in "paraequ.h" */
+    TCHAR  aszGuestMnem[PARA_SPEMNEMO_LEN + 1] = { 0 };  /* PARA_... defined in "paraequ.h" */
+    TCHAR  aszPersonMnem[PARA_TRANSMNEMO_LEN + 1] = { 0 };  /* PARA_... defined in "paraequ.h" */
+    TCHAR  aszTableNo[PRT_ID_LEN + 1] = { 0 };
+    TCHAR  aszNoPerson[PRT_ID_LEN + 1] = { 0 };
+    TCHAR  aszGuestNo[PRT_DFL_LINE + 1] = { 0 };
+    TCHAR  aszWork[PRT_DFL_LINE * 2 + 1] = { 0 };
 
     if ( PrtDflIf.Dfl.uchSeqNo != 0 ) {                 /* first frame ? */
         return(0);
     }
-    *aszTableMnem = '\0';
-    *aszGuestMnem = '\0';
-    *aszPersonMnem = '\0';
-    *aszTableNo = '\0';
-    *aszNoPerson = '\0';
-    *aszGuestNo = '\0';
-    *aszWork = '\0';
 
     /* --- if current system uses unique transaction number,
         do not send its number and mnemonic --- */
@@ -364,14 +413,14 @@ USHORT   PrtDflTrailer(TCHAR *pszWork, const TRANINFORMATION *pTran, ULONG  ulSt
 ** Synopsis: This function sets destination CRT No.
 *===========================================================================
 */
-VOID   PrtDflSetCRTNo(TRANINFORMATION *pTran, ITEMSALES *pItem)
+VOID   PrtDflSetCRTNo(CONST TRANINFORMATION *pTran, CONST ITEMSALES *pItem)
 {
 	UCHAR       fbCRTNo1, fbCRTNo2;                 /* destination CRT No. */
 
     if ( PRT_KPITEM == PrtChkKPPort(pTran, pItem, &fbCRTNo1, PRT_NOT_MDC)) {
-                        
-		fbCRTNo2 = (UCHAR)(fbCRTNo1 >> 4);
-		fbCRTNo1 &= 0x0F;
+        // fbCRTNo1 contains bit mask for CRT #1 through 4 and CRT #5 through 8
+		fbCRTNo2 = (UCHAR)(fbCRTNo1 >> 4);    // separate out the bit mask for CRT #5 through CRT #8
+		fbCRTNo1 &= 0x0F;                     // separate out the bit mask for CRT #1 through CRT #4
 
         PrtDflIf.Dfl.DflHead.auchCRTNo[0] = PrtDflGetNo(fbCRTNo1);      /* set destination CRT No. 1 - 4 */
         PrtDflIf.Dfl.DflHead.auchCRTNo[1] = PrtDflGetNo(fbCRTNo2);      /* set destination CRT No. 5 - 8 */
@@ -395,7 +444,7 @@ VOID   PrtDflSetCRTNo(TRANINFORMATION *pTran, ITEMSALES *pItem)
 ** Synopsis: This function sets destination CRT No. according to total key status.
 *===========================================================================
 */
-VOID   PrtDflSetTtlNo(TRANINFORMATION *pTran)
+VOID   PrtDflSetTtlNo(CONST TRANINFORMATION *pTran)
 {
     UCHAR uchCRTNo;
 
@@ -447,30 +496,20 @@ UCHAR   PrtDflGetNo(UCHAR uchCRTNo)
 ** Synopsis: This function check and set transaction type.
 *===========================================================================
 */
-VOID   PrtDflTrType(TRANINFORMATION *pTran)
+VOID   PrtDflTrType(CONST TRANINFORMATION *pTran)
 {
     
     /* -- preselect void? -- */
     if ( pTran->TranCurQual.fsCurStatus & CURQUAL_PRESELECT_MASK ) {
-    
         if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TRAINING) {
-        
             PrtDflIf.Dfl.DflHead.auchItemType[0] = DFL_TRAIN_VOID;
-    
         } else {
-    
             PrtDflIf.Dfl.DflHead.auchItemType[0] = DFL_NORMAL_VOID;
         }    
-    
-    /* -- training mode -- */    
     } else {
-   
         if ( pTran->TranCurQual.fsCurStatus & CURQUAL_TRAINING) {
-        
             PrtDflIf.Dfl.DflHead.auchItemType[0] = DFL_TRAIN;
-    
         } else {    
-    
             PrtDflIf.Dfl.DflHead.auchItemType[0] = DFL_NORMAL;
         }             
     }
@@ -535,7 +574,7 @@ VOID   PrtDflCheckVoid(USHORT  fbMod)
 */
 VOID   PrtDflIType(USHORT usLineNo, UCHAR uchItemType)
 {
-    TCHAR aszLineNo[3];         
+    TCHAR aszLineNo[3] = { 0 };
     USHORT usLen;
 
     if ( PrtDflIf.Dfl.uchSeqNo == 0 ) {
@@ -543,7 +582,6 @@ VOID   PrtDflIType(USHORT usLineNo, UCHAR uchItemType)
     }
 
     /* -- set number of lines to be displayed -- */
-    memset(aszLineNo, '\0', sizeof(aszLineNo));
     _itot(usLineNo, aszLineNo, 10);
     usLen = tcharlen(aszLineNo);
     tcharnset(PrtDflIf.Dfl.DflHead.aszLineNo, _T('0'), PRT_DFL_LINELEN - usLen);
@@ -684,9 +722,9 @@ VOID   PrtDflSend(VOID)
 *            returns the result. 
 *===========================================================================
 */
-UCHAR   PrtDflXor(VOID *puchStart, USHORT usLen)
+UCHAR   PrtDflXor(CONST VOID *puchStart, USHORT usLen)
 {
-	UCHAR   *puchBlock = (UCHAR *)puchStart;
+	CONST UCHAR   *puchBlock = puchStart;
 	USHORT  usSkip = sizeof(PrtDflIf.Dfl.DflHead);
     USHORT  usI;
 	UCHAR   uchXOR = 0;

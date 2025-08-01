@@ -69,6 +69,48 @@
 **/
 /*
 *===========================================================================
+** Format  : VOID  PrtProm_TH(TRANINFORMATION  *pTran)
+*
+*   Input  : pTran                          -transaction information
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints Promotional header. (thermal) 
+*===========================================================================
+*/
+static VOID  PrtProm_TH(CONST TRANINFORMATION  *pTran)
+{
+
+	PmgStartReceipt();
+
+	/* print header and promotional lines if necessary */
+	if (PrtTHHead(pTran->TranCurQual.usConsNo) > 0) {
+		TCHAR          aszMnemD[PARA_PROMOTION_LEN * 2 + 1] = { 0 };
+
+		for (UCHAR i = PRM_LINE1_ADR; i <= PRM_LINE3_ADR; i++) {
+			PARAPROMOTION  PM = {0};
+
+			PM.uchMajorClass = CLASS_PARAPROMOTION;
+			PM.uchAddress = i;
+			CliParaRead(&PM);
+			PM.aszProSales[PARA_PROMOTION_LEN] = '\0';
+
+			PrtDouble(aszMnemD, PARA_PROMOTION_LEN * 2 + 1, PM.aszProSales);    /* convert to double */
+
+			if (aszMnemD[PARA_PROMOTION_LEN * 2] == PRT_DOUBLE) {
+				aszMnemD[PARA_PROMOTION_LEN * 2] = PRT_SPACE;
+			}
+
+			PrtPrint(PMG_PRT_RECEIPT, aszMnemD, (USHORT) _tcslen(aszMnemD)); /* ### Mod (2171 for Win32) V1.0 */
+		}
+	}
+
+    PrtFeed(PMG_PRT_RECEIPT, 1);                /* 1 line feed */
+}   
+
+/*
+*===========================================================================
 ** Format  : VOID  PrtPromotion(TRANINFORMATION *pTran, ITEMPRINT *pItem);      
 *
 *   Input  : TRANINFORMATION *pTran    -transaction information
@@ -80,7 +122,7 @@
 ** Synopsis: This functions prints Promotional header. 
 *===========================================================================
 */
-VOID PrtPromotion(TRANINFORMATION  *pTran, SHORT fsPrintStatus)
+VOID PrtPromotion(CONST TRANINFORMATION  *pTran, SHORT fsPrintStatus)
 {
 
     PrtPortion(fsPrintStatus);        /* check no-print, compulsory print */
@@ -98,47 +140,6 @@ VOID PrtPromotion(TRANINFORMATION  *pTran, SHORT fsPrintStatus)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtProm_TH(TRANINFORMATION  *pTran)
-*
-*   Input  : pTran                          -transaction information
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints Promotional header. (thermal) 
-*===========================================================================
-*/
-VOID  PrtProm_TH(TRANINFORMATION  *pTran)
-{
-
-	PmgStartReceipt();
-
-	/* print header and promotional lines if necessary */
-	if (PrtTHHead(pTran) > 0) {
-		PARAPROMOTION  PM = {0};
-		TCHAR          aszMnemD[PARA_PROMOTION_LEN * 2 + 1];
-		UCHAR          i;
-
-		PM.uchMajorClass = CLASS_PARAPROMOTION;
-		for ( i = PRM_LINE1_ADR; i <= PRM_LINE3_ADR; i++) {
-			PM.uchAddress = i;
-			CliParaRead(&PM);
-			PM.aszProSales[PARA_PROMOTION_LEN] = '\0';
-
-			PrtDouble(aszMnemD, PARA_PROMOTION_LEN * 2 + 1, PM.aszProSales);    /* convert to double */
-
-			if (aszMnemD[PARA_PROMOTION_LEN * 2] == PRT_DOUBLE) {
-				aszMnemD[PARA_PROMOTION_LEN * 2] = PRT_SPACE;
-			}
-
-			PrtPrint((USHORT)PMG_PRT_RECEIPT, aszMnemD, (USHORT) _tcslen(aszMnemD)); /* ### Mod (2171 for Win32) V1.0 */
-		}
-	}
-
-    PrtFeed(PMG_PRT_RECEIPT, 1);                /* 1 line feed */
-}   
-/*
-*===========================================================================
 ** Format  : VOID  PrtTransactionBegin(VOID)
 *
 *   Input  : none
@@ -154,8 +155,6 @@ VOID PrtTransactionBegin(SHORT sType, ULONG ulTransNo)
 {
 	if(CliParaMDCCheckField(MDC_DBLSIDEPRINT_ADR, MDC_PARAM_BIT_A))
 	{
-		TCHAR	aszFormatString[20] = {0};
-		TCHAR	aszTransactionNumber[10] = {0};
 		UCHAR	uchTrgPrt;
     
 		//if we are in share printer mode, we will have
@@ -169,9 +168,11 @@ VOID PrtTransactionBegin(SHORT sType, ULONG ulTransNo)
 		}
 
 		if ( 0 != PrtCheckShr(uchTrgPrt) ) {
+			TCHAR	aszFormatString[20] = {0};
+			TCHAR	aszTransactionNumber[10] = {0};
 			
 			fbPrtShrStatus |= PRT_SHARED_SYSTEM;
-			PrtShrInit(&TrnInformation);  /* initialize shared printer buffer */
+			PrtShrInit(TrnInformation.TranCurQual.usConsNo);  /* initialize shared printer buffer */
 			aszFormatString[0] = PRT_TRANS_BGN;
 			aszFormatString[1] = sType;
 
@@ -201,13 +202,13 @@ VOID PrtTransactionBegin(SHORT sType, ULONG ulTransNo)
 */
 VOID  PrtTransactionEnd(SHORT sType, ULONG ulTransNo)
 {
-	TCHAR	aszFormatString[20];
-	TCHAR	aszTransactionNumber[10];
-
 	if(CliParaMDCCheckField(MDC_DBLSIDEPRINT_ADR, MDC_PARAM_BIT_A))
 	{
 		if ( fbPrtShrStatus & PRT_SHARED_SYSTEM ) 
 		{
+			TCHAR	aszFormatString[20] = { 0 };
+			TCHAR	aszTransactionNumber[10] = { 0 };
+
 			aszFormatString[0] = PRT_TRANS_END;
 			aszFormatString[1] = sType;
 

@@ -65,9 +65,9 @@
 #include <csttl.h>
 #include <csstbpar.h>
 #include <pmg.h>
+#include <prt.h>
 #include <csop.h>
 #include <report.h>
-#include "prtcom.h"
 #include "prtsin.h"
 
 /*
@@ -102,14 +102,14 @@ VOID PrtThrmSupTOD(PARATOD *pData)
 	static TCHAR const szFRI[] = _T("FRI\0");
 	static TCHAR const szSAT[] = _T("SAT\0");
 
-	const TCHAR  auchPrtSupTHTOD1[] = _T("      %02u/%02u/%02u  %-3s%14u:%02u");  /* R2.0 */
+	static const TCHAR  auchPrtSupTHTOD1[] = _T("      %02u/%02u/%02u  %-3s%14u:%02u");  /* R2.0 */
 																				  // Above was previously -> _T("%8u/%02u/%02u  %-3s%14u:%02u") -CSMALL
 																				  // SR 984 - Format change to show leading zeros for dates
-	const TCHAR  auchPrtSupTHTOD2[] = _T("      %02u/%02u/%02u  %-3s%14u:%02u%s");/* R2.0 */
+	static const TCHAR  auchPrtSupTHTOD2[] = _T("      %02u/%02u/%02u  %-3s%14u:%02u%s");/* R2.0 */
 																				  // Above was previously -> _T("%8u/%02u/%02u  %-3s%14u:%02u%s")
 																				  // SR 984 - Format change to show leading zeros for dates
-	const TCHAR  auchPrtSupEJTOD1[] = _T("%02u/%02u/%02u  %-3s\t%2u:%02u");
-	const TCHAR  auchPrtSupEJTOD2[] = _T("%02u/%02u/%02u  %-3s\t%2u:%02u%s");
+	static const TCHAR  auchPrtSupEJTOD1[] = _T("%02u/%02u/%02u  %-3s\t%2u:%02u");
+	static const TCHAR  auchPrtSupEJTOD2[] = _T("%02u/%02u/%02u  %-3s\t%2u:%02u%s");
 
 	USHORT usHour;
 	TCHAR  aszMnem[8] = { 0 };        /*endo update(change size) 2000/1/7*/

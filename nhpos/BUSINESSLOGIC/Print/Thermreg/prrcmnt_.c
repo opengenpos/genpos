@@ -133,7 +133,6 @@
 #include <paraequ.h> 
 #include <para.h> 
 #include <csstbpar.h>
-/* #include<uie.h> */
 #include <pmg.h>
 #include <rfl.h>
 #include <shr.h>
@@ -146,8 +145,6 @@
 #include "prtrin.h"
 #include "prrcolm_.h"
 
-#include "PrtRJ.h"
-
 /**
 ;========================================================================
 ;+                    S T A T I C    R A M s
@@ -157,137 +154,136 @@
 //SR 420 enhancement, added another string in here so that we add the currency
 //symbol to total amounts. So that we can be certified with teh weights and scales
 //auditors from NCR
-CONST TCHAR FARCONST  aszPrtTHAmtMnem[]     = _T("%s\t %s%l$");     /* trans.mnem, currency symbol, and amount */
-CONST TCHAR FARCONST  aszPrtTHAmtMnemGift[] = _T("%s");      /* Gift Receipt JHHJ*/
+CONST TCHAR   aszPrtTHAmtMnem[]     = _T("%s\t %s%l$");     /* trans.mnem, currency symbol, and amount */
+CONST TCHAR   aszPrtTHAmtMnemGift[] = _T("%s");      /* Gift Receipt JHHJ*/
 
 //SR 144 cwunn added to print quantity, mnemonic, and amount on the same line
-CONST TCHAR FARCONST  aszPrtTHAmtMnem1Line[]     = _T("%ld %s $%l$ %s\t %s%l$");   //5 X $1.39 Hamburger $6.95
+CONST TCHAR   aszPrtTHAmtMnem1Line[]     = _T("%ld %s $%l$ %s\t %s%l$");   //5 X $1.39 Hamburger $6.95
 												                                   //"%-14s      %8ld X\t %l$/%ld " (quantity formatting)
                                                                                    /* trans.mnem and amount */
-CONST TCHAR FARCONST  aszPrtTHAmtMnem1LineGift[] = _T("%ld %s %s");   //5 X $1.39 Hamburger $6.95
+CONST TCHAR   aszPrtTHAmtMnem1LineGift[] = _T("%ld %s %s");   //5 X $1.39 Hamburger $6.95
 												                        //"%-14s      %8ld X\t %l$/%ld " (quantity formatting) GIFT PRT_RECEIPT
                                                                         /* trans.mnem and amount */
-CONST TCHAR FARCONST  aszPrtTHAmtMnemMnem[] = _T("%-16s   %s\t %s%l$");    /* trans.mnem and amount */
+CONST TCHAR   aszPrtTHAmtMnemMnem[] = _T("%-16s   %s\t %s%l$");    /* trans.mnem and amount */
 
-CONST TCHAR FARCONST  aszPrtTHEuroAmtMnem[] = _T("%s\t%s%.*l$");           /* trans.mnem and amount */
+CONST TCHAR   aszPrtTHEuroAmtMnem[] = _T("%s\t%s%.*l$");           /* trans.mnem and amount */
 /* V3.3 */
-CONST TCHAR FARCONST  aszPrtTHTaxRateAmt[] = _T("%-16s %7.2l$%%\t $%l$%*s");  //_T("%-16s %7.2l$%%\t %l$%*s") -- SR 1004, adding $ to format - CSMALL
+CONST TCHAR   aszPrtTHTaxRateAmt[] = _T("%-16s %7.2l$%%\t $%l$%*s");  //_T("%-16s %7.2l$%%\t %l$%*s") -- SR 1004, adding $ to format - CSMALL
                                                                               /* trans. mnem, vat rate, and amount */    
 
-CONST TCHAR FARCONST  aszPrtTHVatMnem[] = _T("        %10s  %10s  %10s");     /* VAT mnemonics */
+CONST TCHAR   aszPrtTHVatMnem[] = _T("        %10s  %10s  %10s");     /* VAT mnemonics */
 
-CONST TCHAR FARCONST  aszPrtTHVatAmt[] = _T("%5.2l$%%%12l$%12l$%12l$");       /* VAT amount */
+CONST TCHAR   aszPrtTHVatAmt[] = _T("%5.2l$%%%12l$%12l$%12l$");       /* VAT amount */
 
-CONST TCHAR FARCONST  aszPrtTHAmtDiscMnem[]     = _T("%s\t %d%% %s%11l$");    //SR 706 Fix for Numerical Data JHHJ, disc. rate and amount */
-CONST TCHAR FARCONST  aszPrtTHAmtDiscMnemGift[] = _T("%s\t %d%%");            /* disc. rate and amount */
+CONST TCHAR   aszPrtTHAmtDiscMnem[]     = _T("%s\t %d%% %s%11l$");    //SR 706 Fix for Numerical Data JHHJ, disc. rate and amount */
+CONST TCHAR   aszPrtTHAmtDiscMnemGift[] = _T("%s\t %d%%");            /* disc. rate and amount */
 
-CONST TCHAR FARCONST  aszPrtTHMnemMnem[] = _T("%s\t %s");                     /* mnem. and mnem. */
+CONST TCHAR   aszPrtTHMnemMnem[] = _T("%s\t %s");                     /* mnem. and mnem. */
 
-CONST TCHAR FARCONST  aszPrtTHAmtTaxMnem[] = _T("%-8.8s   %s\t %l$");         /*8 characters JHHJ, mnem. tax mod. and amount */
+CONST TCHAR   aszPrtTHAmtTaxMnem[] = _T("%-8.8s   %s\t %l$");         /*8 characters JHHJ, mnem. tax mod. and amount */
 
-CONST TCHAR FARCONST  aszPrtTHWaiAmtMnem[] = _T("%-4s %03d      %s\t %l$");   /* waiter ID, mnem. and amount */
+CONST TCHAR   aszPrtTHWaiAmtMnem[] = _T("%-4s %03d      %s\t %l$");   /* waiter ID, mnem. and amount */
 
-CONST TCHAR FARCONST  aszPrtTHTblPerson[] = _T("%-4s %-3s            %s %s"); /* table and person */
+CONST TCHAR   aszPrtTHTblPerson[] = _T("%-4s %-3s            %s %s"); /* table and person */
 
-CONST TCHAR FARCONST  aszPrtTHTblPerGC[] = _T("%-4s %-3s   %s %s\t %s %s\n");
+CONST TCHAR   aszPrtTHTblPerGC[] = _T("%-4s %-3s   %s %s\t %s %s\n");
 
-CONST TCHAR FARCONST  aszPrtTHTblPerGCNoPerson[] = _T("%-4s %-3s  \t %s %s\n");   /* table, person, and G/C */
+CONST TCHAR   aszPrtTHTblPerGCNoPerson[] = _T("%-4s %-3s  \t %s %s\n");   /* table, person, and G/C */
 
-CONST TCHAR FARCONST  aszPrtTHTblPerGCUnique[] = _T("%-4s %-3s\n   %s %s\t %s %s");
+CONST TCHAR   aszPrtTHTblPerGCUnique[] = _T("%-4s %-3s\n   %s %s\t %s %s");
 
-CONST TCHAR FARCONST  aszPrtTHTblPerGCNoPersonUnique[] = _T("%-4s %-3s\n  \t %s %s");
+CONST TCHAR   aszPrtTHTblPerGCNoPersonUnique[] = _T("%-4s %-3s\n  \t %s %s");
 
 /*** Add Unique Transaction No. (REL 3.0) ***/
-CONST TCHAR FARCONST  aszPrtTHTransPerson[] = _T("%-12s %-8.8s\t%8.8s %s");     /*8 characters JHHJ*/
+CONST TCHAR   aszPrtTHTransPerson[] = _T("%-12s %-8.8s\t%8.8s %s");     /*8 characters JHHJ*/
                                                                                 /* unique trans no. */
-CONST TCHAR FARCONST  aszPrtTHTransNo[]     = _T("%-12s %-8.8s");               /*8 characters JHHJ, unique trans no. */
-CONST TCHAR FARCONST  aszPrtTHCustomerName[] = _T("%-19s");          /* customer name */
+CONST TCHAR   aszPrtTHTransNo[]     = _T("%-12s %-8.8s");               /*8 characters JHHJ, unique trans no. */
+CONST TCHAR   aszPrtTHCustomerName[] = _T("%-19s");          /* customer name */
 /*** Add Unique Transaction No. (REL 3.0) ***/
 
-CONST TCHAR FARCONST  aszPrtTHMultiSeat[] = _T("%-s");               /* seat no. */
+CONST TCHAR   aszPrtTHMultiSeat[] = _T("%-s");               /* seat no. */
 
-CONST TCHAR FARCONST  aszPrtTHMnemNum[] = _T("%-8.8s %lu");          /*8 characters JHHJ, mnemo. and number */
+CONST TCHAR   aszPrtTHMnemNum[] = _T("%-8.8s %lu");          /*8 characters JHHJ, mnemo. and number */
 
-CONST TCHAR FARCONST  aszPrtTHPrinNo[]  = _T("PRT%d");               /* printer no. */
+CONST TCHAR   aszPrtTHPrinNo[]  = _T("PRT%d");               /* printer no. */
 
-CONST TCHAR FARCONST  aszPrtTHWaiTaxMod[] = _T("%s %03d  %s");       /* waiter mnemo. and ID and tax mod. */
+CONST TCHAR   aszPrtTHWaiTaxMod[] = _T("%s %03d  %s");       /* waiter mnemo. and ID and tax mod. */
 
-CONST TCHAR FARCONST  aszPrtTHEuro1[]  = _T("%s%ld / %s%.*l$");      /* Euro amount */
-CONST TCHAR FARCONST  aszPrtTHSeat[]    = _T("%-4s %1d");            //SR206 _T("%-4s %2d");       /* seat no. */
+CONST TCHAR   aszPrtTHEuro1[]  = _T("%s%ld / %s%.*l$");      /* Euro amount */
+CONST TCHAR   aszPrtTHSeat[]    = _T("%-4s %1d");            //SR206 _T("%-4s %2d");       /* seat no. */
 
-CONST TCHAR FARCONST  aszPrtTHQuant[]     = _T("%-14s       %8ld %s\t %l$ ");    /* qty and unit price */
-CONST TCHAR FARCONST  aszPrtTHQuantGift[] = _T("%-14s       %8ld %s");           //Gift Receipt JHHJ, qty and unit price */
+CONST TCHAR   aszPrtTHQuant[]     = _T("%-14s       %8ld %s\t %l$ ");    /* qty and unit price */
+CONST TCHAR   aszPrtTHQuantGift[] = _T("%-14s       %8ld %s");           //Gift Receipt JHHJ, qty and unit price */
 
-CONST TCHAR FARCONST  aszPrtTHPPIQuant[]     = _T("%-14s      %8ld %s\t %l$/%ld ");
-CONST TCHAR FARCONST  aszPrtTHPPIQuantGift[] = _T("%-14s      %8ld %s\t %ld "); //Gift Receipt JHHJ, qty, product and qty */
+CONST TCHAR   aszPrtTHPPIQuant[]     = _T("%-14s      %8ld %s\t %l$/%ld ");
+CONST TCHAR   aszPrtTHPPIQuantGift[] = _T("%-14s      %8ld %s\t %ld "); //Gift Receipt JHHJ, qty, product and qty */
 
 //SR 420 added a unique format string for the manual mnemonic.  We do this
 //so that when we are just printing a non manual weighted item, the information
 //that is printed out is less confusing than previously before.
-CONST TCHAR FARCONST  aszPrtTHWeight1Manual[] = _T("\n%-14s      %8.*l$ %s\t %s ");    /* Weight and Manual Mnem. */
+CONST TCHAR   aszPrtTHWeight1Manual[] = _T("\n%-14s      %8.*l$ %s\t %s ");    /* Weight and Manual Mnem. */
 
-CONST TCHAR FARCONST  aszPrtTHWeight1[] = _T("\n%-14s\t%s  %8.*l$ %s ");               /* Weight and Manual Mnem. */
+CONST TCHAR   aszPrtTHWeight1[] = _T("\n%-14s\t%s  %8.*l$ %s ");               /* Weight and Manual Mnem. */
 
-CONST TCHAR FARCONST  aszPrtTHWeight2[] = _T("\t%s %l$/%d %s ");                       /* scale sym. and unit price */
+CONST TCHAR   aszPrtTHWeight2[] = _T("\t%s %l$/%d %s ");                       /* scale sym. and unit price */
 
-CONST TCHAR FARCONST  aszPrtTHChild[]   = _T(" %4s %s");                /* child plu */
+CONST TCHAR   aszPrtTHChild[]   = _T(" %4s %s");                /* child plu */
 
-CONST TCHAR FARCONST  aszPrtTHModLinkPLU1[]   = _T("%4s %s\t%l$ ");
-CONST TCHAR FARCONST  aszPrtTHModLinkPLU2[]   = _T("%s\t%l$ ");
-CONST TCHAR FARCONST  aszPrtTHLinkPLU1[]   = _T("%4s %s\t%l$");
-CONST TCHAR FARCONST  aszPrtTHLinkPLU2[]   = _T("%s\t%l$");             /* link plu */
+CONST TCHAR   aszPrtTHModLinkPLU1[]   = _T("%4s %s\t%l$ ");
+CONST TCHAR   aszPrtTHModLinkPLU2[]   = _T("%s\t%l$ ");
+CONST TCHAR   aszPrtTHLinkPLU1[]   = _T("%4s %s\t%l$");
+CONST TCHAR   aszPrtTHLinkPLU2[]   = _T("%s\t%l$");             /* link plu */
 
 
-CONST TCHAR FARCONST  aszPrtTHWaiGC_WTCD[] = _T("%-8.8s  %03d       %s %4d%02d");   /* old waiter No. and G/C No. with C/D */
+CONST TCHAR   aszPrtTHWaiGC_WTCD[] = _T("%-8.8s  %03d       %s %4d%02d");   /* old waiter No. and G/C No. with C/D */
 
-CONST TCHAR FARCONST  aszPrtTHWaiGC_WOCD[] = _T("%-8s  %03d       %s %4d");         /* old waiter No. and G/C No. with C/D */
+CONST TCHAR   aszPrtTHWaiGC_WOCD[] = _T("%-8s  %03d       %s %4d");         /* old waiter No. and G/C No. with C/D */
 
-CONST TCHAR FARCONST  aszPrtTHGC_WTCD_S[] = _T("                    %s  %4d%02d");  /* G/C No. w/ CD (single wide) */
+CONST TCHAR   aszPrtTHGC_WTCD_S[] = _T("                    %s  %4d%02d");  /* G/C No. w/ CD (single wide) */
 
-CONST TCHAR FARCONST  aszPrtTHGC_WOCD_S[] = _T("                    %s  %4d");      /* G/C No. w/o CD (single wide) */
+CONST TCHAR   aszPrtTHGC_WOCD_S[] = _T("                    %s  %4d");      /* G/C No. w/o CD (single wide) */
 
-CONST TCHAR FARCONST  aszPrtTHGuest_D[] = _T("%-16s     %s");             /* G/C No. (double wide) */
+CONST TCHAR   aszPrtTHGuest_D[] = _T("%-16s     %s");             /* G/C No. (double wide) */
 
-CONST TCHAR FARCONST  *aszPrtTHTickTrail1  = _T("%-8s %s   %4s %s\t %s"); /* ticket trailer 1st line with CD */
+CONST TCHAR   *aszPrtTHTickTrail1  = _T("%-8s %s   %4s %s\t %s"); /* ticket trailer 1st line with CD */
 
-CONST TCHAR FARCONST  aszPrtTHMnemCount[] = _T("%-8s\t%d");               /* mnemo. and counter */
+CONST TCHAR   aszPrtTHMnemCount[] = _T("%-8s\t%d");               /* mnemo. and counter */
 
-CONST TCHAR FARCONST  aszPrtTHCasOrdr[] = _T("%-4s %03d    %s %2d");      /* cashier No. and order No. */
+CONST TCHAR   aszPrtTHCasOrdr[] = _T("%-4s %03d    %s %2d");      /* cashier No. and order No. */
 
-CONST TCHAR FARCONST  aszPrtTHAmtMnemSpace[] = _T("%s\t %l$ ");           /* trans.mnem and amount */
+CONST TCHAR   aszPrtTHAmtMnemSpace[] = _T("%s\t %l$ ");           /* trans.mnem and amount */
 
-CONST TCHAR FARCONST  aszPrtTHItemCount[]  = _T("%-4.20s:  %2d");        //SR 217 JHHJ Item Count Option, trailer item count */
+CONST TCHAR   aszPrtTHItemCount[]  = _T("%-4.20s:  %2d");        //SR 217 JHHJ Item Count Option, trailer item count */
 
-CONST TCHAR FARCONST  aszPrtTHItemCountSP[]  = _T("%-4.20s:  %2d");      //SR 217 JHHJ Item Count Option
+CONST TCHAR   aszPrtTHItemCountSP[]  = _T("%-4.20s:  %2d");      //SR 217 JHHJ Item Count Option
 
 //SR 805 weights and measures fix for price on 1 qty line
-CONST TCHAR FARCONST  aszPrtTHAmtMnemSpaceWeight[]    = _T("%s\t $%l$ ");             /* trans.mnem and amount */
+CONST TCHAR   aszPrtTHAmtMnemSpaceWeight[]    = _T("%s\t $%l$ ");             /* trans.mnem and amount */
 //SR 144 cwunn added to print quantity, mnemonic, and amount on the same line
-CONST TCHAR FARCONST  aszPrtTHAmtMnemSpace1Line[]     = _T("%ld %s $%l$ %s\t $%l$ ");  /* trans.mnem and amount */
-CONST TCHAR FARCONST  aszPrtTHAmtMnemSpace1LineGift[] = _T("%ld %s $%l$ %s");          /* trans.mnem and amount */
+CONST TCHAR   aszPrtTHAmtMnemSpace1Line[]     = _T("%ld %s $%l$ %s\t $%l$ ");  /* trans.mnem and amount */
+CONST TCHAR   aszPrtTHAmtMnemSpace1LineGift[] = _T("%ld %s $%l$ %s");          /* trans.mnem and amount */
 
-CONST TCHAR FARCONST  aszPrtTHAmtS[]    = _T("%l$");  /* amount */
-CONST TCHAR FARCONST  aszPrtTHAmtGift[] = _T("");     //Gift Receipt JHHJ
+CONST TCHAR   aszPrtTHAmtS[]    = _T("%l$");  /* amount */
+CONST TCHAR   aszPrtTHAmtGift[] = _T("");     //Gift Receipt JHHJ
 
-CONST TCHAR FARCONST  aszPrtTHCPRoomCharge[] = _T("%-4s%6s\t %-4s%3s");            /* room charge */
+CONST TCHAR   aszPrtTHCPRoomCharge[] = _T("%-4s%6s\t %-4s%3s");            /* room charge */
 
-CONST TCHAR FARCONST  aszPrtTHOffline[] = _T("%-4s   %5s   %6s");      /* mnemo, date, approval code */
+CONST TCHAR   aszPrtTHOffline[] = _T("%-4s   %5s   %6s");      /* mnemo, date, approval code */
 
-CONST TCHAR FARCONST  aszPrtTHOffDate[] = _T("%02d/%02d");             /* expiration date */
+CONST TCHAR   aszPrtTHOffDate[] = _T("%02d/%02d");             /* expiration date */
 
-CONST TCHAR FARCONST  aszPrtTHEPTError[] = _T("%c %d");                /* mnemo. and error code */
-CONST TCHAR FARCONST  aszPrtTHQty[]      = _T("\t%3ld %s %s ");        /* qty, unit price, Saratoga */
-CONST TCHAR FARCONST  aszPrtTHMoneyForeign[] = _T("%.*l$");
-CONST TCHAR FARCONST  aszPrtTHDecQty[]    = _T("\t%6.*l$ %s %s ");     /* qty, unit price */
+CONST TCHAR   aszPrtTHEPTError[] = _T("%c %d");                /* mnemo. and error code */
+CONST TCHAR   aszPrtTHQty[]      = _T("\t%3ld %s %s ");        /* qty, unit price, Saratoga */
+CONST TCHAR   aszPrtTHMoneyForeign[] = _T("%.*l$");
+CONST TCHAR   aszPrtTHDecQty[]    = _T("\t%6.*l$ %s %s ");     /* qty, unit price */
 
-CONST TCHAR FARCONST  aszPrtTHAmtDiscMnemSI[]     = _T("%s %s\t %d%% %11l$");    /* disc. rate and amount */
-CONST TCHAR FARCONST  aszPrtTHAmtDiscMnemSIGift[] = _T("%s %s\t %d%%");          /* disc. rate and amount */
-CONST TCHAR FARCONST  aszPrtTHTent[] = _T("%s %s");
+CONST TCHAR   aszPrtTHAmtDiscMnemSI[]     = _T("%s %s\t %d%% %11l$");    /* disc. rate and amount */
+CONST TCHAR   aszPrtTHAmtDiscMnemSIGift[] = _T("%s %s\t %d%%");          /* disc. rate and amount */
+CONST TCHAR   aszPrtTHTent[] = _T("%s %s");
 
-extern CONST TCHAR FARCONST  aszEtkCode[];
-extern CONST TCHAR FARCONST aszPrtAmtMnemShift[];/* trans.mnem and amount */
+extern CONST TCHAR  aszPrtAmtMnemShift[];/* trans.mnem and amount */
 
-TCHAR *PrtConcatMnemonic (TCHAR *tcsDest, TCHAR *tcsFill, TCHAR *tcsSource, int nMaxCharCount)
+TCHAR *PrtConcatMnemonic (TCHAR *tcsDest, TCHAR *tcsFill, CONST TCHAR *tcsSource, int nMaxCharCount)
 {
 	if (tcsFill) _tcsncat (tcsDest, tcsFill, nMaxCharCount);
 	if (tcsSource) _tcsncat (tcsDest, tcsSource, nMaxCharCount);
@@ -380,7 +376,7 @@ VOID PrtTHOffTend(USHORT  fbMod)
 *            if "number = 0", does not print.
 *===========================================================================
 */
-VOID  PrtTHNumber(TCHAR  *pszNumber)
+VOID  PrtTHNumber(CONST TCHAR  *pszNumber)
 {
     if (*pszNumber != 0) {
 		TCHAR   aszNumLine[PRT_THCOLUMN * 2 + 1] = {0};
@@ -406,7 +402,7 @@ VOID  PrtTHNumber(TCHAR  *pszNumber)
 *            if "number = 0", does not print.
 *===========================================================================
 */
-VOID  PrtTHMnemNumber(USHORT usAdr, TCHAR  *pszNumber)
+VOID  PrtTHMnemNumber(USHORT usAdr, CONST TCHAR  *pszNumber)
 {
     if (*pszNumber != 0) {
 		TCHAR   aszNumLine[PRT_THCOLUMN * 2 + 1];
@@ -441,7 +437,7 @@ VOID  PrtTHMnemNumber(USHORT usAdr, TCHAR  *pszNumber)
 *            See also MldMnemAmt() used for display in receipt window.
 *===========================================================================
 */
-VOID  PrtTHAmtTwoMnem(USHORT usAdr1, USHORT usAdr2, DCURRENCY lAmount, TCHAR *pCardLabel)
+VOID  PrtTHAmtTwoMnem(USTRNADRS usAdr1, USTRNADRS usAdr2, DCURRENCY lAmount, TCHAR *pCardLabel)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN * 2 + 5] = {0};  /* PARA_... defined in "paraequ.h" */
 	TCHAR  aszTranMnem2[PARA_TRANSMNEMO_LEN + 1] = {0};
@@ -480,7 +476,7 @@ VOID  PrtTHAmtTwoMnem(USHORT usAdr1, USHORT usAdr2, DCURRENCY lAmount, TCHAR *pC
 	}
 }
 
-VOID  PrtTHAmtMnem(USHORT usAdr, DCURRENCY lAmount)
+VOID  PrtTHAmtMnem(USTRNADRS usAdr, DCURRENCY lAmount)
 {
 	PrtTHAmtTwoMnem(usAdr, 0, lAmount, 0);
 }
@@ -502,7 +498,7 @@ VOID  PrtTHAmtMnem(USHORT usAdr, DCURRENCY lAmount)
 *            and Amount line. V3.3
 *===========================================================================
 */
-VOID  PrtTHMAmtShift(USHORT usTranAdr, DCURRENCY lAmount, USHORT usColumn)
+VOID  PrtTHMAmtShift(USTRNADRS usTranAdr, DCURRENCY lAmount, USHORT usColumn)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
     TCHAR  uchNull = 0;
@@ -530,7 +526,7 @@ VOID  PrtTHMAmtShift(USHORT usTranAdr, DCURRENCY lAmount, USHORT usColumn)
 *            and Amount line.
 *===========================================================================
 */
-VOID  PrtTHAmtMnemMnem(USHORT usTranAdr1, USHORT usTranAdr2, DCURRENCY lAmount)
+VOID  PrtTHAmtMnemMnem(USTRNADRS usTranAdr1, USTRNADRS usTranAdr2, DCURRENCY lAmount)
 {
 	TCHAR  aszTrcnMnem[PARA_TRANSMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     TCHAR  aszMnemD[PARA_TRANSMNEMO_LEN * 2 + 1] = {0}; /* PARA_... defined in "paraequ.h" */
@@ -564,7 +560,7 @@ VOID  PrtTHAmtMnemMnem(USHORT usTranAdr1, USHORT usTranAdr2, DCURRENCY lAmount)
 ** Synopsis: This function prints transaction mnemonic, native mnemonic  line. V3.4
 *===========================================================================
 */
-VOID  PrtTHAmtSymEuro(USHORT usTranAdr1, UCHAR uchAdr2, DCURRENCY lAmount, UCHAR fbStatus)
+VOID  PrtTHAmtSymEuro(USTRNADRS usTranAdr1, UCSPCADRS uchSpcAdr2, DCURRENCY lAmount, UCHAR fbStatus)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
     TCHAR  aszFMnem[PARA_SPEMNEMO_LEN +1 + 1] = {0};
@@ -588,10 +584,10 @@ VOID  PrtTHAmtSymEuro(USHORT usTranAdr1, UCHAR uchAdr2, DCURRENCY lAmount, UCHAR
     if (lAmount < 0) {
         aszFMnem[0] = '-';
         /* -- get foreign symbol -- */
-		RflGetSpecMnem(&aszFMnem[1], uchAdr2);
+		RflGetSpecMnem(&aszFMnem[1], uchSpcAdr2);
     } else {
         /* -- get foreign symbol -- */
-		RflGetSpecMnem(aszFMnem, uchAdr2);
+		RflGetSpecMnem(aszFMnem, uchSpcAdr2);
     }
 
     PrtPrintf(PMG_PRT_RECEIPT, aszPrtTHEuroAmtMnem, aszTranMnem, aszFMnem, sDecPoint, RflLLabs(lAmount));
@@ -613,12 +609,12 @@ VOID  PrtTHAmtSymEuro(USHORT usTranAdr1, UCHAR uchAdr2, DCURRENCY lAmount, UCHAR
 ** Synopsis: This function prints transaction mnemonics  line.
 *===========================================================================
 */
-VOID  PrtTHMnem(USHORT usAdr, BOOL fsType)
+VOID  PrtTHMnem(USTRNADRS usTranAdr, BOOL fsType)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
     TCHAR  aszPrintBuff[PRT_THCOLUMN + 1] = {0};
 
-	RflGetTranMnem(aszTranMnem, usAdr);
+	RflGetTranMnem(aszTranMnem, usTranAdr);
 
     /* -- double wide chara? -- */
     if (fsType == PRT_DOUBLE) {
@@ -649,7 +645,7 @@ VOID  PrtTHMnem(USHORT usAdr, BOOL fsType)
 ** Synopsis: This function prints transaction mnemonics  line.
 *===========================================================================
 */
-VOID  PrtTHAmtTaxMnem(USHORT usAdr, USHORT fsTax, USHORT  fbMod, DCURRENCY lAmount)
+VOID  PrtTHAmtTaxMnem(USTRNADRS usAdr, USHORT fsTax, USHORT  fbMod, DCURRENCY lAmount)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
     TCHAR  aszTaxMod[PRT_THCOLUMN + 1] = {0};
@@ -681,7 +677,7 @@ VOID  PrtTHAmtTaxMnem(USHORT usAdr, USHORT fsTax, USHORT  fbMod, DCURRENCY lAmou
 */
 VOID  PrtTHTaxMod(USHORT fsTax, USHORT  fbMod)
 {
-    TCHAR  aszTaxMod[PRT_THCOLUMN + 1];
+    TCHAR  aszTaxMod[PRT_THCOLUMN + 1] = { 0 };
 
     /* -- get tax modifier mnemonics -- */
     if ( PRT_WITHDATA == PrtGetTaxMod(aszTaxMod, TCHARSIZEOF(aszTaxMod), fsTax, fbMod) ) {
@@ -706,7 +702,7 @@ VOID  PrtTHTaxMod(USHORT fsTax, USHORT  fbMod)
 *            and Amount line. V3.3
 *===========================================================================
 */
-VOID  PrtTHTaxRateAmt(USHORT usTranAdr, LONG lRate, DCURRENCY lAmount,  USHORT usColumn)
+VOID  PrtTHTaxRateAmt(USTRNADRS usTranAdr, LONG lRate, DCURRENCY lAmount,  USHORT usColumn)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
     TCHAR  uchNull = 0;
@@ -733,7 +729,7 @@ VOID  PrtTHTaxRateAmt(USHORT usTranAdr, LONG lRate, DCURRENCY lAmount,  USHORT u
 */
 VOID  PrtTHVatMnem(ITEMAFFECTION  *pItem)
 {
-    TCHAR   aszVATMnem[3][PARA_TRANSMNEMO_LEN + 1];
+    TCHAR   aszVATMnem[3][PARA_TRANSMNEMO_LEN + 1] = { 0 };
     USCANVAT *pUSCanVAT = &(pItem->USCanVAT);
                                            
     if ( (   (pUSCanVAT->ItemVAT[0].lVATRate == 0) |
@@ -808,7 +804,7 @@ VOID  PrtTHVatAmt(ITEMVAT  ItemVAT)
 ** Synopsis: This function prints % discount line.
 *===========================================================================
 */
-VOID  PrtTHPerDisc(USHORT usAdr, UCHAR uchRate, DCURRENCY lAmount)
+VOID  PrtTHPerDisc(USTRNADRS usAdr, UCHAR uchRate, DCURRENCY lAmount)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
 	TCHAR  aszSpecMnem[STD_SPEMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
@@ -855,7 +851,7 @@ VOID  PrtTHPerDisc(USHORT usAdr, UCHAR uchRate, DCURRENCY lAmount)
 ** Synopsis: This function prints % discount line. 21RFC05437
 *===========================================================================
 */
-VOID  PrtTHPerDiscSISym(USHORT usAdr, UCHAR uchRate, DCURRENCY lAmount, TCHAR *pszSISym, UCHAR uchMDC)
+VOID  PrtTHPerDiscSISym(USTRNADRS usAdr, UCHAR uchRate, DCURRENCY lAmount, TCHAR *pszSISym, UCHAR uchMDC)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
     
@@ -989,7 +985,7 @@ VOID  PrtTHCoupon( ITEMCOUPON *pItem )
 ** Synopsis: This function prints transaction mnemonic, native mnemonic  line.
 *===========================================================================
 */
-VOID  PrtTHAmtSym(USHORT usAdr, DCURRENCY lAmount, BOOL fsType)
+VOID  PrtTHAmtSym(USTRNADRS usAdr, DCURRENCY lAmount, BOOL fsType)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};                       /* PARA_... defined in "paraequ.h" */
     TCHAR  aszSpecAmtS[PARA_SPEMNEMO_LEN +PRT_AMOUNT_LEN + 1] = {0};         /* spec. mnem & amount save area */
@@ -1266,20 +1262,25 @@ VOID PrtTHTblPerGC(USHORT usTblNo, USHORT usNoPerson, USHORT usGuestNo,
 *			  ***PDINU
 *===========================================================================
 */
-VOID PrtTHTentName( TCHAR *pszCustomerName )
+VOID PrtTHTentName(CONST TCHAR *pszCustomerName )
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
+    TCHAR  aszCustomerName[NUM_NAME + 1] = { 0 };
 
-    if ( *pszCustomerName == '\0' ) {
+    if (*pszCustomerName == '\0') {
         return;
     }
 
-    if ( *( pszCustomerName + NUM_NAME - 2 ) == PRT_DOUBLE ) {
-        *( pszCustomerName + NUM_NAME - 2 ) = '\0';
+#if 1
+    PrtTruncDoubleString(aszCustomerName, NUM_NAME, pszCustomerName);
+#else
+    if (*(pszCustomerName + NUM_NAME - 2) == PRT_DOUBLE) {
+        *(pszCustomerName + NUM_NAME - 2) = '\0';
     }
+#endif
 
 	RflGetTranMnem(aszTranMnem, TRN_TENT);
-    PrtPrintf( PMG_PRT_RECEIPT, aszPrtTHTent, aszTranMnem, pszCustomerName );
+    PrtPrintf( PMG_PRT_RECEIPT, aszPrtTHTent, aszTranMnem, aszCustomerName);
 }
 
 /*
@@ -1294,17 +1295,23 @@ VOID PrtTHTentName( TCHAR *pszCustomerName )
 ** Synopsis : This function prints customer name
 *===========================================================================
 */
-VOID PrtTHCustomerName( TCHAR *pszCustomerName )
+VOID PrtTHCustomerName(CONST TCHAR *pszCustomerName )
 {
-    if ( *pszCustomerName == '\0' ) {
+    TCHAR  aszCustomerName[NUM_NAME + 1] = { 0 };
+
+    if (*pszCustomerName == '\0') {
         return;
     }
 
-    if ( *( pszCustomerName + NUM_NAME - 2 ) == PRT_DOUBLE ) {
-        *( pszCustomerName + NUM_NAME - 2 ) = '\0';
+#if 1
+    PrtTruncDoubleString(aszCustomerName, NUM_NAME, pszCustomerName);
+#else
+    if (*(pszCustomerName + NUM_NAME - 2) == PRT_DOUBLE) {
+        *(pszCustomerName + NUM_NAME - 2) = '\0';
     }
+#endif
 
-    PrtPrintf( PMG_PRT_RECEIPT, aszPrtTHCustomerName, pszCustomerName );
+    PrtPrintf( PMG_PRT_RECEIPT, aszPrtTHCustomerName, aszCustomerName);
 }
 
 /*
@@ -1319,11 +1326,11 @@ VOID PrtTHCustomerName( TCHAR *pszCustomerName )
 ** Synopsis: This function formats seat no. line with list of finalized seats. R3.1
 *===========================================================================
 */
-VOID    PrtTHMultiSeatNo(TRANINFORMATION *pTran)
+VOID    PrtTHMultiSeatNo(CONST TRANINFORMATION *pTran)
 {
 	TCHAR   aszPrintBuff[PRT_EJCOLUMN + 1] = {0};
 	TCHAR   aszSpecMnem[ PARA_SPEMNEMO_LEN + 1 ] = {0};
-    USHORT  i, usPos;
+    USHORT  usPos;
 
     if (pTran->TranGCFQual.auchFinSeat[0] == 0) {
         return;
@@ -1335,7 +1342,7 @@ VOID    PrtTHMultiSeatNo(TRANINFORMATION *pTran)
     _tcsncpy(&aszPrintBuff[0], aszSpecMnem, usPos);
 
     /* ---- set multiple seat no. ---- */
-    for (i = 0; i < NUM_SEAT; i++) {
+    for (USHORT i = 0; i < NUM_SEAT; i++) {
         if (pTran->TranGCFQual.auchFinSeat[i]) {
             aszPrintBuff[usPos++] = ' ';
             aszPrintBuff[usPos++] = (TCHAR)(pTran->TranGCFQual.auchFinSeat[i] | 0x30);
@@ -1366,7 +1373,7 @@ VOID    PrtTHMultiSeatNo(TRANINFORMATION *pTran)
 *            
 *===========================================================================
 */
-VOID  PrtTHTranNum(USHORT usAdr, ULONG ulNumber)
+VOID  PrtTHTranNum(USTRNADRS usAdr, ULONG ulNumber)
 {
     TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};/* PARA_... defined in "paraequ.h" */
 
@@ -1397,7 +1404,7 @@ VOID  PrtTHKitchen(UCHAR  uchKPNo)
     TCHAR  aszPrtNo[8 + 1] = {0};
 
     /* -- get 24 char mnemonics -- */
-    PrtGet24Mnem(aszMnem, CH24_KTCHN_ADR);
+    RflGet24Mnem(aszMnem, CH24_KTCHN_ADR);
 
 	/* -- send kitchen information -- */
     PrtPrint(PMG_PRT_RECEIPT, aszMnem, tcharlen(aszMnem)); /* ### Mod (2171 for Win32) V1.0 */
@@ -1406,7 +1413,7 @@ VOID  PrtTHKitchen(UCHAR  uchKPNo)
     memset(aszMnem, '\0', sizeof(aszMnem));
 
     /* -- get lead through mnemonics -- */
-    PrtGetLead(aszLDT, LDT_KTNERR_ADR);
+    RflGetLead(aszLDT, LDT_KTNERR_ADR);
 
     /* -- convert to double -- */
     PrtDouble(aszMnem, (PRT_THCOLUMN + 1), aszLDT);
@@ -1444,7 +1451,7 @@ VOID  PrtTHKitchen(UCHAR  uchKPNo)
 *            
 *===========================================================================
 */
-VOID  PrtTHWaiAmtMnem(ULONG ulWaiID, USHORT usTranAdr, DCURRENCY lAmount)
+VOID  PrtTHWaiAmtMnem(ULONG ulWaiID, USTRNADRS usTranAdr, DCURRENCY lAmount)
 {
     TCHAR  aszWaiMnem[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};/* PARA_... defined in "paraequ.h" */
@@ -1476,7 +1483,7 @@ VOID  PrtTHWaiAmtMnem(ULONG ulWaiID, USHORT usTranAdr, DCURRENCY lAmount)
 *            
 *===========================================================================
 */
-VOID  PrtTHWaiGC(USHORT usTranAdr, ULONG ulWaiID, USHORT usGuestNo, UCHAR uchCDV)
+VOID  PrtTHWaiGC(USTRNADRS usTranAdr, ULONG ulWaiID, USHORT usGuestNo, UCHAR uchCDV)
 {
     TCHAR  aszWaiMnem[PARA_TRANSMNEMO_LEN + 1] = {0};/* PARA_... defined in "paraequ.h" */
     TCHAR  aszGCMnem[PARA_TRANSMNEMO_LEN + 1] = {0};/* PARA_... defined in "paraequ.h" */
@@ -1515,9 +1522,9 @@ VOID  PrtTHWaiGC(USHORT usTranAdr, ULONG ulWaiID, USHORT usGuestNo, UCHAR uchCDV
 */
 VOID  PrtTHForeign(DCURRENCY lForeign, UCHAR uchMinorClass, UCHAR fbStatus, ULONG ulRate, UCHAR fbStatus2)
 {
-    SHORT  sDecPoint, sDecPoint2;
-	USHORT usTranAdr2;
-	UCHAR  uchAdr1;
+    SHORT      sDecPoint;
+    USTRNADRS  usTranAdr2;
+    UCSPCADRS  uchAdr1;
 
 	// if this is a gift receipt then do not bother trying to print the conversion rate, etc.
 	if(TrnInformation.TranCurQual.fsCurStatus2 & PRT_GIFT_RECEIPT)
@@ -1540,6 +1547,7 @@ VOID  PrtTHForeign(DCURRENCY lForeign, UCHAR uchMinorClass, UCHAR fbStatus, ULON
 		TCHAR  aszFMnem[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
 		TCHAR  aszFAmt[PRT_THCOLUMN + 1] = {0};
 		USHORT usStrLen;
+        SHORT  sDecPoint2;
 
 		/* -- get foreign symbol -- */
 		RflGetSpecMnem(aszFMnem, uchAdr1);
@@ -1578,34 +1586,34 @@ VOID  PrtTHForeign(DCURRENCY lForeign, UCHAR uchMinorClass, UCHAR fbStatus, ULON
 		TCHAR  aszFMnem[PARA_TRANSMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
 		TCHAR  aszFAmt[PRT_THCOLUMN + 1] = {0};
 		TCHAR  aszSpecAmt[PARA_SPEMNEMO_LEN + 1] = {0};
-		UCHAR  uchFCAdr = SPC_CNSYMNTV_ADR;
+        UCSPCADRS  uchFCAdr = SPC_CNSYMNTV_ADR;
 
 		RflGetTranMnem(aszFMnem, usTranAdr2);
 
         switch (uchMinorClass) {
 			case CLASS_MAINTFOREIGN1:
-			   uchFCAdr  = (UCHAR)(SPC_CNSYMFC1_ADR);
+			   uchFCAdr  = SPC_CNSYMFC1_ADR;
 			   break;
 			case CLASS_MAINTFOREIGN2:
-			   uchFCAdr  = (UCHAR)(SPC_CNSYMFC2_ADR);
+			   uchFCAdr  = SPC_CNSYMFC2_ADR;
 			   break;
 			case CLASS_MAINTFOREIGN3:
-			   uchFCAdr  = (UCHAR)(SPC_CNSYMFC3_ADR);
+			   uchFCAdr  = SPC_CNSYMFC3_ADR;
 			   break;
 			case CLASS_MAINTFOREIGN4:
-			   uchFCAdr  = (UCHAR)(SPC_CNSYMFC4_ADR);
+			   uchFCAdr  = SPC_CNSYMFC4_ADR;
 			   break;
 			case CLASS_MAINTFOREIGN5:
-			   uchFCAdr  = (UCHAR)(SPC_CNSYMFC5_ADR);
+			   uchFCAdr  = SPC_CNSYMFC5_ADR;
 			   break;
 			case CLASS_MAINTFOREIGN6:
-			   uchFCAdr  = (UCHAR)(SPC_CNSYMFC6_ADR);
+			   uchFCAdr  = SPC_CNSYMFC6_ADR;
 			   break;
 			case CLASS_MAINTFOREIGN7:
-			   uchFCAdr  = (UCHAR)(SPC_CNSYMFC7_ADR);
+			   uchFCAdr  = SPC_CNSYMFC7_ADR;
 			   break;
 			case CLASS_MAINTFOREIGN8:
-			   uchFCAdr  = (UCHAR)(SPC_CNSYMFC8_ADR);
+			   uchFCAdr  = SPC_CNSYMFC8_ADR;
 			   break;
 		}
 		RflGetSpecMnem(aszSpecAmt, uchFCAdr);
@@ -1634,7 +1642,7 @@ VOID  PrtTHForeign(DCURRENCY lForeign, UCHAR uchMinorClass, UCHAR fbStatus, ULON
 *            
 *===========================================================================
 */
-VOID  PrtTHEuro(UCHAR uchAdr1, LONG lForeign, UCHAR uchAdr2, ULONG ulRate, UCHAR fbStatus2)
+VOID  PrtTHEuro(UCSPCADRS uchAdr1, LONG lForeign, UCSPCADRS uchAdr2, ULONG ulRate, UCHAR fbStatus2)
 {
     TCHAR  aszFMnem1[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     TCHAR  aszFMnem2[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
@@ -1729,11 +1737,7 @@ VOID    PrtTHSeatNo2(TCHAR uchSeatNo)
 VOID  PrtTHQty(TRANINFORMATION  *pTran, ITEMSALES *pItem)
 {
     TCHAR  aszTaxMod[PRT_THCOLUMN + 1] = {0};
-    TCHAR  auchDummy[NUM_PLU_LEN] = {0};
 	TCHAR  aszSpecMnem2[STD_SPEMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
-    DCURRENCY lPrice = 0;
-    USHORT i;
-    USHORT  usNoOfChild;
 
 	RflGetSpecMnem(aszSpecMnem2, SPC_EC_ADR);
 
@@ -1745,11 +1749,12 @@ VOID  PrtTHQty(TRANINFORMATION  *pTran, ITEMSALES *pItem)
     if (labs(pItem->lQTY) == PLU_BASE_UNIT) {
         PrtPrint(PMG_PRT_RECEIPT, aszTaxMod, tcharlen(aszTaxMod));
     } else {
-        usNoOfChild = pItem->uchCondNo + pItem->uchPrintModNo + pItem->uchChildNo;
-        lPrice = 0L;
+        DCURRENCY  lPrice = 0;
+        USHORT     usNoOfChild = pItem->uchCondNo + pItem->uchPrintModNo + pItem->uchChildNo;
 
-        for ( i = pItem->uchChildNo; i < usNoOfChild; i++) {
-            if (_tcsncmp(pItem->Condiment[ i ].auchPLUNo, auchDummy, NUM_PLU_LEN) != 0 ) {
+        NHPOS_ASSERT(usNoOfChild <= sizeof(pItem->Condiment) / sizeof(pItem->Condiment[0]));
+        for (USHORT i = pItem->uchChildNo; i < usNoOfChild; i++) {
+            if (_tcsncmp(pItem->Condiment[ i ].auchPLUNo, MLD_NO_DISP_PLU_DUMMY, NUM_PLU_LEN) != 0 ) {
                 lPrice += pItem->Condiment[i].lUnitPrice;
             }
         }
@@ -1846,9 +1851,6 @@ VOID  PrtTHQty(TRANINFORMATION  *pTran, ITEMSALES *pItem)
 VOID  PrtTHLinkQty(TRANINFORMATION  *pTran, ITEMSALES *pItem)
 {
     TCHAR  aszTaxMod[PRT_THCOLUMN + 1] = {0};
-	TCHAR  aszSpecMnem2[STD_SPEMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
-
-	RflGetSpecMnem(aszSpecMnem2, SPC_EC_ADR);
 
     /* -- get tax modifier mnemonics -- */
     if ( PRT_WITHOUTDATA == PrtGetTaxMod(aszTaxMod, TCHARSIZEOF(aszTaxMod), pTran->TranModeQual.fsModeStatus, pItem->fbModifier) ) {
@@ -1859,6 +1861,9 @@ VOID  PrtTHLinkQty(TRANINFORMATION  *pTran, ITEMSALES *pItem)
         PrtPrint(PMG_PRT_RECEIPT, aszTaxMod, tcharlen(aszTaxMod));
     } else {
 		DCURRENCY lPrice = pItem->Condiment[0].lUnitPrice;
+	    TCHAR  aszSpecMnem2[STD_SPEMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
+
+	    RflGetSpecMnem(aszSpecMnem2, SPC_EC_ADR);
 
         if ((pItem->uchMinorClass == CLASS_DEPTMODDISC) 
                 || (pItem->uchMinorClass == CLASS_PLUMODDISC) 
@@ -2193,7 +2198,7 @@ VOID  PrtTHItems(TRANINFORMATION *pTran, ITEMSALES  *pItem)
 *            
 *===========================================================================
 */
-VOID  PrtTHZeroAmtMnem(USHORT usAddress, DCURRENCY lAmount)
+VOID  PrtTHZeroAmtMnem(USTRNADRS usAddress, DCURRENCY lAmount)
 {
     if (lAmount != 0L) {
         PrtTHAmtMnem(usAddress, lAmount);
@@ -2260,9 +2265,8 @@ VOID  PrtTHDiscItems(ITEMSALES  *pItem)
 ** Synopsis: This function prints thermal header. (with square double width)
 *===========================================================================
 */
-SHORT PrtTHHead(TRANINFORMATION  *pTran)
+SHORT PrtTHHead(USHORT usConsNo)
 {
-    UCHAR i;
     UCHAR uchTrgPrt;
 
     if ( fbPrtTHHead == PRT_HEADER_PRINTED ) {
@@ -2278,8 +2282,8 @@ SHORT PrtTHHead(TRANINFORMATION  *pTran)
         }
 
         if ( 0 != PrtCheckShr(uchTrgPrt) ) {
-            fbPrtShrStatus |= PRT_SHARED_SYSTEM;    /* indicate shared printer system */     
-            PrtShrInit(pTran);                      /* initialize shared printer buffer */
+            fbPrtShrStatus |= PRT_SHARED_SYSTEM;      /* indicate shared printer system */     
+            PrtShrInit(usConsNo);                     /* initialize shared printer buffer */
         }
     }
 
@@ -2288,11 +2292,11 @@ SHORT PrtTHHead(TRANINFORMATION  *pTran)
 		PrtLogo(PMG_PRT_RECEIPT, 1);
 	}
     
-    for ( i = CH24_1STRH_ADR; i <= CH24_4THRH_ADR; i++) {
+    for (USHORT i = CH24_1STRH_ADR; i <= CH24_4THRH_ADR; i++) {
 		TCHAR asz24Mnem[PARA_CHAR24_LEN + 1] = {0};
 		TCHAR aszSDblMn[PARA_CHAR24_LEN * 2 + 1] = {0};
 
-        PrtGet24Mnem(asz24Mnem, i);
+        RflGet24Mnem(asz24Mnem, i);
 
         /* -- convert to square double -- */
         PrtSDouble(aszSDblMn, TCHARSIZEOF(aszSDblMn), asz24Mnem);
@@ -2449,7 +2453,7 @@ VOID  PrtTHWaiTaxMod(ULONG ulID, USHORT  fsTax, USHORT  fbMod)
 ** Synopsis: This function prints Trans. Menm.  and short value.
 *===========================================================================
 */
-VOID  PrtTHMnemCount(USHORT usAdr, SHORT sCount)
+VOID  PrtTHMnemCount(USTRNADRS usAdr, SHORT sCount)
 {
     TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
 
@@ -2474,8 +2478,8 @@ VOID  PrtTHMnemCount(USHORT usAdr, SHORT sCount)
 */
 VOID  PrtTHTrail1(TRANINFORMATION *pTran)
 {
-	extern CONST TCHAR FARCONST  aszCasWaiID[];
-	CONST TCHAR FARCONST  *aszPrtTHTrail1  = _T("%-4s %8s\t %s"); /* trailer 1st line */
+	extern CONST TCHAR   aszCasWaiID[];
+	CONST TCHAR   *aszPrtTHTrail1  = _T("%-4s %8s\t %s"); /* trailer 1st line */
     TCHAR  aszMnem[PARA_SPEMNEMO_LEN + 1] = {0};
     ULONG  ulID;
     TCHAR  *pszName;
@@ -2512,7 +2516,7 @@ VOID  PrtTHTrail1(TRANINFORMATION *pTran)
 */
 VOID PrtTHTrail2(TRANINFORMATION  *pTran, ULONG  ulStRegNo)
 {
-	CONST TCHAR FARCONST  *aszPrtTHTrail2 = _T("%04d\t %s   %04lu-%03lu");    /* trailer 2nd line */
+	CONST TCHAR   *aszPrtTHTrail2 = _T("%04d\t %s   %04lu-%03lu");    /* trailer 2nd line */
     TCHAR   aszDate[PRT_DATETIME_LEN + 1] = {0};
 
    PrtGetDate(aszDate, TCHARSIZEOF(aszDate), pTran);   /* get date time */
@@ -2607,7 +2611,7 @@ VOID  PrtTHTickTrail1(TRANINFORMATION  *pTran)
 */
 VOID PrtTHTickTrail2(TRANINFORMATION  *pTran)
 {
-	CONST TCHAR FARCONST  *aszPrtTHTickTrail2 = _T("%04d %4s %8.8Mu\t %s   %04lu-%03lu"); /* ticket trailer 2nd line */
+	CONST TCHAR   *aszPrtTHTickTrail2 = _T("%04d %4s %8.8Mu\t %s   %04lu-%03lu"); /* ticket trailer 2nd line */
     TCHAR  aszMnem[PARA_SPEMNEMO_LEN + 1] = {0};
     TCHAR  aszDate[PRT_DATETIME_LEN + 1] = {0};
     ULONG  ulID;
@@ -2639,8 +2643,8 @@ VOID PrtTHTickTrail2(TRANINFORMATION  *pTran)
 */
 VOID PrtTHEtkCode(ITEMMISC  *pItem, SHORT sType)
 {
-	extern CONST TCHAR FARCONST  aszEtkJobCode[];
-	CONST TCHAR FARCONST  *aszPrtETKCode = _T("%-16s %8.8Mu\t%s");             /* change at R3.1 */
+	extern CONST TCHAR   aszEtkJobCode[];
+	CONST TCHAR   *aszPrtETKCode = _T("%-16s %8.8Mu\t%s");             /* change at R3.1 */
     TCHAR   aszJobCode[12] = {0};
 
     if ( ( sType == PRT_WTIN) && ( pItem->uchJobCode != 0 ) ) {
@@ -2665,7 +2669,7 @@ VOID PrtTHEtkCode(ITEMMISC  *pItem, SHORT sType)
 ** Synopsis: This function prints ETK time-in/out mnemonics.
 *===========================================================================
 */
-VOID PrtTHEtkOut(USHORT  usTranAdr1, USHORT  usTranAdr2)
+VOID PrtTHEtkOut(USTRNADRS  usTranAdr1, USTRNADRS  usTranAdr2)
 {
     TCHAR  aszTimeInMnem[PARA_TRANSMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     TCHAR  aszTimeOutMnem[PARA_TRANSMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
@@ -2935,12 +2939,13 @@ VOID    PrtTHPLUNo(TCHAR *puchPLUCpn)
 *   InOut  : none
 ** Return  : none
 *
-** Synopsis: This function adjusts FC mnemonics and amount sign
+** Synopsis: This function adjusts FC mnemonics and amount sign.
+*            See also PrtAdjustNative() that does the same for native currency.
 *===========================================================================
 */
-VOID    PrtAdjustForeign(TCHAR *pszDest, DCURRENCY lAmount, UCHAR uchAdr, UCHAR uchMDC)
+VOID    PrtAdjustForeign(TCHAR *pszDest, DCURRENCY lAmount, UCSPCADRS uchSpcAdr, UCHAR uchMDC)
 {
-    static const TCHAR FARCONST  aszPrtRJFC[] = _T("%.*l$");
+    static const TCHAR   aszPrtRJFC[] = _T("%.*l$");
     TCHAR  aszSpecMnem[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     USHORT usStrLen;
     SHORT  sDecPoint;
@@ -2957,7 +2962,7 @@ VOID    PrtAdjustForeign(TCHAR *pszDest, DCURRENCY lAmount, UCHAR uchAdr, UCHAR 
     }
 
     /* -- get fc mnemonics -- */
-	RflGetSpecMnem(aszSpecMnem, uchAdr);
+	RflGetSpecMnem(aszSpecMnem, uchSpcAdr);
 
     /* -- get string length -- */
     usStrLen = tcharlen(aszSpecMnem);
@@ -3000,7 +3005,7 @@ VOID    PrtAdjustForeign(TCHAR *pszDest, DCURRENCY lAmount, UCHAR uchAdr, UCHAR 
 *       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *===========================================================================
 */
-VOID    PrtTHMoneyForeign (DCURRENCY lForeign, USHORT usTranAdr1, UCHAR uchAdr2, UCHAR fbStatus)
+VOID    PrtTHMoneyForeign (DCURRENCY lForeign, USTRNADRS usTranAdr1, UCSPCADRS uchSpcAdr2, UCHAR fbStatus)
 {
     TCHAR   aszFMnem[PARA_SPEMNEMO_LEN + 1] = {0};        /* PARA_... defined in "paraequ.h" */
     TCHAR   aszFAmt[PRT_THCOLUMN + 1] = {0};
@@ -3020,7 +3025,7 @@ VOID    PrtTHMoneyForeign (DCURRENCY lForeign, USHORT usTranAdr1, UCHAR uchAdr2,
     }
 
     /* -- get foreign symbol -- */
-	RflGetSpecMnem( aszFMnem, uchAdr2 );
+	RflGetSpecMnem( aszFMnem, uchSpcAdr2 );
 
     /* -- get string length -- */
     usStrLen = tcharlen( aszFMnem );
@@ -3149,13 +3154,13 @@ VOID  PrtTHTipTotal(USHORT  usPrtType)
 ** Synopsis: This function prints transaction mnemonic, native mnemonic  line.
 *===========================================================================
 */
-VOID  PrtTHOrderDec(USHORT usAdr)
+VOID  PrtTHOrderDec(USTRNADRS usTranAdr)
 {
 	TCHAR  aszTranMnem[(PARA_TRANSMNEMO_LEN) + 1] = {0};      /* PARA_... defined in "paraequ.h" */
     TCHAR  aszTranMnemD[(PARA_TRANSMNEMO_LEN)* 2 + 1] = {0};  /* PARA_... defined in "paraequ.h" */
 
     /* -- get transaction mnemonics -- */
-	RflGetTranMnem(aszTranMnem, usAdr);
+	RflGetTranMnem(aszTranMnem, usTranAdr);
 
     /* -- convert to double -- */
     PrtDouble(aszTranMnemD, TCHARSIZEOF(aszTranMnemD), aszTranMnem);
@@ -3186,7 +3191,7 @@ VOID  PrtTHAmtGiftMnem(ITEMTENDER  *pItem)
 	/* -- get transaction  mnemonics -- */
 //	RflGetTranMnem(aszTranMnem, uchAdr);
 
-	_tcscpy(aszTranMnem,pItem->aszTendMnem);
+	_tcsncpy(aszTranMnem,pItem->aszTendMnem, PARA_TRANSMNEMO_LEN);
 
 	RflGetSpecMnem(aszSpecMnem, SPC_CNSYMNTV_ADR);
 

@@ -95,18 +95,18 @@ VOID  PrtThrmSupCashierNo( MAINTCASHIERIF *pData )
     /* define thermal/EJ common print format */
     const TCHAR  *auchIdNumber = _T("%8.8Mu");
 
-	TCHAR	aszDoubRepoNumb[8 * 2 + 1];
-	TCHAR	aszRepoNumb[8 + 1];
+    TCHAR	aszDoubRepoNumb[8 * 2 + 1] = { 0 };
+	TCHAR	aszRepoNumb[8 + 1] = { 0 };
 
     /* initialize buffer */
-    TCHAR   aszAddress1[6] = { 0, 0, 0, 0, 0, 0 };
-    TCHAR   aszAddress2[6] = { 0, 0, 0, 0, 0, 0 };
-    TCHAR   aszAddress3[6] = { 0, 0, 0, 0, 0, 0 };
-    TCHAR   aszAddress4[6] = { 0, 0, 0, 0, 0, 0 };
-    TCHAR   aszAddress5[3] = { 0, 0, 0 };
-    TCHAR   aszAddress6[3] = { 0, 0, 0 };
-    TCHAR   aszAddress7[4] = { 0, 0, 0, 0 };
-    TCHAR   aszAddress8[PARA_CASHIER_LEN + 1];
+    TCHAR   aszAddress1[6] = { 0 };
+    TCHAR   aszAddress2[6] = { 0 };
+    TCHAR   aszAddress3[6] = { 0 };
+    TCHAR   aszAddress4[6] = { 0 };
+    TCHAR   aszAddress5[3] = { 0 };
+    TCHAR   aszAddress6[3] = { 0 };
+    TCHAR   aszAddress7[4] = { 0 };
+    TCHAR   aszAddress8[PARA_CASHIER_LEN + 1] = { 0 };
 
     /* convert cashier status data to binary ASCII data */
     PrtSupItoa(( UCHAR)(pData->CashierIf.fbCashierStatus[CAS_CASHIERSTATUS_0] & 0x0F), aszAddress1);
@@ -124,7 +124,6 @@ VOID  PrtThrmSupCashierNo( MAINTCASHIERIF *pData )
     PrtDouble(aszDoubRepoNumb, TCHARSIZEOF(aszDoubRepoNumb), aszRepoNumb);
 
     /* copy mnemonics data to buffer */
-    memset(aszAddress8, 0, (PARA_CASHIER_LEN + 1) * sizeof(TCHAR));
     _tcsncpy(aszAddress8, pData->CashierIf.auchCashierName, PARA_CASHIER_LEN);
 
     /* check print control */

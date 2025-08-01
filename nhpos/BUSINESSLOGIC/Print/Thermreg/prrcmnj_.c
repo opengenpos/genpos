@@ -116,18 +116,18 @@
 #include	<stdio.h>
 /**------- 2170 local------**/
 #include    "ecr.h"
+#include    "pif.h"
 #include    "regstrct.h"
 #include    "transact.h"
 #include    "paraequ.h"
 #include    "para.h"
 #include    "csstbpar.h"
 #include    "uie.h"
-#include    "pmg.h"
-#include    "rfl.h"
-#include    "pif.h"
+#include    <pmg.h>
+#include    <rfl.h>
+#include    <prt.h>
 #include    "ej.h"
 #include    "csstbej.h"
-#include    "prtcom.h"
 #include    "prtrin.h"
 #include    "prrcolm_.h"
 #include    "maint.h"
@@ -225,10 +225,7 @@ extern CONST TCHAR  aszPrtTime[];
 extern CONST TCHAR  aszPrtTimeZone[];
 extern CONST TCHAR  aszPrtDate[];
 
-extern CONST TCHAR   aszEtkCode[];
 
-
-extern CONST TCHAR   aszPrtTHEuro1[];         /* Euro amount */
 extern CONST TCHAR   aszPrtTHEuroAmtMnem[];   /* trans.mnem and amount */
 
 CONST TCHAR   aszPrtEJPluBuild[]      = _T("%s\t %13s %04d");     /* Plu no and Dept no. */
@@ -314,7 +311,7 @@ VOID PrtEJOffTend(USHORT  fbMod)
 *            if "number = 0", does not print.
 *===========================================================================
 */
-VOID  PrtEJNumber(TCHAR  *pszNumber)
+VOID  PrtEJNumber(CONST TCHAR  *pszNumber)
 {
     if (*pszNumber != 0) {
 		TCHAR   aszNumLine[PRT_EJCOLUMN * 2 + 1] = {0};
@@ -367,7 +364,7 @@ VOID  PrtEJMnemNumber(USHORT usAdr, TCHAR  *pszNumber)
 *            and Amount line.
 *===========================================================================
 */
-VOID  PrtEJAmtMnem(USHORT usAdr, DCURRENCY lAmount)
+VOID  PrtEJAmtMnem(USTRNADRS usAdr, DCURRENCY lAmount)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 4 + 1] = {0}; // possible 4 characters lead needed.
 
@@ -388,9 +385,9 @@ VOID  PrtEJAmtMnem(USHORT usAdr, DCURRENCY lAmount)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtEJMnem(UCHAR uchAdr, BOOL fsType);
+** Format  : VOID  PrtEJMnem(USTRNADRS uchAdr, BOOL fsType);
 *               
-*   Input  : UCHAR uchAdr          -Transacion mnemonics address
+*   Input  : USTRNADRS uchAdr      -Transacion mnemonics address
 *            SHORT fsType          -characvter type
 *                                       PRT_SINGLE: single character
 *                                       PRT_DOUBLE: double character
@@ -402,7 +399,7 @@ VOID  PrtEJAmtMnem(USHORT usAdr, DCURRENCY lAmount)
 ** Synopsis: This function prints transaction mnemonics  line.
 *===========================================================================
 */
-VOID  PrtEJMnem(USHORT usAdr, BOOL fsType)
+VOID  PrtEJMnem(USTRNADRS usAdr, BOOL fsType)
 {
 #if 1
 	// ignore any kind of a double size as indicated by fsType so that
@@ -435,9 +432,9 @@ VOID  PrtEJMnem(USHORT usAdr, BOOL fsType)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtEJZAMnemShift(UCHAR uchAddress, DCURRENCY lAmount, USHOT usColumn);
+** Format  : VOID  PrtEJZAMnemShift(USTRNADRS usTranAddress, DCURRENCY lAmount, USHOT usColumn);
 *
-*   Input  : UCHAR      uchAddress  -transaction mnemonics address
+*   Input  : USTRNADRS  uchAddress  -transaction mnemonics address
 *            DCURRENCY  lAmount     -change
 *            USHORT     usColumn    -shift column
 *   Output : none
@@ -447,7 +444,7 @@ VOID  PrtEJMnem(USHORT usAdr, BOOL fsType)
 ** Synopsis: This function prints mnemonics. and amount V3.3
 *===========================================================================
 */
-VOID  PrtEJZAMnemShift(USHORT usTranAddress, DCURRENCY lAmount, USHORT usColumn)
+VOID  PrtEJZAMnemShift(USTRNADRS usTranAddress, DCURRENCY lAmount, USHORT usColumn)
 {
     if (lAmount != 0L) {
         PrtEJAmtMnemShift(usTranAddress, lAmount, usColumn);
@@ -456,9 +453,9 @@ VOID  PrtEJZAMnemShift(USHORT usTranAddress, DCURRENCY lAmount, USHORT usColumn)
 
 /*
 *===========================================================================
-** Format  : VOID  PrtEJAmtMnemShift(UCHAR uchAdr, DCURRENCY lAmount, USHORT usColumn);
+** Format  : VOID  PrtEJAmtMnemShift(USTRNADRS usTranAdr, DCURRENCY lAmount, USHORT usColumn);
 *               
-*    Input : UCHAR      uchAdr      -Transacion mnemonics address
+*    Input : USTRNADRS  usTranAdr   -Transacion mnemonics address
 *            DCURRENCY  lAmount     -Amount
 *            USHORT     usColumn    -shift column
 *   Output : none
@@ -470,7 +467,7 @@ VOID  PrtEJZAMnemShift(USHORT usTranAddress, DCURRENCY lAmount, USHORT usColumn)
 *            and Amount line. V3.3
 *===========================================================================
 */
-VOID  PrtEJAmtMnemShift(USHORT usTranAdr, DCURRENCY lAmount, USHORT usColumn)
+VOID  PrtEJAmtMnemShift(USTRNADRS usTranAdr, DCURRENCY lAmount, USHORT usColumn)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     TCHAR  uchNull = _T('\0');
@@ -499,7 +496,7 @@ VOID  PrtEJAmtMnemShift(USHORT usTranAdr, DCURRENCY lAmount, USHORT usColumn)
 ** Synopsis: This function prints transaction mnemonic, native mnemonic  line. V3.4
 *===========================================================================
 */
-VOID  PrtEJAmtSymEuro(USHORT usTranAdr1, UCHAR uchAdr2, DCURRENCY lAmount, UCHAR fbStatus)
+VOID  PrtEJAmtSymEuro(USTRNADRS usTranAdr1, UCSPCADRS uchSpcAdr2, DCURRENCY lAmount, UCHAR fbStatus)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
 	TCHAR  aszFMnem[PARA_SPEMNEMO_LEN + 1 + 1] = {0};  /* PARA_... defined in "paraequ.h" */
@@ -524,10 +521,10 @@ VOID  PrtEJAmtSymEuro(USHORT usTranAdr1, UCHAR uchAdr2, DCURRENCY lAmount, UCHAR
     if (lAmount < 0) {
         aszFMnem[0] = _T('-');
         /* -- get foreign symbol -- */
-		RflGetSpecMnem(&aszFMnem[1], uchAdr2);
+		RflGetSpecMnem(&aszFMnem[1], uchSpcAdr2);
     } else {
         /* -- get foreign symbol -- */
-		RflGetSpecMnem(aszFMnem, uchAdr2);
+		RflGetSpecMnem(aszFMnem, uchSpcAdr2);
     }
 
 	RflCleanupMnemonic (aszFMnem);
@@ -573,7 +570,7 @@ VOID  PrtEJTaxMod(USHORT fsTax, USHORT  fbMod)
 ** Synopsis: This function prints % discount line.
 *===========================================================================
 */
-VOID  PrtEJPerDisc(USHORT usAdr, UCHAR uchRate, DCURRENCY lAmount)
+VOID  PrtEJPerDisc(USTRNADRS usAdr, UCHAR uchRate, DCURRENCY lAmount)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
     
@@ -605,7 +602,7 @@ VOID  PrtEJPerDisc(USHORT usAdr, UCHAR uchRate, DCURRENCY lAmount)
 ** Synopsis: This function prints % discount line. 21RFC05437
 *===========================================================================
 */
-VOID  PrtEJPerDiscSISym(USHORT usAdr, UCHAR uchRate, DCURRENCY lAmount, TCHAR *pszSISym, UCHAR uchMDC)
+VOID  PrtEJPerDiscSISym(USTRNADRS usAdr, UCHAR uchRate, DCURRENCY lAmount, TCHAR *pszSISym, UCHAR uchMDC)
 {
     TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
     
@@ -679,13 +676,13 @@ VOID  PrtEJCoupon( ITEMCOUPON *pItem )
 *            
 *===========================================================================
 */
-VOID  PrtEJOrderDec(USHORT usAdr, DCURRENCY lAmount, BOOL fsType)
+VOID  PrtEJOrderDec(USTRNADRS usTranAdr, DCURRENCY lAmount, BOOL fsType)
 {
 	CONST TCHAR *aszPrtEJOrderDecMnemMnem = _T("%.s\t %s");    /* 8 characters JHHJ*/  /* mnem. and mnem. */
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};
 
     /* -- get transaction mnemonics -- */
-	RflGetTranMnem(aszTranMnem, usAdr);
+	RflGetTranMnem(aszTranMnem, usTranAdr);
 	RflCleanupMnemonic (aszTranMnem);
 	
     PrtPrintf(PMG_PRT_JOURNAL, aszPrtEJOrderDecMnemMnem, aszTranMnem, _T(" "));
@@ -708,7 +705,7 @@ VOID  PrtEJOrderDec(USHORT usAdr, DCURRENCY lAmount, BOOL fsType)
 ** Synopsis: This function prints transaction mnemonic, native mnemonic  line.
 *===========================================================================
 */
-VOID  PrtEJAmtSym(USHORT usAdr, DCURRENCY lAmount, BOOL fsType)
+VOID  PrtEJAmtSym(USTRNADRS usAdr, DCURRENCY lAmount, BOOL fsType)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0}; /* PARA_... defined in "paraequ.h" */
 	TCHAR  aszSpecAmtS[PARA_SPEMNEMO_LEN + PRT_AMOUNT_LEN + 1] = {0};  /* spec. mnem & amount save area */
@@ -833,17 +830,23 @@ VOID PrtEJTblPerson( USHORT usTblNo, USHORT usNoPerson, TCHAR uchSeatNo, SHORT s
 ** Synopsis : This function prints customer name (max. 16 chara).
 *===========================================================================
 */
-VOID PrtEJCustomerName( TCHAR *pszCustomerName )
+VOID PrtEJCustomerName(CONST TCHAR *pszCustomerName )
 {
-    if ( *pszCustomerName == _T('\0') ) {
-        return;
+    TCHAR  aszCustomerName[NUM_NAME + 1] = { 0 };
+
+    if (*pszCustomerName == '\0') {
+        return ;
     }
 
-    if ( *( pszCustomerName + NUM_NAME - 2 ) == PRT_DOUBLE ) {
-        *( pszCustomerName + NUM_NAME - 2 ) = _T('\0');
+#if 1
+    PrtTruncDoubleString(aszCustomerName, NUM_NAME, pszCustomerName);
+#else
+    if (*(pszCustomerName + NUM_NAME - 2) == PRT_DOUBLE) {
+        *(pszCustomerName + NUM_NAME - 2) = '\0';
     }
+#endif
 
-    PrtPrintf( PMG_PRT_JOURNAL, aszPrtEJCustomerName, pszCustomerName );
+    PrtPrintf( PMG_PRT_JOURNAL, aszPrtEJCustomerName, aszCustomerName);
 }
 
 /*
@@ -862,7 +865,7 @@ VOID    PrtEJMultiSeatNo(TRANINFORMATION *pTran)
 {
 	TCHAR   aszPrintBuff[PRT_EJCOLUMN +1] = {0};
     TCHAR   aszSpecMnem[ PARA_SPEMNEMO_LEN + 1 ] = {0};   /* PARA_... defined in "paraequ.h" */
-    USHORT  i, usPos;
+    USHORT  usPos;
 
     if (pTran->TranGCFQual.auchFinSeat[0] == 0) {
         return;
@@ -874,7 +877,7 @@ VOID    PrtEJMultiSeatNo(TRANINFORMATION *pTran)
     _tcsncpy(&aszPrintBuff[0], aszSpecMnem, usPos);
 
     /* ---- set multiple seat no. ---- */
-    for (i = 0; i < NUM_SEAT; i++) { //SR206
+    for (USHORT i = 0; i < NUM_SEAT; i++) { //SR206
         if (pTran->TranGCFQual.auchFinSeat[i]) {
             aszPrintBuff[usPos++] = (TCHAR)0x20;
             aszPrintBuff[usPos++] = (TCHAR)(pTran->TranGCFQual.auchFinSeat[i] | 0x30);
@@ -906,7 +909,7 @@ VOID    PrtEJMultiSeatNo(TRANINFORMATION *pTran)
 *            
 *===========================================================================
 */
-VOID  PrtEJTranNum(USHORT usTranAdr, ULONG ulNumber)
+VOID  PrtEJTranNum(USTRNADRS usTranAdr, ULONG ulNumber)
 {
 	TCHAR  aszTranMnem[PARA_TRANSMNEMO_LEN + 1] = {0};/* PARA_... defined in "paraequ.h" */
 
@@ -960,7 +963,7 @@ VOID  PrtEJWaiter(ULONG usWaiID)
 *            
 *===========================================================================
 */
-VOID  PrtEJForeign1(DCURRENCY lForeign, UCHAR uchAdr, UCHAR fbStatus)
+VOID  PrtEJForeign1(DCURRENCY lForeign, UCSPCADRS uchAdr, UCHAR fbStatus)
 {
 	TCHAR  aszFMnem[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
 	TCHAR  aszFAmt[PRT_EJCOLUMN + 1] = {0};
@@ -987,6 +990,7 @@ VOID  PrtEJForeign1(DCURRENCY lForeign, UCHAR uchAdr, UCHAR fbStatus)
     } else {
         _tcsncpy(aszFAmt, aszFMnem, PARA_SPEMNEMO_LEN);
     }
+    aszFAmt[PRT_EJCOLUMN] = 0;  // reassure compiler that there is an end of string.
 
     /* -- get string length -- */
     usStrLen = tcharlen(aszFAmt);
@@ -1043,9 +1047,11 @@ VOID  PrtEJForeign2(ULONG ulRate, UCHAR fbStatus2)
 *            
 *===========================================================================
 */
-VOID  PrtEJEuro(UCHAR uchAdr1, DCURRENCY lForeign, UCHAR uchAdr2, ULONG ulRate, UCHAR fbStatus2)
+VOID  PrtEJEuro(UCSPCADRS uchAdr1, DCURRENCY lForeign, UCSPCADRS uchAdr2, ULONG ulRate, UCHAR fbStatus2)
 {
-	TCHAR  aszFMnem1[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
+    extern CONST TCHAR   aszPrtTHEuro1[];         /* Euro amount */
+    
+    TCHAR  aszFMnem1[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
 	TCHAR  aszFMnem2[PARA_SPEMNEMO_LEN + 1] = {0};  /* PARA_... defined in "paraequ.h" */
     SHORT  sDecPoint;
 
@@ -1105,13 +1111,13 @@ VOID  PrtEJQty(ITEMSALES *pItem)
 {
     if (labs(pItem->lQTY) != PLU_BASE_UNIT) {
 		DCURRENCY  lPrice = 0;
-		USHORT     i;
 		USHORT     usNoOfChild;
 		TCHAR      auchDummy[NUM_PLU_LEN] = {0};
 
         usNoOfChild = pItem->uchCondNo + pItem->uchPrintModNo + pItem->uchChildNo;
 
-        for ( i = pItem->uchChildNo; i < usNoOfChild; i++) {
+        NHPOS_ASSERT(usNoOfChild <= sizeof(pItem->Condiment) / sizeof(pItem->Condiment[0]));
+        for (USHORT i = pItem->uchChildNo; i < usNoOfChild; i++) {
             if (_tcsncmp(pItem->Condiment[ i ].auchPLUNo, auchDummy, NUM_PLU_LEN) != 0 ) {
                 lPrice += pItem->Condiment[i].lUnitPrice;
             }
@@ -1354,10 +1360,10 @@ VOID  PrtEJItems(ITEMSALES  *pItem)
 *            
 *===========================================================================
 */
-VOID  PrtEJZeroAmtMnem(USHORT usAddress, DCURRENCY lAmount)
+VOID  PrtEJZeroAmtMnem(USTRNADRS usAddr, DCURRENCY lAmount)
 {
     if (lAmount != 0) {
-        PrtEJAmtMnem(usAddress, lAmount);
+        PrtEJAmtMnem(usAddr, lAmount);
     }
 }
 
@@ -1684,28 +1690,13 @@ VOID  PrtEJJobTimeOut(TRANINFORMATION  *pTran, ITEMMISC  *pItem)
 VOID  PrtMaintEJInit(ULONG ulCashierID)
 {
     DATE_TIME   DT;                         /* date & time */
-	ULONG       ulStoreRegNo;
-	USHORT      usConsNo;
+	ULONG       ulStoreRegNo = 0;
+	USHORT      usConsNo = 0;
 
     /* set transaction information */
-	{
-		PARASTOREGNO   StRegNoRcvBuff = {0};
+    ulStoreRegNo = RflCombineStoreRegisterNo(RflGetStoreRegisterNo());
+	usConsNo = MaintCurrentSpcCo(SPCO_CONSEC_ADR);
 
-		StRegNoRcvBuff.uchMajorClass = CLASS_PARASTOREGNO;    /* get store/ reg No. */
-		StRegNoRcvBuff.uchAddress = SREG_NO_ADR;
-		CliParaRead(&StRegNoRcvBuff);
-	    
-		ulStoreRegNo = (ULONG) StRegNoRcvBuff.usStoreNo * 1000L + (ULONG) StRegNoRcvBuff.usRegisterNo;
-	}
-
-	{
-	    PARASPCCO ParaSpcCo = {0};
-
-		ParaSpcCo.uchMajorClass = CLASS_PARASPCCO;
-		ParaSpcCo.uchAddress = SPCO_CONSEC_ADR;                    
-		CliParaRead(&ParaSpcCo);                                     /* call ParaSpcCoRead() */
-		usConsNo = ParaSpcCo.usCounter;
-	}
     /* -- get date time -- */
     PifGetDateTime(&DT);
 
@@ -1723,7 +1714,7 @@ VOID  PrtMaintEJInit(ULONG ulCashierID)
     usPrtEJOffset = sizeof(EJT_HEADER);
 }
 
-VOID  PrtForceEJInit(TRANINFORMATION  *pTran)
+VOID  PrtForceEJInit(const TRANINFORMATION  *pTran)
 {
     DATE_TIME   DT;                         /* date & time */
 
@@ -1747,14 +1738,10 @@ VOID  PrtForceEJInit(TRANINFORMATION  *pTran)
 		((EJT_HEADER *)auchPrtEJBuffer)->usGCFNo        = pTran->TranGCFQual.usGuestNo;
 		((EJT_HEADER *)auchPrtEJBuffer)->usOpeNo        = ulID;
 	} else {
-        PARASTOREGNO   StRegNoRcvBuff = { 0 };
-
-        StRegNoRcvBuff.uchMajorClass = CLASS_PARASTOREGNO;    /* get store/ reg No. */
-        StRegNoRcvBuff.uchAddress = SREG_NO_ADR;
-        CliParaRead(&StRegNoRcvBuff);
+        RflStoreRegNo   StRegNoRcvBuff = RflGetStoreRegisterNo();
 
 		((EJT_HEADER *)auchPrtEJBuffer)->usConsecutive  = MaintCurrentSpcCo(SPCO_CONSEC_ADR);
-        ((EJT_HEADER *)auchPrtEJBuffer)->usTermNo       = StRegNoRcvBuff.usRegisterNo;
+        ((EJT_HEADER *)auchPrtEJBuffer)->usTermNo       = StRegNoRcvBuff.usRegNo;
 	}
 
     ((EJT_HEADER *)auchPrtEJBuffer)->usSeqNo        = 1;
@@ -1765,7 +1752,7 @@ VOID  PrtForceEJInit(TRANINFORMATION  *pTran)
     usPrtEJOffset = sizeof(EJT_HEADER);
 }
 
-VOID  PrtEJInit(TRANINFORMATION  *pTran)
+VOID  PrtEJInit(const TRANINFORMATION  *pTran)
 {
     if (usPrtEJOffset < sizeof(EJT_HEADER) || ((EJT_HEADER *)auchPrtEJBuffer)->usEjSignature != EJT_HEADER_SIGNATURE) {
 		PrtForceEJInit (pTran);
@@ -1786,7 +1773,7 @@ VOID  PrtEJInit(TRANINFORMATION  *pTran)
 *            "auchPrtEJBuffer[]".
 *===========================================================================
 */
-VOID  PrtEJWrite(VOID  *pWrite, USHORT usWriteLen)
+VOID  PrtEJWrite(CONST VOID  *pWrite, USHORT usWriteLen)
 {
 	TCHAR  aszWork1[PRT_THCOLUMN * (NUM_CPRSPCO_EPT + 1)] = {0};
     TCHAR  aszWork2[PRT_THCOLUMN * (NUM_CPRSPCO_EPT + 1)] = {0};
@@ -1813,6 +1800,7 @@ VOID  PrtEJWrite(VOID  *pWrite, USHORT usWriteLen)
 	}
                                                 
     _tcsncpy( &(auchPrtEJBuffer[usPrtEJOffset]), aszWork1, usStrLen);  /* write to E/J buffer */
+//    memcpy (auchPrtEJBuffer + usPrtEJOffset, aszWork1, usStrLen * sizeof(aszWork1[0]));  /* write to E/J buffer */
     usPrtEJOffset += usStrLen * sizeof(TCHAR);                 /* increment offset */                                                           
 }
 
@@ -1986,7 +1974,7 @@ VOID  PrtEJOffline(USHORT fbMod, TCHAR *auchDate, TCHAR *auchApproval)
     TCHAR  aszOffDate[NUM_EXPIRA * 2 + 1] = {0};         // large enough to handle XX/XX
     USHORT  usOffDate;
 
-    _tcsncpy(aszApproval, auchApproval, NUM_APPROVAL);
+    if (auchApproval) _tcsncpy(aszApproval, auchApproval, NUM_APPROVAL);
     _tcsncpy(aszDate, auchDate, NUM_EXPIRA);
 
     if ( fbMod & OFFEPTTEND_MODIF) {                /* offline modifier */
@@ -2171,22 +2159,19 @@ VOID  PrtEJResetLog3(ITEMOTHER *pItem)
 */
 VOID  PrtEJResetLog4(ITEMOTHER *pItem)
 {
-	CONST TCHAR  aszPrtEJResetLog3[] = _T("%04d  \t%s%s");         /* V3.3 */
-	CONST TCHAR  aszPrtEJResetLog5[] = _T("%-3u\t%04u-%03u");      /* FVT#5, V3.3 */
-	CONST TCHAR  aszPrtEJResetLog6[] = _T("\t%04u-%03u");          /* FVT#5, V3.3 */
-    TCHAR           aszPrtNull[10] = {0};
+	static CONST TCHAR  aszPrtEJResetLog3[] = _T("%04d  \t%s%s");         /* V3.3 */
+	static CONST TCHAR  aszPrtEJResetLog5[] = _T("%-3u\t%04u-%03u");      /* FVT#5, V3.3 */
+	static CONST TCHAR  aszPrtEJResetLog6[] = _T("\t%04u-%03u");          /* FVT#5, V3.3 */
+    CONST TCHAR           aszPrtNull[10] = {0};
 	TCHAR           aszBuff2[10] = {0};
 	TCHAR           aszBuff3[10] = {0};
-	PARASTOREGNO    StRg = {0}; 
+    RflStoreRegNo   StRg = RflGetStoreRegisterNo();
 
     /* --- SPV# & Store/Reg# --- */
-    StRg.uchMajorClass = CLASS_PARASTOREGNO;
-    StRg.uchAddress = SREG_NO_ADR;
-    CliParaRead(&StRg);
     if (pItem->lAmount) {
-        PrtPrintf(PMG_PRT_JOURNAL, aszPrtEJResetLog5, (USHORT)pItem->lAmount, StRg.usStoreNo, StRg.usRegisterNo);
+        PrtPrintf(PMG_PRT_JOURNAL, aszPrtEJResetLog5, (USHORT)pItem->lAmount, StRg.usStoreNo, StRg.usRegNo);
     } else {
-        PrtPrintf(PMG_PRT_JOURNAL, aszPrtEJResetLog6, StRg.usStoreNo, StRg.usRegisterNo);
+        PrtPrintf(PMG_PRT_JOURNAL, aszPrtEJResetLog6, StRg.usStoreNo, StRg.usRegNo);
     }
     /* --- Consecutive, Time, Date --- */
     aszBuff2[0] = _T('\0');

@@ -55,7 +55,6 @@
 /**------- 2170 local------**/
 #include<ecr.h>
 #include<paraequ.h>
-/* #include<para.h> */
 #include<regstrct.h>
 #include<transact.h>
 #include<pmg.h>
@@ -64,6 +63,94 @@
 #include"prtrin.h"
 #include"prtdfl.h"
 #include"prrcolm_.h"
+
+/*
+*===========================================================================
+** Format  : VOID  PrtAddChk2_TH(TRANINFORMATION  *pTran,
+*                                ITEMAFFECTION *pItem);   
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMAFFECTION    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints addcheck line. (thermal)
+*===========================================================================
+*/
+static VOID  PrtAddChk2_TH(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
+{
+    if ( pItem->lAmount == 0L ) {
+        return;
+    }
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);     /* print header if necessary */
+
+    PrtTHAmtTaxMnem((pItem->uchAddNum + TRN_ADCK1_ADR), pTran->TranModeQual.fsModeStatus, pItem->fbModifier, pItem->lAmount); 
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtAddChk2_EJ(TRANINFORMATION  *pTran,
+*                                ITEMAFFECTION *pItem);   
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMAFFECTION    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints addcheck line. (electric journal)
+*===========================================================================
+*/
+static VOID  PrtAddChk2_EJ(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
+{
+    if ( pItem->lAmount == 0L ) {
+        return;
+    }
+
+    PrtEJTaxMod(pTran->TranModeQual.fsModeStatus, pItem->fbModifier);
+
+    PrtEJAmtMnem((pItem->uchAddNum + TRN_ADCK1_ADR), pItem->lAmount); 
+}
+
+/*
+*===========================================================================
+** Format  : VOID  PrtAddChk2_SP(TRANINFORMATION  *pTran,
+*                                ITEMAFFECTION *pItem);   
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMAFFECTION    *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*
+** Synopsis: This function prints addcheck line.
+*===========================================================================
+*/
+static VOID  PrtAddChk2_SP(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
+{
+    TCHAR  aszSPPrintBuff[PRT_SPCOLUMN + 1] = { 0 };    /* print data save area */
+    USHORT  usSlipLine = 0;            /* number of lines to be printed */
+    USHORT  usSaveLine;                /* save slip lines to be added */
+
+    if ( pItem->lAmount == 0L ) {      /* if amount "0", not print */
+        return;
+    }
+
+    /* set add check, tax# 1-3 mnemonic and amount */
+    usSlipLine += PrtSPMnemTaxAmt(aszSPPrintBuff, (pItem->uchAddNum + TRN_ADCK1_ADR), pTran->TranModeQual.fsModeStatus, pItem->fbModifier, pItem->lAmount);
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print the data in the buffer -- */ 
+    if (usSlipLine != '\0') {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);*/
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;    
+}
 
 /*
 *===========================================================================
@@ -108,97 +195,6 @@ VOID   PrtAddChk2(TRANINFORMATION  *pTran, ITEMAFFECTION  *pItem)
     }
 }
 
-/*
-*===========================================================================
-** Format  : VOID  PrtAddChk2_TH(TRANINFORMATION  *pTran,
-*                                ITEMAFFECTION *pItem);   
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMAFFECTION    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints addcheck line. (thermal)
-*===========================================================================
-*/
-VOID  PrtAddChk2_TH(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
-{
-    if ( pItem->lAmount == 0L ) {
-        return;
-    }
-
-    PrtTHHead(pTran);                        /* print header if necessary */
-
-    PrtTHAmtTaxMnem((pItem->uchAddNum + TRN_ADCK1_ADR), pTran->TranModeQual.fsModeStatus, pItem->fbModifier, pItem->lAmount); 
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtAddChk2_EJ(TRANINFORMATION  *pTran,
-*                                ITEMAFFECTION *pItem);   
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMAFFECTION    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints addcheck line. (electric journal)
-*===========================================================================
-*/
-VOID  PrtAddChk2_EJ(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
-{
-    if ( pItem->lAmount == 0L ) {
-        return;
-    }
-
-    PrtEJTaxMod(pTran->TranModeQual.fsModeStatus, pItem->fbModifier);
-
-    PrtEJAmtMnem((pItem->uchAddNum + TRN_ADCK1_ADR), pItem->lAmount); 
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID  PrtAddChk2_SP(TRANINFORMATION  *pTran,
-*                                ITEMAFFECTION *pItem);   
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMAFFECTION    *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*
-** Synopsis: This function prints addcheck line.
-*===========================================================================
-*/
-VOID  PrtAddChk2_SP(TRANINFORMATION  *pTran, ITEMAFFECTION *pItem)
-{
-    TCHAR  aszSPPrintBuff[PRT_SPCOLUMN + 1];    /* print data save area */
-    USHORT  usSlipLine = 0;            /* number of lines to be printed */
-    USHORT  usSaveLine;                /* save slip lines to be added */
-
-    if ( pItem->lAmount == 0L ) {      /* if amount "0", not print */
-        return;
-    }
-
-    memset(aszSPPrintBuff, '\0', sizeof(aszSPPrintBuff));       /* initialize the area */
-
-    /* set add check, tax# 1-3 mnemonic and amount */
-    usSlipLine += PrtSPMnemTaxAmt(aszSPPrintBuff, (pItem->uchAddNum + TRN_ADCK1_ADR), pTran->TranModeQual.fsModeStatus, pItem->fbModifier, pItem->lAmount);
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print the data in the buffer -- */ 
-    if (usSlipLine != '\0') {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);*/
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff, PRT_SPCOLUMN);
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;    
-}
 
 
 /*
@@ -250,8 +246,9 @@ VOID   PrtDflAddChk2(TRANINFORMATION  *pTran, ITEMAFFECTION  *pItem)
     usLineNo += PrtDflAmtMnem(aszDflBuff[usLineNo], (pItem->uchAddNum + TRN_ADCK1_ADR), pItem->lAmount);
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TRANOPEN); 

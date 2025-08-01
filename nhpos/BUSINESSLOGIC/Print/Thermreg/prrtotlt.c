@@ -107,6 +107,167 @@
 ;+              P R O G R A M    D E C L A R A T I O N s
 ;============================================================================
 **/
+
+/*
+*===========================================================================
+** Format  : VOID PrtTotal_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*   Input  : ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints total key  (thermal)
+*===========================================================================
+*/
+static VOID  PrtTotal_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
+{
+    SHORT   sType;
+
+    /* -- total amount printed double wide? -- */
+    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
+        sType = PRT_DOUBLE;
+    } else {
+        sType = PRT_SINGLE;
+    }
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);   /* print header if necessary */
+
+    PrtFeed(PMG_PRT_RECEIPT, 1);              /* 1 line feed(Receipt) */
+
+    PrtTHNumber(pItem->aszNumber);            /* number line */
+
+    PrtTHAmtSym(RflChkTtlAdr(pItem), pItem->lMI, sType);
+
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTotalKP_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem )
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints total key  when take to kithen.
+*===========================================================================
+*/
+static VOID PrtTotalKP_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem )
+{
+    SHORT   sType;
+
+    if ( pItem->uchMinorClass == CLASS_TOTAL1 ) {
+        /* --- sub total key is not print on kitchen printer --- */
+        return;
+    }
+
+    /* -- total amount printed double wide? -- */
+
+    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
+        sType = PRT_DOUBLE;
+    } else {
+        sType = PRT_SINGLE;
+    }
+
+    PrtTHHead(pTran->TranCurQual.usConsNo);   /* print header if necessary */
+
+    PrtFeed(PMG_PRT_RECEIPT, 1);              /* 1 line feed(Receipt) */
+
+/*    PrtTHNumber(pItem->aszNumber);            / number line */
+
+    PrtTHAmtSym(RflChkTtlAdr(pItem), pItem->lMI, sType);
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTotal_EJ(ITEMTOTAL *pItem);      
+*
+*   Input  : ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints total key  (elctric journal)
+*===========================================================================
+*/
+static VOID  PrtTotal_EJ(ITEMTOTAL *pItem)
+{
+
+    SHORT   sType;
+
+    /* -- total amount printed double wide? -- */
+
+    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
+        sType = PRT_DOUBLE;
+    } else {
+        sType = PRT_SINGLE;
+    }
+
+    PrtEJNumber(pItem->aszNumber);            /* number line */
+
+    if (((pItem->auchTotalStatus[0] / CHECK_TOTAL_TYPE) == PRT_CASINT1) ||
+        ((pItem->auchTotalStatus[0] / CHECK_TOTAL_TYPE) == PRT_CASINT2)) {
+
+        /* print cashier interrupt mnemonic on journal, R3.3 */
+        PrtEJAmtSym(TRN_CASINT_ADR, pItem->lMI, sType);
+
+    } else {
+
+        PrtEJAmtSym(RflChkTtlAdr(pItem), pItem->lMI, sType);
+    }
+}
+
+/*
+*===========================================================================
+** Format  : VOID PrtTotal_SP(TRANINFORMATION  *pTran, ITEMTOTAL *pItem);      
+*
+*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
+*            ITEMTOTAL        *pItem     -Item Data address
+*   Output : none
+*   InOut  : none
+** Return  : none
+*            
+** Synopsis: This function prints total key  (slip)
+*===========================================================================
+*/
+static VOID PrtTotal_SP(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
+{
+    TCHAR   aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
+    USHORT  usSlipLine = 0;             /* number of lines to be printed */
+    USHORT  usSaveLine;                 /* save slip lines to be added */
+    USHORT  i;
+    SHORT   sType;                      /* set double wide or single */
+
+    /* -- total amount printed double wide? -- */
+    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
+        sType = PRT_DOUBLE;
+    } else {
+        sType = PRT_SINGLE;
+    }
+
+    /* -- set mnemonic and number -- */
+    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
+
+    /* -- set total line -- */   
+    usSlipLine += PrtSPMnemNativeAmt(aszSPPrintBuff[usSlipLine], RflChkTtlAdr(pItem), pItem->lMI, sType);
+
+    /* -- check if paper change is necessary or not -- */ 
+    usSaveLine = PrtCheckLine(usSlipLine, pTran);
+
+    /* -- print all data in the buffer -- */ 
+    for (i = 0; i < usSlipLine; i++) {
+/*  --- fix a glitch (05/15/2001)
+        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
+        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);       
+    }
+
+    /* -- update current line No. -- */
+    usPrtSlipPageLine += usSlipLine + usSaveLine;
+}
+
 /*
 *===========================================================================
 ** Format  : VOID   PrtTotal(TRANINFORMATION  *pTran, ITEMTOTAL *pItem);      
@@ -173,170 +334,7 @@ VOID  PrtTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem)
     }
 }
 
-/*
-*===========================================================================
-** Format  : VOID PrtTotal_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*   Input  : ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints total key  (thermal)
-*===========================================================================
-*/
-VOID  PrtTotal_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
-{
-    SHORT   sType;
-
-
-    /* -- total amount printed double wide? -- */
-
-    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
-        sType = PRT_DOUBLE;
-    } else {
-        sType = PRT_SINGLE;
-    }
-
-    PrtTHHead(pTran);                         /* print header if necessary */
-
-    PrtFeed(PMG_PRT_RECEIPT, 1);              /* 1 line feed(Receipt) */
-
-    PrtTHNumber(pItem->aszNumber);            /* number line */
-
-    PrtTHAmtSym(RflChkTtlAdr(pItem), pItem->lMI, sType);
-
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtTotalKP_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem )
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints total key  when take to kithen.
-*===========================================================================
-*/
-VOID PrtTotalKP_TH(TRANINFORMATION *pTran, ITEMTOTAL *pItem )
-{
-    SHORT   sType;
-
-    if ( pItem->uchMinorClass == CLASS_TOTAL1 ) {
-        /* --- sub total key is not print on kitchen printer --- */
-        return;
-    }
-
-    /* -- total amount printed double wide? -- */
-
-    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
-        sType = PRT_DOUBLE;
-    } else {
-        sType = PRT_SINGLE;
-    }
-
-    PrtTHHead(pTran);                         /* print header if necessary */
-
-    PrtFeed(PMG_PRT_RECEIPT, 1);              /* 1 line feed(Receipt) */
-
-/*    PrtTHNumber(pItem->aszNumber);            / number line */
-
-    PrtTHAmtSym(RflChkTtlAdr(pItem), pItem->lMI, sType);
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtTotal_EJ(ITEMTOTAL *pItem);      
-*
-*   Input  : ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints total key  (elctric journal)
-*===========================================================================
-*/
-VOID  PrtTotal_EJ(ITEMTOTAL *pItem)
-{
-
-    SHORT   sType;
-
-    /* -- total amount printed double wide? -- */
-
-    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
-        sType = PRT_DOUBLE;
-    } else {
-        sType = PRT_SINGLE;
-    }
-
-    PrtEJNumber(pItem->aszNumber);            /* number line */
-
-    if (((pItem->auchTotalStatus[0] / CHECK_TOTAL_TYPE) == PRT_CASINT1) ||
-        ((pItem->auchTotalStatus[0] / CHECK_TOTAL_TYPE) == PRT_CASINT2)) {
-
-        /* print cashier interrupt mnemonic on journal, R3.3 */
-        PrtEJAmtSym(TRN_CASINT_ADR, pItem->lMI, sType);
-
-    } else {
-
-        PrtEJAmtSym(RflChkTtlAdr(pItem), pItem->lMI, sType);
-    }
-}
-
-/*
-*===========================================================================
-** Format  : VOID PrtTotal_SP(TRANINFORMATION  *pTran, ITEMTOTAL *pItem);      
-*
-*   Input  : TRANINFORMATION  *pTran     -Transaction Information address
-*            ITEMTOTAL        *pItem     -Item Data address
-*   Output : none
-*   InOut  : none
-** Return  : none
-*            
-** Synopsis: This function prints total key  (slip)
-*===========================================================================
-*/
-VOID PrtTotal_SP(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
-{
-    TCHAR   aszSPPrintBuff[2][PRT_SPCOLUMN + 1]; /* print data save area */
-    USHORT  usSlipLine = 0;             /* number of lines to be printed */
-    USHORT  usSaveLine;                 /* save slip lines to be added */
-    USHORT  i;
-    SHORT   sType;                      /* set double wide or single */
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
-
-    /* -- total amount printed double wide? -- */
-    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
-        sType = PRT_DOUBLE;
-    } else {
-        sType = PRT_SINGLE;
-    }
-
-    /* -- set mnemonic and number -- */
-    usSlipLine += PrtSPVoidNumber(aszSPPrintBuff[0], pItem->fbModifier, pItem->usReasonCode, pItem->aszNumber);
-
-    /* -- set total line -- */   
-    usSlipLine += PrtSPMnemNativeAmt(aszSPPrintBuff[usSlipLine], RflChkTtlAdr(pItem), pItem->lMI, sType);
-
-    /* -- check if paper change is necessary or not -- */ 
-    usSaveLine = PrtCheckLine(usSlipLine, pTran);
-
-    /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
-/*  --- fix a glitch (05/15/2001)
-        PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
-        PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);       
-    }
-
-    /* -- update current line No. -- */
-    usPrtSlipPageLine += usSlipLine + usSaveLine;
-}
+//        ------------
 
 /*
 *===========================================================================
@@ -362,7 +360,7 @@ VOID   PrtTotalStub(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
         sType = PRT_SINGLE;
     }
 
-    PrtTHHead(pTran);                   /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);     /* print header if necessary */
 
     if ( fbPrtShrStatus & PRT_SHARED_SYSTEM ) { 
         fbPrtAltrStatus |= PRT_TOTAL_STUB;
@@ -397,7 +395,7 @@ VOID   PrtTotalOrder(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
         return ;
     }
 
-    PrtTHHead(pTran);                   /* print header if necessary */
+    PrtTHHead(pTran->TranCurQual.usConsNo);       /* print header if necessary */
 
     /* --- if current system uses unique transaction no.,
         print it in double width character. --- */
@@ -463,12 +461,9 @@ VOID   PrtTotalOrder(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
 */
 VOID  PrtTotal_SPVL(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
 {
-
-    /* CHAR    achWork[4]; */
-    TCHAR   aszSPPrintBuff[2][PRT_SPCOLUMN + 1]; /* print data save area */
+    TCHAR   aszSPPrintBuff[2][PRT_SPCOLUMN + 1] = { 0 }; /* print data save area */
     USHORT  usSlipLine = 0;             /* number of lines to be printed */
     USHORT  usSaveLine;                 /* save slip lines to be added */
-    USHORT  i;
     SHORT   sType;                      /* set double wide or single */
 
 
@@ -478,9 +473,6 @@ VOID  PrtTotal_SPVL(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
 	}
 	
 	PmgBeginSmallValidation( PMG_PRT_SLIP );//change to allow Small Slips
-
-    /* initialize the buffer */
-    memset(aszSPPrintBuff[0], '\0', sizeof(aszSPPrintBuff));
 
     /* -- total amount printed double wide? -- */
     if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {
@@ -498,7 +490,7 @@ VOID  PrtTotal_SPVL(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
     usSaveLine = PrtCheckLine(usSlipLine, pTran);
 
     /* -- print all data in the buffer -- */ 
-    for (i = 0; i < usSlipLine; i++) {
+    for (USHORT i = 0; i < usSlipLine; i++) {
 /*  --- fix a glitch (05/15/2001)
         PmgPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN); */
         PrtPrint(PMG_PRT_SLIP, aszSPPrintBuff[i], PRT_SPCOLUMN);
@@ -510,6 +502,43 @@ VOID  PrtTotal_SPVL(TRANINFORMATION *pTran, ITEMTOTAL *pItem)
 	
 	PmgEndSmallValidation( PMG_PRT_SLIP );//change to allow Small Slips
 
+}
+/*
+*===========================================================================
+** Format  : VOID  PrtTotalAudact_SPVL(ITEMTOTAL *pItem);
+*
+*               
+*    Input : ITEMTOTAL           *pItem       -item information
+*
+*   Output : none
+*    InOut : none
+*
+** Return  : none
+*
+** Synopsis: This function prints total mnemonics, symbol and amount in audaction.
+*===========================================================================
+*/
+static VOID  PrtTotalAudact_SPVL(ITEMTOTAL *pItem)
+{
+	CONST TCHAR   aszPrtSPVLTotal[] = _T("%s\t %s");        /* total line */
+	TCHAR  aszMnem[PARA_TRANSMNEMO_LEN + 1] = { 0 };/* PARA_... defined in "paraequ.h" */
+	TCHAR  aszAmountS[PRT_SPCOLUMN] = { 0 };
+	TCHAR  aszAmountD[PRT_SPCOLUMN] = { 0 };
+    TCHAR  *pszAmount;
+
+	RflGetTranMnem(aszMnem, TRN_AMTTL_ADR);         /* get Amt.total mnemo. */
+    PrtAdjustNative(aszAmountS, pItem->lMI);        /* get native & adjust  */
+
+    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {    /* double wide print*/
+        PrtDouble(aszAmountD, (PRT_SPCOLUMN), aszAmountS);
+        pszAmount = aszAmountD;
+    } else {
+        pszAmount = aszAmountS;
+    }
+/*  --- fix a glitch (05/15/2001)
+    PmgPrintf(PMG_PRT_SLIP, aszPrtSPVLTotal, aszMnem, pszAmount); */
+    PrtPrintf(PMG_PRT_SLIP, aszPrtSPVLTotal, aszMnem, pszAmount);
+    return;
 }
 
 /*
@@ -544,43 +573,6 @@ VOID   PrtTotalAudact(TRANINFORMATION  *pTran, ITEMTOTAL *pItem)
         }
         return ;
     }
-}
-/*
-*===========================================================================
-** Format  : VOID  PrtTotalAudact_SPVL(ITEMTOTAL *pItem);
-*
-*               
-*    Input : ITEMTOTAL           *pItem       -item information
-*
-*   Output : none
-*    InOut : none
-*
-** Return  : none
-*
-** Synopsis: This function prints total mnemonics, symbol and amount in audaction.
-*===========================================================================
-*/
-VOID  PrtTotalAudact_SPVL(ITEMTOTAL *pItem)
-{
-	CONST TCHAR FARCONST  aszPrtSPVLTotal[] = _T("%s\t %s");        /* total line */
-	TCHAR  aszMnem[PARA_TRANSMNEMO_LEN + 1] = { 0 };/* PARA_... defined in "paraequ.h" */
-	TCHAR  aszAmountS[PRT_SPCOLUMN] = { 0 };
-	TCHAR  aszAmountD[PRT_SPCOLUMN] = { 0 };
-    TCHAR  *pszAmount;
-
-	RflGetTranMnem(aszMnem, TRN_AMTTL_ADR);         /* get Amt.total mnemo. */
-    PrtAdjustNative(aszAmountS, pItem->lMI);        /* get native & adjust  */
-
-    if (pItem->auchTotalStatus[3] & CURQUAL_TOTAL_PRINT_DOUBLE) {    /* double wide print*/
-        PrtDouble(aszAmountD, (PRT_SPCOLUMN), aszAmountS);
-        pszAmount = aszAmountD;
-    } else {
-        pszAmount = aszAmountS;
-    }
-/*  --- fix a glitch (05/15/2001)
-    PmgPrintf(PMG_PRT_SLIP, aszPrtSPVLTotal, aszMnem, pszAmount); */
-    PrtPrintf(PMG_PRT_SLIP, aszPrtSPVLTotal, aszMnem, pszAmount);
-    return;
 }
 
 /*
@@ -669,19 +661,16 @@ VOID  PrtDflTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItem)
 */
 VOID PrtDflForeignTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItemTotal)
 {
-    TCHAR  aszDflBuff[11][PRT_DFL_LINE + 1];   /* display data save area */
+    TCHAR  aszDflBuff[11][PRT_DFL_LINE + 1] = { 0 };   /* display data save area */
     USHORT  usLineNo;                       /* number of lines to be displayed */
     USHORT  usOffset = 0;                       
-    USHORT  i;                       
-    UCHAR  uchAdr1;
-	USHORT usTranAdr2;
+    UCSPCADRS  uchAdr1;
+    USTRNADRS  usTranAdr2;
 
     /* --- if this frame is 1st frame, display customer name --- */
     PrtDflCustHeader( pTran );
 
 	PrtGetMoneyMnem (pItemTotal->uchMinorClass, &usTranAdr2, &uchAdr1);
-
-    memset(aszDflBuff, '\0', sizeof(aszDflBuff));
 
     /* -- set header -- */
     usLineNo = PrtDflHeader(aszDflBuff[0], pTran);
@@ -693,13 +682,14 @@ VOID PrtDflForeignTotal(TRANINFORMATION  *pTran, ITEMTOTAL  *pItemTotal)
     usLineNo += PrtDflForeign3(aszDflBuff[usLineNo], RflChkTtlAdr(pItemTotal), pItemTotal->lMI, uchAdr1, pItemTotal->auchTotalStatus[0]);
 
     /* -- set destination CRT -- */
-    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
-    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
+    PrtDflIfSetDestCrt(0x30, 0x30);
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[0] = 0x30;
+//    PrtDflIf.Dfl.DflHead.auchCRTNo[1] = 0x30;
 
     /* -- set display data in the buffer -- */ 
     PrtDflIType(usLineNo, DFL_TOTAL); 
 
-    for ( i = 0; i < usLineNo; i++ ) {
+    for (USHORT i = 0; i < usLineNo; i++ ) {
         PrtDflSetData(aszDflBuff[i], &usOffset);
         if ( aszDflBuff[i][PRT_DFL_LINE] != '\0' ) {
             i++;
