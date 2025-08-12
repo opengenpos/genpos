@@ -1479,7 +1479,22 @@ SHORT PIFENTRY PifGetVersion(TCHAR  *pInfoBuffer)
 	TCHAR *myFileName = _T("*.exe");
 
 	//we need to change to this directory to look for the files
-	_tchdir(STD_FOLDER_PROGRAMFILES);
+    switch (_tchdir(STD_FOLDER_PROGRAMFILES)) {
+    case -1:    // error so what kind of error
+        switch (errno) {
+        case ENOENT:     // path not found
+            NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: PifGetVersion() _tchdir() failed ENOENT.");
+            break;
+        case EINVAL:
+            NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: PifGetVersion() _tchdir() failed EINVAL.");
+            break;
+        default:
+            NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: PifGetVersion() _tchdir() failed Unknown.");
+            break;
+        }
+        return PIF_ERROR_SYSTEM;
+        break;
+    }
 
 	fileSearch = FindFirstFile (myFileName, &myFoundFile); //find the first file
 

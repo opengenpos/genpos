@@ -2388,7 +2388,7 @@ SHORT    TrnStoMultiComp( ITEMMULTI *ItemMulti, UCHAR *uchBuffer )
 
     *uchBuffer = uchSize1;                                          /* non-compress size */
 
-    memcpy( &Work, &ItemMulti->lService[0], sizeof( TRANSTORAGEMULTICHECK ) );
+    memcpy( &Work, &ItemMulti->lService, sizeof( TRANSTORAGEMULTICHECK ) );
     Work.fbStorageStatus = 0;                                       /* storage status */
 
 	NHPOS_ASSERT((TRN_WORKBUFFER - uchSize1 - 2) > 0);
@@ -5374,7 +5374,6 @@ SHORT TrnStoSalesUpdateVoidItem( ITEMSALES  *pItemSales,
 
 SHORT TrnStoIsPairItem( ITEMSALES *pSource, UCHAR *puchTarget )
 {
-    USHORT    usI;
     SHORT     fSameItem;
 	ITEMSALES ItemSales = {0};
 
@@ -5415,7 +5414,7 @@ SHORT TrnStoIsPairItem( ITEMSALES *pSource, UCHAR *puchTarget )
 
 	//SR 527, the problem was that we were comparing only the first number in the number type array
 	//by checking ALL of the numbers, we can now determine the correct item to discount JHHJ
-    if ( memcmp( pSource->aszNumber[0], ItemSales.aszNumber[0], (NUM_NUMBER * NUM_OF_NUMTYPE_ENT * sizeof(TCHAR)))) {
+    if ( memcmp( pSource->aszNumber, ItemSales.aszNumber, (NUM_NUMBER * NUM_OF_NUMTYPE_ENT * sizeof(TCHAR)))) {
         return ( FALSE );
     }
 
@@ -5430,7 +5429,7 @@ SHORT TrnStoIsPairItem( ITEMSALES *pSource, UCHAR *puchTarget )
 			return ( -2 );
 		}
 
-		for ( usI = 0; (( usI < STD_MAX_COND_NUM ) && ( fSameItem )); usI++ ) {
+		for (USHORT usI = 0; (( usI < STD_MAX_COND_NUM ) && ( fSameItem )); usI++ ) {
 			if ( _tcsncmp(pSource->Condiment[ usI ].auchPLUNo, ItemSales.Condiment[ usI ].auchPLUNo, NUM_PLU_LEN) != 0 ) {    /* 2172 */
 				 fSameItem = 0;
 			} else if ( pSource->Condiment[ usI ].uchAdjective != ItemSales.Condiment[ usI ].uchAdjective ) {
@@ -5793,8 +5792,7 @@ VOID TrnStoItemSalesPLUMnemo( ITEMSALES *pItemSales)
 		(pItemSales->uchMinorClass == CLASS_SETITEMDISC) ||
 		(pItemSales->uchMinorClass == CLASS_SETMODDISC))
 	{
-		USHORT i;
-		USHORT j, usNoOfChild;
+		USHORT usNoOfChild;
 
     	usNoOfChild = pItemSales->uchCondNo + pItemSales->uchPrintModNo + pItemSales->uchChildNo;
 
@@ -5809,6 +5807,7 @@ VOID TrnStoItemSalesPLUMnemo( ITEMSALES *pItemSales)
 
 			_tcsncpy(TrnPluMnemo.auchPLUNo, pItemSales->auchPLUNo, NUM_PLU_LEN);
 			if (Rfl_SpBsearch(&TrnPluMnemo, sizeof(TRNPLUMNEMO), &TrnItemStorePluMnem, usItemStoredPluMnem, &pusHitPoint, pComp) != RFL_HIT) {
+		        USHORT i;
 				USHORT offusSearchPoint;
 
     			offusSearchPoint = (UCHAR *)pusHitPoint - (UCHAR *)&TrnItemStorePluMnem;
@@ -5823,7 +5822,8 @@ VOID TrnStoItemSalesPLUMnemo( ITEMSALES *pItemSales)
 			}
     	}
 
-		for ( j = 0; j < usNoOfChild; j++) {
+        NHPOS_ASSERT(usNoOfChild <= sizeof(pItemSales->Condiment) / sizeof(pItemSales->Condiment[0]));
+        for (USHORT j = 0; j < usNoOfChild; j++) {
 			TRNPLUMNEMO TrnPluMnemo = {0};
 
 			_tcsncpy(TrnPluMnemo.auchPLUNo, pItemSales->Condiment[j].auchPLUNo, NUM_PLU_LEN);
@@ -5832,6 +5832,7 @@ VOID TrnStoItemSalesPLUMnemo( ITEMSALES *pItemSales)
 				USHORT *pusHitPoint;
 
 				if (Rfl_SpBsearch(&TrnPluMnemo, sizeof(TRNPLUMNEMO), &TrnItemStorePluMnem, usItemStoredPluMnem, &pusHitPoint, pComp) != RFL_HIT) {
+                    USHORT i;
 					USHORT offusSearchPoint;
 
 	    			offusSearchPoint = (UCHAR *)pusHitPoint - (UCHAR *)&TrnItemStorePluMnem;

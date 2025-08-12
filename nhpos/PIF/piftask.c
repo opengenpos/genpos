@@ -503,7 +503,7 @@ ULONG PIFENTRY PifBeginThread(VOID (THREADENTRY *pStart)(VOID),
                                CONST CHAR *pszThreadName, ...)
 {
     HANDLE  hHandle;
-    DWORD   dwThreadId;
+    DWORD   dwThreadId = 0;
     int     nPriority = THREAD_PRIORITY_NORMAL;
     DWORD   dwArg, dwError;
     LPVOID  lpArg = NULL;
@@ -853,7 +853,7 @@ VOID PifTaskTableInit(VOID)
 fhfh*/
 VOID   PifSubFtoA(PIFDEF pRetAddr, UCHAR *pauchMsg)
 {
-    RETADDR uRetAddr;
+	RETADDR uRetAddr = { 0 };
 
     uRetAddr.pRetAddr = pRetAddr;
     PifSubPtoA(&uRetAddr.uchByte[3], &pauchMsg[0], 1); /* set high segment */
@@ -1180,12 +1180,9 @@ VOID   PIFENTRY PifLog(USHORT usModuleId, USHORT usExceptionCode)
 fhfh*/
 ULONG   PIFENTRY PifLogNoAbort(UCHAR *lpCondition, UCHAR *lpFilename, UCHAR *lpFunctionname, ULONG ulLineNo)
 {
-    DWORD      dwThreadId, dwReturn, dwNumberOfBytes = 0;
-    CHAR       szLog1[512];
-    USHORT     i, usRetryCount = 5, usLen;
-	SYSTEMTIME  DateTime;
-    HANDLE     hHandle;
     static DWORD  dwFileSeek = 0;  //Static information for location to write the file
+    USHORT     usRetryCount = 5;
+    HANDLE     hHandle = INVALID_HANDLE_VALUE;
 
 	if (lpCondition == 0 && lpFilename == 0 && lpFunctionname == 0) {
 		DWORD  dwFileSeekSave = dwFileSeek;
@@ -1213,8 +1210,12 @@ ULONG   PIFENTRY PifLogNoAbort(UCHAR *lpCondition, UCHAR *lpFilename, UCHAR *lpF
 		usRetryCount--;
 	} while ( (hHandle == INVALID_HANDLE_VALUE) && (usRetryCount > 0));
 
+	/* write log information */
 	if (hHandle != INVALID_HANDLE_VALUE) {
-	    /* write log information */
+		CHAR       szLog1[512] = { 0 };
+		DWORD      dwThreadId, dwReturn, dwNumberOfBytes = 0;
+		SYSTEMTIME  DateTime = { 0 };
+		USHORT     i, usLen;
 
         dwThreadId = GetCurrentThreadId();
         for (i = PIF_TASK_FIRST_THREAD_INDEX; i < PIF_MAX_TASK; i++) {
@@ -1284,8 +1285,8 @@ VOID   PIFENTRY PifTransactionLog(UCHAR *lpCondition, UCHAR *lpTransactionLog, U
 	TCHAR  wszLog[256] = { 0 };
 	CHAR    szLog[LOGTRANS_LOGLINE + 1] = { 0 };
     USHORT  usRetryCount = 5;
-    SYSTEMTIME  DateTime;
-    HANDLE  hHandle;
+    SYSTEMTIME  DateTime = { 0 };
+    HANDLE  hHandle = INVALID_HANDLE_VALUE;
     LONG   ulPosition;
     UINT   uiLine = 0;
     UINT   uiMaxLine;
@@ -1520,22 +1521,22 @@ SHORT  PIFENTRY PifDebugFileCleanUp(VOID)
 	TCHAR *myFileName = _T("DD*"); // find all DD files
 	DWORD dwHandle;
 	DWORD viSize = 0;
-	TCHAR			backupName[MAX_PATH],backupName2[MAX_PATH], infoBuffer2[2][MAX_PATH];
+	TCHAR			backupName[MAX_PATH] = { 0 };
+	TCHAR           backupName2[MAX_PATH] = { 0 };
+	TCHAR           infoBuffer2[2][MAX_PATH] = { 0 };
 	WIN32_FIND_DATA myFoundFile;
 	HANDLE fileSearch;
 	BOOL doit = TRUE;
 	USHORT	myCounter = 2;
-	TCHAR		versionNumber[40];
+	TCHAR		versionNumber[40] = { 0 };
 	INT		dateCheck, check = 0;
 	DATE_TIME   dtCur;
-	TCHAR		name[5];
+	TCHAR		name[5] = { 0 };
 	HANDLE  hHandle;
-	UCHAR	dataArea[1024];
-	SHORT       hsFileHandle;
+	UCHAR	dataArea[1024] = { 0 };
+	PifFileHandle   hsFileHandle;
 	ULONG		ulBytesRead = sizeof(dataArea);
 	ULONG		ulBytesWritten = 0;
-
-	memset(dataArea, 0x00, sizeof(dataArea));
 
 	hsFileHandle = PifOpenFile(_T("DEBUGDMP"), "or");
 
@@ -1544,9 +1545,23 @@ SHORT  PIFENTRY PifDebugFileCleanUp(VOID)
 		return SUCCESS;
 	}
 
-	memset(backupName, 0x00, sizeof(backupName));
-	_tchdir(STD_FOLDER_DATABASEFILES);
-	
+	switch (_tchdir(STD_FOLDER_DATABASEFILES)) {
+	case -1:    // error so what kind of error
+		switch (errno) {
+		case ENOENT:     // path not found
+			NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate() _tchdir() failed ENOENT.");
+			break;
+		case EINVAL:
+			NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate() _tchdir() failed EINVAL.");
+			break;
+		default:
+			NHPOS_NONASSERT_NOTE("==NOTE", "==NOTE: checkFolderAndCreate() _tchdir() failed Unknown.");
+			break;
+		}
+		return SUCCESS;
+		break;
+	}
+
 	doit = TRUE;
 
 	fileSearch = FindFirstFile (myFileName, &myFoundFile);
@@ -1618,6 +1633,14 @@ SHORT  PIFENTRY PifDebugFileCleanUp(VOID)
 	PifDeleteFile(_T("DEBUGDMP"));
 	return 1;
 }
+
+
+// NOTE: The following time difference functions do not seem to be
+//      used anywhere. Keeping them in the code since the .def file
+//      has defined entry points in the PIF library for them.
+//      TODO: These PIF timer functions are POSSIBLE_DEAD_CODE.
+//          Richard Chambers, Aug-01-2025
+
 //Family of functions that keep track of time differentials for 
 //determining the length of time it takes for certain things 
 //to finish 
@@ -1629,10 +1652,7 @@ typedef struct
 } DateTimeTracker, *pDateTimeTracker;
 
 
-static DateTimeTracker	myTimeTracker[20] = {0,0,0,0,0,
-											0,0,0,0,0,
-											0,0,0,0,0,
-											0,0,0,0,0};
+static DateTimeTracker	myTimeTracker[20] = {0};
 /*fhfh
 *****************************************************************************
 *
@@ -1645,7 +1665,6 @@ static DateTimeTracker	myTimeTracker[20] = {0,0,0,0,0,
 *
 *****************************************************************************
 fhfh*/
-
 SHORT   PIFENTRY PifOpenTimeTracker(VOID)
 {
 	USHORT i = 0;
@@ -1660,8 +1679,8 @@ SHORT   PIFENTRY PifOpenTimeTracker(VOID)
 	}
 	myTimeTracker[i].inUse = TRUE;
 	return i;
-
 }
+
 /*fhfh
 *****************************************************************************
 *
@@ -1677,13 +1696,13 @@ fhfh*/
 USHORT   PIFENTRY PifStartTimeTracker(USHORT usTimeIndex)
 {
 
-	if(usTimeIndex <= 20)
+	if(usTimeIndex < sizeof(myTimeTracker)/sizeof(myTimeTracker[0]))
 	{
 		GetLocalTime(&myTimeTracker[usTimeIndex].stBeginTime);
 	}
 	return 1;
-
 }
+
 /*fhfh
 *****************************************************************************
 *
@@ -1698,7 +1717,7 @@ fhfh*/
 
 USHORT   PIFENTRY PifEndTimeTracker(USHORT usTimeIndex)
 {
-	if(usTimeIndex <= 20)
+	if(usTimeIndex < sizeof(myTimeTracker) / sizeof(myTimeTracker[0]))
 	{
 		GetLocalTime(&myTimeTracker[usTimeIndex].stEndTime);
 	}else
@@ -1706,8 +1725,8 @@ USHORT   PIFENTRY PifEndTimeTracker(USHORT usTimeIndex)
 		return 1;
 	}
 	return 1;
-
 }
+
 /*fhfh
 *****************************************************************************
 *
@@ -1721,29 +1740,28 @@ USHORT   PIFENTRY PifEndTimeTracker(USHORT usTimeIndex)
 fhfh*/
 ULONG   PIFENTRY PifTimeTrackerGetDiff(USHORT usTimeIndex)
 {
-    FILETIME fileTime1;
-       // Stores second instance of time
-    FILETIME fileTime2;
-       // Stores results of time arithmetic
-    LARGE_INTEGER uLargeIntegerTimeRESULT;
+    FILETIME fileTime1;       // Stores first instance of time
+    FILETIME fileTime2;       // Stores second instance of time
+    LARGE_INTEGER uLargeIntegerTimeRESULT;       // Stores results of time arithmetic
 // Used for testing the result of conversions
-    ULONG usDiff;
-	BOOL	result;
+    ULONG ulDiff = 0;
 
 	
 	//myTimeTracker[usTimeIndex]
+	if (usTimeIndex < sizeof(myTimeTracker) / sizeof(myTimeTracker[0]))
+	{
+		BOOL	result;
+		// Conversion from SYSTEMTIME structure to FILETIME structure
+		result = SystemTimeToFileTime(&myTimeTracker[usTimeIndex].stBeginTime, &fileTime1);
+		result = SystemTimeToFileTime(&myTimeTracker[usTimeIndex].stEndTime, &fileTime2);
 
-  // Conversion from SYSTEMTIME structure to FILETIME structure
-	  result = SystemTimeToFileTime(&myTimeTracker[usTimeIndex].stBeginTime, &fileTime1);
-	  result = SystemTimeToFileTime(&myTimeTracker[usTimeIndex].stEndTime, &fileTime2);
-
-	  uLargeIntegerTimeRESULT = *(LARGE_INTEGER*)&fileTime2;
-	  uLargeIntegerTimeRESULT.QuadPart -= ((LARGE_INTEGER *)&fileTime1)->QuadPart;
-	  usDiff = (ULONG)(uLargeIntegerTimeRESULT.QuadPart/10000);
-	  
-	  return usDiff;
-
+		uLargeIntegerTimeRESULT = *(LARGE_INTEGER*)&fileTime2;
+		uLargeIntegerTimeRESULT.QuadPart -= ((LARGE_INTEGER*)&fileTime1)->QuadPart;
+		ulDiff = (ULONG)(uLargeIntegerTimeRESULT.QuadPart / 10000);
+	}
+	return ulDiff;
 }
+
 /*fhfh
 *****************************************************************************
 *
@@ -1759,9 +1777,10 @@ fhfh*/
 USHORT   PIFENTRY PifCloseTimeTracker(USHORT usTimeIndex)
 {
 
-	memset(&myTimeTracker[usTimeIndex], 0x00, sizeof(myTimeTracker[usTimeIndex]));
-
+	if (usTimeIndex < sizeof(myTimeTracker) / sizeof(myTimeTracker[0])) {
+		memset(&myTimeTracker[usTimeIndex], 0x00, sizeof(myTimeTracker[usTimeIndex]));
+	}
 	return 1;
-
 }
+
 /* end of piftask.c */

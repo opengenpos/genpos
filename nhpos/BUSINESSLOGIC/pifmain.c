@@ -759,7 +759,7 @@ static SHORT ReadAndProvideFileLine (ReadFileLineControl *pControl, TCHAR *aszLi
 	if (pControl->ulActualBytesRead == 0 && pControl->ulBufferEndPoint == 0)
 		return -1;
 
-	if (pControl->ulBufferEndPoint < pControl->usFileBufferSizeInBytes/2 && pControl->ulActualBytesRead != 0) {
+	if (pControl->ulBufferEndPoint < pControl->usFileBufferSizeInBytes/2U && pControl->ulActualBytesRead != 0U) {
 		PifReadFile (pControl->hsFileHandle, pControl->ucFileBuffer + pControl->ulBufferEndPoint, pControl->usFileBufferSizeInBytes - pControl->ulBufferEndPoint, &(pControl->ulActualBytesRead));
 		pControl->ulBufferEndPoint += pControl->ulActualBytesRead;
 	}
@@ -2394,14 +2394,14 @@ VOID  UifRequestSharedLuaFile (TCHAR *aszFileName)
 
 VOID THREADENTRY UifWatchPrintFilesFolder (VOID)
 {
+	// reduce stack space requirements by making this static instead of stack.
+	static TCHAR      myFileList[UIF_PRINT_QUEUE_MAX][64] = { 0 };
+	static BYTE       szBuffer[UIF_PRINT_QUEUE_MAX * 1024] = { 0 };
+
 	FILE_NOTIFY_INFORMATION  *pFileInfo;
 	TCHAR      *szDirectory = STD_FOLDER_PRINTFOLDER;
-	DWORD      dwNotifyFilter = (FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE);
-	DWORD      dwBufferBytesReturned = 0;
+	CONST DWORD   dwNotifyFilter = (FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_LAST_WRITE);
 	HANDLE     hDir;
-	int        iListIndex;
-	TCHAR      myFileList[UIF_PRINT_QUEUE_MAX][64];
-	BYTE       szBuffer[UIF_PRINT_QUEUE_MAX * 1024];
 
 	hDir = CreateFile(szDirectory, FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
 
@@ -2413,6 +2413,9 @@ VOID THREADENTRY UifWatchPrintFilesFolder (VOID)
 	// for every file change or that Windows will not immediately send notifications and that the use
 	// of the FlushFileBuffers() function does help flush any pending notifications.
 	while (hDir != INVALID_HANDLE_VALUE) {
+		int        iListIndex = 0;
+		DWORD      dwBufferBytesReturned = 0;
+
 		if (0 == ReadDirectoryChangesW (hDir, szBuffer, sizeof(szBuffer), FALSE, dwNotifyFilter, &dwBufferBytesReturned, NULL, NULL)) {
 			char  xBuff[128];
 
@@ -2437,8 +2440,7 @@ VOID THREADENTRY UifWatchPrintFilesFolder (VOID)
 			pFileInfo = (FILE_NOTIFY_INFORMATION  *)((BYTE *)pFileInfo + pFileInfo->NextEntryOffset);
 		}
 		if (iListIndex > 0) {
-			int i;
-			for (i = 0; i < iListIndex; i++) {
+			for (int i = 0; i < iListIndex; i++) {
 				UifRequestSharedPrintFile (myFileList[i]);
 			}
 		}
@@ -3239,7 +3241,7 @@ static TCHAR  *UifPrintFileLineParser (TCHAR *tcsBuff, UifPrintFileLineTags *pLi
 				if (TokenIterator.tcsLastDelim == _T('=')) {
 					tcsValue = Rfl_tcstok (&TokenIterator, tcsTokenSeparators);
 				}
-				if (tcsKeyWord == 0 || *tcsKeyWord == 0)
+				if (tcsKeyWord == 0 || *tcsKeyWord == 0 || tcsValue == 0)
 					break;
 				for (i = 1; pLineTags[i].tcsKeyWord; i++) {
 					if (_tcscmp (tcsKeyWord, pLineTags[i].tcsKeyWord) == 0) {
