@@ -23,6 +23,8 @@
 * Jul-04-92:H.Yamaguchi: initial                                   
 * Oct-20-92:H.Yamaguchi: Change TTL_NOT_ISSUED ---> LDT_NOT_ISSUED_ERR                                   
 *          :           :                                    
+* OpenGenPOS
+* Aug-15-25 : 02.04.00 : R.Chambers : added report return codes to handle with errors.
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -37,9 +39,10 @@
 #include    <ecr.h>
 #include    <pif.h>
 #include    <log.h>
+#include    <appllog.h>
 #include    <paraequ.h>
 #include    <csttl.h>
-#include    <appllog.h>
+#include    <report.h>
 
 
 /*
@@ -163,6 +166,28 @@ USLDTERR   TtlConvertError(STTLRSLT sError)
 
 		case TTL_BUSY_ERROR:
 			usLeadthruNo = LDT_REQST_TIMED_OUT;
+			break;
+
+		// The following RPT_ codes were added since this function is called
+		// within the totals report functionality to handle errors. We have
+		// changed the range of the RPT_ codes to be -200 and lower so they do
+		// not conflict with the TTL_ codes.
+		//     Richard Chambers, Aug-15-2025
+
+		case RPT_ABORTED:             /* Aborted By User */
+			usLeadthruNo = 0;
+			break;
+		case RPT_EXE_RESET:           /* Executed Reset Report */
+			usLeadthruNo = 0;
+			break;
+		case RPT_RESET_FAIL:          /* All Reset Incompleted in EOD/PTD */
+			usLeadthruNo = LDT_ERR_ADR;     /*  21 * Error(Global) */
+			break;
+		case RPT_END:                 /* Reported */
+			usLeadthruNo = 0;
+			break;
+		case RPT_PARM_ERROR:          /* Error in one or more report parameters */
+			usLeadthruNo = LDT_PROHBT_ADR;    /*  10   Prohibit Operation */
 			break;
 
 		default:  

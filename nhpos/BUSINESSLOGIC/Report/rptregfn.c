@@ -123,7 +123,7 @@ static D13DIGITS CONST NULL13DIGITS = 0;
 *===============================================================================
 */
 
-SHORT RptRegFinDayRead(UCHAR uchMinorClass, UCHAR uchType) 
+SLDTITM RptRegFinDayRead(UCHAR uchMinorClass, UCHAR uchType)
 {
     /* execute Current Daily Report */
     return(RptRegFinRead(uchMinorClass, uchType));
@@ -145,7 +145,7 @@ SHORT RptRegFinDayRead(UCHAR uchMinorClass, UCHAR uchType)
 *===============================================================================
 */
 
-SHORT RptRegFinPTDRead(UCHAR uchMinorClass, UCHAR uchType) 
+SLDTITM RptRegFinPTDRead(UCHAR uchMinorClass, UCHAR uchType)
 {
     /* execute Current PTD Report */
     return(RptRegFinRead(uchMinorClass, uchType));
@@ -168,15 +168,11 @@ SHORT RptRegFinPTDRead(UCHAR uchMinorClass, UCHAR uchType)
 *       Print out Header and Trailer.
 *===============================================================================
 */
-
-
-SHORT RptRegFinRead(UCHAR uchMinorClass, UCHAR uchType) 
+SLDTITM RptRegFinRead(UCHAR uchMinorClass, UCHAR uchType)
 {
-    UCHAR       uchSpecMnemo,
-                uchRptType,
-                uchACNo,
-                uchRptName;
-    SHORT       sReturn;
+    UCSPCADRS   uchSpecMnemo;
+    UCHAR       uchRptType, uchACNo, uchRptName;
+    SLDTITM     sReturn;
 	TTLREGFIN   TtlData = {0};                    /* Assign Register Financial Total Save Area */
 
     /* EOD PTD Report Not Display Out MLD */
@@ -228,7 +224,8 @@ SHORT RptRegFinRead(UCHAR uchMinorClass, UCHAR uchType)
         break;
 
     default:
-        ;
+        NHPOS_ASSERT_TEXT(0, "ERROR: RptRegFinRead() minor class error.");
+        return (LDT_NTINFL_ADR);
     }
     /* Print Header Name */
     if (uchType != RPT_EOD_ALLREAD && uchType != RPT_PTD_ALLREAD) {      /* Not EOD Function */
@@ -284,7 +281,7 @@ SHORT RptRegFinRead(UCHAR uchMinorClass, UCHAR uchType)
 *===============================================================================
 */
 
-SHORT RptRegFinEdit(RptElementFunc RptElement, TTLREGFIN *pTtlData, UCHAR uchType, UCHAR uchIndAll)
+SLDTITM RptRegFinEdit(RptElementFunc RptElement, TTLREGFIN *pTtlData, UCHAR uchType, UCHAR uchIndAll)
 {
     UCHAR  uchNo;                 /* store any Number      */
     UCHAR  uchMinor, fchFS, uchBonusIndex;
@@ -297,9 +294,9 @@ SHORT RptRegFinEdit(RptElementFunc RptElement, TTLREGFIN *pTtlData, UCHAR uchTyp
     PARADISCTBL     Data = {0};
 	struct {
 		SHORT  sMdcAddrTtl;    // indicates if discount key is a Discount or a Surcharge
-		SHORT  sBitTtl;
+		UCHAR  sBitTtl;
 		SHORT  sMdcAddrRpt;    // indicates if discount is to appear on report or not
-		SHORT  sBitRpt;
+		UCHAR  sBitRpt;
 		SHORT  sTrnMnem;       // transaction mnemonic identifier for report mnemonic
 	}  MdcListItemDiscount [] = {   // uses CliParaMDCCheckField(), index same as pTtlData->ItemDiscExtra.TtlIAmount[i]
 		{MDC_MODID33_ADR, MDC_PARAM_BIT_D, MDC_RPTFIN45_ADR, MDC_PARAM_BIT_D, TRN_ITMDISC_ADR_3},   // Item Discount #3, pTtlData->ItemDiscExtra.TtlIAmount[0]
@@ -1626,9 +1623,9 @@ SHORT RptIndFinRead(UCHAR uchMinorClass, UCHAR uchType, USHORT usTermNo, UCHAR u
 *===============================================================================
 */
 
-SHORT RptIndFinDayReset(UCHAR uchType, UCHAR uchFunc, USHORT usTermNumber) 
+SHORT RptIndFinDayReset(UCHAR uchType, UCHAR uchFunc, USHORT usTermNumber)
 {                   
-    SHORT sReturn;                
+    SHORT sReturn = LDT_KEYOVER_ADR;
                                             
     if (uchType == RPT_IND_RESET) {                             /* Individual Reset Case */         
         sReturn = RptIndFinIndReset(uchFunc, usTermNumber);  
@@ -1661,7 +1658,7 @@ SHORT RptIndFinDayReset(UCHAR uchType, UCHAR uchFunc, USHORT usTermNumber)
 *===============================================================================
 */
 
-SHORT RptIndFinIndReset(UCHAR uchFunc, USHORT usTermNumber) 
+SHORT RptIndFinIndReset(UCHAR uchFunc, USHORT usTermNumber)
 {
     SHORT           sReturn;
 	TTLREGFIN       TtlData = {0};
@@ -1739,7 +1736,7 @@ SHORT RptIndFinIndReset(UCHAR uchFunc, USHORT usTermNumber)
 *===============================================================================
 */
 
-SHORT RptIndFinAllReset(UCHAR uchType, UCHAR uchFunc) 
+SHORT RptIndFinAllReset(UCHAR uchType, UCHAR uchFunc)
 {
     SHORT           sReturn;
     USHORT          usNoOfTerm;
@@ -1771,7 +1768,7 @@ SHORT RptIndFinAllReset(UCHAR uchType, UCHAR uchFunc)
 *                                      SHORT sNo)
 *
 *       Input:  UCHAR   uchType
-*               SHORT   sNo
+*               SHORT   sNo        - number of terminals
 *
 *      Output:  Nothing
 *
@@ -1784,16 +1781,18 @@ SHORT RptIndFinAllReset(UCHAR uchType, UCHAR uchFunc)
 */
 SHORT  RptIndFinAllOnlyReset(UCHAR uchType,
                           UCHAR uchFunc,
-                          SHORT sNo)
+                          USHORT usNo)
 {
     UCHAR       uchRptType = uchType,
                 uchResetType = uchFunc;
     USHORT      usMDCBit = ~(RPT_RESET_INDFIN_BIT);
     USHORT      usFlag = 0;
-    SHORT       i, sReturn; 
+    SHORT       sReturn; 
 	TTLREGFIN   TtlData = {0};
 
-   /* Print Header Name */
+    if (usNo < 1) return RPT_PARM_ERROR;
+
+    /* Print Header Name */
     if (uchType == RPT_EOD_ALLRESET) {
         uchRptType = RPT_ALL_RESET;
         uchResetType = 0;
@@ -1816,7 +1815,7 @@ SHORT  RptIndFinAllOnlyReset(UCHAR uchType,
     TtlData.uchMajorClass = CLASS_TTLINDFIN;                         /* Set Major      */
     TtlData.uchMinorClass = CLASS_TTLCURDAY;                         /* Set Minor      */
     usFlag = 0;
-    for (i = 1; i <= sNo; i++) {                                    /* Get All Terminal files */
+    for (USHORT i = 1; i <= usNo; i++) {                                    /* Get All Terminal files */
         TtlData.usTerminalNumber = i;                               /* Set Terminal No        */
         if ((sReturn = SerTtlTotalReset(&TtlData, usMDCBit)) == TTL_SUCCESS) {  /* Reset OK?         */ 
             usFlag = 1;
@@ -1836,7 +1835,7 @@ SHORT  RptIndFinAllOnlyReset(UCHAR uchType,
         RptFeed(RPT_DEFALTFEED);                                    /* Feed            */
     }             
 
-    if ((uchType == RPT_EOD_ALLRESET) && (usFlag != 1) && sNo) {    /* Reset Failed in EOD Case */
+    if ((uchType == RPT_EOD_ALLRESET) && (usFlag != 1) && usNo) {    /* Reset Failed in EOD Case */
         return(RPT_RESET_FAIL);                                                 
     }
     return(SUCCESS);
@@ -1851,7 +1850,7 @@ SHORT  RptIndFinAllOnlyReset(UCHAR uchType,
 *       Input:  UCHAR   uchType         : RPT_ALL_RESET
 *                                       : RPT_EODALL_RESET
 *               UCHAR   uchFunc         : RPT_PRT_RESET
-*               SHORT   sNo             :
+*               SHORT   sNo             : Number of terminals
 *
 *      Output:  Nothing
 *
@@ -1866,14 +1865,15 @@ SHORT  RptIndFinAllOnlyReset(UCHAR uchType,
 */ 
 SHORT  RptIndFinAllRstReport(UCHAR  uchType,
                           UCHAR  uchFunc,
-                          SHORT  sNo)
+                          USHORT usNo)
 {
     UCHAR       uchResetType = uchFunc;
     UCHAR       uchRptType = uchType;
     USHORT      usMDCBit = ~(RPT_RESET_INDFIN_BIT); 
     USHORT      usFlag = 0; 
-    SHORT       i;
 	TTLREGFIN   TtlData = {0};
+
+    if (usNo < 1) return RPT_PARM_ERROR;
 
     if (uchType == RPT_EOD_ALLRESET) {
         uchRptType = RPT_ALL_RESET;
@@ -1883,7 +1883,7 @@ SHORT  RptIndFinAllRstReport(UCHAR  uchType,
 
     TtlData.uchMajorClass = CLASS_TTLINDFIN;                        /* Set Major      */
     TtlData.uchMinorClass = CLASS_TTLCURDAY;                         /* Set Minor      */
-    for (i = 1; i <= sNo; i++) { 
+    for (USHORT i = 1; i <= usNo; i++) { 
 		SHORT       sReturn;
 
         TtlData.usTerminalNumber = i;
@@ -1911,7 +1911,7 @@ SHORT  RptIndFinAllRstReport(UCHAR  uchType,
     if ((uchType != RPT_EOD_ALLRESET) && (usFlag == 1)) {
         MaintIncreSpcCo(SPCO_EODRST_ADR);                               /* Reset counter up    */                      
     }
-    if ((uchType == RPT_EOD_ALLRESET) && (usFlag != 1) && sNo) {        /* Reset Failed in EOD Case */
+    if ((uchType == RPT_EOD_ALLRESET) && (usFlag != 1) && usNo) {        /* Reset Failed in EOD Case */
         return(RPT_RESET_FAIL);                                                 
     }
     return(SUCCESS);

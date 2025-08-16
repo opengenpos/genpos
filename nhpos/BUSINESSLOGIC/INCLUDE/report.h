@@ -277,16 +277,23 @@ extern    UCHAR   uchRptOpeCount;
 #define RPT_WAI_UNLOCK          3               /* Individual Unlock G/C File by Waiter */
 
 
-/* Return Status */
-#define RPT_ABORTED             -1              /* Aborted By User */
-#define RPT_EXE_RESET           -2              /* Executed Reset Report */
-#define RPT_RESET_FAIL          -3              /* All Reset Incompleted in EOD/PTD */
-#define RPT_END                 -4              /* Reported */
+/*
+ *    Return Status for reports
+ * 
+ *    WARNING: These should be compatible with the TTL_ error codes
+ *             since the function TtlConvertError() is used in a number
+ *             of places to convert an error code, a negative value, to
+ *             a lead thru address value.
+*/
+//  SUCCESS is used as a successful status code along side these error codes.
+#define RPT_ABORTED             -201              /* Aborted By User */
+#define RPT_EXE_RESET           -202              /* Executed Reset Report */
+#define RPT_RESET_FAIL          -203              /* All Reset Incompleted in EOD/PTD */
+#define RPT_END                 -204              /* Reported */
+#define RPT_PARM_ERROR          -205              /* Error in one or more report parameters */
 
 #define RPT_FILE_NOTEXIST        0              /* File Not Exist */
 #define RPT_FILE_EXIST           1              /* File Exist */
-
-#define RPT_PAUSED              -5              /* Pause (for LCD) */
 
 /* Defalt feed */
 #define RPT_DEFALTFEED          1               /* Defalt feed line */
@@ -618,14 +625,14 @@ VOID   RptFCRateCalc2(UCHAR uchAddress, DCURRENCY *plModAmount, DCURRENCY lAmoun
 
 /***** FINANCIAL REPORT *****/
 
-SHORT   RptRegFinDayRead( UCHAR uchMinor, UCHAR uchType );
-SHORT   RptRegFinPTDRead( UCHAR uchMinor, UCHAR uchType );
-SHORT   RptRegFinRead( UCHAR uchMinor, UCHAR uchType);
-SHORT   RptRegFinEdit( RptElementFunc func, TTLREGFIN *pTtlData, UCHAR uchType, UCHAR uchIndAll);
+SLDTITM RptRegFinDayRead( UCHAR uchMinor, UCHAR uchType );
+SLDTITM RptRegFinPTDRead( UCHAR uchMinor, UCHAR uchType );
+SLDTITM RptRegFinRead( UCHAR uchMinor, UCHAR uchType);
+SLDTITM RptRegFinEdit( RptElementFunc func, TTLREGFIN *pTtlData, UCHAR uchType, UCHAR uchIndAll);
 
 VOID RptRegFinPrtTermNumber(USHORT usTermNo, UCHAR uchType);
 
-SHORT RptRegFinVAT(TTLREGFIN *pTtlData);
+SLDTITM RptRegFinVAT(TTLREGFIN *pTtlData);
 
 SHORT  ItemGenerateAc23Report (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR uchType, FILE *fpFile, USHORT usTerminalNo);
 
@@ -636,8 +643,8 @@ SHORT RptIndFinRead(UCHAR uchMinorClass, UCHAR uchType, USHORT usTermNo, UCHAR u
 SHORT RptIndFinDayReset(UCHAR uchType, UCHAR uchFunc, USHORT usTermNumber);
 SHORT RptIndFinIndReset(UCHAR uchFunc, USHORT usTermNumber);
 SHORT RptIndFinAllReset(UCHAR uchType, UCHAR uchFunc);
-SHORT  RptIndFinAllOnlyReset(UCHAR uchType, UCHAR uchFunc, SHORT sNo);
-SHORT  RptIndFinAllRstReport(UCHAR  uchType, UCHAR  uchFunc, SHORT  sNo);
+SHORT  RptIndFinAllOnlyReset(UCHAR uchType, UCHAR uchFunc, USHORT UsNo);
+SHORT  RptIndFinAllRstReport(UCHAR  uchType, UCHAR  uchFunc, USHORT  usNo);
 SHORT RptIndFinLock(UCHAR uchType, USHORT usTermNumber);
 VOID RptIndFinUnLock(VOID);
 
