@@ -144,9 +144,6 @@
 #define EEPT_ERROR_DONOTHING  19
 #define EEPT_HARD_ERROR       20    // hard error such as EEPTINTERFACE_SOCK_ERROR see pdata->lRawError for details
 
-#define EEPT_APPROVED		0
-#define RPT_SUMMARY			1
-#define RPT_FAILED			3
 /*
 *===========================================================================
 *   Structure Type Define Declarations
