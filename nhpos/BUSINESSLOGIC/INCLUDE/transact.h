@@ -373,8 +373,8 @@ typedef signed short   STRNRSLT;      // result variable containing one of the T
         UCHAR   uchSplit;                   /* split key#, normally total key type, ItemTotal->auchTotalStatus[0]  R3.1 */
         UCHAR   uchPrintStorage;            /* target storage at print */
         UCHAR   uchKitchenStorage;          /* target storage at kitchen */
-        UCHAR   fbNoPrint;                  /* no print bit map, see CURQUAL_NO_R etc defines below */
-        UCHAR   fbCompPrint;                /* compulsory print bit map, see CURQUAL_COMP_R etc defines below  */
+        UCHAR   fbNoPrint;                  /* no print bit map, same as Print global fsPrtNoPrtMask, see CLASS_START in PrtItemPrint(), see CURQUAL_NO_R etc defines below */
+        UCHAR   fbCompPrint;                /* compulsory print bit map, same as Print global fsPrtCompul, see CLASS_START in PrtItemPrint(), see CURQUAL_COMP_R etc defines below  */
         UCHAR   uchSeat;                    /* seat#, when doing a split transaction   R3.1 */
 		UCHAR	fbOepCondimentEdit;			/* flag that tells if we are editing an OEP condiment JHHJ*/
 		UCHAR	uchOrderDec;

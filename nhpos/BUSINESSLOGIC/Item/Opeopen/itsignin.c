@@ -66,6 +66,7 @@
 #include    "cpm.h"
 #include    "eept.h"
 #include    "fdt.h"
+#include    "prt.h"
 #include    "enhkds.h"
 #include    "pifmain.h"
 #include    "itmlocal.h"
@@ -302,9 +303,20 @@ SHORT   ItemSignIn(UIFREGOPEOPEN *pUifRegOpeOpen)
 		TrnPutCurQual( &CurQualWork );
 
 		ItemTransClose.uchMajorClass = CLASS_ITEMTRANSCLOSE;
-		ItemTransClose.uchMinorClass = CLASS_CLSETK;
-		fsPrtCompul= 0;  // ensure that we only do an EJ print
-		TrnClose( &ItemTransClose );
+        ItemTransClose.uchMinorClass = CLASS_CLSETK;
+        
+        {
+#if 1
+            PrtPrintCompulMask xSave = PrtSetPrintCompulMask((PrtPrintCompulMask) { 0, ~PRT_SLIP });
+            TrnClose(&ItemTransClose);
+            PrtSetPrintCompulMask(xSave);
+#else 
+            SHORT  fsPrtCompulSave = fsPrtCompul;
+		    fsPrtCompul= 0;  // ensure that we only do an EJ print
+		    TrnClose( &ItemTransClose );
+            fsPrtCompul = fsPrtCompulSave;  // ensure that we only do an EJ print
+#endif
+        }
 
 		{
 			TCHAR aszSapId[16];

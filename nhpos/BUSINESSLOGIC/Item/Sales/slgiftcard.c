@@ -36,6 +36,7 @@
 #include "item.h"
 #include "display.h"
 #include "uireg.h"
+#include "prt.h"
 //SR 143 cwunn @/For & HALO Override
 #include "transact.h"
 #include "trans.h"
@@ -553,8 +554,12 @@ SHORT ItemCheckNoPurchase(UIFREGTENDER *pUifRegTender)
 		sRetStatus = ItemTenderEntry(pUifRegTender);    /* Tender Modele */
 
 		uchIsNoCheckOn = 0;      // ItemCheckNoPurchase() having done the tender, now turn it off.
+#if 1
+		PrtSetPrintCompulMask((PrtPrintCompulMask) { 0, 0 });
+#else 
 		fsPrtCompul = 0;
 		fsPrtNoPrtMask = 0;
+#endif
 
 		UifRegCheckDrawerLimit(1);						//SR 155 Cash Drawer Limit
 		UifRegWorkClear();

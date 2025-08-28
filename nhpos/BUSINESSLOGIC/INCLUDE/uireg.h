@@ -233,8 +233,6 @@ typedef struct {
 #endif
 
 extern UCHAR	   uchIsNoCheckOn;					  /* Is No Check functionality on SR 18*/
-extern SHORT		  fsPrtCompul;
-extern SHORT	   fsPrtNoPrtMask;
 extern SHORT       UifSupInterventRetStatus;
 
 /*

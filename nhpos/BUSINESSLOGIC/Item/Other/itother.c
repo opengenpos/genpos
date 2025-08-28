@@ -3788,8 +3788,12 @@ SHORT   ItemOtherAskEPT(UIFREGOTHER *pItem)
 	if(sStatus != ITM_SUCCESS)
 		return (sStatus);
 
+#if 1
+    PrtSetPrintCompulMask((PrtPrintCompulMask) { 0, 0 });
+#else 
 	fsPrtCompul = 0;
 	fsPrtNoPrtMask = 0;
+#endif 
 
     /* --- Account# Entry, R2.0 GCA --- */
     ItemMiscResetStatus( MISC_POSTRECPT | MISC_PARKING | MISC_GIFTRECEIPT | MISC_PRINTDEMAND );           /* inhibit post receipt, R3.0 */

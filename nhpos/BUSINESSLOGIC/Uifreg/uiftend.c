@@ -46,13 +46,14 @@
 #include "para.h"
 #include "transact.h"
 #include "BlFWif.h"
+#include "prt.h"
                                                                                 
 /*
 *===========================================================================
 *   Code Area Data
 *===========================================================================
 */
-UISEQ FARCONST aszSeqRegTender[] = {FSC_TENDER,
+static UISEQ CONST aszSeqRegTender[] = {FSC_TENDER,
                                     FSC_PRESET_AMT,
                                     FSC_OFFTEND_MODIF,
 									FSC_CURSOR_VOID,
@@ -242,8 +243,12 @@ SHORT UifTender(KEYMSG *pData)
 			if(uchIsNoCheckOn == 1)  //we are in #/Type, so we are Check No Purchase, but after ItemTender, flag no longer needed,
 			{						//so reset all flags that we used to default values SR 18 JHHJ 8-21-03
 				uchIsNoCheckOn = 0;
+#if 1
+				PrtSetPrintCompulMask((PrtPrintCompulMask) { 0, 0 });
+#else 
 				fsPrtCompul = 0;
 				fsPrtNoPrtMask = 0;
+#endif
 			}
 
             if (sRetStatus == UIF_FS2NORMAL) {              /* Saratoga */

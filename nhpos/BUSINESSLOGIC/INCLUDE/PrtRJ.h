@@ -672,6 +672,7 @@
 #define  PrtPrintf                          RJPrtPrintf
 #define  PrtPrintLine                       RJPrtPrintLine
 #define  PrtPrintLineImmediate              RJPrtPrintLineImmediate
+#define  PrtSetPrintCompulMask              RJPrtSetPrintCompulMask
 #define  PrtPrintItem                       RJPrtPrintItem
 #define  PrtPrintSplit                      RJPrtPrintSplit
 #define  PrtPrintTran                       RJPrtPrintTran

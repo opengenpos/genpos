@@ -642,7 +642,6 @@ SHORT PrtChkStorage( PifFileHandle * hsRead1, PifFileHandle * hsRead2,  CONST TR
 */
 VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo *PluChitInfoList, int PluChitInfoListIndex, int PluChitOrderDeclareAdr)
 {
-	int i;
 	ULONG  ulBarcodeCode = PRT_BARCODE_CODE_CODEEAN13;
 	SHORT  sTotalOrderQty = 0, sTotalOrderQtyPrinted = 0;
 
@@ -658,12 +657,12 @@ VOID PrtPluTicketList (TRANINFORMATION *pTran, ULONG ulPrintOptions, PluChitInfo
 
 	sTotalOrderQty = 0;
 	if ((ulPrintOptions & PLUCHITINFO_FLAG_PRINT_TICKET) == 0) {
-		for (i = 0; PluChitInfoList[i].aszMnemonic[0]; i++) {
+		for (USHORT i = 0; PluChitInfoList[i].aszMnemonic[0]; i++) {
 			sTotalOrderQty += PluChitInfoList[i].sQty;
 		}
 	}
 
-	for (i = 0; PluChitInfoList[i].aszMnemonic[0]; i++) {
+	for (USHORT i = 0; PluChitInfoList[i].aszMnemonic[0]; i++) {
 		SHORT  sQtyLoop;
         TCHAR  aszPrintLine[44] = { 0 };
 
@@ -875,11 +874,10 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, PifFileHandle hsStorage, Plu
     PifFileHandle   hsIndexFile;
     USHORT          usItemReadLen;
 	SHORT           PluChitInfoListIndex = 0;
-    PRTIDXHDR       IdxFileInfo;
+    PRTIDXHDR       IdxFileInfo = { 0 };
     UCHAR           auchIdxWork[ sizeof( PRTIDX ) * FLEX_ITEMSTORAGE_MIN ];
-    UCHAR           uchTtlItemCo;
-    UCHAR           uchCurItemCo;
-    UCHAR           uchItemCo;
+    USHORT          usTtlItemCo;
+    USHORT          usCurItemCo;
 	//11-11-03 SR 201 JHHJ
 
 	if (PluChit) {
@@ -905,8 +903,8 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, PifFileHandle hsStorage, Plu
     TrnReadFile( 0, &IdxFileInfo, sizeof( PRTIDXHDR ), hsIndexFile , &ulActualBytesRead);
 
     ulTtlIdxReadSize = 0;
-    uchTtlItemCo     = 0;
-    uchCurItemCo     = ( sizeof( auchIdxWork ) / sizeof( PRTIDX ));
+    usTtlItemCo = 0;
+    usCurItemCo = ( sizeof( auchIdxWork ) / sizeof( PRTIDX ));
 
     while ( ulTtlIdxReadSize < IdxFileInfo.usIndexVli ) {
         ULONG           ulStorageReadOffset;
@@ -918,7 +916,7 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, PifFileHandle hsStorage, Plu
         TrnReadFile( (sizeof( PRTIDXHDR ) + ulTtlIdxReadSize), auchIdxWork, sizeof( auchIdxWork ), hsIndexFile, &ulCurIdxReadSize);
         if ( IdxFileInfo.usIndexVli < ( ulTtlIdxReadSize + ulCurIdxReadSize )) {
             ulCurIdxReadSize = IdxFileInfo.usIndexVli - ulTtlIdxReadSize;
-            uchCurItemCo     = ( UCHAR )( ulCurIdxReadSize / sizeof( PRTIDX )) + 1;
+            usCurItemCo = ( ulCurIdxReadSize / sizeof( PRTIDX )) + 1;
         }
         ulTtlIdxReadSize += ulCurIdxReadSize;
 
@@ -926,18 +924,17 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, PifFileHandle hsStorage, Plu
         pPrtIdxHighest = ( PRTIDX * )( auchIdxWork );
         pPrtIdxCurrent = ( PRTIDX * )( auchIdxWork );
 
-        if ( IdxFileInfo.uchNoOfItem < ( uchTtlItemCo + uchCurItemCo )) {
-            uchCurItemCo = IdxFileInfo.uchNoOfItem - uchTtlItemCo;
+        if ( IdxFileInfo.uchNoOfItem < (usTtlItemCo + usCurItemCo)) {
+            usCurItemCo = IdxFileInfo.uchNoOfItem - usTtlItemCo;
         }
-        uchTtlItemCo += uchCurItemCo;
+        usTtlItemCo += usCurItemCo;
 
         ulStorageReadOffset = 0;
         ulStorageReadSize   = 0;
 
-        for ( uchItemCo = 0; uchItemCo < uchCurItemCo; uchItemCo++, pPrtIdxCurrent++ ) {
+        for (USHORT usItemCo = 0; usItemCo < usCurItemCo; usItemCo++, pPrtIdxCurrent++ ) {
             static UCHAR    auchItemData[sizeof(ITEMDATASIZEUNION)];
             static UCHAR    auchStorageWork[CONSOLIMAXSIZE];   /*endo update(fig->macro) 2000/1/7*/
-            ITEMSALES       *pItemSales = NULL;
 
 #if defined(_DEBUG)
             // compile time check that the buffer sizes for reading compressed transaction data and
@@ -1010,7 +1007,7 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, PifFileHandle hsStorage, Plu
 
             /* --- set qty and price for unconsolidated print --- */
             if ( auchItemData[ 0 ] == CLASS_ITEMSALES ) {
-                pItemSales   = ( ITEMSALES * )auchItemData;
+                ITEMSALES* pItemSales = ( ITEMSALES * )auchItemData;
                 pItemSales->lQTY     = pPrtIdxCurrent->lQTY;
                 pItemSales->lProduct = pPrtIdxCurrent->lProduct;
 				if (PluChit && auchItemData[1] == CLASS_ITEMORDERDEC) {
@@ -1070,8 +1067,6 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, PifFileHandle hsStorage, Plu
 			fAffectionDetected = (fAffectionDetected || (auchItemData[ 0 ] == CLASS_ITEMAFFECTION));
 #endif
 
-            if (pItemSales == NULL) continue;
-
             if ( pTran->TranCurQual.uchPrintStorage == PRT_CONSOL_CP_EPT ) {
                 PrtPrintCpEpt( pTran, auchItemData );
             } else {
@@ -1080,6 +1075,7 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, PifFileHandle hsStorage, Plu
 
             /* --- if this is sales item with item discount, print out item discount data --- */
             if (RflIsSalesItemDisc( auchItemData )) {
+                ITEMSALES* pItemSales = (ITEMSALES*)auchItemData;
 				SHORT    sQTYSave = pItemSales->sCouponQTY;
 
                 /* read parent plu status for item discount void consolidation */

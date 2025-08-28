@@ -73,6 +73,18 @@
 
 #define PRT_MAX_PERCENT  60000          /* used to check if PERCENT is illegal in RPTDEPT -> usPercent. used in MLD and Thermsup */
 
+// The following two mask variables are used to control which printers will be used when printing.
+// How these are used in when they are combined seems to vary in the printer source code.
+// Sometimes both are used to indicate a printer is compulsory and sometimes only or
+// the other is used to determine if a printer action should be done for a printer.
+// There appear to be two types of masks that are used with these, one indicating the
+// actual printer station. A physical printer may have more than one station such as
+// a printer that has both thermal receipt station and a physical paper slip station.
+typedef struct {
+    USHORT  fsPrtCompul;       // value for/of printer global fsPrtCompul - mask indicating compulsory printers
+    USHORT  fsPrtNoPrtMask;    // value for/of printer global fsPrtNoPrtMask - No-Print mask indicating printers allowed to print
+} PrtPrintCompulMask;
+
 
 extern const TCHAR aszPrtAM[];
 extern const TCHAR aszPrtPM[];
@@ -126,6 +138,7 @@ extern VOID    ThermPrtInitialize(VOID);                                  /* ini
 /* -- PrCItem_.c -- */
 extern USHORT   ThermPrtPrintLine(USHORT usPrtControl, TCHAR *pLineToPrint);   /* item print  */
 extern USHORT   ThermPrtPrintLineImmediate(USHORT usPrtControl, TCHAR *pLineToPrint);   /* item print  */
+extern PrtPrintCompulMask  ThermPrtSetPrintCompulMask(PrtPrintCompulMask compulmask);   /* set printer compulsory and mask */
 extern USHORT   ThermPrtPrintItem(TRANINFORMATION *pTran, VOID *pItem);   /* item print  */
 extern USHORT   ThermPrtPrintCpEpt(TRANINFORMATION *pTran, VOID *pItem);  /* dupli print */
 extern VOID     ThermPrtDispItem(TRANINFORMATION *pTran, VOID *pItem);    /* item display */
@@ -165,6 +178,7 @@ VOID    PrtInitialize(VOID);                                  /* initalize stati
 /* -- PrCItem_.c -- */
 USHORT   PrtPrintLine(USHORT usPrtControl, TCHAR *pLineToPrint);   /* item print  */
 USHORT   PrtPrintLineImmediate(USHORT usPrtControl, TCHAR *pLineToPrint);   /* item print  */
+PrtPrintCompulMask  PrtSetPrintCompulMask(PrtPrintCompulMask compulmask);   /* set the printing control masks */
 USHORT   PrtPrintItem(TRANINFORMATION *pTran, VOID *pItem);   /* item print  */
 USHORT   PrtPrintCpEpt(TRANINFORMATION *pTran, VOID *pItem);  /* dupli print */
 VOID     PrtDispItem(TRANINFORMATION *pTran, VOID *pItem);    /* item display */

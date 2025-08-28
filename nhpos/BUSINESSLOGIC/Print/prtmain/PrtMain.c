@@ -199,6 +199,11 @@ USHORT   PrtPrintLineImmediate(USHORT usPrtControl, TCHAR *pLineToPrint)
     return ThermPrtPrintLineImmediate (usPrtControl, pLineToPrint);  /* Call PrtPrintItem for  Thermal(thermreg.lib)  */
 }
 
+PrtPrintCompulMask  PrtSetPrintCompulMask (PrtPrintCompulMask compulmask)
+{
+    return ThermPrtSetPrintCompulMask(compulmask);  /* Call PrtSetPrintCompulMask() for  Thermal(thermreg.lib)  */
+}
+
 
 /*
 *===========================================================================

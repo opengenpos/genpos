@@ -60,24 +60,22 @@
 *   Static Area Declarations
 *===========================================================================
 */
-UIFITEMDATA UifRegData;                         /* Item Module Interface Data */
-UCHAR       uchUifRegVoid;                      /* Item Void Save Area */
-TCHAR       aszUifRegNumber[NUM_NUMBER];        /* Number Save Area */
-UIFDIADATA  UifRegDiaWork;                      /* Dialog Work Area */
-ULONG       flUifRegStatus;                     /* UI for Reg Status Area, Saratoga */
-SHORT       husUifRegHandle;                    /* UIC Handle Save Area */
-UCHAR       auchUifDifFsc[2];                   /* Beverage Dispenser String Buffer, R3.1 */
-UCHAR       fchUifSalesMod;                     /* Sales Modifier Save Area, 2172 */
-UCHAR	    uchIsNoCheckOn;					    /* Is No Check functionality on SR 18*/
-SHORT		fsPrtCompul;						/* Flag to be used when using the Check No Purchase functionality*/
-SHORT		fsPrtNoPrtMask;						/* Flag to be used when using the Check No Purchase functionality*/
+UIFITEMDATA UifRegData = { 0 };                     /* Item Module Interface Data */
+UCHAR       uchUifRegVoid = 0;                      /* Item Void Save Area */
+TCHAR       aszUifRegNumber[NUM_NUMBER] = { 0 };    /* Number Save Area */
+UIFDIADATA  UifRegDiaWork = { 0 };                  /* Dialog Work Area */
+ULONG       flUifRegStatus = 0;                     /* UI for Reg Status Area, Saratoga */
+SHORT       husUifRegHandle = 0;                    /* UIC Handle Save Area */
+UCHAR       auchUifDifFsc[2] = { 0 };               /* Beverage Dispenser String Buffer, R3.1 */
+UCHAR       fchUifSalesMod = 0;                     /* Sales Modifier Save Area, 2172 */
+UCHAR	    uchIsNoCheckOn = 0;					    /* Is No Check functionality on SR 18*/
 
 /*
 *===========================================================================
 *   Code Area Data
 *===========================================================================
 */
-UIMENU FARCONST aChildRegModeIn[] = {{UifMSR, CID_MSR},
+static UIMENU CONST aChildRegModeIn[] = {{UifMSR, CID_MSR},
                                      {UifCashier, CID_CASHIER},
                                      {UifCasInt, CID_CASINT},   /* R3.3 */
                                      {UifETKTimeIn, CID_ETKTIMEIN},

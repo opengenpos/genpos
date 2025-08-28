@@ -67,6 +67,8 @@
 /* -- PrCItem_.c -- */
 #define   PrtPrintLine          ThermPrtPrintLine
 #define   PrtPrintLineImmediate          ThermPrtPrintLineImmediate
+#define   PrtSetPrintCompulMask  ThermPrtSetPrintCompulMask
+
 #define   PrtPrintItem          ThermPrtPrintItem
 #define   PrtPrintCpEpt         ThermPrtPrintCpEpt
 #define   PrtDispItem           ThermPrtDispItem

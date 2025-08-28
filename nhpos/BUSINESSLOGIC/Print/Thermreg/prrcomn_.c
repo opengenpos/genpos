@@ -527,7 +527,7 @@ VOID  PrtPortion(SHORT fsPrtState)
     fsPrtPrintPort &= fsPrtNoPrtMask;
 
     /* -- if ticket, portion is "receipt" -- */
-    if ((fsPrtState & PRT_SINGLE_RECPT) || (fsPrtState & PRT_DOUBLE_RECPT)) {
+    if (fsPrtState & (PRT_SINGLE_RECPT | PRT_DOUBLE_RECPT)) {
         fsPrtPrintPort = PRT_RECEIPT;
     }
 

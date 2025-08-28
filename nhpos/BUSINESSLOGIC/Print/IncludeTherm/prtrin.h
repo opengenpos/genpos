@@ -138,9 +138,10 @@ extern TCHAR   auchPrtSeatCtl[2];      /* save seat no data for split check prin
 UCHAR  PrtKPSeatStateNotFeed(void);
 
 extern USHORT  usPrtSlipPageLine;    /* current slip lines and pages */
-extern USHORT  usPrtTHColumn;        /* thermal's numbers of columns */
-extern USHORT  usPrtEJColumn;        /* journal's numbers of columns */
-extern USHORT  usPrtVLColumn;        /* validation's numbers of columns */
+
+const extern USHORT  usPrtTHColumn;        /* thermal's numbers of columns */
+const extern USHORT  usPrtEJColumn;        /* journal's numbers of columns */
+const extern USHORT  usPrtVLColumn;        /* validation's numbers of columns */
 
 extern PRTCONTROL PrtCompNo;         /* compulsory print & no print status save area */   
 

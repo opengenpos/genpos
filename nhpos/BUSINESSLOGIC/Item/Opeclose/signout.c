@@ -70,6 +70,7 @@
 #include    "itmlocal.h"
 #include	<ConnEngineObjectIf.h>
 #include	<BlFWif.h>
+#include    <prt.h>
 
 
 /*
@@ -166,7 +167,7 @@ SHORT   ItemSignOut(UIFREGOPECLOSE *pUifRegOpeClose)
 /* #endif */
     case CLASS_UIMODELOCK:
         sReturnStatus = ItemModeKeyOut(&ItemOpeClose);
-        if (sReturnStatus != UIF_CAS_SIGNOUT || sReturnStatus != UIF_WAI_SIGNOUT) {
+        if (sReturnStatus != UIF_CAS_SIGNOUT && sReturnStatus != UIF_WAI_SIGNOUT) {
             return(sReturnStatus);
         }
         break;
@@ -261,8 +262,16 @@ SHORT   ItemSignOut(UIFREGOPECLOSE *pUifRegOpeClose)
 
 			ItemTransClose.uchMajorClass = CLASS_ITEMTRANSCLOSE;
 			ItemTransClose.uchMinorClass = CLASS_CLSETK;
+#if 1
+			{
+				PrtPrintCompulMask xSave = PrtSetPrintCompulMask((PrtPrintCompulMask) { 0, ~PRT_SLIP });
+				TrnClose(&ItemTransClose);
+				PrtSetPrintCompulMask(xSave);
+			}
+#else
 			fsPrtCompul= 0;  // ensure that we only do an EJ print
 			TrnClose( &ItemTransClose );
+#endif
 
 			{
 				TCHAR aszSapId[16];

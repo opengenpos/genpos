@@ -476,24 +476,36 @@ SHORT   ItemTenderEntry( UIFREGTENDER *UifRegTender )
 					{
 						case CLASS_UITENDER8:												  //If the tender pressed is 8,	
 							if(ParaMDCCheck(MDC_TEND84_ADR, EVEN_MDC_BIT2)){	 //check to see if it is assigned to Check no Purchase
-								fsPrtCompul = PRT_RECEIPT;      //Print values that need to be set here, because when doing Check no Purchase, they never 
+#if 1
+                                PrtSetPrintCompulMask((PrtPrintCompulMask) { PRT_RECEIPT, ~PRT_SLIP });
+#else 
+                                fsPrtCompul = PRT_RECEIPT;      //Print values that need to be set here, because when doing Check no Purchase, they never 
 								fsPrtNoPrtMask = ~PRT_SLIP;     //get set.  no slip printing wanted.
+#endif
 							} else {
 								return LDT_BLOCKEDBYMDC_ADR;
 							}
 							break;
 						case CLASS_UITENDER9:												  //If the tender pressed is 9
 							if(ParaMDCCheck(MDC_TEND94_ADR, EVEN_MDC_BIT2)){	 //check to see if it is assigned to Check No Purchase
-								fsPrtCompul = PRT_RECEIPT;      //Print values that need to be set here, because when doing Check no Purchase, they never 
+#if 1
+                                PrtSetPrintCompulMask((PrtPrintCompulMask) { PRT_RECEIPT, ~PRT_SLIP });
+#else 
+                                fsPrtCompul = PRT_RECEIPT;      //Print values that need to be set here, because when doing Check no Purchase, they never 
 								fsPrtNoPrtMask = ~PRT_SLIP;     //get set.  no slip printing wanted.
+#endif
 							} else {
 								return LDT_BLOCKEDBYMDC_ADR;
 							}
 							break;
 						case CLASS_UITENDER10:											  //If the tender pressed is 10	
 							if(ParaMDCCheck(MDC_TEND104_ADR,EVEN_MDC_BIT2)){	 //check to see if it is assigned to Check No Purchase
-								fsPrtCompul = PRT_RECEIPT;      //Print values that need to be set here, because when doing Check no Purchase, they never 
+#if 1
+                                PrtSetPrintCompulMask((PrtPrintCompulMask) { PRT_RECEIPT, ~PRT_SLIP });
+#else 
+                                fsPrtCompul = PRT_RECEIPT;      //Print values that need to be set here, because when doing Check no Purchase, they never 
 								fsPrtNoPrtMask = ~PRT_SLIP;     //get set.  no slip printing wanted.
+#endif
 							} else {
 								return LDT_BLOCKEDBYMDC_ADR;
 							}

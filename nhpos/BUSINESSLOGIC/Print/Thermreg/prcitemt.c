@@ -101,41 +101,71 @@
 +                  S T A T I C   R A M s
 ============================================================================
 */
-SHORT   fsPrtCompul;          /* compulsory portion */
-SHORT   fsPrtNoPrtMask;       /* No-Print portion Mask */
-SHORT   fsPrtStatus;          /* status ( request kitchen, no other, print on demand, 
-                                   not initialize condition ) */
-SHORT   fsPrtPrintPort;       /* print portion */
-UCHAR   auchPrtFailKP[PRT_KPRT_MAX];  /* failed kitchen printer */
-UCHAR   uchPrtCurKP;          /* current failed kitchen printer */
 
-TCHAR   uchPrtSeatNo;           /* save seat no for continual slip print R3.1 */
-TCHAR   auchPrtSeatCtl[2];      /* save seat no data for split check print control */
+// The following two mask variables are used to control which printers will be used when printing.
+// How these are used in when they are combined seems to vary in the printer source code.
+// Sometimes both are used to indicate a printer is compulsory and sometimes only or
+// the other is used to determine if a printer action should be done for a printer.
+// 
+// There appear to be two types of masks that are used with fsPrtNoPrtMask, one indicating the
+// actual printer station. A physical printer may have more than one station such as
+// a printer that has both thermal receipt station and a physical paper slip station.
+// 
+// These two masks are used in combination with the variable fsPrtPrintPort to indicate
+// the target printer station for a print action.
+// 
+// The mask is a combination of the PRT_ codes to indicate the printer station:
+//   - PRT_RECEIPT indicates receipt printer station
+//   - PRT_SLIP indicates slip printer station
+//   - PRT_JOURNAL indicates Journal printer station which includes Electronic Journal
+//
+// However fsPrtNoPrtMask can also contain other mask bits such as:
+//   - PRT_EJ_JOURNAL - Print EJ when not execute buffered print
+
+SHORT   fsPrtCompul = 0;          /* compulsory mask indicating printers that should print */
+SHORT   fsPrtNoPrtMask = 0;       /* No-Print mask indicating printers allowed to print */
+
+// The fsPrtStatus mask variable is used in the code a bit strangely in that some of the
+// mask bits seem to indicate more than one status.
+SHORT   fsPrtStatus = 0;          /* status ( request kitchen, no other, print on demand, not initialize condition ) */
+SHORT   fsPrtPrintPort = 0;       /* print portion */
+
+UCHAR   auchPrtFailKP[PRT_KPRT_MAX] = { 0 };  /* failed kitchen printer */
+UCHAR   uchPrtCurKP = 0;          /* current failed kitchen printer */
+
+TCHAR   uchPrtSeatNo = 0;           /* save seat no for continual slip print R3.1 */
+TCHAR   auchPrtSeatCtl[2] = { 0 };      /* save seat no data for split check print control */
 
 USHORT  usPrtSlipPageLine;    /* current slip lines and pages */
-USHORT  usPrtTHColumn = 42;   /* thermal's numbers of columns */
-USHORT  usPrtEJColumn = 24;   /* journal's numbers of columns */
-USHORT  usPrtVLColumn = 47;   /* validation's numbers of columns */
-                              /* "47" for safety */
+
+// see also the following defines which seem to duplicate these constants:
+//    - PRT_THCOLUMN - thermal column
+//    - PRT_EJCOLUMN - journal column
+//    - PRT_SPCOLUMN - slip column
+//    - PRT_KPCOLUMN - kp column
+//    - PRT_VLCOLUMN - validation column
+const USHORT  usPrtTHColumn = 42;   /* thermal's numbers of columns, PRT_THCOLUMN? */
+const USHORT  usPrtEJColumn = 24;   /* journal's numbers of columns, PRT_EJCOLUMN? */
+const USHORT  usPrtVLColumn = 47;   /* validation's numbers of columns, "47" for safety, PRT_VLCOLUMN? */
 
 const TCHAR aszPrtAM[] = STD_TIME_AM_SYMBOL;
 const TCHAR aszPrtPM[] = STD_TIME_PM_SYMBOL;
 
-UCHAR   fbPrtTHHead;                            /* header printed or not */                        
+UCHAR   fbPrtTHHead = 0;                            /* header printed or not */
 
 /* -- for shared printer data -- */
-PRTSHRINF PrtShrInf;                            /* shared print information */
-UCHAR   uchPrtReceiptCo;                        /* number of receipt/ ticket to be printed */
-USHORT  usPrtShrOffset;                         /* print data area offset */
-UCHAR   fbPrtLockChk;                           /* lock check */
-UCHAR   fbPrtShrStatus;                         /* shared print status */                        
-UCHAR   fbPrtAltrStatus;                        /* printer alternation status */
-UCHAR   fbPrtAbortStatus;                       /* abort key entry status */
-UCHAR   fbPrtAltrSav;                           /* save alternation status */
-UCHAR   fbPrtAbortSav;                          /* save abort key entry status */
-UCHAR   fbPrtShrPrint;                          /* not print status */                        
+PRTSHRINF PrtShrInf = { 0 };                            /* shared print information */
+UCHAR   uchPrtReceiptCo = 0;                        /* number of receipt/ ticket to be printed */
+USHORT  usPrtShrOffset = 0;                         /* print data area offset */
+UCHAR   fbPrtLockChk = 0;                           /* lock check */
+UCHAR   fbPrtShrStatus = 0;                         /* shared print status */
+UCHAR   fbPrtAltrStatus = 0;                        /* printer alternation status */
+UCHAR   fbPrtAbortStatus = 0;                       /* abort key entry status */
+UCHAR   fbPrtAltrSav = 0;                           /* save alternation status */
+UCHAR   fbPrtAbortSav = 0;                          /* save abort key entry status */
+UCHAR   fbPrtShrPrint = 0;                          /* not print status */
 
-PRTCONTROL PrtCompNo;                           /* print status save area */
+PRTCONTROL PrtCompNo = { 0 };                           /* print status save area */
 
 
 /**
@@ -169,6 +199,25 @@ USHORT   PrtPrintLineImmediate (USHORT usPrtControl, TCHAR *pLineToPrint)
 
 	usPrtControl |= PMG_PRT_IMMEDIATE;
 	return PmgPrint(usPrtControl, pLineToPrint, usLen);
+}
+
+PrtPrintCompulMask  PrtSetPrintCompulMask(PrtPrintCompulMask compulmask)
+{
+    PrtPrintCompulMask xSave = { fsPrtCompul, fsPrtNoPrtMask };
+
+    // It appears that any changes made using this function will be overwritten
+    // anyway so for right now we are not setting these Print subsystem globals.
+    // At some point we want to remove this functionality and the use of it.
+    // It appears that any special settings should be done using the TranCurQual
+    // member of the TRANINFORMATION struct global, in memory database.
+    //   - fsPrtCompul  = pTran->TranCurQual.fbCompPrint;
+    //   - fsPrtNoPrtMask = ~(pTran->TranCurQual.fbNoPrint);
+    //   Richard Chambers, Aug-27-2025
+
+//    fsPrtCompul = compulmask.fsPrtCompul;          /* compulsory portion */
+//    fsPrtNoPrtMask = compulmask.fsPrtNoPrtMask;       /* No-Print portion Mask */
+
+    return xSave;
 }
 
 /*

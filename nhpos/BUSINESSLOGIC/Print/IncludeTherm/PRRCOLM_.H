@@ -40,8 +40,12 @@
 +                       D E F I N I T I O N S
 ============================================================================
 */
-#define     PRT_THCOLUMN        42      /* thermal column */
-#define     PRT_EJCOLUMN        24      /* journal column */
+// see also the following constant global variables that seem to have similar values:
+//    - usPrtTHColumn - thermal's numbers of columns
+//    - usPrtEJColumn - journal's numbers of columns
+//    - usPrtVLColumn - validation's numbers of columns, "47" for safety
+#define     PRT_THCOLUMN        42      /* thermal column, usPrtTHColumn? */
+#define     PRT_EJCOLUMN        24      /* journal column, usPrtEJColumn? */
 #define     PRT_SPCOLUMN        44      /* slip column */
 #define     PRT_KPCOLUMN        21      /* kp column */
 #define     PRT_VLCOLUMN        55      /* validation column */
