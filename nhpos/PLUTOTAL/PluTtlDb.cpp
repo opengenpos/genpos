@@ -7,6 +7,7 @@
 
 #include "NDbgTrc.h"    // TRACER object
 
+#include <string>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -36,7 +37,11 @@ const int   CnPluTotalDb::s_IdxNum         = 3;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CnPluTotalDb::CnPluTotalDb(const LPCTSTR szDbFileName){
+#if !defined(ENABLE_EMBED_SQLITE_DB)
+CnPluTotalDb::CnPluTotalDb(const LPCTSTR szDbFileName) {
+#else
+CnPluTotalDb::CnPluTotalDb(const LPCTSTR szDbFileName) {
+#endif
 //
 // See also the Microsoft article Driver history for Microsoft SQL Server
 //    https://learn.microsoft.com/en-us/sql/connect/connect-history?view=sql-server-ver15
@@ -78,6 +83,7 @@ CnPluTotalDb::~CnPluTotalDb(){
 }
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 void    CnPluTotalDb::CreateObject(LPCTSTR szDbFileName){
 
     m_strDbFileName = szDbFileName;
@@ -97,8 +103,40 @@ void    CnPluTotalDb::CreateObject(LPCTSTR szDbFileName){
 #endif
     CnPluTotalDb::s_nObjCnt++;
 }
+#else
+void    CnPluTotalDb::CreateObject(LPCTSTR szDbFileName) {
 
+    m_strDbFileName = szDbFileName;
+    ConnectionString.Format(ConnectionStringDbPath, m_strDbFileName);
 
+    char sqlBuf[256] = { 0 };
+    snprintf(sqlBuf, sizeof(sqlBuf), "%S", (LPCWSTR)ConnectionString);
+
+    int rc = sqlite3_open(sqlBuf, &cnRec0.pSqliteDb);
+    if (rc != SQLITE_OK) {
+        char xBuff[128];
+        sprintf(xBuff, "==NOTE: CnPluTotalDb::CreateObject() %S rc = %d", (LPCWSTR)m_strDbFileName, rc);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+    }
+
+    rc = sqlite3_open(sqlBuf, &cnRecS.pSqliteDb);
+    if (rc != SQLITE_OK) {
+        char xBuff[128];
+        sprintf(xBuff, "==NOTE: CnPluTotalDb::CreateObject() %S rc = %d", (LPCWSTR)m_strDbFileName, rc);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+    }
+
+    cnRecS.prepTotalDbKeyFields.CreateOneDim(VT_VARIANT, 6);
+    cnRecS.prepTotalDbKeyValues.CreateOneDim(VT_VARIANT, 6);
+
+    cnRec0.prepTotalDbKeyFields.CreateOneDim(VT_VARIANT, 6);
+    cnRec0.prepTotalDbKeyValues.CreateOneDim(VT_VARIANT, 6);
+
+    CnPluTotalDb::s_nObjCnt++;
+}
+#endif
+
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 void    CnPluTotalDb::DestroyObject(){
     CnPluTotalDb::s_nObjCnt--;
     if(CnPluTotalDb::s_nObjCnt == 0){
@@ -112,7 +150,17 @@ void    CnPluTotalDb::DestroyObject(){
         }
     }
 }
+#else
+void    CnPluTotalDb::DestroyObject() {
+    CnPluTotalDb::s_nObjCnt--;
 
+    sqlite3_close(cnRecS.pSqliteDb);
+    cnRecS.pSqliteDb = NULL;
+
+    sqlite3_close(cnRec0.pSqliteDb);
+    cnRec0.pSqliteDb = NULL;
+}
+#endif
 
 ULONG   CnPluTotalDb::CreateDbFile(){
 
@@ -226,6 +274,7 @@ ULONG   CnPluTotalDb::CreateDbBackUpFile(){
 }
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::CreateTable(const __CnTblFormat &TblFormat){
 #if defined(CNPLUTOTALDB_LOG) && CNPLUTOTALDB_LOG
     {
@@ -278,8 +327,51 @@ ULONG   CnPluTotalDb::CreateTable(const __CnTblFormat &TblFormat){
 #endif
     return  PLUTOTAL_SUCCESS;
 }
+#else
+ULONG   CnPluTotalDb::CreateTable(const __CnTblFormat& TblFormat)
+{
+    AFX_MANAGE_STATE(AfxGetStaticModuleState());
+
+#if defined(CNPLUTOTALDB_LOG) && CNPLUTOTALDB_LOG
+    {
+        char xBuff[128];
+        sprintf(xBuff, "==NOTE: CnPluTotalDb::CreateTable() %S -> %S", (LPCWSTR)m_strDbFileName, (LPCWSTR)TblFormat.strName);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+    }
+#endif
+
+    char sqlBuf[512];
+    snprintf(sqlBuf, sizeof(sqlBuf), "CREATE TABLE IF NOT EXISTS %S (%S)", (LPCWSTR)TblFormat.strName, (LPCWSTR)TblFormat.strFldFormat);
+
+    char* errMsg = nullptr;
+    int rc = sqlite3_exec(cnRec0.pSqliteDb, sqlBuf, nullptr, nullptr, &errMsg);
+
+    if (rc != SQLITE_OK) {
+        if (errMsg) sqlite3_free(errMsg);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    // create index(s)
+    if (!TblFormat.strIdxName.IsEmpty()) {
+        CString strIdxName;
+        for (int i = 0; i < CnPluTotalDb::s_IdxNum; i++) {
+            if (TblFormat.strIdxFld[i].IsEmpty())
+                break;
+            strIdxName.Format(_T("%s_%02d"), (LPCTSTR)TblFormat.strIdxName, i);
+            m_hr = CnPluTotalDb::CreateIndex(TblFormat.strName, strIdxName, TblFormat.strIdxFld[i]);
+            if (FAILED(m_hr)) {
+                CnPluTotalDb::DropTable(TblFormat.strName);
+                return  PLUTOTAL_E_FAILURE;
+            }
+        }
+    }
+
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::DropTable(LPCTSTR strTblName){
 #if defined(CNPLUTOTALDB_LOG) && CNPLUTOTALDB_LOG
     {
@@ -312,8 +404,36 @@ ULONG   CnPluTotalDb::DropTable(LPCTSTR strTblName){
 
     return PLUTOTAL_SUCCESS;
 }
+#else
+ULONG   CnPluTotalDb::DropTable(LPCTSTR strTblName) {
+#if defined(CNPLUTOTALDB_LOG) && CNPLUTOTALDB_LOG
+    {
+        char xBuff[128];
+        sprintf(xBuff, "==NOTE: CnPluTotalDb::DropTable() %S -> %S", (LPCWSTR)m_strDbFileName, strTblName);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+    }
+#endif
+    if (CheckTable(strTblName) == PLUTOTAL_SUCCESS) {
+        char sqlBuf[256];
+        snprintf(sqlBuf, sizeof(sqlBuf), "DROP TABLE %S ", strTblName);
 
+        char* errMsg = nullptr;
+        int rc = sqlite3_exec(cnRec0.pSqliteDb, sqlBuf, nullptr, nullptr, &errMsg);
 
+        if (rc != SQLITE_OK) {
+            char  xBuff[256];
+            sprintf(xBuff, "CnPluTotalDb::DropTable() %S::%S FAILED: rc = 0x%8.8x", (LPCWSTR)m_strDbFileName, strTblName, rc);
+            NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+            if (errMsg) sqlite3_free(errMsg);
+            return PLUTOTAL_E_FAILURE;
+        }
+    }
+
+    return PLUTOTAL_SUCCESS;
+}
+#endif
+
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::CreateIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName,LPCTSTR lpszFldNames){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -334,7 +454,26 @@ ULONG   CnPluTotalDb::CreateIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName,LPCTST
 
     return  PLUTOTAL_SUCCESS;
 }
+#else
+ULONG   CnPluTotalDb::CreateIndex(LPCTSTR lpszTblName, LPCTSTR lpszIdxName, LPCTSTR lpszFldNames) {
+    char sqlBuf[256];
+    snprintf(sqlBuf, sizeof(sqlBuf), "CREATE INDEX %S ON %S ( %S ) ", lpszIdxName, lpszTblName, lpszFldNames);
 
+    char* errMsg = nullptr;
+    int rc = sqlite3_exec(cnRec0.pSqliteDb, sqlBuf, nullptr, nullptr, &errMsg);
+
+    if (rc != SQLITE_OK) {
+        char  xBuff[128];
+        sprintf(xBuff, "CnPluTotalDb::CreateIndex() FAILED: HRESULT rc = 0x%8.8x", rc);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+        return  PLUTOTAL_E_FAILURE;
+    }
+
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
+
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::DropIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -355,6 +494,25 @@ ULONG   CnPluTotalDb::DropIndex(LPCTSTR lpszTblName,LPCTSTR lpszIdxName){
 
     return  PLUTOTAL_SUCCESS;
 }
+#else
+ULONG   CnPluTotalDb::DropIndex(LPCTSTR lpszTblName, LPCTSTR lpszIdxName) {
+    char sqlBuf[256];
+    snprintf(sqlBuf, sizeof(sqlBuf), "DROP INDEX %S.%S", lpszTblName, lpszIdxName);
+
+    char* errMsg = nullptr;
+    int rc = sqlite3_exec(cnRec0.pSqliteDb, sqlBuf, nullptr, nullptr, &errMsg);
+
+    if (rc != SQLITE_OK) {
+        char  xBuff[128];
+        sprintf(xBuff, "CnPluTotalDb::DropIndex() FAILED: HRESULT rc = 0x%8.8x", rc);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+        return  PLUTOTAL_E_FAILURE;
+    }
+
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
+
 
 ULONG   CnPluTotalDb::CreateIndexEx(const __CnTblFormat &TblFormat)
 {
@@ -408,6 +566,7 @@ ULONG   CnPluTotalDb::DropIndexEx(const __CnTblFormat &TblFormat)
 }
 
 // ### ADD (041500)
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::CheckTable(LPCTSTR lpcTblName){
     ULONG   ulSts = PLUTOTAL_SUCCESS;
 #if defined(SQLITE_TEST) && SQLITE_TEST
@@ -482,8 +641,53 @@ ULONG   CnPluTotalDb::CheckTable(LPCTSTR lpcTblName){
 
     return  ulSts;
 }
+#else
+ULONG   CnPluTotalDb::CheckTable(LPCTSTR lpcTblName) {
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::CheckTable() called.");
+
+    ULONG   ulSts = PLUTOTAL_SUCCESS;
+
+    //
+    // what this code does is to look up in the SQLite database management
+    // data to ask if a specific table is in the list of tables and to provide
+    // us the name for the table. if this query fails then the requested table
+    // does not exist. if the query succeeds then fetch the SELECT result and
+    // then clean up.
+
+    char   sqlBuf[256] = { 0 };         // SQL statement
+    snprintf(sqlBuf, sizeof(sqlBuf), "SELECT name FROM sqlite_master WHERE type='table' AND name='%S'", lpcTblName);
+
+    cnRec0.prepStmt = nullptr;
+    int rc = sqlite3_prepare_v2(cnRec0.pSqliteDb, sqlBuf, -1, &cnRec0.prepStmt, nullptr);
+    if (rc != SQLITE_OK) {
+        char  xBuff[128];
+        if (cnRec0.prepStmt) sqlite3_finalize(cnRec0.prepStmt);
+        sprintf(xBuff, "CnPluTotalDb::CheckTable() '%S' OpenRec() FAILED: rc = %d", lpcTblName, rc);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    rc = sqlite3_step(cnRec0.prepStmt);
+    if (rc == SQLITE_ROW) {
+        // table is the database file so we are good
+        sqlite3_finalize(cnRec0.prepStmt);
+        ulSts = PLUTOTAL_SUCCESS;
+    }
+    else {
+        // either an error of some kind or the table is not in the database file.
+        char  xBuff[128];
+        sqlite3_finalize(cnRec0.prepStmt);
+        sprintf(xBuff, "CnPluTotalDb::CheckTable() '%S' OpenRec() FAILED: m_hr = 0x%8.8x", lpcTblName, m_hr);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+        ulSts = PLUTOTAL_NOT_FOUND;
+    }
+
+    return  ulSts;
+}
+#endif
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::get_RecordCnt(LPCTSTR szTblName,LONG * plRecCnt){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -514,6 +718,41 @@ GETRECCNT_ERR:
 #endif
     return  PLUTOTAL_E_FAILURE;
 }
+#else
+ULONG   CnPluTotalDb::get_RecordCnt(LPCTSTR szTblName, LONG* plRecCnt) {
+
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::get_RecordCnt() called.");
+
+    ULONG   ulSts = PLUTOTAL_SUCCESS;
+
+    if (!plRecCnt) return PLUTOTAL_E_ILLEAGAL;
+
+    *plRecCnt = 0;
+
+    // Prepare SQL statement to count records
+    char sqlBuf[128];
+    snprintf(sqlBuf, sizeof(sqlBuf), "SELECT COUNT(*) FROM %S;", szTblName);
+
+    cnRec0.prepRc = sqlite3_prepare_v2(cnRec0.pSqliteDb, sqlBuf, -1, &cnRec0.prepStmt, nullptr);
+    if (cnRec0.prepRc != SQLITE_OK) {
+        NHPOS_ASSERT(cnRec0.prepRc == SQLITE_OK);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    cnRec0.prepRc = sqlite3_step(cnRec0.prepStmt);
+    if (cnRec0.prepRc == SQLITE_ROW) {
+        *plRecCnt = (ULONG)sqlite3_column_int64(cnRec0.prepStmt, 0);
+        ulSts = PLUTOTAL_SUCCESS;
+    }
+    else {
+        NHPOS_ASSERT(cnRec0.prepRc == SQLITE_ROW);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    if (cnRec0.prepStmt) sqlite3_finalize(cnRec0.prepStmt);
+	return ulSts;
+}
+#endif
 
 
 ULONG   CnPluTotalDb::ExecSQL(LPCTSTR szSqlCode){
@@ -677,6 +916,7 @@ MULTI_USER_DB:
 
 
 // New Functions
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::OpenRec(LPCTSTR lpcTableName){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -707,8 +947,28 @@ ULONG   CnPluTotalDb::OpenRec(LPCTSTR lpcTableName){
 
     return  PLUTOTAL_SUCCESS;
 }
+#else
+ULONG   CnPluTotalDb::OpenRec(LPCTSTR lpcTableName) {
+
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::OpenRec() table name called.");
+
+    wcscpy(cnRec0.prepTableName, lpcTableName);
+    return  PLUTOTAL_SUCCESS;
+}
+
+ULONG   CnPluTotalDb::OpenRec(LPCTSTR lpcTableName, COleSafeArray &saFields, COleSafeArray &saValues) {
+
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::OpenRec() table name, saFields, saValues called.");
+
+    wcscpy(cnRec0.prepTableName, lpcTableName);
+    cnRec0.prepTotalDbKeyFields = saFields;
+    cnRec0.prepTotalDbKeyValues = saValues;
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::OpenRec(LPCTSTR szSqlCode,const BOOL bClose,LONG * plRecCnt){
     *plRecCnt = 0;
 
@@ -743,8 +1003,55 @@ ULONG   CnPluTotalDb::OpenRec(LPCTSTR szSqlCode,const BOOL bClose,LONG * plRecCn
 #endif
     return  ulSts;
 }
+#else
+ULONG   CnPluTotalDb::OpenRec(LPCTSTR szSqlCode, const BOOL bClose, LONG* plRecCnt) {
+    *plRecCnt = 0;
+
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::OpenRec() szSqlCode called.");
+
+    char   sqlBuf[256] = { 0 };         // SQL statement
+    snprintf(sqlBuf, sizeof(sqlBuf), "%S", szSqlCode);
+
+    cnRec0.prepStmt = nullptr;
+    cnRec0.prepRc = sqlite3_prepare_v2(cnRec0.pSqliteDb, sqlBuf, -1, &cnRec0.prepStmt, nullptr);
+    if (cnRec0.prepRc != SQLITE_OK) {
+        char  xBuff[128];
+        if (cnRec0.prepStmt) sqlite3_finalize(cnRec0.prepStmt);
+        cnRec0.prepStmt = nullptr;
+        sprintf(xBuff, "CnPluTotalDb::CheckTable() '%S' OpenRec() FAILED: rc = %d", (LPCTSTR)m_strDbFileName, cnRec0.prepRc);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    cnRec0.iRecordCount = 0;
+    do {
+        cnRec0.prepRc = sqlite3_step(cnRec0.prepStmt);
+        if (cnRec0.prepRc == SQLITE_ROW) cnRec0.iRecordCount += 1;
+    } while (cnRec0.prepRc == SQLITE_ROW);
+
+    *plRecCnt = cnRec0.iRecordCount;
+
+    if (cnRec0.prepStmt) sqlite3_finalize(cnRec0.prepStmt);
+    cnRec0.prepStmt = nullptr;
+
+    ULONG   ulSts = PLUTOTAL_SUCCESS;
+
+    if (*plRecCnt == 0L) {
+        ulSts = PLUTOTAL_NOT_FOUND;
+    }
+
+    cnRec0.prepRc = sqlite3_prepare_v2(cnRec0.pSqliteDb, sqlBuf, -1, &cnRec0.prepStmt, nullptr);
+    if (cnRec0.prepRc != SQLITE_OK) {
+        NHPOS_ASSERT(cnRec0.prepRc == SQLITE_OK);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    return  ulSts;
+}
+#endif
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 VOID    CnPluTotalDb::CloseRec(void){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -753,8 +1060,20 @@ VOID    CnPluTotalDb::CloseRec(void){
         __pRecO->Close();
 #endif
 }
+#else
+VOID    CnPluTotalDb::CloseRec(void) {
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::CloseRec() called.");
+    cnRec0.iRecordCount = 0;
+    if (cnRec0.prepStmt) sqlite3_finalize(cnRec0.prepStmt);
+    cnRec0.prepStmt = nullptr;
+    cnRec0.prepRc = 0;
+    cnRec0.prepTotalDbKeyFields.Clear();
+    cnRec0.prepTotalDbKeyValues.Clear();
+    cnRec0.prepTableName[0] = 0;
+}
+#endif
 
-
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::GetRec(VARIANT vGetFields,LPVARIANT lpvValues){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -773,7 +1092,278 @@ ULONG   CnPluTotalDb::GetRec(VARIANT vGetFields,LPVARIANT lpvValues){
     return  PLUTOTAL_SUCCESS;
 #endif
 }
+#else
+ULONG   CnPluTotalDb::GetRec(VARIANT vGetFields, COleVariant & lpvValues) {
+    ULONG  ulSts = PLUTOTAL_E_FAILURE;
 
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::GetRec() called.");
+
+    if (cnRec0.pSqliteDb && cnRec0.prepStmt) {
+        COleVariant vStart;
+
+        vStart.Clear();	/* 09/03/01 */
+
+        int rc = sqlite3_step(cnRec0.prepStmt);
+        if (rc == SQLITE_ROW) {
+            COleSafeArray   saRec = vGetFields;
+            COleSafeArray   saValues;
+            COleVariant     vWrk;
+            long    lIdx[1] = { 0 };    // bound
+
+            int column_count = sqlite3_column_count(cnRec0.prepStmt);
+
+            saValues.CreateOneDim(VT_VARIANT, column_count, NULL, 0);
+            for (int i = 0; i < column_count; i++) {
+                const wchar_t* pText = nullptr;
+                const wchar_t* p0 = (const wchar_t*)sqlite3_column_name16(cnRec0.prepStmt, i);
+                int tp0 = sqlite3_column_type(cnRec0.prepStmt, i);
+                long long   i64Value = 0;
+
+                switch (tp0) {
+                case SQLITE_INTEGER:
+                    i64Value = sqlite3_column_int64(cnRec0.prepStmt, i);
+                    vWrk.Clear(); vWrk = i64Value;
+                    saValues.PutElement(lIdx, &vWrk);
+                    lIdx[0]++;
+                    break;
+                case SQLITE_TEXT:
+                    pText = (const wchar_t *)sqlite3_column_text16(cnRec0.prepStmt, i);
+                    vWrk.Clear(); vWrk.SetString(pText, VT_BSTR);
+                    saValues.PutElement(lIdx, &vWrk);
+                    lIdx[0]++;
+                    break;
+                case SQLITE_NULL:
+                    vWrk.Clear(); vWrk = 0L;
+                    saValues.PutElement(lIdx, &vWrk);
+                    lIdx[0]++;
+                    break;
+                default:
+                    break;
+                }
+            }
+            lpvValues = CComVariant(saValues);
+            ulSts =  PLUTOTAL_SUCCESS;
+        }
+    }
+
+    return  ulSts;
+}
+#endif
+
+// Add to the output strings wsFields and wsValues
+// the field names and the values from the variants.
+//
+// We allow additional fields and values such as for
+// a row key in order to use this function with both
+// PutRec() and AddRec().
+// PutRec() is not provided the key in the vPutFields variant
+// where as AddRec() is.
+
+static int FigureArrayCount(COleSafeArray& osaFields)
+{
+    if (osaFields.vt == VT_EMPTY) return -1;
+
+    long lUbound = 0, lLbound = 0;
+
+    osaFields.GetUBound(1, &lUbound);
+    osaFields.GetLBound(1, &lLbound);
+    
+    return lUbound - lLbound + 1;
+}
+
+
+static int BuildInsertStmt (const wchar_t* wsTableName, VARIANT vPutFields, VARIANT vPutValues, std::wstring  &wsStmt)
+{
+    // building fields and values list part of an INSERT statement.
+    // example: "INSERT INTO users (name, age) VALUES ('John Doe', 30);";
+    COleSafeArray   saFields = vPutFields;
+    COleSafeArray   saValues = vPutValues;
+    COleVariant     vWrk;
+    std::wstring    wsFields, wsValues;
+    long    lIdx[1] = { 0 };    // bound
+
+    int column_count = FigureArrayCount(saFields);
+
+    NHPOS_ASSERT(column_count > 0);
+
+    wsStmt = L"INSERT INTO ";
+    wsStmt += wsTableName;
+    wsStmt += L" ";
+    wsFields.clear();
+    wsValues.clear();
+
+    for (int i = 0; i < column_count; i++) {
+        long long   i64Value = 0;
+        COleDateTime    dtDate;
+        wchar_t       wsValueTemp[32] = { 0 };
+
+        vWrk.Clear();
+        saFields.GetElement(lIdx, &vWrk);
+        wsFields += vWrk.bstrVal;
+        wsFields += L", ";
+
+        vWrk.Clear();
+        saValues.GetElement(lIdx, &vWrk);
+        lIdx[0]++;
+        switch (vWrk.vt) {
+        case VT_I1:
+            swprintf(wsValueTemp, 30, L"%d", vWrk.bVal);
+            wsValues += wsValueTemp;
+            wsValues += L", ";
+            break;
+        case VT_I2:
+            swprintf(wsValueTemp, 30, L"%d", vWrk.iVal);
+            wsValues += wsValueTemp;
+            wsValues += L", ";
+            break;
+        case VT_UI4:
+            swprintf(wsValueTemp, 30, L"%u", vWrk.ulVal);
+            wsValues += wsValueTemp;
+            wsValues += L", ";
+            break;
+        case VT_I4:
+            swprintf(wsValueTemp, 30, L"%d", vWrk.lVal);
+            wsValues += wsValueTemp;
+            wsValues += L", ";
+            break;
+        case VT_I8:
+            swprintf(wsValueTemp, 30, L"%lld", vWrk.llVal);
+            wsValues += wsValueTemp;
+            wsValues += L", ";
+            break;
+        case VT_BSTR:
+            wsValues += L"\'";
+            wsValues += vWrk.bstrVal;
+            wsValues += L"\'";
+            wsValues += L", ";
+            break;
+        case VT_DATE:
+            wsValues += L"\'";
+            dtDate = vWrk;
+            wsValues += dtDate.Format(_T("%Y-%m-%d %H:%M:%S"));
+            wsValues += L"\'";
+            wsValues += L", ";
+            break;
+        default:
+            break;
+        }
+    }
+
+    wsFields.erase(wsFields.length() - 2);
+    wsValues.erase(wsValues.length() - 2);
+    wsStmt += L"( " + wsFields + L") VALUES ( " + wsValues + L" );";
+
+    return 0;
+}
+
+static int BuildUpdateStmt(const wchar_t *wsTableName, VARIANT vPutFields, std::wstring& wsStmt)
+{
+    // building fields and values list part of an UPDATE statement.
+    // example: "UPDATE users SET name = ?, age = ? WHERE id = ?;";
+    COleSafeArray   saFields = vPutFields;
+    COleVariant     vWrk;
+    std::wstring    wsFields;
+    long    lIdx[1] = { 0 };    // bound
+
+    int column_count = FigureArrayCount(saFields);
+
+    NHPOS_ASSERT(column_count > 0);
+
+    wsStmt = L"UPDATE ";
+    wsStmt += wsTableName;
+    wsStmt += L" SET ";
+
+    for (int i = 0; i < column_count; i++) {
+        long long   i64Value = 0;
+        wchar_t       wsValueTemp[32] = { 0 };
+
+        vWrk.Clear();
+        saFields.GetElement(lIdx, &vWrk);
+        wsFields += vWrk.bstrVal;
+        wsFields += L" = ?, ";
+        lIdx[0]++;
+    }
+
+    wsFields.erase(wsFields.length() - 2);
+    wsStmt += wsFields ;
+
+    return 0;
+}
+
+static int bindSafeArray(sqlite3_stmt* prepStmt, int iArgIndex, COleSafeArray& saValues)
+{
+    COleDateTime   dtDate;
+    COleVariant    vWrk;
+    long           lIdx[1] = { 0 };    // bound
+
+    int column_count = FigureArrayCount(saValues);
+
+    NHPOS_ASSERT(column_count > 0);
+
+    for (int i = iArgIndex + 1; i <= iArgIndex + column_count; i++) {
+        long long   i64Value = 0;
+        int         iLen;
+        int         rc = 0;
+        char        sValueTemp[64] = { 0 };
+
+        vWrk.Clear();
+        saValues.GetElement(lIdx, &vWrk);
+        lIdx[0]++;
+        switch (vWrk.vt) {
+        case VT_I1:
+            rc = sqlite3_bind_int(prepStmt, i, vWrk.iVal);
+            break;
+        case VT_I2:
+            rc = sqlite3_bind_int(prepStmt, i, vWrk.iVal);
+            break;
+        case VT_UI4:
+            rc = sqlite3_bind_int(prepStmt, i, vWrk.iVal);
+            break;
+        case VT_I4:
+            rc = sqlite3_bind_int(prepStmt, i, vWrk.iVal);
+            break;
+        case VT_I8:
+            rc = sqlite3_bind_int64(prepStmt, i, vWrk.llVal);
+            break;
+        case VT_BSTR:
+            {
+                 _bstr_t b = vWrk.bstrVal;
+                unsigned int bl = b.length();
+                char* bc = _com_util::ConvertBSTRToString(b);
+                rc = sqlite3_bind_text(prepStmt, i, bc, -1, SQLITE_TRANSIENT);
+                delete[] bc;
+           }
+            break;
+        case VT_DATE:
+            // convert from the internal date format to the string style date format
+            // we use in our SQLite database.
+            dtDate = vWrk;
+            iLen = snprintf(sValueTemp, sizeof(sValueTemp), "%S", (LPCWSTR)dtDate.Format(_T("%Y-%m-%d %H:%M:%S")));
+            rc = sqlite3_bind_text(prepStmt, i, sValueTemp, -1, SQLITE_TRANSIENT);
+            break;
+        default:
+            break;
+        }
+    }
+
+    return iArgIndex + column_count;
+}
+
+int bindPrepStmt(sqlite3_stmt* prepStmt, VARIANT &vPutValues, COleSafeArray &prepDbKeyValues)
+{
+    // Bind parameters from RecData
+    COleSafeArray   saValues = vPutValues;
+
+    int iArgIndex = 0;
+
+    iArgIndex = bindSafeArray(prepStmt, iArgIndex, saValues);   // values for the fields
+
+    iArgIndex = bindSafeArray(prepStmt, iArgIndex, prepDbKeyValues);   // values for the key
+
+    return iArgIndex;
+}
+
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::PutRec(VARIANT vPutFields,VARIANT vValues){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -789,8 +1379,59 @@ ULONG   CnPluTotalDb::PutRec(VARIANT vPutFields,VARIANT vValues){
     return  PLUTOTAL_SUCCESS;
 #endif
 }
+#else
+ULONG   CnPluTotalDb::PutRec(VARIANT vPutFields, VARIANT vPutValues) {
+    ULONG ulSts = PLUTOTAL_E_FAILURE;
 
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::PutRec() called.");
+    if (cnRec0.prepTableName[0] == 0)
+        return  PLUTOTAL_E_FAILURE;
 
+    std::wstring  wsStmt;
+
+    BuildUpdateStmt(cnRec0.prepTableName, vPutFields, wsStmt);
+
+    wsStmt += L" WHERE ";
+    int column_count = FigureArrayCount(cnRec0.prepTotalDbKeyFields);
+    long    lIdx[1] = { 0 };    // bound
+    for (int i = 0; i < column_count; i++) {
+        long long   i64Value = 0;
+        COleVariant     vWrk;
+
+        vWrk.Clear();
+        cnRec0.prepTotalDbKeyFields.GetElement(lIdx, &vWrk);
+        wsStmt += vWrk.bstrVal;
+        wsStmt += L" = ? AND ";
+        lIdx[0]++;
+    }
+    wsStmt.erase(wsStmt.length() - 4);
+    wsStmt += L";";
+
+    // Prepare SQL statement for all fields
+    char sqlBuf[512] = { 0 };
+    int iLen = snprintf(sqlBuf, sizeof(sqlBuf), "%S", wsStmt.c_str());
+
+    cnRec0.prepStmt = nullptr;
+    cnRec0.prepRc = sqlite3_prepare_v2(cnRec0.pSqliteDb, sqlBuf, -1, &cnRec0.prepStmt, nullptr);
+    if (cnRec0.prepRc != SQLITE_OK) {
+        NHPOS_ASSERT(cnRec0.prepRc == SQLITE_OK);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    // Bind parameters from RecData
+    bindPrepStmt(cnRec0.prepStmt, vPutValues, cnRec0.prepTotalDbKeyValues);
+
+    cnRec0.prepRc = sqlite3_step(cnRec0.prepStmt);
+    if (cnRec0.prepRc != SQLITE_DONE) {
+        NHPOS_ASSERT(cnRec0.prepRc == SQLITE_DONE);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
+
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::AddRec(VARIANT vPutFields,VARIANT vValues){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -807,8 +1448,42 @@ ULONG   CnPluTotalDb::AddRec(VARIANT vPutFields,VARIANT vValues){
     return  PLUTOTAL_SUCCESS;
 #endif
 }
+#else
+ULONG   CnPluTotalDb::AddRec(VARIANT vPutFields, VARIANT vPutValues) {
+    ULONG ulSts = PLUTOTAL_E_FAILURE;
+
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::AddRec() called.");
+
+    if (cnRec0.prepTableName[0] == 0)
+        return  PLUTOTAL_E_FAILURE;
+
+    std::wstring  wsStmt;
+
+    BuildInsertStmt(cnRec0.prepTableName, vPutFields, vPutValues, wsStmt);
+
+    // Prepare SQL statement for all fields
+    char sqlBuf[512] = { 0 };
+    snprintf(sqlBuf, sizeof(sqlBuf), "%S", wsStmt.c_str());
+
+    cnRec0.prepStmt = nullptr;
+    cnRec0.prepRc = sqlite3_prepare_v2(cnRec0.pSqliteDb, sqlBuf, -1, &cnRec0.prepStmt, nullptr);
+    if (cnRec0.prepRc != SQLITE_OK) {
+        NHPOS_ASSERT(cnRec0.prepRc == SQLITE_OK);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    cnRec0.prepRc = sqlite3_step(cnRec0.prepStmt);
+    if (cnRec0.prepRc != SQLITE_DONE) {
+        NHPOS_ASSERT(cnRec0.prepRc == SQLITE_DONE);
+        return PLUTOTAL_E_FAILURE;
+    }
+    
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::DelRec(void){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -824,12 +1499,66 @@ ULONG   CnPluTotalDb::DelRec(void){
     return  PLUTOTAL_SUCCESS;
 #endif
 }
+#else
+ULONG   CnPluTotalDb::DelRec(void) {
+    ULONG ulSts = PLUTOTAL_E_FAILURE;
+
+    NHPOS_NONASSERT_TEXT("##CnPluTotalDb::PutRec() called.");
+    if (cnRec0.prepTableName[0] == 0)
+        return  PLUTOTAL_E_FAILURE;
+
+    std::wstring  wsStmt;
+
+    wsStmt = L"DELETE FROM ";
+    wsStmt += cnRec0.prepTableName;
+    wsStmt += L" WHERE ";
+
+    int column_count = FigureArrayCount(cnRec0.prepTotalDbKeyFields);
+    std::wstring    wsKey;
+    long    lIdx[1] = { 0 };    // bound
+    for (int i = 0; i < column_count; i++) {
+        long long   i64Value = 0;
+        COleVariant     vWrk;
+
+        vWrk.Clear();
+        cnRec0.prepTotalDbKeyFields.GetElement(lIdx, &vWrk);
+        wsStmt += vWrk.bstrVal;
+        wsKey += L" = ?, ";
+        lIdx[0]++;
+    }
+    wsKey.erase(wsKey.length() - 2);
+    wsKey += L";";
+
+    // Prepare SQL statement for all fields
+    char sqlBuf[512] = { 0 };
+    int iLen = snprintf(sqlBuf, sizeof(sqlBuf), "%S", wsStmt.c_str());
+
+    cnRec0.prepStmt = nullptr;
+    cnRec0.prepRc = sqlite3_prepare_v2(cnRec0.pSqliteDb, sqlBuf, -1, &cnRec0.prepStmt, nullptr);
+    if (cnRec0.prepRc != SQLITE_OK) {
+        NHPOS_ASSERT(cnRec0.prepRc == SQLITE_OK);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    // Bind parameters from RecData
+    int iArgIndex = bindSafeArray(cnRec0.prepStmt, 0, cnRec0.prepTotalDbKeyValues);   // values for the key
+
+    cnRec0.prepRc = sqlite3_step(cnRec0.prepStmt);
+    if (cnRec0.prepRc != SQLITE_DONE) {
+        NHPOS_ASSERT(cnRec0.prepRc == SQLITE_DONE);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
 
 // *** DEBUG & TEST ************************************
 
 
 
 // *** record set series
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::OpenRecoredset(const LPCTSTR szSqlCode,CursorTypeEnum CursorType,LockTypeEnum LockType,long lOption){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -853,8 +1582,53 @@ ULONG   CnPluTotalDb::OpenRecoredset(const LPCTSTR szSqlCode,CursorTypeEnum Curs
     return  PLUTOTAL_SUCCESS;
 #endif
 }
+#else
+ULONG   CnPluTotalDb::OpenRecoredset(const LPCTSTR szSqlCode, CursorTypeEnum CursorType, LockTypeEnum LockType, long lOption) {
+    ULONG   ulSts = PLUTOTAL_SUCCESS;
+
+    char   sqlBuf[256] = { 0 };         // SQL statement
+    snprintf(sqlBuf, sizeof(sqlBuf), "%S", szSqlCode);
+
+    cnRecS.prepStmt = nullptr;
+    cnRecS.prepRc = sqlite3_prepare_v2(cnRecS.pSqliteDb, sqlBuf, -1, &cnRecS.prepStmt, nullptr);
+    if (cnRecS.prepRc != SQLITE_OK) {
+        char  xBuff[128];
+        if (cnRecS.prepStmt) sqlite3_finalize(cnRecS.prepStmt);
+        cnRecS.prepStmt = nullptr;
+        sprintf(xBuff, "CnPluTotalDb::OpenRecoredset() '%S' sqlite3_prepare_v2() FAILED: rc = %d", (LPCTSTR)m_strDbFileName, cnRecS.prepRc);
+        NHPOS_NONASSERT_NOTE("==NOTE", xBuff);
+        return PLUTOTAL_E_FAILURE;
+    }
+
+    cnRecS.iRecordCount = 0;
+    do {
+        cnRecS.prepRc = sqlite3_step(cnRecS.prepStmt);
+        if (cnRecS.prepRc == SQLITE_ROW) cnRecS.iRecordCount += 1;
+    } while (cnRecS.prepRc == SQLITE_ROW);
+
+    if (cnRecS.prepStmt) sqlite3_finalize(cnRecS.prepStmt);
+    cnRecS.prepStmt = nullptr;
+
+    cnRecS.prepRc = sqlite3_prepare_v2(cnRecS.pSqliteDb, sqlBuf, -1, &cnRecS.prepStmt, nullptr);
+    if (cnRecS.prepRc != SQLITE_OK) {
+        NHPOS_ASSERT(cnRecS.prepRc == SQLITE_OK);
+    }
+
+    cnRecS.prepRc = sqlite3_step(cnRecS.prepStmt);
+    switch (cnRecS.prepRc) {
+    case SQLITE_ROW:
+        break;
+    default:
+        return PLUTOTAL_E_FAILURE;
+        break;
+    }
+
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::CloseRecoredset(void){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -865,7 +1639,15 @@ ULONG   CnPluTotalDb::CloseRecoredset(void){
 #endif
     return  PLUTOTAL_SUCCESS;
 }
+#else
+ULONG   CnPluTotalDb::CloseRecoredset(void) {
+    if (cnRecS.prepStmt) sqlite3_finalize(cnRecS.prepStmt);
+    cnRecS.prepStmt = nullptr;
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::MoveFirst(void){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -880,7 +1662,19 @@ ULONG   CnPluTotalDb::MoveFirst(void){
     return  PLUTOTAL_SUCCESS;
 #endif
 }
+#else
+ULONG   CnPluTotalDb::MoveFirst(void) {
+    if (__pRecS->IsOpened() == FALSE)
+        return  PLUTOTAL_E_FAILURE;
+    m_hr = __pRecS->MoveFirst();
+    if (FAILED(m_hr))
+        return  PLUTOTAL_E_FAILURE;
 
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
+
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::MoveNext(void){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -895,8 +1689,24 @@ ULONG   CnPluTotalDb::MoveNext(void){
     return  PLUTOTAL_SUCCESS;
 #endif
 }
+#else
+ULONG   CnPluTotalDb::MoveNext(void) {
+    cnRecS.prepRc = sqlite3_step(cnRecS.prepStmt);
+    switch (cnRecS.prepRc) {
+    case SQLITE_ROW:
+        break;
+    default:
+        NHPOS_ASSERT(cnRecS.prepRc == SQLITE_ROW);
+        return PLUTOTAL_E_FAILURE;
+        break;
+    }
+
+    return  PLUTOTAL_SUCCESS;
+}
+#endif
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::GetRow(const CnVariant vFldNames,CnVariant * pvValues){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -920,8 +1730,30 @@ ULONG   CnPluTotalDb::GetRow(const CnVariant vFldNames,CnVariant * pvValues){
         return  PLUTOTAL_SUCCESS;
 #endif
 }
+#else
+ULONG   CnPluTotalDb::GetRow(const CnVariant vFldNames, CnVariant* pvValues) {
+
+    if (cnRecS.prepStmt) {
+        switch (cnRecS.prepRc) {
+        case SQLITE_ROW:
+            return  PLUTOTAL_SUCCESS;
+            break;
+
+        case SQLITE_DONE:
+            break;
+
+        default:
+            NHPOS_ASSERT(cnRecS.prepRc == SQLITE_ROW);
+            break;
+        }
+    }
+
+    return  PLUTOTAL_EOF;
+}
+#endif
 
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 ULONG   CnPluTotalDb::get_RecordCnt(LONG * plRecCnt){
 #if defined(SQLITE_TEST) && SQLITE_TEST
     m_hr = 0;    // pretned that the command worked.
@@ -939,4 +1771,9 @@ ULONG   CnPluTotalDb::get_RecordCnt(LONG * plRecCnt){
         return  PLUTOTAL_SUCCESS;
 #endif
 }
+#else
+ULONG   CnPluTotalDb::get_RecordCnt(LONG* plRecCnt) {
 
+    return  PLUTOTAL_SUCCESS;
+}
+#endif

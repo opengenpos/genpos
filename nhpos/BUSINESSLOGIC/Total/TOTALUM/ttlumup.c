@@ -65,6 +65,7 @@
 #include <memory.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <ecr.h>
 #include <pif.h>
@@ -1317,6 +1318,12 @@ SHORT TtlTUpdatePLU(TTLTUMTRANQUAL *pTtlTranQualBuff,
 
 		   if (sRetvalue != 0)
 		   {
+               char xBuff[128] = { 0 };
+               sprintf(xBuff, "##ERROR TtlPLUupdate() sRet = %d, \"%14.14S\"  %d", sRetvalue,
+                   pTtlTranUpBuff->TtlItemSales.auchPLUNo,
+                   pTtlTranUpBuff->TtlItemSales.uchAdjective
+               );
+               NHPOS_ASSERT_TEXT(sRetvalue == 0, xBuff);
                 if (sRetvalue <= TTL_FILE_OPEN_ERR) {
                     if (sRetvalue != TTL_FILE_HANDLE_ERR) {
                         TtlAbort(MODULE_TTL_TUM_PLU, sRetvalue);    /* Execute PifAbort */

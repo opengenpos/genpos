@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.36324.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Additional Materials Includes", "Additional Materials Includes", "{371BC8BC-7D7E-44A2-BD1A-42F2B024B7B0}"
 EndProject
@@ -128,6 +128,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PifNet", "PIFNET\PifNet.vcxproj", "{1D52AA8B-879C-4364-AF54-06342DECA0B5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluTotal", "PLUTOTAL\PluTotal.vcxproj", "{2CA1EA6E-1CBC-4717-9D37-F0182CCA0A47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8DE65B0B-D802-4A7C-9BE2-1C7E93C2F274} = {8DE65B0B-D802-4A7C-9BE2-1C7E93C2F274}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pmg", "BUSINESSLOGIC\Sa\Pmg\Pmg.vcxproj", "{D543E9B6-AED7-441D-8B6F-570303C84721}"
 EndProject
@@ -207,11 +210,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Device7194Printer", "DEVICE
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Device7158Printer", "DEVICE71XXPRINTER\Device7158Printer.vcxproj", "{15E92D75-430E-4123-B0F3-808E880971E2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SqliteDBE", "Sqlite\SqliteDBE\SqliteDBE.vcxproj", "{8DE65B0B-D802-4A7C-9BE2-1C7E93C2F274}"
+EndProject
 Global
-	GlobalSection(SubversionScc) = preSolution
-		Svn-Managed = True
-		Manager = AnkhSVN - Subversion Support for Visual Studio
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Demo Release|Win32 = Demo Release|Win32
@@ -686,6 +687,12 @@ Global
 		{15E92D75-430E-4123-B0F3-808E880971E2}.Demo Release|Win32.Build.0 = Release|Win32
 		{15E92D75-430E-4123-B0F3-808E880971E2}.Release|Win32.ActiveCfg = Release|Win32
 		{15E92D75-430E-4123-B0F3-808E880971E2}.Release|Win32.Build.0 = Release|Win32
+		{8DE65B0B-D802-4A7C-9BE2-1C7E93C2F274}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8DE65B0B-D802-4A7C-9BE2-1C7E93C2F274}.Debug|Win32.Build.0 = Debug|Win32
+		{8DE65B0B-D802-4A7C-9BE2-1C7E93C2F274}.Demo Release|Win32.ActiveCfg = Release|Win32
+		{8DE65B0B-D802-4A7C-9BE2-1C7E93C2F274}.Demo Release|Win32.Build.0 = Release|Win32
+		{8DE65B0B-D802-4A7C-9BE2-1C7E93C2F274}.Release|Win32.ActiveCfg = Release|Win32
+		{8DE65B0B-D802-4A7C-9BE2-1C7E93C2F274}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -699,5 +706,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DDE1F239-381C-4943-8872-BEAEF3046E27}
+	EndGlobalSection
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
 	EndGlobalSection
 EndGlobal

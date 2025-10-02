@@ -574,12 +574,10 @@ ULONG   CnPluTotal::OpenDatabase(const BOOL bCreateTbl/* = TRUE*/, SHORT fPTD, S
     ULONG   ulSts = PLUTOTAL_SUCCESS;
 
     // create database
-    CString strDbPath;
     int idx = 0;
     while(!(s_lstDb[idx].strName.IsEmpty())){
         if(s_lstDb[idx].pDb == NULL){
-            strDbPath = s_lstDb[idx].strPath;
-            strDbPath += s_lstDb[idx].strName;
+            CString strDbPath(s_lstDb[idx].strPath + s_lstDb[idx].strName);
             s_lstDb[idx].pDb = new CnPluTotalDb(strDbPath);
         }
         if(bCreateTbl)
@@ -1216,6 +1214,7 @@ ULONG   CnPluTotal::UpdateN(const SHORT nTblID,const PLUTOTAL_REC &RecData){
 
 // Status table
 ULONG   CnPluTotal::Find(const SHORT nTblID,const ULONG ulFindVal){
+    NHPOS_NONASSERT_TEXT("##CnPluTotal::Find() Status Table called.");
     // *** SQL code
     CString     strSqlCode;
     strSqlCode.Format(TEXT("SELECT * FROM %s WHERE Version = %ld "),_TableName(nTblID),ulFindVal);
@@ -1225,27 +1224,59 @@ ULONG   CnPluTotal::Find(const SHORT nTblID,const ULONG ulFindVal){
         return  PLUTOTAL_E_ILLEAGAL;
 
     long    lRecNum;
+    COleSafeArray   saFields, saValues;
+    COleVariant     vWrk;
+    long    lIdx[] = { 0,0,0 };
+    saFields.CreateOneDim(VT_VARIANT, 1, NULL, 0);
+    saValues.CreateOneDim(VT_VARIANT, 1, NULL, 0);
+
+    vWrk.Clear(); vWrk.SetString(SQLVAR_VERSION, VT_BSTR);
+    saFields.PutElement(lIdx, &vWrk);
+    vWrk.Clear(); vWrk = (LONG)ulFindVal;
+    saValues.PutElement(lIdx, &vWrk);
+    lIdx[0]++;
+
+    pDB->OpenRec(_TableName(nTblID), saFields, saValues);
     return  pDB->OpenRec(strSqlCode,FALSE,&lRecNum);
 }
 
 // total
 ULONG   CnPluTotal::Find(const SHORT nTblID,const TCHAR pPluNo[],const SHORT sAdjIdx,const BOOL bClose,long * plRecNum){
+    NHPOS_NONASSERT_TEXT("##CnPluTotal::Find() Total Table called.");
     // *** SQL code
     CString     strSqlCode;
-    TCHAR       szPluNo[PLUTOTAL_PLUNO_LEN+1];
-    //mbstowcs(szPluNo,(const char *)pPluNo,PLUTOTAL_PLUNO_LEN);
+    TCHAR       szPluNo[PLUTOTAL_PLUNO_LEN + 1] = {0};
+
 	_tcsncpy(szPluNo, pPluNo, PLUTOTAL_PLUNO_LEN);
-    szPluNo[PLUTOTAL_PLUNO_LEN] = _T('\0');
-//### MOD (042500) BUG  strSqlCode.Format(TEXT("SELECT * FROM %s WHERE PluNumber = %s "),_TableName(nTblID),szPluNo);
-    strSqlCode.Format(TEXT("SELECT * FROM %s WHERE PluNumber = '%s' and AdjectiveIndex = %d "),_TableName(nTblID),szPluNo,sAdjIdx);
+    strSqlCode.Format(TEXT("SELECT * FROM %s WHERE PluNumber = '%s' and AdjectiveIndex = %d ;"),_TableName(nTblID), szPluNo, sAdjIdx);
 
     CnPluTotalDb*   pDB = _DataBaseObject(nTblID);
     if(pDB == NULL)
         return  PLUTOTAL_E_ILLEAGAL;
+
+    COleSafeArray   saFields, saValues;
+    COleVariant     vWrk;
+    long    lIdx[] = { 0,0,0 };
+    saFields.CreateOneDim(VT_VARIANT, 2, NULL, 0);
+    saValues.CreateOneDim(VT_VARIANT, 2, NULL, 0);
+
+    vWrk.Clear(); vWrk.SetString(SQLVAR_PLUNUMBER, VT_BSTR);
+    saFields.PutElement(lIdx, &vWrk);
+    vWrk.Clear(); vWrk.SetString(szPluNo, VT_BSTR);
+    saValues.PutElement(lIdx, &vWrk);
+    lIdx[0]++;
+    vWrk.Clear(); vWrk.SetString(SQLVAR_ADJINDEX, VT_BSTR);
+    saFields.PutElement(lIdx, &vWrk);
+    vWrk.Clear(); vWrk = sAdjIdx;
+    saValues.PutElement(lIdx, &vWrk);
+    lIdx[0]++;
+
+    pDB->OpenRec(_TableName(nTblID), saFields, saValues);
     return  pDB->OpenRec(strSqlCode,bClose,plRecNum);
 }
 
 ULONG   CnPluTotal::FindN(const SHORT nTblID,const TCHAR pPluNo[],const BYTE byAdjIdx,PLUTOTAL_REC * pRecData){
+    NHPOS_NONASSERT_TEXT("##CnPluTotal::FindN() called.");
     CnPluTotalDb*   pDB = _DataBaseObject(nTblID);
     if(pDB == NULL)
         return  PLUTOTAL_E_ILLEAGAL;
@@ -1289,7 +1320,7 @@ ULONG   CnPluTotal::FindN(const SHORT nTblID,const TCHAR pPluNo[],const BYTE byA
         vWrk.Clear();                               // V1.0.0.4
 #endif
 
-        ulSts = pDB->GetRec(saFields,(LPVARIANT)vValues);
+        ulSts = pDB->GetRec(saFields,vValues);
         saFields.Clear();                         // V1.0.0.4
 //        saFields.Destroy();                         // V1.0.0.4
     }
@@ -1331,6 +1362,7 @@ ULONG   CnPluTotal::DeleteN(const SHORT nTblID,const TCHAR pPluNo[],const BYTE b
 
 
 ULONG   CnPluTotal::SelectRec(const SHORT nTblID,const ULONG SearchCond){
+    NHPOS_NONASSERT_TEXT("##CnPluTotal::SelectRec() called.");
     CString strSqlCode;
 
     CnPluTotalDb* pDB = _DataBaseObject(nTblID);
@@ -1356,6 +1388,7 @@ ULONG   CnPluTotal::SelectRec(const SHORT nTblID,const ULONG SearchCond){
 
 
 ULONG   CnPluTotal::FirstRec(const SHORT nTblID){
+    NHPOS_NONASSERT_TEXT("##CnPluTotal::FirstRec() called.");
     CnPluTotalDb* pDB = _DataBaseObject(nTblID);
 
     if(pDB == NULL)
@@ -1366,6 +1399,7 @@ ULONG   CnPluTotal::FirstRec(const SHORT nTblID){
 
 
 ULONG   CnPluTotal::NextRec(const SHORT nTblID){
+    NHPOS_NONASSERT_TEXT("##CnPluTotal::NextRec() called.");
     CnPluTotalDb* pDB = _DataBaseObject(nTblID);
 
     if(pDB == NULL)
@@ -1376,6 +1410,7 @@ ULONG   CnPluTotal::NextRec(const SHORT nTblID){
 
 
 ULONG   CnPluTotal::GetRec(const SHORT nTblID,PLUTOTAL_REC * pRecData){
+    NHPOS_NONASSERT_TEXT("##CnPluTotal::GetRec() called.");
     CnPluTotalDb* pDB = _DataBaseObject(nTblID);
     if(pDB == NULL)
         return PLUTOTAL_E_ILLEAGAL;
@@ -1524,7 +1559,7 @@ ULONG   CnPluTotal::LoadStatus(const SHORT nStsTblID,PLUTOTAL_STATUS * pStatusRe
 
     // get values
     COleVariant vValues;
-    ulSts = pDB->GetRec(saFields,&vValues);             // read row
+    ulSts = pDB->GetRec(saFields,vValues);             // read row
     saFields.Clear();                     // V1.0.0.4
 //    saFields.Destroy();                     // V1.0.0.4
     pDB->CloseRec();

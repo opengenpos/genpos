@@ -104,7 +104,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Tbc.lib;Pif.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Tbc.lib;Pif.lib;SqliteDBE.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\..\bin\DemoRelease/PluTotal.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(NHPOSLIB)\DemoRelease;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -146,7 +146,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Tbc.lib;Pif.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Tbc.lib;Pif.lib;SqliteDBE.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\..\bin\Release/PluTotal.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -189,7 +189,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Tbc.lib;Pif.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Tbc.lib;Pif.lib;SqliteDBE.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\..\bin\Debug/PluTotal.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

@@ -9,10 +9,16 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#define ENABLE_EMBED_SQLITE_DB
+
 //building for Win2000/XP
 #include "CnAdoXP.h"
 
 #include "PluTtlD.h"
+
+#if defined(ENABLE_EMBED_SQLITE_DB)
+#include "../Sqlite/sqlite3.h"
+#endif
 
 // *** Index define table ***
 struct __CnIdxFormat {
@@ -35,6 +41,18 @@ const	int	c_nTblNumMax = 10;
 
 class	CnAdoXPRec;
 
+#if defined(ENABLE_EMBED_SQLITE_DB)
+struct CnSqliteRec {
+	sqlite3* pSqliteDb;        // SQLite database object pointer
+	sqlite3_stmt* prepStmt;         // last prepared statement pointer
+	int                 prepRc;             // last return code from last SQLite3 function
+	int                 iRecordCount;       // last record count
+	COleSafeArray       prepTotalDbKeyFields;     // Total table key from last read or read attempt
+	COleSafeArray       prepTotalDbKeyValues;     // Total table key from last read or read attempt
+	wchar_t  prepTableName[512];             // last table accessed
+};
+#endif
+
 class CnPluTotalDb
 {
 private:
@@ -52,6 +70,10 @@ private:
 	CString             ConnectionStringDbPath;     // used with SQLite only to create database file using CFile since SQLite doesn't support CREATE DATABASE 
 	CString				ConnectionStringTemp; 		//= L"Provider=MSDASQL;DRIVER={SQL Server};SERVER=(local);DATABASE=%s;UID=; Password=;";
 	_bstr_t				ConnectionStringNoDB; 		//= L"Provider=MSDASQL;DRIVER={SQL Server};SERVER=(local);DATABASE=;UID=; Password=;";
+#if defined(ENABLE_EMBED_SQLITE_DB)
+	CnSqliteRec      cnRecS;
+	CnSqliteRec      cnRec0;
+#endif
 
 	CnPluTotalDb();                                 // prevent default constructor
 
@@ -92,9 +114,10 @@ public:
 
 	// ### NewFunctions
 	virtual	ULONG	OpenRec(LPCTSTR szTableName);
+	virtual ULONG   OpenRec(LPCTSTR lpcTableName, COleSafeArray& saFields, COleSafeArray& saValues);
 	virtual	ULONG	OpenRec(LPCTSTR szSqlCode,const BOOL bClose,LONG *plRecCnt);
 	virtual	VOID	CloseRec();
-	virtual	ULONG	GetRec(VARIANT vGetFields,LPVARIANT lpvValues);
+	virtual	ULONG	GetRec(VARIANT vGetFields, COleVariant& lpvValues);
 	virtual	ULONG	PutRec(VARIANT vPutFields,VARIANT vValues);
 	virtual	ULONG	AddRec(VARIANT vPutFields,VARIANT vValues);
 	virtual	ULONG	DelRec(void);

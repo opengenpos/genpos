@@ -30,7 +30,7 @@
 // for Windows 7 SP1 development environment with Visual Studio 2013 to target Windows XP and Windows 7 use the following
 // see "An ADO-based application that is compiled in Windows 7 SP1 or in Windows Server 2008 R2 SP1 does not run in earlier versions of Windows" at URL:
 //    https://support.microsoft.com/en-us/kb/2640696
-#import <C:\Program Files (x86)\Common Files\System\ado\msado60.tlb> no_namespace rename("EOF", "adoEOF")
+#import "C:\Program Files (x86)\Common Files\System\ado\msado60.tlb" no_namespace rename("EOF", "adoEOF")
 #else
 #if 1
 // for Windows XP development environment use the following
