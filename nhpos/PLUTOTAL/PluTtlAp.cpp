@@ -451,34 +451,6 @@ ULONG   CnPluTotalAPI::FirstRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID
 
 /*
 *============================================================================
-**Synopsis:     ULONG   CnPluTotalAPI::NextRec(const PLUTOTAL_DB_HANDLE hdDB,
-*                       const SHORT nTblID)
-*
-*    Input:     hdDB                    - database handle
-*               nTblID                  - table index
-*
-*   Output:     Nothing
-*
-*    InOut:     Nothing
-*
-** Return:      PLUTOTAL_SUCCESS
-*               PLUTOTAL_E_ILLEAGAL
-*               PLUTOTAL_E_FAILURE
-*
-** Description  
-*
-*============================================================================
-*/
-
-ULONG   CnPluTotalAPI::NextRec(const PLUTOTAL_DB_HANDLE hdDB,const SHORT nTblID){
-    if(CheckDBHandle(hdDB) == FALSE)
-        return  PLUTOTAL_E_ILLEAGAL;    // Illeagal DB handle
-    return  m_pPluTotal.CnPluTotal::NextRec(nTblID);
-}
-
-
-/*
-*============================================================================
 **Synopsis:     ULONG   CnPluTotalAPI::GetRec(const PLUTOTAL_DB_HANDLE hdDB,
 *                       const SHORT nId,PLUTOTAL_REC *pRecData)
 *

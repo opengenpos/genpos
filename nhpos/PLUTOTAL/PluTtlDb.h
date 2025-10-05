@@ -9,8 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define ENABLE_EMBED_SQLITE_DB
-
 //building for Win2000/XP
 #include "CnAdoXP.h"
 
@@ -58,6 +56,10 @@ class CnPluTotalDb
 private:
 	static	int			s_nObjCnt;					// object counter
 //	static	CnAdoXPRec* s_pRec[RECORDSET_NUM];	// recordset (ADOCE)
+#if defined(ENABLE_EMBED_SQLITE_DB)
+	CnSqliteRec      cnRecS;
+	CnSqliteRec      cnRec0;
+#else
 #if defined(SQLITE_TEST) && SQLITE_TEST
 // replace the real objects with fake objects to eliminate
 // compiler errors when stubbing out database interface.
@@ -67,13 +69,10 @@ private:
 	static	CnAdoXPRec* __pRecS;	// recordset (ADOCE)
 	static	CnAdoXPRec* __pRecO;	// recordset (ADOCE)
 #endif
+#endif
 	CString             ConnectionStringDbPath;     // used with SQLite only to create database file using CFile since SQLite doesn't support CREATE DATABASE 
 	CString				ConnectionStringTemp; 		//= L"Provider=MSDASQL;DRIVER={SQL Server};SERVER=(local);DATABASE=%s;UID=; Password=;";
 	_bstr_t				ConnectionStringNoDB; 		//= L"Provider=MSDASQL;DRIVER={SQL Server};SERVER=(local);DATABASE=;UID=; Password=;";
-#if defined(ENABLE_EMBED_SQLITE_DB)
-	CnSqliteRec      cnRecS;
-	CnSqliteRec      cnRec0;
-#endif
 
 	CnPluTotalDb();                                 // prevent default constructor
 

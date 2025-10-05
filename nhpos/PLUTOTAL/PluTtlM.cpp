@@ -1362,7 +1362,10 @@ ULONG   CnPluTotal::DeleteN(const SHORT nTblID,const TCHAR pPluNo[],const BYTE b
 
 
 ULONG   CnPluTotal::SelectRec(const SHORT nTblID,const ULONG SearchCond){
-    NHPOS_NONASSERT_TEXT("##CnPluTotal::SelectRec() called.");
+
+    char xBuff[128] = { 0 };
+    sprintf(xBuff, "##CnPluTotal::SelectRec() called: nTblID = %d  %ld", nTblID, SearchCond);
+    NHPOS_NONASSERT_TEXT(xBuff);
     CString strSqlCode;
 
     CnPluTotalDb* pDB = _DataBaseObject(nTblID);
@@ -1395,17 +1398,6 @@ ULONG   CnPluTotal::FirstRec(const SHORT nTblID){
         return PLUTOTAL_E_ILLEAGAL;
 
     return  pDB->MoveFirst();
-}
-
-
-ULONG   CnPluTotal::NextRec(const SHORT nTblID){
-    NHPOS_NONASSERT_TEXT("##CnPluTotal::NextRec() called.");
-    CnPluTotalDb* pDB = _DataBaseObject(nTblID);
-
-    if(pDB == NULL)
-        return PLUTOTAL_E_ILLEAGAL;
-
-    return  pDB->MoveNext();
 }
 
 

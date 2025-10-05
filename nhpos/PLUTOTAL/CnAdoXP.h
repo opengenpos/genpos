@@ -6,6 +6,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#define ENABLE_EMBED_SQLITE_DB
+
+
 //make sure the path to msado15.dll is listed in
 //visual C++ 6.0 options under the Tools Menu
 //directories tab, Show Directories for: Executable files
@@ -25,6 +28,9 @@
 //          you instead need to use msado60.tlb which appears to have the class ids corrected.
 
 #include "ecr.h"
+#include "pif.h"
+#include "log.h"
+
 
 #if defined(GENPOS_REL_020300)
 // for Windows 7 SP1 development environment with Visual Studio 2013 to target Windows XP and Windows 7 use the following
@@ -41,15 +47,14 @@
 #endif
 #endif
 
-#include "pif.h"
-#include "log.h"
-
 //Replace CnAdoCERec with CnAdoXPRec when
 //building for Windows 2000/XP
 //#define CnAdoCERec CnAdoXPRec
 //#define m_pRecordSet recordsetPtr
 
 typedef	class COleVariant	CnVariant;
+
+#if !defined(ENABLE_EMBED_SQLITE_DB)
 
 class CnAdoXPRec
 {
@@ -413,3 +418,5 @@ public:
 		return m_hr;
 	}
 };
+
+#endif

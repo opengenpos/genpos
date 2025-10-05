@@ -119,7 +119,6 @@ public:
 
 	virtual	ULONG	SelectRec(const SHORT nTblID,const ULONG SearchCond);
 	virtual	ULONG	FirstRec(const SHORT nTblID);
-	virtual	ULONG	NextRec(const SHORT nTblID);
 	virtual	ULONG	GetRec(const SHORT nTblID,PLUTOTAL_REC * pRecData);
 	virtual	ULONG	GetNumRec(const SHORT nTblID,ULONG * pulRecNum);
 	virtual	ULONG	ReleaseRec(const SHORT nTblID);

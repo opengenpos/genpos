@@ -5,6 +5,8 @@
 #include "stdafx.h"
 #include "CnAdoXP.h"
 
+#if !defined(ENABLE_EMBED_SQLITE_DB)
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -91,3 +93,5 @@ VOID	CnAdoXPRec::DestroyObject(){
 	if(s_nObjCnt == 0)
 		CoUninitialize();
 }
+
+#endif
