@@ -49,10 +49,10 @@
 #include	"trans.h"
 #include	"../trans/transl.h"
 
-WCHAR        szCommTouchLayoutSaveName[PEP_FILENAME_LEN]; //ESMITH LAYOUT
-WCHAR        szCommKeyboardLayoutSaveName[PEP_FILENAME_LEN];
-WCHAR		 szFileLayoutDir[PEP_FILENAME_LEN];
-WCHAR        szLayoutCaption[LAYOUT_MAXLEN_TEXT];
+WCHAR        szCommTouchLayoutSaveName[PEP_FILENAME_LEN] = { 0 }; //ESMITH LAYOUT
+WCHAR        szCommKeyboardLayoutSaveName[PEP_FILENAME_LEN] = { 0 };
+WCHAR		 szFileLayoutDir[PEP_FILENAME_LEN] = { 0 };
+WCHAR        szLayoutCaption[LAYOUT_MAXLEN_TEXT] = { 0 };
 
 /************************************************************\
 |*                                                          *|

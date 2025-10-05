@@ -1268,6 +1268,9 @@ BOOL    FileExit(HANDLE, HWND);
 BOOL    FileTempDelete(HANDLE);
 BOOL    FileDelete(HANDLE, HWND);
 
+const WCHAR * const FileGetCurrentFileName(VOID);
+
+
 BOOL FileReadInFile (HANDLE hInst, HWND hwnd, WCHAR *szFileName);
 
 BOOL WINAPI  CurrentLogoFileDlgProc(HWND, UINT, WPARAM, LPARAM);
