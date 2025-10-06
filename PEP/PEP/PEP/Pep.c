@@ -1136,7 +1136,7 @@ static  HWND InitPepWnd(HANDLE hInstance, HANDLE hPrevInst, int nCmdShow)
                         WS_OVERLAPPEDWINDOW,
                         CW_USEDEFAULT,
                         CW_USEDEFAULT,
-                        475/*CW_USEDEFAULT*/,
+                        725/*CW_USEDEFAULT*/,
                         700/*CW_USEDEFAULT*/,
                         0,
                         LoadMenu(hResourceDll,_T("#1")),
@@ -1531,31 +1531,6 @@ static  void    DrawTitle(HDC hdcPep, HWND hWnd)
 
     /* ----- Load String of the PEP Title ----- */
 
-    LoadString(hResourceDll, IDS_PEP_FILEINFO_FRMT, szFormatter, PEP_STRING_LEN_MAC(szFormatter));
-
-	wsPepf(szP2Info, szFormatter,
-				  szBUSys,
-				  nNumTerm,
-			   	  szGCSys,
-				  aFlexMemData[8].ulRecordNumber,
-				  aFlexMemData[7].ulRecordNumber,
-				  aFlexMemData[6].ulRecordNumber,
-				  aFlexMemData[0].ulRecordNumber,
-				  aFlexMemData[0].uchPTDFlag,
-				  aFlexMemData[1].ulRecordNumber,
-				  aFlexMemData[1].uchPTDFlag,
-				  aFlexMemData[3].ulRecordNumber,
-				  aFlexMemData[3].uchPTDFlag,
-				  aFlexMemData[9].ulRecordNumber,
-				  aFlexMemData[9].uchPTDFlag,
-				  aFlexMemData[4].ulRecordNumber,
-                  aFlexMemData[4].uchPTDFlag,
-				  aFlexMemData[5].ulRecordNumber,
-				  aFlexMemData[10].ulRecordNumber,
-				  aFlexMemData[12].ulRecordNumber,
-				  aFlexMemData[11].ulRecordNumber,
-				  szTaxSys);
-
 	// Now that we have written out the title, we will
 	// change font to 12 point, not underline and write out some
 	// of the basic statistics of this PEP file.
@@ -1583,10 +1558,41 @@ static  void    DrawTitle(HDC hdcPep, HWND hWnd)
     SetTextAlign(hdcPep, TA_TOP | TA_LEFT);
 
 	/*-------Adjust Foreground RECT top to adjust for title-------*/
-    rTitle.top    += 50;
-
+    rTitle.top    += 30;
 
     /* ---------------- Write the String within the Rectangular Region ------- */
+	LoadString(hResourceDll, IDS_PEP_FILENAMES_FRMT, szFormatter, PEP_STRING_LEN_MAC(szFormatter));
+
+	wsPepf(szP2Info, szFormatter, FileGetCurrentFileName(), szCommTouchLayoutSaveName);
+
+	DrawTextW(hdcPep, szP2Info, wcslen(szP2Info), &rTitle, DT_LEFT | DT_EXPANDTABS | DT_NOCLIP);
+
+	rTitle.top += 50;
+
+	LoadString(hResourceDll, IDS_PEP_FILEINFO_FRMT, szFormatter, PEP_STRING_LEN_MAC(szFormatter));
+
+	wsPepf(szP2Info, szFormatter,
+				  szBUSys,
+				  nNumTerm,
+			   	  szGCSys,
+				  aFlexMemData[8].ulRecordNumber,
+				  aFlexMemData[7].ulRecordNumber,
+				  aFlexMemData[6].ulRecordNumber,
+				  aFlexMemData[0].ulRecordNumber,
+				  aFlexMemData[0].uchPTDFlag,
+				  aFlexMemData[1].ulRecordNumber,
+				  aFlexMemData[1].uchPTDFlag,
+				  aFlexMemData[3].ulRecordNumber,
+				  aFlexMemData[3].uchPTDFlag,
+				  aFlexMemData[9].ulRecordNumber,
+				  aFlexMemData[9].uchPTDFlag,
+				  aFlexMemData[4].ulRecordNumber,
+                  aFlexMemData[4].uchPTDFlag,
+				  aFlexMemData[5].ulRecordNumber,
+				  aFlexMemData[10].ulRecordNumber,
+				  aFlexMemData[12].ulRecordNumber,
+				  aFlexMemData[11].ulRecordNumber,
+				  szTaxSys);
 	DrawTextW(hdcPep, szP2Info, wcslen(szP2Info), &rTitle, DT_LEFT | DT_EXPANDTABS |DT_NOCLIP);
 
 	// Finally, we clean up the created font so as to be a good Windows app.

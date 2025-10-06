@@ -69,11 +69,15 @@
 
 WCHAR       szFileSaveName[FILE_MAXLEN];
 
-static WCHAR		writeInfo[FILE_MAXERROR];
+static WCHAR		writeInfo[FILE_MAXERROR] = { 0 };
 static WCHAR  wszFileVersion[128];
 
 USHORT  usFileVersionInfo[4] = {0};
 
+const WCHAR * const FileGetCurrentFileName(VOID)
+{
+	return szFileSaveName;
+}
 
 // -----------------------------------------------
 //  General purpose dialog routines used to popup

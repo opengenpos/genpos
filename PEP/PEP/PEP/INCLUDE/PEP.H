@@ -120,6 +120,7 @@ not having to use additional mnemonics for something that was already defined.*/
 #define IDS_PEP_TXSYS_VAT        (IDS_PEP + 38)
 #define IDS_PEP_TXSYS_US        (IDS_PEP + 39)
 #define IDS_PEP_TXSYS_CAN       (IDS_PEP + 40)
+#define IDS_PEP_FILENAMES_FRMT 	(IDS_PEP + 41)	//format string for PEP and Layout file names in main window
 
 #define IDS_HELP                (IDS_PEP + 512)
 

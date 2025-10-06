@@ -14101,6 +14101,7 @@ BEGIN
     IDS_PEP_FILE_RPT        "Programmable Report file"
     IDS_PEP_FILE_PPI        "PPI file"
     IDS_PEP_FILEINFO_FRMT   "%s \n\tNumber of Terminals\t\t%-2d\n\t \nGuest Check System:\n\t%s \nMax # of Guest Checks\t\t\t%-4d\t \n\tMax # of Items in G.C.\t\t%-3d\t \n\tMax # of Items in Transaction\t%-3d\n \nMax # of Departments\t\t\t%-3d \n\tPTD - %d \nMax # of PLU\t\t\t\t%-6d \n\tPTD - %d \nMax # of Operators\t\t\t%-3d \n\tPTD - %d \nMax # of Coupons\t\t\t%-3d \n\tPTD - %d \nMax # of EJ\t\t\t\t%-4d \n\tO/R - %d \nMax # of Employees\t\t\t%-3d \nMax # of Control Strings\t\t\t%-4d \nMax # of PPI\t\t\t\t%-3d \nProgrammable Report Size\t\t\t%-2d\n \nTax System\t\t\t\t%-8s"
+    IDS_PEP_FILENAMES_FRMT  "PEP File:  %s\nLayout File:  %s"
     IDS_PEP_TXSYS_VAT       "VAT"
     IDS_PEP_TXSYS_US        "U.S"
     IDS_PEP_TXSYS_CAN       "Canadian"
