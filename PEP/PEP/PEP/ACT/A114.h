@@ -83,9 +83,10 @@
 #define	IDD_A114_BONUS_RNG		11438
 #define IDD_A114_PRTPRY_RNG		11439
 #define IDD_A114_DESC			11440
+#define IDD_A114_ADJGROUP       11441
 
 /* ===== Control Code DialogBox Control ID Definition ===== */
-#define IDD_A114ST01    (IDD_A114PRTPRY_SPIN + 20)   /* Plus/Minus           *//* 11429*/
+#define IDD_A114ST01    (IDD_A114PRTPRY_SPIN + 41)   /* Plus/Minus           *//* 11429*/
 #define IDD_A114ST02    (IDD_A114ST01 +  1)         /* Normal/Special       */
 #define IDD_A114ST03    (IDD_A114ST01 +  2)         /* Super. Intervention  */
 #define IDD_A114ST04    (IDD_A114ST01 +  3)         /* Print Modifier Key   */
