@@ -94,6 +94,29 @@ static	BOOL	enableDPFP = FALSE;
 *                       Cashier Maintenance (AC 20)
 * ===========================================================================
 */
+static struct {
+    int  strid;
+    int  cntrlid;
+} StrCntrlTable[] = {
+    {IDS_PEP_OK, IDOK},
+    {IDS_PEP_CANCEL, IDCANCEL},
+    {IDS_A20_OPTIONS, IDD_SET},
+    {IDS_A20_BIO_FINGER, IDD_A20_BIO_FINGER},
+    {IDS_A20_BIO_FINGER_RESET, IDD_A20_BIO_FINGER_RESET},
+    {IDS_A20_MENT, IDD_A20_STRMENT},
+    {IDS_A20_ADDCHG, IDD_A20_ADDCHG},
+    {IDS_A20_DEL, IDD_A20_DEL},
+    {IDS_A20_NO, IDD_A20_STRNO},
+    {IDS_A20_SPIN, IDD_A20_STRSPIN},
+    {IDS_A20_NAME, IDD_A20_STRNAME},
+    {IDS_A20_NAMEMAX, IDD_A20_STRNAMEMAX},
+    {IDS_A20_CONF, IDD_A20_CONF},
+    {IDS_A20_CTRL, IDD_A20_STRCTRL},
+    {IDS_A20_SUP_ID_LBL, IDD_A20_SUP_ID_LBL},
+    {IDS_A20_CTRLSTR_LBL, IDD_A20_CTRLSTR_LBL},
+    {IDS_A20_WINDOW_LBL, IDD_A20_WINDOW_LBL}
+};
+
 BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
     static  PEPSPIN PepSpin;        /* Configuration of SpinButton      */
@@ -111,42 +134,10 @@ BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
         /* ----- set initial description, V3.3 ----- */
         LoadString(hResourceDll, IDS_A20_CAPTION, szDesc, PEP_STRING_LEN_MAC(szDesc));
         WindowRedrawText(hDlg, szDesc);
-        LoadString(hResourceDll, IDS_PEP_OK, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDOK, szDesc);
-        LoadString(hResourceDll, IDS_PEP_CANCEL, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDCANCEL, szDesc);
-        LoadString(hResourceDll, IDS_A20_OPTIONS, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_SET, szDesc);
-		LoadString(hResourceDll, IDS_A20_BIO_FINGER, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_BIO_FINGER, szDesc);
-		LoadString(hResourceDll, IDS_A20_BIO_FINGER_RESET, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_BIO_FINGER_RESET, szDesc);
 
-        LoadString(hResourceDll, IDS_A20_MENT, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_STRMENT, szDesc);
-        LoadString(hResourceDll, IDS_A20_ADDCHG, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_ADDCHG, szDesc);
-        LoadString(hResourceDll, IDS_A20_DEL, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_DEL, szDesc);
-        LoadString(hResourceDll, IDS_A20_NO, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_STRNO, szDesc);
-        LoadString(hResourceDll, IDS_A20_SPIN, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_STRSPIN, szDesc);
-        LoadString(hResourceDll, IDS_A20_NAME, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_STRNAME, szDesc);
-        LoadString(hResourceDll, IDS_A20_NAMEMAX, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_STRNAMEMAX, szDesc);
-        LoadString(hResourceDll, IDS_A20_CONF, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_CONF, szDesc);
-        LoadString(hResourceDll, IDS_A20_CTRL, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A20_STRCTRL, szDesc);
-
-		LoadString(hResourceDll, IDS_A20_SUP_ID_LBL, szDesc, PEP_STRING_LEN_MAC(szDesc));
-		DlgItemRedrawText(hDlg, IDD_A20_SUP_ID_LBL, szDesc);
-		LoadString(hResourceDll, IDS_A20_CTRLSTR_LBL, szDesc, PEP_STRING_LEN_MAC(szDesc));
-		DlgItemRedrawText(hDlg, IDD_A20_CTRLSTR_LBL, szDesc);
-		LoadString(hResourceDll, IDS_A20_WINDOW_LBL, szDesc, PEP_STRING_LEN_MAC(szDesc));
-		DlgItemRedrawText(hDlg, IDD_A20_WINDOW_LBL, szDesc);
+        for (int i = 0; i < sizeof(StrCntrlTable) / sizeof(StrCntrlTable[0]); i++) {
+            DlgItemLoadStringRedrawText(hDlg, hResourceDll, StrCntrlTable[0].strid, StrCntrlTable[0].cntrlid);
+        }
 
 		// before starting to use the Cashier data file, check that the data in the file is
 		// consistent. We have found an error in the file conversion routines that convert
@@ -156,7 +147,7 @@ BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		CasCheckFileBlockData();
 
 		/* ----- Initialize dialogbox ----- */
-        unCurCas = A020InitDlg(hDlg, (LPUSHORT)&unMaxCas);
+        unCurCas = A020InitDlg(hDlg, &unMaxCas);
 
         /* ----- Initialize Configulation of Spin Button ----- */
         PepSpin.nStep      = A20_SPIN_STEP;
@@ -167,8 +158,7 @@ BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SETFONT:
 		if (hResourceFont) {
-			int j;
-			for(j=IDD_A20_MAX; j<=IDD_A20_TERM_NO_RNG; j++)
+			for(int j = IDD_A20_MAX; j <= IDD_A20_TERM_NO_RNG; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
@@ -185,45 +175,45 @@ BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
         /* ----- Set Maximum Value of Data Range by Selected Button ----- */
         switch (idSpin) {
         case IDD_A20_NO:
-            PepSpin.lMin       = (long)A20_CAS_MIN;
-            PepSpin.lMax       = (long)A20_CAS_MAX;
+            PepSpin.lMin       = A20_CAS_MIN;
+            PepSpin.lMax       = A20_CAS_MAX;
             break;
 
         case IDD_A20_NOFROM:
-            PepSpin.lMin       = (long)A20_NO_MIN;
-            PepSpin.lMax       = (long)A20_NO_MAX;
+            PepSpin.lMin       = A20_NO_MIN;
+            PepSpin.lMax       = A20_NO_MAX;
             break;
 
         case IDD_A20_NOTO:
-            PepSpin.lMin       = (long)A20_NO_MIN;
-            PepSpin.lMax       = (long)A20_NO_MAX;
+            PepSpin.lMin       = A20_NO_MIN;
+            PepSpin.lMax       = A20_NO_MAX;
             break;
 
         case IDD_A20_CTIP:
-            PepSpin.lMin       = (long)A20_CTIP_MIN;
-            PepSpin.lMax       = (long)A20_CTIP_MAX;
+            PepSpin.lMin       = A20_CTIP_MIN;
+            PepSpin.lMax       = A20_CTIP_MAX;
             break;
 
         case IDD_A20_TEAM:
-            PepSpin.lMin       = (long)A20_TEAM_MIN;
-            PepSpin.lMax       = (long)A20_TEAM_MAX;
+            PepSpin.lMin       = A20_TEAM_MIN;
+            PepSpin.lMax       = A20_TEAM_MAX;
             break;
 
         case IDD_A20_TERMNO:
-            PepSpin.lMin       = (long)A20_TERMNO_MIN;
-            PepSpin.lMax       = (long)A20_TERMNO_MAX;
+            PepSpin.lMin       = A20_TERMNO_MIN;
+            PepSpin.lMax       = A20_TERMNO_MAX;
             break;
 
         case IDD_A20_CODE1:
         case IDD_A20_CODE2:
         case IDD_A20_CODE3:
-            PepSpin.lMin       = (long)A20_CODE_MIN;
-            PepSpin.lMax       = (long)A20_CODE_MAX;
+            PepSpin.lMin       = A20_CODE_MIN;
+            PepSpin.lMax       = A20_CODE_MAX;
             break;
         }
 
         /* ----- Spin Button Procedure ----- */
-        PepSpinProc(hDlg, wParam, idSpin, (LPPEPSPIN)&PepSpin);
+        PepSpinProc(hDlg, wParam, idSpin, &PepSpin);
         SendMessage(hDlg, WM_COMMAND, MAKELONG(idSpin,EN_CHANGE), 0L);
         return FALSE;
 
@@ -244,7 +234,7 @@ BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
         case IDD_A20_LIST:
             if (HIWORD(wParam) == LBN_SELCHANGE) {
                 /* ----- Set Selected Data to Each Controls ----- */
-                A020SetData(hDlg, (LPCASIF)&CasData, unCurCas);
+                A020SetData(hDlg, &CasData, unCurCas);
                 return TRUE;
             }
             return FALSE;
@@ -265,7 +255,7 @@ BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 						//delete the fingerprint data for this individual
 						// DFPRDeleteRecord(tempCasNo);
                         /* ----- Set data to maintenance-box ----- */
-                        A020SetData(hDlg, (LPCASIF)&CasData, unCurCas);
+                        A020SetData(hDlg, &CasData, unCurCas);
                     }
 
                     SetFocus(GetDlgItem(hDlg, IDD_A20_LIST));
@@ -359,7 +349,6 @@ BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 BOOL    WINAPI  A020CtrlDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
     static CASIF    CasCtrlData;
-    WCHAR   szDesc[PEP_LOADSTRING_LEN];
 
     switch (wMsg) {
     case WM_INITDIALOG:
@@ -370,8 +359,7 @@ BOOL    WINAPI  A020CtrlDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lPar
 
 	case WM_SETFONT:
 		if (hResourceFont) {
-			int j;
-			for(j=IDD_A20ST01; j<=IDD_A20ST15; j++)
+			for(int j = IDD_A20ST01; j <= IDD_A20ST15; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
@@ -384,15 +372,11 @@ BOOL    WINAPI  A020CtrlDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lPar
         switch (LOWORD(wParam)) {
 		/* ###ADD Saratoga */
         case IDD_A20ST14:
-            memset((LPSTR)szDesc, 0x00, sizeof(szDesc));
-            LoadString(hResourceDll, IDS_A20_STAON14, szDesc, PEP_STRING_LEN_MAC(szDesc));
-            DlgItemRedrawText(hDlg, IDD_A20ST14, szDesc);
+            DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A20_STAON14, IDD_A20ST14);
             break;
 
         case IDD_A20ST15:
-            memset((LPSTR)szDesc, 0x00, sizeof(szDesc));
-            LoadString(hResourceDll, IDS_A20_STAON15, szDesc, PEP_STRING_LEN_MAC(szDesc));
-            DlgItemRedrawText(hDlg, IDD_A20ST15, szDesc);
+            DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A20_STAON15, IDD_A20ST15);
             break;
 
 		case IDD_A20_ORDERDEC_ENABLED:
@@ -437,7 +421,6 @@ BOOL    WINAPI  A020CtrlDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lPar
 }
 
 BOOL    WINAPI  A020GroupDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam){
-	int i = 0;
 	int checkboxes[] = {IDC_CHECK1, IDC_CHECK2, IDC_CHECK3, IDC_CHECK4,
 						IDC_CHECK5, IDC_CHECK6, IDC_CHECK7, IDC_CHECK8,
 						IDC_CHECK9, IDC_CHECK10,IDC_CHECK11,IDC_CHECK12,
@@ -448,29 +431,29 @@ BOOL    WINAPI  A020GroupDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lPa
 						IDC_CHECK29,IDC_CHECK30,IDC_CHECK31,IDC_CHECK32};
 	switch(wMsg){
 		case WM_INITDIALOG:
-			for (i = 0; i < 32; i++)
+			for (int i = 0; i < 32; i++)
 				CheckDlgButton(hDlg, checkboxes[i], (CasData.ulGroupAssociations & (0x00000001 << i) ? TRUE : FALSE));
 			return TRUE;
 		case WM_COMMAND:
 			switch(wParam){
 			case IDC_BTN_CHECK_ALL:		//check all
-				for (i = 0; i < 32; i++)
+				for (int i = 0; i < 32; i++)
 					CheckDlgButton(hDlg, checkboxes[i], TRUE);
 				return TRUE;
 
 			case IDC_BTN_CHECK_NONE:	//check none
-				for (i = 0; i < 32; i++)
+				for (int i = 0; i < 32; i++)
 					CheckDlgButton(hDlg, checkboxes[i], FALSE);
 				return TRUE;
 
 			case IDC_BTN_CHECK_INVERT:	//check inversion
-				for (i = 0; i < 32; i++)
+				for (int i = 0; i < 32; i++)
 					CheckDlgButton(hDlg, checkboxes[i], IsDlgButtonChecked(hDlg, checkboxes[i]) ? FALSE : TRUE);
 				return TRUE;
 
 			case IDOK:
 				CasData.ulGroupAssociations = 0;	//wipe existing groups so the right ones can be set
-				for (i = 0; i < 32; i++)
+				for (int i = 0; i < 32; i++)
 					if(IsDlgButtonChecked(hDlg, checkboxes[i]))
 						CasData.ulGroupAssociations |= 0x1 << i;
 			case IDCANCEL:
@@ -505,7 +488,7 @@ BOOL    WINAPI  A020GroupDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lPa
 USHORT  A020InitDlg(HWND hDlg, LPUSHORT lpunMax)
 {
     ULONG		aulCasNo[MAX_NO_CASH];
-	USHORT		unI, unCur = 0;
+	USHORT		unCur = 0;
     WCHAR		szMsg[A20_MEM_LEN], szCap[PEP_CAPTION_LEN];
 	HMODULE		hTemp;
 
@@ -537,7 +520,7 @@ USHORT  A020InitDlg(HWND hDlg, LPUSHORT lpunMax)
     /* ----- Read All Cashier No. from Cashier File ----- */
     unCur = CasAllIdRead(sizeof(aulCasNo), aulCasNo);
 
-    for (unI = 0; unI < unCur; unI++) {
+    for (USHORT unI = 0; unI < unCur; unI++) {
 		CASIF		CasWork = {0};
 
 		/* ----- Read Current Exists cashier Name from Server File ----- */
@@ -614,7 +597,7 @@ USHORT  A020InitDlg(HWND hDlg, LPUSHORT lpunMax)
 */
 USHORT  A020ReadMax(VOID)
 {
-    PARAFLEXMEM FlexData;
+    PARAFLEXMEM FlexData = { 0 };
 
     /* ----- Set Target Address to Server ----- */
     FlexData.uchAddress = FLEX_CAS_ADR;
@@ -720,10 +703,6 @@ VOID    A020SetCurRec(HWND hDlg, USHORT unCur)
 */
 VOID    A020SetData(HWND hDlg, LPCASIF lpData, USHORT unCur)
 {
-    DWORD   dwOff;
-    WCHAR    szBuff[A20_MNE_LEN + 1];
-	ETK_JOB Job = {0};
-
     /* ----- Enable/Disable to Push Button ----- */
     EnableWindow(GetDlgItem(hDlg, IDD_A20_ADDCHG),		(BOOL)unCur);
     EnableWindow(GetDlgItem(hDlg, IDD_A20_DEL),			(BOOL)unCur);
@@ -735,12 +714,16 @@ VOID    A020SetData(HWND hDlg, LPCASIF lpData, USHORT unCur)
 	EnableWindow(GetDlgItem(hDlg, IDC_BTN_SET_GROUP_ASSOCIATION), (BOOL)unCur);	
 
     if (unCur != 0) {   /* Cashier Record Exists */
+	    ETK_JOB  Job = {0};
+        DWORD    dwOff;
+        WCHAR    szBuff[A20_MNE_LEN + 1];
 
         /* ----- Get Selected Item Order from ListBox ----- */
         dwOff = SendDlgItemMessage(hDlg, IDD_A20_LIST, LB_GETCURSEL, 0, 0L);
 
         /* ----- Get Selected String from ListBox ----- */
         DlgItemSendTextMessage(hDlg, IDD_A20_LIST, LB_GETTEXT, (WPARAM)dwOff, (LPARAM)(szBuff));
+        szBuff[A20_MNE_LEN] = 0;
 
         /* ----- Calculate Cashier No. with Loaded String ----- */
         lpData->ulCashierNo = (ULONG)_wtoi(szBuff);
@@ -754,7 +737,7 @@ VOID    A020SetData(HWND hDlg, LPCASIF lpData, USHORT unCur)
 
         /* ----- Replace Double Key Code (0x12 => '~') ----- */
 		memset(szBuff, 0, sizeof(szBuff));
-        PepReplaceMnemonic((WCHAR *)lpData->auchCashierName, (WCHAR *)szBuff, A20_NAME_LEN, PEP_MNEMO_READ);
+        PepReplaceMnemonic(lpData->auchCashierName, szBuff, A20_NAME_LEN, PEP_MNEMO_READ);
 
         /* ----- Set cashier No. to EditText ----- */
         DlgItemRedrawText(hDlg, IDD_A20_NAME, szBuff);
@@ -869,35 +852,31 @@ VOID    A020SetCtrlData(HWND hDlg)
 */
 VOID    A020SetChkbox(HWND hDlg, WPARAM wBtnID, BYTE bChkBit, BYTE bCtrlAddr)
 {
-    BYTE    bI;
-    BOOL    fCheck;
-    WCHAR    szDesc[PEP_LOADSTRING_LEN];     /* ###ADD Saratoga */
-
-    for (bI = 0; bI < A20_8BITS; bI++) {
+    for (BYTE bI = 0; bI < A20_8BITS; bI++) {
         /* ----- Determine Whether Current Bit is Reserved Area or Not ----- */
         if (bChkBit & (A20_BITMASK << bI)) {
+            BOOL    fCheck;
+
 			/* ----- Get Current Bit Status ----- */
             fCheck = (CasData.fbCashierStatus[bCtrlAddr] & (A20_BITMASK << bI)) ? TRUE : FALSE;
 
 			/* ###ADD Saratoga */
             if (wBtnID == IDD_A20ST14) {
-                LoadString( hResourceDll, IDS_A20_STAON14, szDesc, PEP_STRING_LEN_MAC(szDesc));
-                DlgItemRedrawText(hDlg, wBtnID, szDesc);
+                DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A20_STAON14, wBtnID);
             }
             if (wBtnID == IDD_A20ST15) {
-                LoadString( hResourceDll, IDS_A20_STAON15, szDesc, PEP_STRING_LEN_MAC(szDesc));
-                DlgItemRedrawText(hDlg, wBtnID, szDesc);
+                DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A20_STAON15, wBtnID);
             }
 
 			if (wBtnID == IDD_A20ST17) {
-				if (CasData.fbCashierStatus[2] & 0x02) {
+				if (CasData.fbCashierStatus[2] & CAS_ORDER_DEC_DEFAULT) {
 					// "Terminal Default" is enabled, so this area should be enabled
 					CheckDlgButton(hDlg,IDD_A20_ORDERDEC_ENABLED, TRUE);
 					EnableWindow(GetDlgItem(hDlg, IDD_A20ST17), TRUE);
 					EnableWindow(GetDlgItem(hDlg, IDD_A20ST18), TRUE);
 					// check "Terminal Default" radio button
 					CheckDlgButton(hDlg, IDD_A20ST17, TRUE);
-				} else if( CasData.fbCashierStatus[2] & 0x04) {
+				} else if( CasData.fbCashierStatus[2] & CAS_ORDER_DEC_FORCE) {
 					// "Forced Entry" is enabled, so this area should be enabled
 					CheckDlgButton(hDlg,IDD_A20_ORDERDEC_ENABLED, TRUE);
 					EnableWindow(GetDlgItem(hDlg, IDD_A20ST17), TRUE);
@@ -969,10 +948,9 @@ VOID    A020SetCtrlList(HWND hDlg)
 */
 VOID A020SetListContent(HWND hDlg, BYTE bChkBit, BYTE bCtrlAddr, WPARAM wOffset)
 {
-    BYTE    bI;
-    WCHAR    szDesc[PEP_LOADSTRING_LEN];
+    for(BYTE bI = 0; bI < A20_8BITS; bI++) {
+        WCHAR    szDesc[PEP_LOADSTRING_LEN];
 
-    for(bI = 0; bI < A20_8BITS; bI++) {
         /* ----- Determine Whether Current Bit is Reserved Area or Not ----- */
         if (bChkBit & (A20_BITMASK << bI)) {
             /* ----- Check Current Bit is ON or OFF ----- */
@@ -1016,7 +994,6 @@ VOID A020SetListContent(HWND hDlg, BYTE bChkBit, BYTE bCtrlAddr, WPARAM wOffset)
 BOOL    A020GetData(HWND hDlg, WORD wEditId, LPCASIF lpData, LPUSHORT lpunCur, USHORT unMax)
 {
     BOOL    fRet = TRUE;
-	BOOL    fCode1, fCode2, fCode3;
 
     /* ----- Get Inputed Cashier No. from EditText ----- */
     lpData->ulCashierNo = (ULONG)GetDlgItemInt(hDlg, IDD_A20_NO, NULL, FALSE);
@@ -1055,9 +1032,9 @@ BOOL    A020GetData(HWND hDlg, WORD wEditId, LPCASIF lpData, LPUSHORT lpunCur, U
 		//Startup Window
 		lpData->usStartupWindow		= (USHORT)GetDlgItemInt(hDlg, IDD_A20_WINDOW_NO, NULL, FALSE);
 
-		Job.uchJobCode1 = (UCHAR)GetDlgItemInt(hDlg, IDD_A20_CODE1, (LPBOOL)&fCode1, FALSE);
-		Job.uchJobCode2 = (UCHAR)GetDlgItemInt(hDlg, IDD_A20_CODE2, (LPBOOL)&fCode2, FALSE);
-		Job.uchJobCode3 = (UCHAR)GetDlgItemInt(hDlg, IDD_A20_CODE3, (LPBOOL)&fCode3, FALSE);
+		Job.uchJobCode1 = (UCHAR)GetDlgItemInt(hDlg, IDD_A20_CODE1, NULL, FALSE);
+		Job.uchJobCode2 = (UCHAR)GetDlgItemInt(hDlg, IDD_A20_CODE2, NULL, FALSE);
+		Job.uchJobCode3 = (UCHAR)GetDlgItemInt(hDlg, IDD_A20_CODE3, NULL, FALSE);
 
         /* ----- Refresh ListBox ----- */
         if (A020RefreshList(hDlg, lpData, (LPUSHORT)lpunCur, wEditId) == TRUE) {
@@ -1128,11 +1105,9 @@ VOID    A020GetCtrlData(HWND hDlg)
 */
 VOID    A020GetChkbox(HWND hDlg, WPARAM wBtnID, BYTE bChkBit, BYTE bCtrlAddr)
 {
-    BYTE    bI;
-
     /* ----- Reset Target Control Code Area without Reserved Area ----- */
     CasData.fbCashierStatus[bCtrlAddr] &= (~bChkBit);
-    for (bI = 0; bI < A20_8BITS; bI++) {
+    for (BYTE bI = 0; bI < A20_8BITS; bI++) {
         /* ----- Determine Whether Current Bit is Reserved Area or Not ----- */
         if (bChkBit & (A20_BITMASK << bI)) {
             /* ----- Get Data from CheckBox ----- */
@@ -1166,14 +1141,16 @@ VOID    A020GetChkbox(HWND hDlg, WPARAM wBtnID, BYTE bChkBit, BYTE bCtrlAddr)
 */
 BOOL    A020ChkMax(HWND hDlg, WORD wEditId, ULONG unNo, USHORT unCur, USHORT unMax)
 {
-    WCHAR	szCap[PEP_CAPTION_LEN], szMsg[PEP_OVER_LEN];
-    DWORD	dwIndex;
     BOOL	fRet = FALSE;
 
     if ((wEditId == IDD_A20_ADDCHG) && (unCur == unMax)) {	/* check over maximum */
+        DWORD	dwIndex;
+
         /* ----- Search Corresponding Data from Current cashier Data ----- */
         dwIndex = A020FindNo(hDlg, (UINT)unNo);
         if (dwIndex == LB_ERR) {            /* add new data */
+            WCHAR	szCap[PEP_CAPTION_LEN], szMsg[PEP_OVER_LEN];
+
             /* ----- Load String from Resource ----- */
             LoadString(hResourceDll, IDS_PEP_CAPTION_A20, szCap, PEP_STRING_LEN_MAC(szCap));
             LoadString(hResourceDll, IDS_A20_OVERRECORD,  szMsg, PEP_STRING_LEN_MAC(szMsg));

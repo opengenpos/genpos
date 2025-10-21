@@ -66,6 +66,7 @@ LRESULT SendPepDlgItemMsgString (HWND hDlg, UINT uId, UINT uMsg, WPARAM wParam, 
 //BOOL StaticBoxRedrawText (HWND hdlg, int wID, UINT idString, size_t stLen);
 UINT DlgItemGetText (HWND hdlg, int wID, LPWSTR szString, int nMax);
 BOOL DlgItemRedrawText (HWND hdlg, int wID, LPCWSTR idString);
+BOOL DlgItemLoadStringRedrawText(HWND hdlg, HINSTANCE hResourceDll, int strId, int cntrlId);
 BOOL WindowRedrawText (HWND hdlg, LPCWSTR idString);
 BOOL WindowComboBoxAddString (HWND hdlg, LPCWSTR szString);
 int MessageBoxPopUp (HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType);

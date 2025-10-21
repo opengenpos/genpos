@@ -56,6 +56,7 @@ LRESULT SendUnicodeStringMsg (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
 //BOOL StaticBoxRedrawText (HWND hdlg, int wID, UINT idString, size_t stLen);
 UINT DlgItemGetText (HWND hdlg, int wID, LPWSTR szString, int nMax);
 BOOL DlgItemRedrawText (HWND hdlg, int wID, LPCWSTR idString);
+BOOL DlgItemLoadStringRedrawText(HWND hdlg, HINSTANCE hResourceDll, int strId, int cntrlId);
 BOOL WindowRedrawText (HWND hdlg, LPCWSTR idString);
 int MessageBoxPopUp (HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType);
 int MessageBoxPopUpFileCaption(HWND hWnd, LPCWSTR lpText, UINT uType);

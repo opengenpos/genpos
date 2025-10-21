@@ -289,15 +289,17 @@ BOOL    WINAPI  A114DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SETFONT:
 		if (hResourceFont) {
-			int j;
-			for(j=IDD_A114_CTRL; j<=IDD_A114_PRTPRY_RNG; j++)
+            ULONG list[] = { IDD_A114_MAINT, IDD_A114_DEPT, IDD_A114_HALO, IDD_A114_MAJORDEPT,
+                        IDD_A114_BONUSTTL, IDD_A114_MNEM, IDD_A114_20CHAR, IDD_A114_PRTPRI, IDD_A114_CTLCODES,
+                        IDD_A114_AGETYPE, IDD_A114_CANTAX, IDD_A114_VAT, IDD_A114_DEPT_RNG, IDD_A114_HALO_RNG,
+                        IDD_A114_MAJOR_RNG, IDD_A114_BONUS_RNG, IDD_A114_PRTPRY_RNG, IDD_A114_DESC, IDD_A114_ADJGROUP,
+                        IDD_A114_CUR, IDD_ENTER, IDD_A114_DEL, IDD_SET
+            };
+
+			for(int j = 0; j < sizeof(list)/sizeof(list[j]); j++)
 			{
-				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+				SendDlgItemMessage(hDlg, list[j], WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
-			SendDlgItemMessage(hDlg, IDD_A114_CUR, WM_SETFONT, (WPARAM)hResourceFont, 0);
-			SendDlgItemMessage(hDlg, IDD_ENTER, WM_SETFONT, (WPARAM)hResourceFont, 0);
-			SendDlgItemMessage(hDlg, IDD_A114_DEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
-			SendDlgItemMessage(hDlg, IDD_SET, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
 		}
