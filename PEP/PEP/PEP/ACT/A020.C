@@ -158,12 +158,13 @@ BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SETFONT:
 		if (hResourceFont) {
-			for(int j = IDD_A20_MAX; j <= IDD_A20_TERM_NO_RNG; j++)
+			for(int j = IDD_A20_MAX; j <= IDD_A20_CODE3_RNG; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
-			SendDlgItemMessage(hDlg, IDD_SET, WM_SETFONT, (WPARAM)hResourceFont, 0);
-			SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDD_SET, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDC_BTN_SET_GROUP_ASSOCIATION, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
 		}
 		return FALSE;
@@ -309,7 +310,12 @@ BOOL    WINAPI  A020DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		case IDC_BTN_SET_GROUP_ASSOCIATION:
 			if (HIWORD(wParam) == BN_CLICKED) {
 				//popup group association dialog
-				DialogBoxPopup(hResourceDll, MAKEINTRESOURCEW(IDD_A20_GROUP_ASSOCIATIONS), hDlg, A020GroupDlgProc);				
+                DWORD dw = 0;
+
+                INT_PTR y = DialogBoxPopup(hResourceDll, MAKEINTRESOURCEW(IDD_A20_GROUP_ASSOCIATIONS), hDlg, A020GroupDlgProc);
+                if (FAILED(y)) {
+                    dw = GetLastError();
+                }
 				return TRUE;
             }
 			return FALSE;
@@ -711,7 +717,7 @@ VOID    A020SetData(HWND hDlg, LPCASIF lpData, USHORT unCur)
 		EnableWindow(GetDlgItem(hDlg, IDD_A20_BIO_FINGER),(BOOL)unCur);
 		EnableWindow(GetDlgItem(hDlg, IDD_A20_BIO_FINGER_RESET),(BOOL)unCur);
 	}
-	EnableWindow(GetDlgItem(hDlg, IDC_BTN_SET_GROUP_ASSOCIATION), (BOOL)unCur);	
+	EnableWindow(GetDlgItem(hDlg, IDC_BTN_SET_GROUP_ASSOCIATION), (BOOL)unCur);
 
     if (unCur != 0) {   /* Cashier Record Exists */
 	    ETK_JOB  Job = {0};
@@ -1376,7 +1382,8 @@ VOID    A020ChkExist(HWND hDlg)
     /* ----- Enable/Disable to Add/Change Button ----- */
     EnableWindow(GetDlgItem(hDlg, IDD_A20_ADDCHG),	fTrans);
     EnableWindow(GetDlgItem(hDlg, IDD_A20_DEL),		fChk);
-    EnableWindow(GetDlgItem(hDlg, IDD_SET),			fTrans);
+    EnableWindow(GetDlgItem(hDlg, IDD_SET), fTrans);
+    EnableWindow(GetDlgItem(hDlg, IDC_BTN_SET_GROUP_ASSOCIATION), fTrans);
 }
 
 

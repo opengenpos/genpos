@@ -121,19 +121,19 @@ BOOL    WINAPI  A162DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SETFONT:
 		if (hResourceFont) {
-			int j;
-            for (j = 0; j < 4; j++)
+            for (int j = 0; j < 4; j++)
             {
                 SendDlgItemMessage(hDlg, IDD_A162_LANE_1_T1_DESC + j, WM_SETFONT, (WPARAM)hResourceFont, 0);
                 SendDlgItemMessage(hDlg, IDD_A162_LANE_1_T1_EDIT + j, WM_SETFONT, (WPARAM)hResourceFont, 0);
             }
 
-            for(j=IDD_A162_DESC01; j<=IDD_A162_CAPTION2; j++)
+            for(int j = IDD_A162_DESC01; j <= IDD_A162_CAPTION2; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
 
-            for (j = IDD_A162_SYSTYPE_DESC00; j <= IDD_A162_TERMTYPE_DESC14; j++)
+            // set font for the help text describing the System Type and Terminal Type values
+            for (int j = IDD_A162_SYSTYPE_DESC00; j <= IDD_A162_TERMTYPE_DESC14; j++)
             {
                 SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
             }

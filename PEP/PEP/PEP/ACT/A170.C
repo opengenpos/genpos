@@ -105,7 +105,28 @@ static struct {
 
 BOOL    WINAPI  A170DlgChildProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
+    switch (wMsg) {
+
+    case    WM_INITDIALOG:
+        SendMessage(hDlg, WM_SETFONT, (WPARAM)hResourceFont, MAKELPARAM(TRUE, 0));
+        return TRUE;
+
+    case WM_SETFONT:
+        if (hResourceFont) {
+            ULONG  list[] = {
+                    IDD_A170_STR1, IDD_A170_STR2, IDD_A170_CAPTION1, IDD_A170_CAPTION2, IDD_A170_CAPTION3,
+                    IDD_A170_CAPTION4, IDD_A170_CAPTION5, IDD_A170_CAPTION6, IDD_A170_CAPTION7 
+            };
+
+            for (int j = 0; j < sizeof(list)/sizeof(list[0]); j++)
+            {
+                SendDlgItemMessage(hDlg, list[j], WM_SETFONT, (WPARAM)hResourceFont, 0);
+            }
+        }
         return FALSE;
+    }
+    
+    return FALSE;
 }
 
 void  A170ModeLessChildDialogClear ()
@@ -214,8 +235,7 @@ BOOL    WINAPI  A170DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SETFONT:
 		if (hResourceFont) {
-			int j;
-			for(j=IDD_A170_DATE1; j<=IDD_A170_CAPTION10; j++)
+			for(int j = IDD_A170_DATE1; j <= IDD_A170_DAYS; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
@@ -362,18 +382,12 @@ VOID    A170InitDlg(HWND hDlg)
 		int      i;
 		WCHAR    szDesc[128];
 
-		LoadString(hResourceDll, IDS_A170_DESC1, szDesc, PEP_STRING_LEN_MAC(szDesc));
-		DlgItemRedrawText(hDlg, IDD_A170_STR1, szDesc);
-		LoadString(hResourceDll, IDS_A170_DESC2, szDesc, PEP_STRING_LEN_MAC(szDesc));
-		DlgItemRedrawText(hDlg, IDD_A170_STR2, szDesc);
-		LoadString(hResourceDll, IDS_A170_DESC3, szDesc, PEP_STRING_LEN_MAC(szDesc));
-		DlgItemRedrawText(hDlg, IDD_A170_STR3, szDesc);
-		LoadString(hResourceDll, IDS_A170_DESC4, szDesc, PEP_STRING_LEN_MAC(szDesc));
-		DlgItemRedrawText(hDlg, IDD_A170_STR4, szDesc);
-		LoadString(hResourceDll, IDS_A170_DESC5, szDesc, PEP_STRING_LEN_MAC(szDesc));
-		DlgItemRedrawText(hDlg, IDD_A170_STR5, szDesc);
-		LoadString(hResourceDll, IDS_A170_DESC6, szDesc, PEP_STRING_LEN_MAC(szDesc));
-		DlgItemRedrawText(hDlg, IDD_A170_STR6, szDesc);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A170_DESC1, IDD_A170_STR1);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A170_DESC2, IDD_A170_STR2);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A170_DESC3, IDD_A170_STR3);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A170_DESC4, IDD_A170_STR4);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A170_DESC5, IDD_A170_STR5);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A170_DESC6, IDD_A170_STR6);
 
 		// set the MDC checkbox text
 		DlgItemRedrawText(hDlg, IDD_A170_MDC_PLU5_ADR, PepFetchMdcMnemonic (MDC_PLU5_ADR, EVEN_MDC_BIT1, 1, szDesc, PEP_STRING_LEN_MAC(szDesc)));

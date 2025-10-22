@@ -148,7 +148,22 @@ BOOL    WINAPI  A209DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 */
 		return TRUE;
 
-    case WM_COMMAND:
+	case WM_SETFONT:
+
+		if (hResourceFont) {
+			ULONG list[] = { IDD_A209_STRPALETTE_ADR, IDD_A209_STRDESC, IDD_A209_STRNOTE,
+							IDD_A209_COMBO_ADR, IDD_A209_FOREGROUND_SET, IDD_A209_BACKGROUND_SET };
+
+			for (int j = 0; j < sizeof(list)/sizeof(list[0]); j++)
+			{
+				SendDlgItemMessage(hDlg, list[j], WM_SETFONT, (WPARAM)hResourceFont, 0);
+			}
+			SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
+			SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
+		}
+		return FALSE;
+
+	case WM_COMMAND:
 		// need to repaint when a command is entered
 		repaintSample = 0;
 
