@@ -138,13 +138,13 @@
 #define IDD_A170_CAPTION9	(IDD_A170_CAPTION1+8)
 #define IDD_A170_CAPTION10	(IDD_A170_CAPTION1+9)
 #define IDD_A170_DAYS_1	    (IDD_A170_CAPTION1+10)
-#define IDD_A170_DAYS_2	    (IDD_A170_DAYS_1+1)
-#define IDD_A170_DAYS_3	    (IDD_A170_DAYS_1+2)
-#define IDD_A170_DAYS_4	    (IDD_A170_DAYS_1+3)
-#define IDD_A170_DAYS_5	    (IDD_A170_DAYS_1+4)
-#define IDD_A170_DAYS_6	    (IDD_A170_DAYS_1+5)
-#define IDD_A170_MDC_PLU5_ADR	29347    // indicates current state of MDC MDC_PLU5_ADR Bit B
-#define IDD_A170_DAYS       	29348    // indicates current state of MDC MDC_PLU5_ADR Bit B
+#define IDD_A170_DAYS_2	    (IDD_A170_CAPTION1+11)
+#define IDD_A170_DAYS_3	    (IDD_A170_CAPTION1+12)
+#define IDD_A170_DAYS_4	    (IDD_A170_CAPTION1+13)
+#define IDD_A170_DAYS_5	    (IDD_A170_CAPTION1+14)
+#define IDD_A170_DAYS_6	    (IDD_A170_CAPTION1+15)
+#define IDD_A170_MDC_PLU5_ADR	(IDD_A170_CAPTION1 + 16)    // indicates current state of MDC MDC_PLU5_ADR Bit B
+#define IDD_A170_DAYS       	17106   // indicates current state of MDC MDC_PLU5_ADR Bit B
 
 /*
 * ===========================================================================

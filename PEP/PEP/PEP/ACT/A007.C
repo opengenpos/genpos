@@ -95,35 +95,27 @@ BOOL    WINAPI  A007DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
             szWork[128],
             szCap[128];
     USHORT  usReturnLen;
-    USHORT  usJobData[MAX_AB_JOB_SIZE],
-            unI;
-	ULONG	alOpData[A07_ADDR_MAX];
-    BOOL    fTrans;
+    USHORT  usJobData[MAX_AB_JOB_SIZE] = { 0 };
+    ULONG	alOpData[A07_ADDR_MAX] = { 0 };
 
     switch (wMsg) {
     case WM_INITDIALOG:
-
 		SendMessage(hDlg, WM_SETFONT, (WPARAM)hResourceFont, MAKELPARAM(TRUE, 0));
 
         /* ----- set initial description, V3.3 ----- */
         LoadString(hResourceDll, IDS_A07_CAPTION, szDesc, PEP_STRING_LEN_MAC(szDesc));
         WindowRedrawText(hDlg, szDesc);
-        LoadString(hResourceDll, IDS_PEP_OK, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDOK, szDesc);
-        LoadString(hResourceDll, IDS_PEP_CANCEL, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDCANCEL, szDesc);
-        
-        LoadString(hResourceDll, IDS_A07_AKEY, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A07_STRAKEY, szDesc);
-        LoadString(hResourceDll, IDS_A07_BKEY, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A07_STRBKEY, szDesc);
-        LoadString(hResourceDll, IDS_A07_DESC, szDesc, PEP_STRING_LEN_MAC(szDesc));
-        DlgItemRedrawText(hDlg, IDD_A07_STRDESC, szDesc);
+
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_PEP_OK, IDOK);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_PEP_CANCEL, IDCANCEL);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A07_AKEY, IDD_A07_STRAKEY);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A07_BKEY, IDD_A07_STRBKEY);
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_A07_DESC, IDD_A07_STRDESC);
     
         /* ----- Read Initial Data from Parameter File ----- */
         ParaAllRead(CLASS_PARACASHABASSIGN, (UCHAR *)alOpData, sizeof(alOpData), 0, &usReturnLen);
 
-        for (unI = 0; unI < A07_ADDR_MAX; unI++) {
+        for (USHORT unI = 0; unI < A07_ADDR_MAX; unI++) {
             /* ----- Limit Length of Input Data to EditText ----- */
             SendDlgItemMessage(hDlg, IDD_A07_AKEY + unI, EM_LIMITTEXT, A07_DATA_LEN, 0L);
         
@@ -134,7 +126,7 @@ BOOL    WINAPI  A007DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		//need a read here to get job data from para
 		ParaAllRead(CLASS_PARACASHABASSIGNJOB, (UCHAR *)usJobData, sizeof(usJobData), 0, &usReturnLen);
 
-		for (unI = 0; unI < MAX_AB_JOB_SIZE; unI++) {
+		for (USHORT unI = 0; unI < MAX_AB_JOB_SIZE; unI++) {
             /* ----- Limit Length of Input Data to EditText ----- */
 			SendDlgItemMessage(hDlg, IDD_A07_CASH_A_JOBRNG1 + unI, EM_LIMITTEXT, A07_DATA_JOB_LEN, 0L);
         
@@ -146,35 +138,34 @@ BOOL    WINAPI  A007DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
         SendDlgItemMessage(hDlg, IDD_A07_AKEY, EM_SETSEL, 1, MAKELONG(0, -1));
 
         /* ----- Initialize Configulation of SpinButton ----- */
-        PepSpin.lMin       = (long)A07_DATA_MIN;
-        PepSpin.lMax       = (long)A07_DATA_MAX;
+        PepSpin.lMin       = A07_DATA_MIN;
+        PepSpin.lMax       = A07_DATA_MAX;
         PepSpin.nStep      = A07_SPIN_STEP;
         PepSpin.nTurbo     = A07_SPIN_TURBO;
         PepSpin.nTurStep   = A07_SPIN_TURSTEP;
         PepSpin.fSpinStyle = PEP_SPIN_NOROLL;
-
         return TRUE;
 
     case WM_VSCROLL:
-
         /* ----- Set Target EditText ID ----- */
-
         idEdit = GetDlgCtrlID((HWND)lParam);
         idEdit -= A07_SPIN_OFFSET;
 
         /* ----- Common SpinButton Procedure ----- */
-
-        PepSpinProc(hDlg, wParam, idEdit, (LPPEPSPIN)&PepSpin);
-
+        PepSpinProc(hDlg, wParam, idEdit, &PepSpin);
         return FALSE;   
 
 	case WM_SETFONT:
-
 		if (hResourceFont) {
-			int j;
-			for(j=IDD_A07_AKEY; j<=IDD_A07_STRDESC; j++)
+            ULONG list[] = {
+                IDD_A07_AKEY, IDD_A07_BKEY, IDD_A07_STRAKEY, IDD_A07_STRBKEY,
+                IDD_A07_STRDESC, IDD_A07_OPER_CAP, IDD_A07_JOB_CAP,
+                IDD_A07_CASH_A_JOBRNG1, IDD_A07_CASH_A_JOBRNG2, IDD_A07_CASH_B_JOBRNG1
+            };
+
+			for(int j = 0; j < sizeof(list)/sizeof(list[0]); j++)
 			{
-				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+				SendDlgItemMessage(hDlg, list[j], WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
 			SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
@@ -187,11 +178,11 @@ BOOL    WINAPI  A007DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
         case IDCANCEL:
             if (HIWORD(wParam) == BN_CLICKED) {
                 if (LOWORD(wParam) == IDOK) {
-
-                    for (unI = 0; unI < A07_ADDR_MAX; unI++) {
+                    BOOL    fTrans;
+                    for (USHORT unI = 0; unI < A07_ADDR_MAX; unI++) {
 
                         /* ----- Get Security Number from EditText ----- */
-						alOpData[unI] = GetDlgItemInt(hDlg, IDD_A07_AKEY + unI, (LPBOOL)&fTrans, FALSE);
+						alOpData[unI] = GetDlgItemInt(hDlg, IDD_A07_AKEY + unI, &fTrans, FALSE);
 
                         /* ----- Check Inputed Data is Valid or Not ----- */
                         if (fTrans == 0) {
@@ -214,8 +205,8 @@ BOOL    WINAPI  A007DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
                         }
                     }
 
-					for (unI = 0; unI < MAX_AB_JOB_SIZE; unI++)
-						usJobData[unI] = GetDlgItemInt(hDlg, IDD_A07_CASH_A_JOBRNG1 + unI, (LPBOOL)&fTrans, FALSE);
+					for (USHORT unI = 0; unI < MAX_AB_JOB_SIZE; unI++)
+						usJobData[unI] = GetDlgItemInt(hDlg, IDD_A07_CASH_A_JOBRNG1 + unI, &fTrans, FALSE);
 
                     /* ----- Write data to parameter file ----- */
                     ParaAllWrite(CLASS_PARACASHABASSIGN, (UCHAR *)alOpData, sizeof(alOpData), 0, &usReturnLen);
@@ -225,7 +216,6 @@ BOOL    WINAPI  A007DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
                     /* ----- Set modifier flag ----- */
                     PepSetModFlag(hwndActMain, PEP_MF_ACT, 0);
-
                 }
 
                 EndDialog(hDlg, LOWORD(wParam));

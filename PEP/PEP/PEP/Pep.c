@@ -155,7 +155,7 @@ typedef struct tagCodePageTable {
 #define ILISEL_ENGLISH  1
 CodePageTable myCodePageTable [] = {
 	{WIDE("chinese-simplified"), 10, 936, LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED, GB2312_CHARSET, DEFAULT_QUALITY, FIXED_PITCH},
-	{WIDE("english"), 8, 1252, LANG_ENGLISH, SUBLANG_ENGLISH_US, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
+	{WIDE("english"), 9, 1252, LANG_ENGLISH, SUBLANG_ENGLISH_US, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
 	{WIDE("french"), 8, 1252, LANG_FRENCH, SUBLANG_FRENCH, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
 	{WIDE("german"), 8, 1252, LANG_GERMAN, SUBLANG_GERMAN, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
 /*	{WIDE("greek"), 8, 1253, LANG_GREEK, 0x01, GREEK_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
@@ -1103,7 +1103,7 @@ static  HWND InitPepWnd(HANDLE hInstance, HANDLE hPrevInst, int nCmdShow)
         wc.hCursor          = LoadCursor(NULL, IDC_ARROW);
         wc.hIcon            = LoadIcon(hResourceDll, MAKEINTRESOURCE(IDI_PEPICON1));
         wc.lpszMenuName     = _T("#1");
-        wc.hbrBackground    = (HBRUSH)(COLOR_WINDOW + 1);
+		wc.hbrBackground    = (HBRUSH)(COLOR_WINDOW + 1);
         wc.style            = CS_HREDRAW | CS_VREDRAW;
         wc.cbClsExtra       = 0;
         wc.cbWndExtra       = 0;
@@ -1371,7 +1371,6 @@ static  void    DrawTitle(HDC hdcPep, HWND hWnd)
 	USHORT      usBuffAddr;
 	int         nAddress, nNumTerm;
 	HFONT		hDescFont, oldFont, tmpFont;
-	LOGFONT		logfont;
 	int			iLiSel = 0;
 
 
@@ -1381,28 +1380,36 @@ static  void    DrawTitle(HDC hdcPep, HWND hWnd)
     /* ----- Set the Coodinates of the BackGround and ForeGround Rects ----- */
 	GetClientRect(hWnd, (RECT     *)&rClientWnd);
 
-	rTitle.left   = rClientWnd.left + 25;
+	rTitle.left   = rClientWnd.left + 20;
     rTitle.top    = rClientWnd.top + 25;
-    rTitle.right  = 425;
-    rTitle.bottom = rClientWnd.bottom;
+	rTitle.right  = rClientWnd.right - 20;
+    rTitle.bottom = rClientWnd.bottom - 25;
 
-	/* ----- Set the Current Text Color to BLACK ----- */
+	/* -----
+	 *    Set the main window background color to something other than
+	 *    ghastly white. Light gray will do.
+	 *    Set the Current Text Color to BLACK
+     *    Set the Text-Alignment Flags for the Device Context
+	 *-----
+	*/
+	COLORREF colorRef = RGB(240, 240, 240); // light gray background
+	HBRUSH hBrush = CreateSolidBrush(colorRef);
+	FillRect(hdcPep, &rClientWnd, hBrush);
+	DeleteObject(hBrush);
+
     SetTextColor(hdcPep, PEP_TEXT_COLOR);
+	SetBkColor(hdcPep, colorRef);
 
-    /* ----- Set the Text-Alignment Flags for the Device Context ----- */
     SetTextAlign(hdcPep, TA_CENTER | TA_TOP);
-
 
     /* ----- Load String of the PEP Title ----- */
    LoadString(hResourceDll, IDS_PEP_TITLE, szTitle, PEP_STRING_LEN_MAC(szTitle));
-
 
 	/*-----------------------------------------------------------------------*/
 	/*-------create the font we will use for our file description.-----------*/
 	/*---- we want to use a 14 point font size with the ANSI character set---*/
 	/*---- Title will use 14 point, underline, will change for description---*/
-	memset (&logfont, 0, sizeof (LOGFONT));
-
+	LOGFONT		logfont = { 0 };
 	logfont.lfHeight = -MulDiv(14, GetDeviceCaps(hdcPep, LOGPIXELSY), 72);
 	logfont.lfOutPrecision = OUT_TT_PRECIS;
 	logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;

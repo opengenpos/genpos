@@ -212,6 +212,14 @@ BOOL DlgItemRedrawText (HWND hdlg, int wID, LPCWSTR szString)
 	return SetDlgItemText(hdlg, wID, szString/*szMyBuffer*/);
 }
 
+BOOL DlgItemLoadStringRedrawText(HWND hdlg, HINSTANCE hResourceDll, int strId, int cntrlId)
+{
+	wchar_t  szDesc[256] = { 0 };
+
+	int ls = LoadString(hResourceDll, strId, szDesc, PEP_STRING_LEN_MAC(szDesc));
+	return SetDlgItemText(hdlg, cntrlId, szDesc);
+}
+
 int MessageBoxPopUp (HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)
 {
 
