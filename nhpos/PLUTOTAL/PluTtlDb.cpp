@@ -1239,42 +1239,35 @@ static int BuildInsertStmt (const wchar_t* wsTableName, VARIANT vPutFields, VARI
         lIdx[0]++;
         switch (vWrk.vt) {
         case VT_I1:
-            swprintf(wsValueTemp, 30, L"%d", vWrk.bVal);
+            swprintf(wsValueTemp, 30, L"%d, ", vWrk.bVal);
             wsValues += wsValueTemp;
-            wsValues += L", ";
             break;
         case VT_I2:
-            swprintf(wsValueTemp, 30, L"%d", vWrk.iVal);
+            swprintf(wsValueTemp, 30, L"%d, ", vWrk.iVal);
             wsValues += wsValueTemp;
-            wsValues += L", ";
             break;
         case VT_UI4:
-            swprintf(wsValueTemp, 30, L"%u", vWrk.ulVal);
+            swprintf(wsValueTemp, 30, L"%u, ", vWrk.ulVal);
             wsValues += wsValueTemp;
-            wsValues += L", ";
             break;
         case VT_I4:
-            swprintf(wsValueTemp, 30, L"%d", vWrk.lVal);
+            swprintf(wsValueTemp, 30, L"%d, ", vWrk.lVal);
             wsValues += wsValueTemp;
-            wsValues += L", ";
             break;
         case VT_I8:
-            swprintf(wsValueTemp, 30, L"%lld", vWrk.llVal);
+            swprintf(wsValueTemp, 30, L"%lld, ", vWrk.llVal);
             wsValues += wsValueTemp;
-            wsValues += L", ";
             break;
         case VT_BSTR:
             wsValues += L"\'";
             wsValues += vWrk.bstrVal;
-            wsValues += L"\'";
-            wsValues += L", ";
+            wsValues += L"\', ";
             break;
         case VT_DATE:
             wsValues += L"\'";
             dtDate = vWrk;
             wsValues += dtDate.Format(_T("%Y-%m-%d %H:%M:%S"));
-            wsValues += L"\'";
-            wsValues += L", ";
+            wsValues += L"\', ";
             break;
         default:
             break;
