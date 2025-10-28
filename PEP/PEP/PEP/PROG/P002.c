@@ -168,7 +168,7 @@ BOOL    WINAPI  P002DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 				LoadString(hResourceDll, IDS_P02_RAM_UNKNOWN, szWork, PEP_STRING_LEN_MAC(szWork));
 			}
 			
-			DlgItemRedrawText (hDlg, IDC_P02_RAM_SIZE, szWork);
+//			DlgItemRedrawText (hDlg, IDC_P02_RAM_SIZE, szWork);
 		}
         /* ----- Enable/Disable to push OK button ----- */
         EnableWindow(GetDlgItem(hDlg, IDOK), fChk);
@@ -208,7 +208,7 @@ BOOL    WINAPI  P002DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_PAINT:
         /* ----- Draw graphical memory usage ----- */
-        dwTotalMem = P02DrawMemUse(hDlg, dwFreeBlock, adwMem);
+//        dwTotalMem = P02DrawMemUse(hDlg, dwFreeBlock, adwMem);
         return TRUE;
 
     case PM_GET_FCONF:
@@ -569,6 +569,7 @@ DWORD    P02CalcBlock(HWND hDlg, WORD wIdx)
     RECT    rcDraw;
     int     nLen;
 
+    return 20;
     /* ----- Get data from the edit-box ----- */
     if(wIdx == P02_PLU) {
 		WCHAR    szPluRecord[P02_PLU_LEN + 1] = {0};
@@ -985,6 +986,7 @@ BOOL    P02ChkRng(HWND hDlg, LPP02BUFF lpBuff, WORD wIdx)
         break;
     }
 
+#if 0
     if (lpBuff->dwData > dwMax || lpBuff->dwData < (DWORD)wMin) {
 		WCHAR  szWork[PEP_OVER_LEN] = {0};
 		WCHAR  szErr[PEP_OVER_LEN] = {0}, szCap[PEP_CAPTION_LEN] = {0};
@@ -998,6 +1000,7 @@ BOOL    P02ChkRng(HWND hDlg, LPP02BUFF lpBuff, WORD wIdx)
         MessageBoxPopUp(hDlg, szWork, szCap, MB_ICONEXCLAMATION | MB_OK);
         return TRUE;
     }
+#endif
     return FALSE;
 }
 
@@ -2094,6 +2097,7 @@ DWORD  P02DrawMemUse(HWND hDlg, DWORD dwFree, LPDWORD lpdwMem)
 */
 BOOL    P02ChkMemUse(HWND hDlg, DWORD dwTtl, DWORD dwFree)
 {
+    return TRUE;
     if (dwTtl > dwFree) {   /* out of memory */
 		WCHAR    szCap[PEP_CAPTION_LEN];
 

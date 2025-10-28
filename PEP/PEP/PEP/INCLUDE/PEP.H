@@ -37,6 +37,27 @@
 *       Define Declarations
 * ===========================================================================
 */
+
+// following are several font faces used with dialogs during the history
+// of Windows from early Windows through Windows XP and to Windows 10.
+// Segoe UI is the recommended font for Windows 10/11 and was designed to
+// be as readable as possible on display devices.
+//
+// The recommended font size for Windows 10/11 is 9 pt. sized Segoe UI.
+
+#define DLG_FONT_FACE  "Segoe UI"
+#define DLG_FONT_FACE_WIDE L"Segoe UI"
+
+//#define DLG_FONT_FACE  "MS Shell Dlg"
+//#define DLG_FONT_FACE_WIDE L"MS Shell Dlg"
+
+//#define DLG_FONT_FACE  "MS Sans Serif"
+//#define DLG_FONT_FACE_WIDE L"MS Sans Serif"
+
+#define DLG_FONT_POINT  9
+
+
+
 /*
 * ===========================================================================
 *       Dialog ID definition
