@@ -132,8 +132,7 @@ BOOL    WINAPI  P015DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
         
 	case WM_SETFONT:
 		if (hResourceFont) {
-			int j;
-			for(j = IDD_P15_01; j <= IDD_P15_DATA_RANGE; j++)
+			for(int j = IDD_P15_01; j <= IDD_P15_DATA_RANGE; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}

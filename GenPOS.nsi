@@ -53,7 +53,7 @@ Name "OpenGenPOS Application"
 #       See as well the copyright macro ALL_Q_COPYRIGHT.
 #
 #       See as well macro for OutFile below containing installer file name.
-!define VERSION 2.4.0.5
+!define VERSION 2.4.0.6
 !define COMPANY OpenGenPOS
 !define URL https://github.com/opengenpos
 
@@ -86,7 +86,7 @@ Var StartMenuGroup
 
 # OpenGenPOS uses the same directory structure as previous releases of GenPOS and NHPOS.
 # NHPOS on the NCR 7448 use a non-standard directory tree.
-OutFile GenPOS_rel_02_04_00_005.exe
+OutFile GenPOS_rel_02_04_00_006.exe
 InstallDir C:\FlashDisk\NCR\Saratoga
 CRCCheck force
 XPStyle on
@@ -99,7 +99,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "OpenGenPOS Terminal Installer"
-VIAddVersionKey LegalCopyright "Copyright (C) 2002-2024, Georgia Southern University"
+VIAddVersionKey LegalCopyright "Copyright (C) 2002-2025, Georgia Southern University"
 
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show

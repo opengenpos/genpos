@@ -148,22 +148,23 @@ typedef struct tagCodePageTable {
 	UINT   uiCharSet;
 	BYTE   ucQuality;
 	BYTE   ucPitch;
+	WCHAR  tcFace[20];
 } CodePageTable, *PCodePageTable;
 
 //  Typically, Asian languages such as Chinese require a 10 pt font for legibility.
 //  The following define, ISEL_ENGLISH, is used for the default language.
 #define ILISEL_ENGLISH  1
 CodePageTable myCodePageTable [] = {
-	{WIDE("chinese-simplified"), 10, 936, LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED, GB2312_CHARSET, DEFAULT_QUALITY, FIXED_PITCH},
-	{WIDE("english"), 9, 1252, LANG_ENGLISH, SUBLANG_ENGLISH_US, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
-	{WIDE("french"), 8, 1252, LANG_FRENCH, SUBLANG_FRENCH, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
-	{WIDE("german"), 8, 1252, LANG_GERMAN, SUBLANG_GERMAN, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
+	{WIDE("chinese-simplified"), 10, 936, LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED, GB2312_CHARSET, DEFAULT_QUALITY, FIXED_PITCH, 0},
+	{WIDE("english"), DLG_FONT_POINT, 1252, LANG_ENGLISH, SUBLANG_ENGLISH_US, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, DLG_FONT_FACE_WIDE},
+	{WIDE("french"), 8, 1252, LANG_FRENCH, SUBLANG_FRENCH, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, 0},
+	{WIDE("german"), 8, 1252, LANG_GERMAN, SUBLANG_GERMAN, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, 0},
 /*	{WIDE("greek"), 8, 1253, LANG_GREEK, 0x01, GREEK_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
 	{WIDE("italian"), 8, 1252, LANG_ITALIAN, SUBLANG_ITALIAN, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
 	{WIDE("japanese"), 10, 932, LANG_JAPANESE, 0x01, SHIFTJIS_CHARSET, PROOF_QUALITY, FIXED_PITCH},*/
 //	{WIDE("Korean"), 10, 949, LANG_KOREAN, SUBLANG_KOREAN, HANGUL_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH}, /* ESMITH */
 /*	{WIDE("russian"), 8, 1251, LANG_RUSSIAN, 0x01, RUSSIAN_CHARSET, PROOF_QUALITY, FIXED_PITCH},*/
-	{WIDE("spanish"), 8, 1252, LANG_SPANISH, SUBLANG_SPANISH_MODERN, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH},
+	{WIDE("spanish"), 8, 1252, LANG_SPANISH, SUBLANG_SPANISH_MODERN, ANSI_CHARSET, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS},
 	{NULL, 10, 1252, LANG_NEUTRAL, SUBLANG_SYS_DEFAULT, ANSI_CHARSET, PROOF_QUALITY, FIXED_PITCH}
 };
 
@@ -495,6 +496,169 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpszCmdLine, int nCmdSho
 *      messages sent to a window.
 * ===========================================================================
 */
+// Structure associated with menu items 
+
+
+typedef struct tagMYITEM
+{
+	HFONT hfont;               // font handle for font to use.
+	int   cchItemText;         // length of the text in characters
+	wchar_t  szItemText[1];    // buffer for text
+} MYITEM;
+
+static HFONT CreateMenuItemFont(UINT uID, HDC hDc)
+{
+	LOGFONT lf = { 0 };
+
+	lf.lfHeight = - MulDiv(DLG_FONT_POINT, GetDeviceCaps(hDc, LOGPIXELSY), 72);
+	wcscpy(lf.lfFaceName, DLG_FONT_FACE_WIDE);
+
+	return CreateFontIndirect(&lf);
+}
+
+static void doMenuModification(HWND hWnd)
+{
+#define MENUTEXTSTRING(x) ((x)*sizeof(wchar_t))
+	// the list of the menu item ids being used in our application
+	// menu. This is taken from the MENU resource in our resource file.
+	UINT listUids[] = {
+		IDM_NEW, IDM_OPEN, IDM_SAVE, IDM_SAVEAS, IDM_DELETE, IDM_CONFIG
+		, IDM_PRN, IDM_PRN_PRINTER, IDM_EXIT
+		, IDM_P01, IDM_P02, IDM_P03, IDM_P06, IDM_P08, IDM_P09, IDM_P10
+		, IDM_P15, IDM_P17, IDM_P18, IDM_P49, IDM_P50, IDM_P51, IDM_P54
+		, IDM_P60, IDM_P62, IDM_P67, IDM_P97, IDM_P98
+		, IDD_P20, IDD_P21, IDM_P22, IDM_P23, IDM_P46, IDM_P47, IDM_P48
+		, IDM_P57, IDM_P65, IDM_P72, IDD_P223_RPT, IDD_P223_1_RPT
+		, IDM_A04, IDM_A05, IDM_A07, IDM_A20, IDM_A33, IDM_A68, IDM_A71
+		, IDM_A84, IDM_A86, IDM_A87, IDM_A88, IDM_A89, IDM_A111, IDM_A114
+		, IDM_A116, IDM_A124, IDM_A127, IDM_A128, IDM_A130, IDM_A133, IDM_A137
+		, IDM_A152, IDM_A154, IDD_A156, IDM_A160, IDM_A161, IDM_A162
+		, IDM_A170, IDM_A208, IDM_A209
+		, IDM_TERMINAL, IDM_PROGREPORT, IDM_REPORTFILE, IDM_LAYOUTTOUCH_LMNGR
+		, IDM_LAYOUTTOUCH_SET, IDM_LAYOUTKEYBOARD_LMNGR
+		, IDM_LAYOUTKEYBOARD_SET, IDM_EDITLOGO, IDM_CHOOSELOGO, IDM_SECRET_CODE
+		, IDM_CHANGE_LANGUAGE
+		, IDM_HLP_CONTENTS, IDM_HLP_ABOUT
+	};
+	HMENU hmenuBar = GetMenu(hWnd);
+	HDC hDc = GetDC(hWnd);
+	HFONT hFont = CreateMenuItemFont(0, hDc);  // we use the same font for entire menu
+	const size_t  CCH_MAXITEMTEXT = 256;    // initial text buffer allocation in characters.
+
+	// Modify each menu item. Assume that the IDs IDM_REGULAR 
+	// through IDM_UNDERLINE are consecutive numbers. 
+
+	for (UINT uID = 0; uID < sizeof(listUids)/sizeof(listUids[0]); uID++)
+	{
+		// Allocate an item structure, leaving space for a 
+		// string of up to CCH_MAXITEMTEXT characters. 
+		MYITEM* pMyItem = (MYITEM*)malloc(sizeof(MYITEM) + MENUTEXTSTRING(CCH_MAXITEMTEXT));
+		MENUITEMINFO mii = { 0 };
+
+		// Save the item text in the item structure. 
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_STRING;
+		mii.dwTypeData = pMyItem->szItemText;
+		mii.cch = CCH_MAXITEMTEXT;
+		GetMenuItemInfo(hmenuBar, listUids[uID], FALSE, &mii);
+		pMyItem->cchItemText = mii.cch;
+
+		// Reallocate the structure to the minimum required size.
+		// make sure realloc() worked before using pointer returned.
+		MYITEM* pMyItem2 = (MYITEM*)realloc(pMyItem, sizeof(MYITEM) + MENUTEXTSTRING(mii.cch), LMEM_MOVEABLE);
+		if (pMyItem2) pMyItem = pMyItem2;
+
+		// Create the font used to draw the item. 
+		pMyItem->hfont = hFont;
+
+		// Change the item to an owner-drawn item, and save 
+		// the address of the item structure as item data. 
+		mii.fMask = MIIM_FTYPE | MIIM_DATA;
+		mii.fType = MFT_OWNERDRAW;
+		mii.dwItemData = (ULONG_PTR)pMyItem;
+		SetMenuItemInfo(hmenuBar, listUids[uID], FALSE, &mii);
+	}
+#undef MENUTEXTSTRING
+}
+
+static VOID WINAPI OnMeasureItem(HWND hwnd, LPMEASUREITEMSTRUCT lpmis)
+{
+	MYITEM* pMyItem = (MYITEM*)lpmis->itemData;
+
+	// Get the drawing context and select into it the font we are using
+	// for the menu in order to determine our measurements.
+	// We will take Windows estimates as to the size of our menu item
+	// text string as drawn by the font to report back our measurements.
+	// 
+	// NOTE: This is an estimate of the height and width of the menu item row.
+	//       Also note that we add a fudge factor to the row height in order
+	//       to provide spacing between each of the menu item rows and their
+	//       text.
+	HDC hdc = GetDC(hwnd);
+	HFONT hfntOld = (HFONT)SelectObject(hdc, pMyItem->hfont);
+
+	SIZE size;
+	GetTextExtentPoint32(hdc, pMyItem->szItemText, pMyItem->cchItemText, &size);
+
+	lpmis->itemWidth = size.cx;
+	lpmis->itemHeight = size.cy + size.cy / 3;  // make the menu row size a bit taller
+
+	// restore the drawing context and then release it.
+	SelectObject(hdc, hfntOld);
+	ReleaseDC(hwnd, hdc);
+}
+
+static VOID WINAPI OnDrawItem(HWND hwnd, LPDRAWITEMSTRUCT lpdis)
+{
+	if (lpdis->CtlType != ODT_MENU) return;
+
+	MYITEM* pMyItem = (MYITEM*)lpdis->itemData;
+	COLORREF clrPrevText, clrPrevBkgnd;
+
+	// Set the appropriate foreground and background colors. 
+	if (lpdis->itemState & ODS_SELECTED)
+	{
+		clrPrevText = SetTextColor(lpdis->hDC, GetSysColor(COLOR_HIGHLIGHTTEXT));
+		clrPrevBkgnd = SetBkColor(lpdis->hDC, GetSysColor(COLOR_HIGHLIGHT));
+	}
+	else
+	{
+		clrPrevText = SetTextColor(lpdis->hDC, GetSysColor(COLOR_MENUTEXT));
+		clrPrevBkgnd = SetBkColor(lpdis->hDC, GetSysColor(COLOR_MENU));
+	}
+
+	// Get the top left coordinate for the menu row.
+	// We will use this to position the text within the
+	// menu row. 
+	int x = lpdis->rcItem.left;
+	int y = lpdis->rcItem.top;
+
+	// Select the font to position and draw the text wihin the menu row area.
+	HFONT hfntPrev = (HFONT)SelectObject(lpdis->hDC, pMyItem->hfont);
+
+	// Work out menu text position within the menu row in order
+	// to improve readability. We indent away from the edge of
+	// the menu window and we center the text within the menu
+	// row area.
+	SIZE size;
+	GetTextExtentPoint32(lpdis->hDC, pMyItem->szItemText, pMyItem->cchItemText, &size);
+
+	x += 10;    // indent the menu item text away from the left side of the menu window.
+	if (lpdis->rcItem.bottom - lpdis->rcItem.top > size.cy) {
+		y += (lpdis->rcItem.bottom - lpdis->rcItem.top - size.cy) / 2;     // center the text in the menu row.
+	}
+
+	ExtTextOut(lpdis->hDC, x, y, ETO_OPAQUE,
+		&lpdis->rcItem, pMyItem->szItemText,
+		pMyItem->cchItemText, NULL);
+
+	// Restore the original font and colors. 
+	SelectObject(lpdis->hDC, hfntPrev);
+	SetTextColor(lpdis->hDC, clrPrevText);
+	SetBkColor(lpdis->hDC, clrPrevBkgnd);
+}
+
+
 LONG    WINAPI  PepWndProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
     static  int         nCyStatDef; /* Default Height of Status Window  */
@@ -540,6 +704,8 @@ LONG    WINAPI  PepWndProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 			GlobalFree(hMemParam);
 			break;
 		}
+
+		doMenuModification(hWnd);
 
 		lpBufStart = &Para;
         memcpy(lpPepParam, lpBufStart, sizeof(Para));
@@ -608,7 +774,15 @@ LONG    WINAPI  PepWndProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		CloseHandle(iLogHandle);
         break;
 
-    case WM_INITMENUPOPUP:
+	case WM_MEASUREITEM:
+		OnMeasureItem(hWnd, (LPMEASUREITEMSTRUCT)lParam);
+		return TRUE;
+
+	case WM_DRAWITEM:
+		OnDrawItem(hWnd, (LPDRAWITEMSTRUCT)lParam);
+		return TRUE;
+
+	case WM_INITMENUPOPUP:
         if (LOWORD(lParam) == PEP_MENU_FILE) {
             unEnable = ((PepQueryModFlag(PEP_MF_OPEN, 0) == FALSE) ? MF_GRAYED : MF_ENABLED);
             EnableMenuItem((HMENU)wParam, IDM_SAVE,   unEnable);
@@ -1370,7 +1544,7 @@ static  void    DrawTitle(HDC hdcPep, HWND hWnd)
 	BYTE		bMDCWork, bWork, bWork2;
 	USHORT      usBuffAddr;
 	int         nAddress, nNumTerm;
-	HFONT		hDescFont, oldFont, tmpFont;
+	HFONT		hDescFont, oldFont = 0;
 	int			iLiSel = 0;
 
 
@@ -1414,7 +1588,8 @@ static  void    DrawTitle(HDC hdcPep, HWND hWnd)
 	logfont.lfOutPrecision = OUT_TT_PRECIS;
 	logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
 	logfont.lfQuality = DEFAULT_QUALITY;
-	logfont.lfPitchAndFamily = DEFAULT_PITCH;
+	logfont.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;
+	logfont.lfWeight = 400;
 	logfont.lfCharSet = ANSI_CHARSET ;
 	logfont.lfUnderline = TRUE;
 
@@ -1428,6 +1603,7 @@ static  void    DrawTitle(HDC hdcPep, HWND hWnd)
 		logfont.lfCharSet = myCodePageTable[iLiSel].uiCharSet ;
 		logfont.lfQuality = myCodePageTable[iLiSel].ucQuality;
 		logfont.lfPitchAndFamily = myCodePageTable[iLiSel].ucPitch;
+		wcscpy (logfont.lfFaceName, myCodePageTable[iLiSel].tcFace);
 	}
 
 	hDescFont = CreateFontIndirect (&logfont);
@@ -1548,8 +1724,9 @@ static  void    DrawTitle(HDC hdcPep, HWND hWnd)
 	// Next we create our new font using a 12 pt size and select it into the DC.
 
 	if (hDescFont) {
-		tmpFont = SelectObject (hdcPep, oldFont);
+		HFONT    tmpFont = SelectObject (hdcPep, oldFont);
 		DeleteObject (tmpFont);
+		oldFont = 0;
 	}
 
 	logfont.lfHeight = -MulDiv(12, GetDeviceCaps(hdcPep, LOGPIXELSY), 72);
@@ -1604,8 +1781,9 @@ static  void    DrawTitle(HDC hdcPep, HWND hWnd)
 
 	// Finally, we clean up the created font so as to be a good Windows app.
 	if (hDescFont) {
-		tmpFont = SelectObject (hdcPep, oldFont);
+		HFONT   tmpFont = SelectObject (hdcPep, oldFont);
 		DeleteObject (tmpFont);
+		oldFont = 0;
 	}
 }
 
@@ -1958,17 +2136,12 @@ VOID GetLangFont(int iLiSel)
 {
 	LOGFONT logfont = {0};
 
-	logfont.lfHeight = -MulDiv(10, GetDeviceCaps(GetDC (NULL), LOGPIXELSY), 72);
-	logfont.lfOutPrecision = OUT_TT_PRECIS;
-	logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
-	logfont.lfQuality = DEFAULT_QUALITY;
-	logfont.lfPitchAndFamily = DEFAULT_PITCH;
-
-
 	logfont.lfHeight = -MulDiv(myCodePageTable[iLiSel].unFontSize, GetDeviceCaps(GetDC (NULL), LOGPIXELSY), 72);
 	logfont.lfCharSet = myCodePageTable[iLiSel].uiCharSet ;
 	logfont.lfQuality = myCodePageTable[iLiSel].ucQuality;
 	logfont.lfPitchAndFamily = myCodePageTable[iLiSel].ucPitch;
+	logfont.lfWeight = 400;
+	wcscpy(logfont.lfFaceName, myCodePageTable[iLiSel].tcFace);
 	hResourceFont = CreateFontIndirect (&logfont);
 
 	_ASSERT (hResourceFont);

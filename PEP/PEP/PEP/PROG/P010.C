@@ -101,21 +101,43 @@ BOOL    WINAPI  P010DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
     switch (wMsg) {
     case WM_INITDIALOG:
-		SendMessage(hDlg, WM_SETFONT, (WPARAM)hResourceFont, MAKELPARAM(TRUE, 0));
+//		SendMessage(hDlg, WM_SETFONT, (WPARAM)hResourceFont, MAKELPARAM(TRUE, 0));
         /* ----- Initialize Configulation of DialogBox ----- */
         P10InitDlg(hDlg, abHalo);
         return TRUE;
 
 	case WM_SETFONT:
+#if 1
 		if (hResourceFont) {
-			int j;
-			for(j = IDD_P10_DESC01; j <= IDD_P10_RANGE_HALO; j++)
+            wchar_t  *ct[] = { L"Segoe UI", L"MS Shell Dlg", L"MS Sans Serif" };
+
+            LOGFONT logfont = { 0 };
+            HFONT   hLogFont = 0;
+
+            logfont.lfHeight = -MulDiv(9, GetDeviceCaps(GetDC(NULL), LOGPIXELSY), 72);
+            logfont.lfOutPrecision = OUT_TT_PRECIS;
+            logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+            logfont.lfQuality = PROOF_QUALITY;
+            logfont.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;
+            logfont.lfWeight = FW_LIGHT;
+            logfont.lfCharSet = ANSI_CHARSET;
+            wcscpy(logfont.lfFaceName, ct[0]);
+
+            hLogFont = CreateFontIndirect(&logfont);
+
+			for(int j = IDD_P10_DESC01; j <= IDD_P10_CHECK10; j++)
 			{
-				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
-			}
-			SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
-			SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
+				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hLogFont, 0);
+			} 
+            for (int j = IDD_P10_ADDR; j <= IDD_P10_RANGE_HALO; j++)
+            {
+                SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            }
+            SendDlgItemMessage(hDlg, IDOK, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
+            DeleteObject(hLogFont);
 		}
+#endif
 		return FALSE;
 
     case WM_MOUSEWHEEL:
