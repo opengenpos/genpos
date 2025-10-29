@@ -47,7 +47,7 @@ Name "OpenGenPOS Parameter Entry Program (PEP)"
 #       are defined.
 #       See as well the copyright macro ALL_Q_COPYRIGHT.
 #       See as well macro for OutFile below containing installer file name.
-!define VERSION 2.4.0.005
+!define VERSION 2.4.0.006
 !define COMPANY OpenGenPOS
 !define URL https://github.com/opengenpos
 !define PEPDIR  Pep2.4
@@ -78,7 +78,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile PEP_rel_02_04_00_005.exe
+OutFile PEP_rel_02_04_00_006.exe
 InstallDir $PROGRAMFILES\NCR\NeighborhoodPOS\Pep2.4
 CRCCheck force
 XPStyle on
@@ -90,7 +90,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "OpenGenPOS PEP Installer"
-VIAddVersionKey LegalCopyright "Copyright (C) 2002-2024, Georgia Southern University"
+VIAddVersionKey LegalCopyright "Copyright (C) 2002-2025, Georgia Southern University"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 RequestExecutionLevel admin
