@@ -5502,19 +5502,19 @@ BEGIN
     LTEXT           "System Type Values 3", IDD_A162_SYSTYPE_DESC03, 279, 52, 220, 10
     LTEXT           "Terminal Type Values", IDD_A162_TERMTYPE_DESC00, 268, 68, 200, 10
     LTEXT           "Terminal Type Values 1", IDD_A162_TERMTYPE_DESC01, 279, 80, 200, 10
-    LTEXT           "Terminal Type Values 2", IDD_A162_TERMTYPE_DESC02, 279, 92, 200, 801
+    LTEXT           "Terminal Type Values 2", IDD_A162_TERMTYPE_DESC02, 279, 92, 200, 10
     LTEXT           "Terminal Type Values 3", IDD_A162_TERMTYPE_DESC03, 279, 104, 200, 10
     LTEXT           "Terminal Type Values 4", IDD_A162_TERMTYPE_DESC04, 279, 116, 200, 10
     LTEXT           "Terminal Type Values 5", IDD_A162_TERMTYPE_DESC05, 279, 128, 200, 10
-    LTEXT           "Terminal Type Values 6", IDD_A162_TERMTYPE_DESC06, 279, 130, 200, 10
-    LTEXT           "Terminal Type Values 7", IDD_A162_TERMTYPE_DESC07, 279, 142, 200, 10
-    LTEXT           "Terminal Type Values 8", IDD_A162_TERMTYPE_DESC08, 279, 154, 200, 10
-    LTEXT           "Terminal Type Values 9", IDD_A162_TERMTYPE_DESC09, 279, 166, 200, 10
-    LTEXT           "Terminal Type Values 10", IDD_A162_TERMTYPE_DESC10, 279, 178, 200, 10
-    LTEXT           "Terminal Type Values 11", IDD_A162_TERMTYPE_DESC11, 275, 190, 200, 10
-    LTEXT           "Terminal Type Values 12", IDD_A162_TERMTYPE_DESC12, 275, 202, 200, 10
-    LTEXT           "Terminal Type Values 13", IDD_A162_TERMTYPE_DESC13, 275, 214, 200, 10
-    LTEXT           "Terminal Type Values 14", IDD_A162_TERMTYPE_DESC14, 275, 226, 200, 10
+    LTEXT           "Terminal Type Values 6", IDD_A162_TERMTYPE_DESC06, 279, 140, 200, 10
+    LTEXT           "Terminal Type Values 7", IDD_A162_TERMTYPE_DESC07, 279, 152, 200, 10
+    LTEXT           "Terminal Type Values 8", IDD_A162_TERMTYPE_DESC08, 279, 164, 200, 10
+    LTEXT           "Terminal Type Values 9", IDD_A162_TERMTYPE_DESC09, 279, 176, 200, 10
+    LTEXT           "Terminal Type Values 10", IDD_A162_TERMTYPE_DESC10, 279, 188, 200, 10
+    LTEXT           "Terminal Type Values 11", IDD_A162_TERMTYPE_DESC11, 275, 200, 200, 10
+    LTEXT           "Terminal Type Values 12", IDD_A162_TERMTYPE_DESC12, 275, 212, 200, 10
+    LTEXT           "Terminal Type Values 13", IDD_A162_TERMTYPE_DESC13, 275, 224, 200, 10
+    LTEXT           "Terminal Type Values 14", IDD_A162_TERMTYPE_DESC14, 275, 236, 200, 10
     PUSHBUTTON      "Set As Counter",IDD_A162_BTNSET01,10,248,64,12
     LTEXT           "Terminal Provisioning for Counter, no Drive Thru",IDD_A162_CAPSET01,80,250,190,10
 	PUSHBUTTON      "Set As DT #1",IDD_A162_BTNSET02,10,267,64,12
