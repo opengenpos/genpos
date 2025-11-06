@@ -549,6 +549,9 @@ can assign PLUs to, and 165 is the max number of keys that can be assigned per p
 #define PLU_MAX_PRICE           9999999L    /* limitation for building */
 #define PLU_MAX_PM              99          /* limitation for building */
 
+#define PLU_STANDARD_RPT_CODE   10          // Standard report code used with PLU building up ItemSalesPLUSetupBuilding()
+#define PLU_STANDARD_GROUP_NO   89          // Standard group number used with PLU building up ItemSalesPLUSetupBuilding() for Compass
+
 /*------------------------------------------------------------------------*\
 *   UNIVERSAL DEFINITION
 \*------------------------------------------------------------------------*/
