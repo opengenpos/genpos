@@ -139,7 +139,7 @@ BOOL    WINAPI  P051DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
 		if (hResourceFont) {
 			int j;
-			for(j=IDD_P51_IPADD11; j<=IDD_P51_STRPOSLEN2; j++)
+			for(int j = IDD_P51_IPADD11; j <= IDD_P51_STRPOSLEN2; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
@@ -446,11 +446,9 @@ BOOL    P051ChkRndPos(HWND hDlg, WPARAM wID)
     short   nRndPos;
 
     /* ----- Get the Inputed Data from the Specified EditText ----- */
-
     nRndPos = (short)GetDlgItemInt(hDlg, LOWORD(wID), NULL, TRUE);
 
     /* ----- Determine Whether the Inputed Data is Out of Range or Not ----- */
-
         switch (LOWORD(wID)) {
         
         case    IDD_P51_IPADD11:
@@ -490,11 +488,8 @@ BOOL    P051ChkRndPos(HWND hDlg, WPARAM wID)
         case    IDD_P51_IPADD84:
 		//*********************************
 
-            if ((nRndPos < P51_IPPOS_MIN) || (nRndPos > P51_IPPOS_MAX))
-            {
-
-                 fCheck = TRUE;
-            }
+            fCheck = ((nRndPos < P51_IPPOS_MIN) || (nRndPos > P51_IPPOS_MAX));
+            break;
 
         case    IDD_P51_PORT1:
         case    IDD_P51_PORT2:
@@ -515,11 +510,9 @@ BOOL    P051ChkRndPos(HWND hDlg, WPARAM wID)
 		case    IDD_P51_PORT15:
 		case    IDD_P51_PORT16:
 		//*********************************
-            if ((nRndPos < P51_DATA_MIN) || (nRndPos > P51_DATA_MAX))
-            {
+            fCheck = ((nRndPos < P51_DATA_MIN) || (nRndPos > P51_DATA_MAX));
+            break;
 
-                 fCheck = TRUE;
-            }
         default:
             break;
     }

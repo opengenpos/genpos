@@ -595,8 +595,9 @@ VOID    P10RedrawText(HWND hDlg, LPBYTE lpbData)
 
         /* ----- Set HALO Data to EditText ----- */
 		{
+            // see function RflHALO_OverRide() in terminal application source code.
 			UINT ulHALO = (UINT)*(lpbData + (BYTE)unCount);
-
+            // indicate if two leading digit is set or not.
 			SendDlgItemMessage(hDlg, IDD_P10_CHECK01 + unLoop, BM_SETCHECK, ((ulHALO & 0x80) ? BST_CHECKED : BST_UNCHECKED), 0L);
 			ulHALO &= 0x7f;
 			SetDlgItemInt(hDlg, IDD_P10_EDIT01 + unLoop, ulHALO, FALSE);

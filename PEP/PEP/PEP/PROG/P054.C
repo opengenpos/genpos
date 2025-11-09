@@ -87,6 +87,13 @@
 *       Program Mode Security Code (Program Mode # 54).
 * ===========================================================================
 */
+
+// remove P54 Charge Post/EPT Parameters as this is done through
+// P98 Tender Key Setup which has a control to do the EPT setup for
+// a tender key. The Hotel Charge Post interface is obsolete and a
+// holdover from the NCR 2170 days of NHPOS 1.x
+//     Richard Chambers, Nov-08-2025
+
 BOOL    WINAPI  P054DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
     static  PEPSPIN PepSpin;           /* SpinButton Configulation         */

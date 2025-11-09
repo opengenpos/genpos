@@ -1044,11 +1044,11 @@ LONG    WINAPI  PepWndProc(HWND hWnd, UINT wMsg, WPARAM wParam, LPARAM lParam)
         case    IDM_P49:        /* Automatic Alternative Remote Printer     */
         case    IDM_P50:        /* Assignment Terminal # Installing Shared Printer */
         case    IDM_P51:        /* Assignment IP Address for KDS    NCR2172 */
-        case    IDM_P54:        /* Set Hotel Id and SLd                     */
+//        case    IDM_P54:        /* Set Hotel Id and SLd                     */
         case    IDM_P57:        /* Header/Special Messages                  */
         case    IDM_P60:        /* Total Key Type / Function                */
 
-        case    IDM_P62:        /* Tender Key Parameter , V3.3              */
+//        case    IDM_P62:        /* Tender Key Parameter , V3.3              */
         case    IDM_P65:        /* Multi-Line Display Mnemonics , V3.3      */
         case	IDM_P67:		/* Auto Combinational Coupons				*/ //RLZ
         case	IDM_P72:		/* Reason Code mnemonics				*/ //RLZ
@@ -1918,8 +1918,13 @@ static  void    ExecuteProg(HWND hWnd, WORD wEditID)
         DoProgram(hWnd, P051DlgProc, IDD_P51, hPepInst);
         break;
 
-    case    IDM_P54:        /* Set Hotel Id and SLD */
-        DoProgram(hWnd, P054DlgProc, IDD_P54, hPepInst);
+		// remove P54 Charge Post/EPT Parameters as this is done through
+		// P98 Tender Key Setup which has a control to do the EPT setup for
+		// a tender key. The Hotel Charge Post interface is obsolete and a
+		// holdover from the NCR 2170 days of NHPOS 1.x
+		//     Richard Chambers, Nov-08-2025
+//    case    IDM_P54:        /* Set Hotel Id and SLD */
+//        DoProgram(hWnd, P054DlgProc, IDD_P54, hPepInst);
         break;
 
     case    IDM_P57:        /* Header/Special Messages */
@@ -1930,8 +1935,11 @@ static  void    ExecuteProg(HWND hWnd, WORD wEditID)
         DoProgram(hWnd, P060DlgProc, IDD_P60, hPepInst);
         break;
 
-    case    IDM_P62:        /* Tender Key Parameter , V3.3 */
-        DoProgram(hWnd, P062DlgProc, IDD_P62, hPepInst);
+	// remove P62 Tender Key parameter as this is done through
+	// P98 Tender Key Setup which has a control to do the same thing.
+	//     Richard Chambers, Nov-08-2025
+//    case    IDM_P62:        /* Tender Key Parameter , V3.3 */
+//        DoProgram(hWnd, P062DlgProc, IDD_P62, hPepInst);
         break;
 
     case    IDM_P65:        /* Multi-Line Display Mnemonics , V3.3 */
