@@ -112,9 +112,8 @@ BOOL    WINAPI  P015DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		if (b8presetsNot4) {
 			PepSpin.lMax       = P15_DATA_MAX_8;
 		} else {
-			int j;
 			PepSpin.lMax       = P15_DATA_MAX_4;
-			for (j = IDD_P15_05; j <= IDD_P15_08; j++) {
+			for (int j = IDD_P15_05; j <= IDD_P15_08; j++) {
 				EnableWindow(GetDlgItem(hDlg, j), FALSE);
 				EnableWindow(GetDlgItem(hDlg, j + P15_SPIN_OFFSET), FALSE);
 			}
@@ -178,28 +177,36 @@ BOOL    WINAPI  P015DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 */
 VOID    P15InitDlg(HWND hDlg)
 {
-	DWORD   dwData[MAX_PRESETAMOUNT_SIZE] = {0};
+    DWORD   dwData[MAX_PRESETAMOUNT_SIZE] = { 0 };
     WORD    wI, wID;
-	WORD    wMax = (b8presetsNot4) ? P15_ADDR_MAX : MAX_PRESETAMOUNT_SIZE;
+    WORD    wMax = (b8presetsNot4) ? P15_ADDR_MAX : MAX_PRESETAMOUNT_SIZE;
     USHORT  usReturnLen;
 
     /* ----- Read Initial Data from Parameter File ----- */
-    ParaAllRead(CLASS_PARAPRESETAMOUNT, (VOID *)dwData, P15_ADDR_LEN, 0, &usReturnLen);
+    ParaAllRead(CLASS_PARAPRESETAMOUNT, (VOID*)dwData, P15_ADDR_LEN, 0, &usReturnLen);
 
     for (wI = 0, wID = IDD_P15_01; wI < wMax; wI++, wID++) {
-		WCHAR    szWork[16];
-		DWORD    dwTranslatedData = dwData[wI % MAX_PRESETAMOUNT_SIZE];
+        WCHAR    szWork[16];
+        DWORD    dwTranslatedData = dwData[wI % MAX_PRESETAMOUNT_SIZE];
+        DWORD    dwDataLen = (b8presetsNot4) ? P15_DATA_LEN / 2 + 1 : P15_DATA_LEN;
 
-		if (b8presetsNot4) {
-			if (wI >= MAX_PRESETAMOUNT_SIZE) dwTranslatedData >>= 16;
-			dwTranslatedData &= 0x0000ffff;
-		}
+        if (b8presetsNot4) {
+            if (wI >= MAX_PRESETAMOUNT_SIZE) dwTranslatedData >>= 16;
+            dwTranslatedData &= 0x0000ffff;
+        }
 
         /* ----- Set Maximum Length of Input Data ----- */
         /* ----- Set Initial Data to Each EditText ----- */
-        SendDlgItemMessage(hDlg, wID, EM_LIMITTEXT, P15_DATA_LEN, 0L);
+        SendDlgItemMessage(hDlg, wID, EM_LIMITTEXT, dwDataLen, 0L);
         wsPepf(szWork, WIDE("%lu"), dwTranslatedData);
         DlgItemRedrawText(hDlg, wID, szWork);
+    }
+
+    if (b8presetsNot4) {
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_P15_RANGE2, IDD_P15_DATA_RANGE);
+    }
+    else {
+        DlgItemLoadStringRedrawText(hDlg, hResourceDll, IDS_P15_RANGE1, IDD_P15_DATA_RANGE);
     }
 }
 

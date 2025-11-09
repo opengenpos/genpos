@@ -155,7 +155,10 @@
 
 
 #define IDD_P50_TITLE	25290
-#define IDD_P50_CAPTION	25291
+#define IDD_P50_TITLE2	25291
+#define IDD_P50_TITLE3	25292
+#define IDD_P50_CAPTION	25293
+
 /*
 * ===========================================================================
 *       Strings ID

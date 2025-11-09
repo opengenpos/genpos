@@ -14365,6 +14365,8 @@ END
 STRINGTABLE DISCARDABLE
 BEGIN
     IDS_P15_OVER            "Ein Wert angeben für Daten zwischen 1 und 9.999.999."  //  "Specify a value for data between 1 and 9,999,999."
+    IDS_P15_RANGE1          "(Data Range : 0 - 9999999)"
+    IDS_P15_RANGE2          "(Data Range : 0 - 9999)"
 END
 
 STRINGTABLE DISCARDABLE

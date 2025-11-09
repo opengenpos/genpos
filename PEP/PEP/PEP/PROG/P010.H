@@ -88,6 +88,7 @@
 #define IDD_P10_DESC	    (IDD_P10_SCBAR + 2)
 #define IDD_P10_HALO	    (IDD_P10_SCBAR + 3)
 #define IDD_P10_RANGE_HALO	(IDD_P10_SCBAR + 4)
+#define IDD_P10_HALO_CHECK  (IDD_P10_SCBAR + 5)
 
 /*
 * ===========================================================================
