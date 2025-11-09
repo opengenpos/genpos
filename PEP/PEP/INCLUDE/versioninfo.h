@@ -82,8 +82,8 @@
 //    END
 
 
-#define  ALL_M_VERSIONINFO   "2, 4, 0, 006\0"
-#define  ALL_N_VERSIONINFO   2,4,0,006
+#define  ALL_M_VERSIONINFO   "2, 4, 0, 007\0"
+#define  ALL_N_VERSIONINFO   2,4,0,007
 
 #define ALL_Q_COPYRIGHT     "Copyright (C) 2002-2025, Georgia Southern University\0"
 #define ALL_Q_TRADEMARKS    "\0"
@@ -95,14 +95,14 @@
 
 // following define used in FrameWork.rc for the GenPOS release displayed on the
 // initial startup progress dialog which appears when GenPOS first starts.
-#define  ALL_O_VERSIONINFO   "2.4.0.006"
+#define  ALL_O_VERSIONINFO   "2.4.0.007"
 
 // following define intended for PEP resource files for PEP file version number.
-#define  ALL_O_VERSIONINFO2  "v2.4.0.006"
+#define  ALL_O_VERSIONINFO2  "v2.4.0.007"
 
 // special defines for specific utilities and applications with an About box.
 
-#define  ALL_P_VERSIONINFO  "DeviceConfig Version 2.4.0.006"
+#define  ALL_P_VERSIONINFO  "DeviceConfig Version 2.4.0.007"
 
-#define  ALL_Q_VERSIONINFO  "Version\t2.4.0.006"
+#define  ALL_Q_VERSIONINFO  "Version\t2.4.0.007"
 
