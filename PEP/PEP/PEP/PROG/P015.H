@@ -69,6 +69,8 @@
 #define IDD_P15_CAPTION  	21531
 
 #define IDS_P15_OVER    (IDS_P15)
+#define IDS_P15_RANGE1  (IDS_P15_OVER + 1)
+#define IDS_P15_RANGE2  (IDS_P15_RANGE1 + 1)
 
 /*
 * ===========================================================================

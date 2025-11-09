@@ -115,14 +115,14 @@ VOID RflPutTranMnem (WCHAR *pszDest, USHORT usAddress)
 *===============================================================================
 */
 SHORT ParaAllRead( UCHAR uchClass,
-                            UCHAR FAR *puchRcvBuffer,
+                            UCHAR  *puchRcvBuffer,
                             USHORT usRcvBufLen,
                             USHORT usStartPointer,
-                            USHORT FAR *pusReturnLen )
+                            USHORT  *pusReturnLen )
 {
 
     USHORT usRamSize;
-    UCHAR FAR *puchSystemRam;
+    UCHAR  *puchSystemRam;
     USHORT usCopySize;
 
 
@@ -131,7 +131,7 @@ SHORT ParaAllRead( UCHAR uchClass,
     switch(uchClass) {
     case CLASS_PARAPLUNOMENU:
         usRamSize = sizeof(ParaPLUNoMenu);
-        puchSystemRam = ( UCHAR FAR *)ParaPLUNoMenu;   /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaPLUNoMenu;   /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARAROUNDTBL:
@@ -151,17 +151,17 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     case CLASS_PARACURRENCYTBL:
         usRamSize = sizeof(ParaCurrency);
-        puchSystemRam = ( UCHAR FAR *)ParaCurrency;    /* ULONG -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaCurrency;    /* ULONG -> UCHAR */
         break;
 
     case CLASS_PARAMENUPLUTBL:
         usRamSize = sizeof(ParaMenuPLU);
-        puchSystemRam = ( UCHAR FAR *)ParaMenuPLU;     /* MENUPLU -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaMenuPLU;     /* MENUPLU -> UCHAR */
         break;
 
     case CLASS_PARATAXRATETBL:
         usRamSize = sizeof(ParaTaxRate);
-        puchSystemRam = ( UCHAR FAR *)ParaTaxRate;     /* ULONG -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaTaxRate;     /* ULONG -> UCHAR */
         break;
 
     case CLASS_PARAMDC:
@@ -171,17 +171,17 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     case CLASS_PARAFSC:
         usRamSize = sizeof(ParaFSC);
-        puchSystemRam = ( UCHAR FAR *)ParaFSC;
+        puchSystemRam = ( UCHAR *)ParaFSC;
         break;
 
     case CLASS_PARASECURITYNO:
         usRamSize = sizeof(ParaSecurityNo);
-        puchSystemRam = ( UCHAR FAR *)&ParaSecurityNo;  /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)&ParaSecurityNo;  /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARASUPLEVEL:
         usRamSize = sizeof(ParaSupLevel);
-        puchSystemRam = ( UCHAR FAR *)ParaSupLevel;    /* SUPLEVEL -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaSupLevel;    /* SUPLEVEL -> UCHAR */
         break;
 
     case CLASS_PARAACTCODESEC:
@@ -196,7 +196,7 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     case CLASS_PARAHOURLYTIME:
         usRamSize = sizeof(ParaHourlyTime);
-        puchSystemRam = ( UCHAR FAR *)ParaHourlyTime;  /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaHourlyTime;  /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARASLIPFEEDCTL:
@@ -279,15 +279,14 @@ SHORT ParaAllRead( UCHAR uchClass,
 		break;
 
 
-
     case CLASS_PARAFLEXMEM:
         usRamSize = sizeof(ParaFlexMem);
-        puchSystemRam = ( UCHAR FAR *)ParaFlexMem; /* FLEXMEM -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaFlexMem; /* FLEXMEM -> UCHAR */
         break;
 
     case CLASS_PARASTOREGNO:
         usRamSize = sizeof(ParaStoRegNo);
-        puchSystemRam = ( UCHAR FAR *)ParaStoRegNo;    /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaStoRegNo;    /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARATTLKEYTYP:
@@ -307,12 +306,12 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     case CLASS_PARACASHABASSIGN:
         usRamSize = sizeof(ParaCashABAssign);
-        puchSystemRam = ( UCHAR FAR *)ParaCashABAssign;    /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaCashABAssign;    /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARASPCCO:
         usRamSize = sizeof(ParaSpcCo);
-        puchSystemRam = ( UCHAR FAR *)ParaSpcCo;           /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaSpcCo;           /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARAPCIF:
@@ -327,7 +326,7 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     case CLASS_PARATARE:
         usRamSize = sizeof(ParaTare);
-        puchSystemRam = ( UCHAR FAR *)ParaTare;            /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaTare;            /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARASHRPRT:
@@ -337,12 +336,12 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     case CLASS_PARAPRESETAMOUNT:
         usRamSize = sizeof(ParaPresetAmount);
-        puchSystemRam = ( UCHAR FAR *)ParaPresetAmount;    /* ULONG -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaPresetAmount;    /* ULONG -> UCHAR */
         break;
 
    case CLASS_PARAPIGRULE:                               /* A/C 130 */
         usRamSize = sizeof(ParaPigRule);
-        puchSystemRam = ( UCHAR FAR *)ParaPigRule;       /* ULONG -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaPigRule;       /* ULONG -> UCHAR */
         break;
 
     case CLASS_PARASOFTCHK:                             /* A/C 87 */
@@ -353,57 +352,57 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     case CLASS_PARAHOTELID:                             /* Prog# 54 */
         usRamSize = sizeof(Para_HotelId);
-        puchSystemRam = ( UCHAR FAR *)&Para_HotelId;
+        puchSystemRam = ( UCHAR *)&Para_HotelId;
         break;
 
     case CLASS_PARAOEPTBL:                             /* A/C 160 */
         usRamSize = sizeof(ParaOep);
-        puchSystemRam = ( UCHAR FAR *)&ParaOep;
+        puchSystemRam = ( UCHAR *)&ParaOep;
         break;
 
     case CLASS_PARAFXDRIVE:                             /* A/C 162 */
         usRamSize = sizeof(ParaFlexDrive);
-        puchSystemRam = ( UCHAR FAR *)&ParaFlexDrive;
+        puchSystemRam = ( UCHAR *)&ParaFlexDrive;
         break;
 
     case CLASS_PARASERVICETIME:                        /* A/C 133 */
         usRamSize = sizeof(ParaServiceTime);
-        puchSystemRam = ( UCHAR FAR *)&ParaServiceTime;
+        puchSystemRam = ( UCHAR *)&ParaServiceTime;
         break;
 
     case CLASS_PARALABORCOST:                          /* A/C 154 */
         usRamSize = sizeof(ParaLaborCost);
-        puchSystemRam = ( UCHAR FAR *)&ParaLaborCost;
+        puchSystemRam = ( UCHAR *)&ParaLaborCost;
         break;
 
     case CLASS_PARADISPPARA:
         usRamSize = sizeof(Para_DispPara);
-        puchSystemRam = ( UCHAR FAR *)Para_DispPara; /* DISPPARA -> UCHAR */
+        puchSystemRam = ( UCHAR *)Para_DispPara; /* DISPPARA -> UCHAR */
         break;
 
     case CLASS_PARAKDSIP:
         usRamSize = sizeof(Para_KdsIp);
-        puchSystemRam = ( UCHAR FAR *)Para_KdsIp; /* Prog 51, 2172 */
+        puchSystemRam = ( UCHAR *)Para_KdsIp; /* Prog 51, 2172 */
         break;
 
     case CLASS_PARARESTRICTION:
         usRamSize = sizeof(ParaRestriction);
-        puchSystemRam = ( UCHAR FAR *)ParaRestriction;     /* RESTRICT -> UCHAR, 2172 */
+        puchSystemRam = ( UCHAR *)ParaRestriction;     /* RESTRICT -> UCHAR, 2172 */
         break;
 
     case CLASS_PARABOUNDAGE:                             /* A/C 208, 2172 */
         usRamSize = sizeof(Para.auchParaBoundAge);
-        puchSystemRam = ( UCHAR FAR *)&Para.auchParaBoundAge;
+        puchSystemRam = ( UCHAR *)&Para.auchParaBoundAge;
         break;
 
     case CLASS_PARADEPTNOMENU:
         usRamSize = sizeof(ParaDeptNoMenu);
-        puchSystemRam = ( UCHAR FAR *)ParaDeptNoMenu;   /* USHORT -> UCHAR, 2172 */
+        puchSystemRam = ( UCHAR *)ParaDeptNoMenu;   /* USHORT -> UCHAR, 2172 */
         break;
 
     case CLASS_PARAMISCPARA:   /* ### ADD Saratoga (051900) */
         usRamSize = sizeof(ParaMiscPara);
-        puchSystemRam = ( UCHAR FAR *)ParaMiscPara;   /* Misc para 2172 */
+        puchSystemRam = ( UCHAR *)ParaMiscPara;   /* Misc para 2172 */
         break;
 
     case CLASS_PARASTOREFORWARD:
@@ -413,27 +412,27 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     case CLASS_PARATERMINALINFO:
         usRamSize = sizeof(ParaTerminalInformationPara);
-        puchSystemRam = ( UCHAR FAR *)ParaTerminalInformationPara;   /* Misc para 2172 */
+        puchSystemRam = ( UCHAR *)ParaTerminalInformationPara;   /* Misc para 2172 */
         break;
 
 	case CLASS_PARAAUTOCPN:
 		usRamSize = sizeof(ParaAutoCoupon);
-		puchSystemRam = (UCHAR FAR *)&ParaAutoCoupon; /* PARAAUTOCPN -> UCHAR */
+		puchSystemRam = (UCHAR *)&ParaAutoCoupon; /* PARAAUTOCPN -> UCHAR */
 		break;
 
 	case CLASS_PARACOLORPALETTE:	//CSMALL-colorpalette
 		usRamSize = sizeof(ParaColorPalette);
-		puchSystemRam = (UCHAR FAR *)&ParaColorPalette; // PARACOLORPALETTE -> UCHAR
+		puchSystemRam = (UCHAR *)&ParaColorPalette; // PARACOLORPALETTE -> UCHAR
 		break;
 
 	case CLASS_PARATTLKEYORDERDEC:
 		usRamSize = sizeof(ParaTtlKeyOrderDecType);
-		puchSystemRam = (UCHAR FAR *)&ParaTtlKeyOrderDecType;
+		puchSystemRam = (UCHAR *)&ParaTtlKeyOrderDecType;
 		break;
 
 	case CLASS_PARACASHABASSIGNJOB:
 		usRamSize = sizeof(ParaCashABAssignJob);
-		puchSystemRam = ( UCHAR FAR *)ParaCashABAssignJob;
+		puchSystemRam = ( UCHAR *)ParaCashABAssignJob;
 		break;
 
 	case CLASS_PARAREASONCODE:
@@ -449,19 +448,19 @@ SHORT ParaAllRead( UCHAR uchClass,
 
     /* check if offset is over ram size */
 
-    if ( usStartPointer > usRamSize ) {
+    if ( usStartPointer > usRamSize || puchSystemRam == NULL) {
         return(PARA_OFFOVER_RAMSIZE);             /* error - offset is over ram size */
     } else {
 
         /* check if received buffer is over ram size */
 
         if ( usRamSize - usStartPointer > usRcvBufLen ) {  /* received buffer is not over ram size */
-            memcpy( ( UCHAR FAR *)puchRcvBuffer, puchSystemRam + usStartPointer, usRcvBufLen );
+            memcpy( puchRcvBuffer, puchSystemRam + usStartPointer, usRcvBufLen );
             *pusReturnLen = usRcvBufLen;
             return(PARA_NOTOVER_RAMSIZE);
         } else {                         /* received buffer is over ram size */
             usCopySize = ( USHORT)(usRamSize - usStartPointer);
-            memcpy( ( UCHAR FAR *)puchRcvBuffer, puchSystemRam + usStartPointer, usCopySize );
+            memcpy( puchRcvBuffer, puchSystemRam + usStartPointer, usCopySize );
             *pusReturnLen = usCopySize;
             return(SUCCESS);
         }
@@ -493,14 +492,14 @@ SHORT ParaAllRead( UCHAR uchClass,
 *===============================================================================
 */
 SHORT ParaAllWrite( UCHAR uchClass,
-                             UCHAR FAR *puchWrtBuffer,
+                             UCHAR *puchWrtBuffer,
                              USHORT usWrtBufLen,
                              USHORT usStartPointer,
-                             USHORT FAR *pusReturnLen )
+                             USHORT *pusReturnLen )
 {
 
     USHORT usRamSize;
-    UCHAR FAR *puchSystemRam;
+    UCHAR  *puchSystemRam;
     USHORT  usCopySize;
 
 
@@ -509,7 +508,7 @@ SHORT ParaAllWrite( UCHAR uchClass,
     switch(uchClass) {
     case CLASS_PARAPLUNOMENU:
         usRamSize = sizeof(ParaPLUNoMenu);
-        puchSystemRam = ( UCHAR FAR *)ParaPLUNoMenu;   /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaPLUNoMenu;   /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARAROUNDTBL:
@@ -529,17 +528,17 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     case CLASS_PARACURRENCYTBL:
         usRamSize = sizeof(ParaCurrency);
-        puchSystemRam = ( UCHAR FAR *)ParaCurrency;    /* ULONG -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaCurrency;    /* ULONG -> UCHAR */
         break;
 
     case CLASS_PARAMENUPLUTBL:
         usRamSize = sizeof(ParaMenuPLU);
-        puchSystemRam = ( UCHAR FAR *)ParaMenuPLU;     /* MENUPLU -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaMenuPLU;     /* MENUPLU -> UCHAR */
         break;
 
     case CLASS_PARATAXRATETBL:
         usRamSize = sizeof(ParaTaxRate);
-        puchSystemRam = ( UCHAR FAR *)ParaTaxRate;     /* ULONG -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaTaxRate;     /* ULONG -> UCHAR */
         break;
 
     case CLASS_PARAMDC:
@@ -549,17 +548,17 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     case CLASS_PARAFSC:
         usRamSize = sizeof(ParaFSC);
-        puchSystemRam = ( UCHAR FAR *)ParaFSC;
+        puchSystemRam = ( UCHAR *)ParaFSC;
         break;
 
     case CLASS_PARASECURITYNO:
         usRamSize = sizeof(ParaSecurityNo);
-        puchSystemRam = ( UCHAR FAR *)&ParaSecurityNo;  /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)&ParaSecurityNo;  /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARASUPLEVEL:
         usRamSize = sizeof(ParaSupLevel);
-        puchSystemRam = ( UCHAR FAR *)ParaSupLevel;    /* SUPLEVEL -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaSupLevel;    /* SUPLEVEL -> UCHAR */
         break;
 
     case CLASS_PARAACTCODESEC:
@@ -574,7 +573,7 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     case CLASS_PARAHOURLYTIME:
         usRamSize = sizeof(ParaHourlyTime);
-        puchSystemRam = ( UCHAR FAR *)ParaHourlyTime;  /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaHourlyTime;  /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARASLIPFEEDCTL:
@@ -658,12 +657,12 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     case CLASS_PARAFLEXMEM:
         usRamSize = sizeof(ParaFlexMem);
-        puchSystemRam = ( UCHAR FAR *)ParaFlexMem; /* FLEXMEM -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaFlexMem; /* FLEXMEM -> UCHAR */
         break;
 
     case CLASS_PARASTOREGNO:
         usRamSize = sizeof(ParaStoRegNo);
-        puchSystemRam = ( UCHAR FAR *)ParaStoRegNo;    /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaStoRegNo;    /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARATTLKEYTYP:
@@ -683,12 +682,12 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     case CLASS_PARACASHABASSIGN:
         usRamSize = sizeof(ParaCashABAssign);
-        puchSystemRam = ( UCHAR FAR *)ParaCashABAssign;    /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaCashABAssign;    /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARASPCCO:
         usRamSize = sizeof(ParaSpcCo);
-        puchSystemRam = ( UCHAR FAR *)ParaSpcCo;           /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaSpcCo;           /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARAPCIF:
@@ -703,7 +702,7 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     case CLASS_PARATARE:
         usRamSize = sizeof(ParaTare);
-        puchSystemRam = ( UCHAR FAR *)ParaTare;            /* USHORT -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaTare;            /* USHORT -> UCHAR */
         break;
 
     case CLASS_PARASHRPRT:
@@ -713,12 +712,12 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     case CLASS_PARAPRESETAMOUNT:
         usRamSize = sizeof(ParaPresetAmount);
-        puchSystemRam = ( UCHAR FAR *)ParaPresetAmount;    /* ULONG -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaPresetAmount;    /* ULONG -> UCHAR */
         break;
 
     case CLASS_PARAPIGRULE:                               /* A/C 130 */
         usRamSize = sizeof(ParaPigRule);
-        puchSystemRam = ( UCHAR FAR *)ParaPigRule;      /* ULONG -> UCHAR */
+        puchSystemRam = ( UCHAR *)ParaPigRule;      /* ULONG -> UCHAR */
         break;
 
     case CLASS_PARASOFTCHK:                             /* A/C 87 */
@@ -729,57 +728,57 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     case CLASS_PARAHOTELID:                             /* Prog# 54 */
         usRamSize = sizeof(Para_HotelId);
-        puchSystemRam = ( UCHAR FAR *)&Para_HotelId;
+        puchSystemRam = ( UCHAR *)&Para_HotelId;
         break;
 
     case CLASS_PARAOEPTBL:                             /* A/C 160 */
         usRamSize = sizeof(ParaOep);
-        puchSystemRam = ( UCHAR FAR *)&ParaOep;
+        puchSystemRam = ( UCHAR *)&ParaOep;
         break;
 
     case CLASS_PARAFXDRIVE:                             /* A/C 162 */
         usRamSize = sizeof(ParaFlexDrive);
-        puchSystemRam = ( UCHAR FAR *)&ParaFlexDrive;
+        puchSystemRam = ( UCHAR *)&ParaFlexDrive;
         break;
 
     case CLASS_PARASERVICETIME:                         /* A/C 133 */
         usRamSize = sizeof(ParaServiceTime);
-        puchSystemRam = ( UCHAR FAR *)&ParaServiceTime;
+        puchSystemRam = ( UCHAR *)&ParaServiceTime;
         break;
 
     case CLASS_PARALABORCOST:                           /* A/C 154 */
         usRamSize = sizeof(ParaLaborCost);
-        puchSystemRam = ( UCHAR FAR *)&ParaLaborCost;
+        puchSystemRam = ( UCHAR *)&ParaLaborCost;
         break;
 
     case CLASS_PARADISPPARA:
         usRamSize = sizeof(Para_DispPara);
-        puchSystemRam = ( UCHAR FAR *)Para_DispPara; /* DISPPARA -> UCHAR */
+        puchSystemRam = ( UCHAR *)Para_DispPara; /* DISPPARA -> UCHAR */
         break;
 
     case CLASS_PARAKDSIP:
         usRamSize = sizeof(Para_KdsIp);
-        puchSystemRam = ( UCHAR FAR *)Para_KdsIp; /* Prog 51, 2172 */
+        puchSystemRam = ( UCHAR *)Para_KdsIp; /* Prog 51, 2172 */
         break;
 
     case CLASS_PARARESTRICTION:
         usRamSize = sizeof(ParaRestriction);
-        puchSystemRam = ( UCHAR FAR *)ParaRestriction;     /* RESTRICT -> UCHAR, 2172 */
+        puchSystemRam = ( UCHAR *)ParaRestriction;     /* RESTRICT -> UCHAR, 2172 */
         break;
 
     case CLASS_PARABOUNDAGE:                             /* A/C 208, 2172 */
         usRamSize = sizeof(Para.auchParaBoundAge);
-        puchSystemRam = ( UCHAR FAR *)&Para.auchParaBoundAge;
+        puchSystemRam = ( UCHAR *)&Para.auchParaBoundAge;
         break;
 
     case CLASS_PARADEPTNOMENU:
         usRamSize = sizeof(ParaDeptNoMenu);
-        puchSystemRam = ( UCHAR FAR *)ParaDeptNoMenu;   /* USHORT -> UCHAR, 2172 */
+        puchSystemRam = ( UCHAR *)ParaDeptNoMenu;   /* USHORT -> UCHAR, 2172 */
         break;
 
     case CLASS_PARAMISCPARA:   /* ### ADD Saratoga (051900) */
         usRamSize = sizeof(ParaMiscPara);
-        puchSystemRam = ( UCHAR FAR *)ParaMiscPara;   /* Misc para 2172 */
+        puchSystemRam = ( UCHAR *)ParaMiscPara;   /* Misc para 2172 */
         break;
 
     case CLASS_PARASTOREFORWARD:
@@ -789,27 +788,27 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
      case CLASS_PARATERMINALINFO:
         usRamSize = sizeof(ParaTerminalInformationPara);
-        puchSystemRam = ( UCHAR FAR *)ParaTerminalInformationPara;   /* Misc para 2172 */
+        puchSystemRam = ( UCHAR *)ParaTerminalInformationPara;   /* Misc para 2172 */
         break;
 
 	case CLASS_PARAAUTOCPN:
 		usRamSize = sizeof(ParaAutoCoupon);
-		puchSystemRam = (UCHAR FAR *)&ParaAutoCoupon; /* PARAAUTOCPN -> UCHAR */
+		puchSystemRam = (UCHAR *)&ParaAutoCoupon; /* PARAAUTOCPN -> UCHAR */
 		break;
 
 	case CLASS_PARACOLORPALETTE:  //CSMALL-colorpalette
 		usRamSize = sizeof(ParaColorPalette);
-		puchSystemRam = (UCHAR FAR *)&ParaColorPalette; // PARACOLORPALETTE -> UCHAR 
+		puchSystemRam = (UCHAR *)&ParaColorPalette; // PARACOLORPALETTE -> UCHAR 
 		break;
 
 	case CLASS_PARATTLKEYORDERDEC:
 		usRamSize = sizeof(ParaTtlKeyOrderDecType);
-		puchSystemRam = (UCHAR FAR *)&ParaTtlKeyOrderDecType;
+		puchSystemRam = (UCHAR *)&ParaTtlKeyOrderDecType;
 		break;
 
 	case CLASS_PARACASHABASSIGNJOB:
 		usRamSize = sizeof(ParaCashABAssignJob);
-		puchSystemRam = (UCHAR FAR *)&ParaCashABAssignJob;
+		puchSystemRam = (UCHAR *)&ParaCashABAssignJob;
 		break;
 
 	case CLASS_PARAREASONCODE:
@@ -825,18 +824,18 @@ SHORT ParaAllWrite( UCHAR uchClass,
 
     /* check if offset is over ram size */
 
-    if ( usStartPointer > usRamSize ) {
+    if ( usStartPointer > usRamSize || puchSystemRam == NULL) {
         return(PARA_OFFOVER_RAMSIZE);             /* error - offset is over ram size */
     } else {
 
         /* check if write buffer is over ram size */
 
         if ( usRamSize - usStartPointer > usWrtBufLen ) {  /* write buffer is not over ram size */
-            memcpy( puchSystemRam + usStartPointer, ( UCHAR FAR *)puchWrtBuffer, usWrtBufLen );
+            memcpy( puchSystemRam + usStartPointer, puchWrtBuffer, usWrtBufLen );
             *pusReturnLen = usWrtBufLen;
         } else {                         /* write buffer is over ram size */
             usCopySize = ( USHORT)(usRamSize - usStartPointer);
-            memcpy( puchSystemRam + usStartPointer, ( UCHAR FAR *)puchWrtBuffer, usCopySize );
+            memcpy( puchSystemRam + usStartPointer, puchWrtBuffer, usCopySize );
             *pusReturnLen = usCopySize;
         }
     }
@@ -846,27 +845,24 @@ SHORT ParaAllWrite( UCHAR uchClass,
 	switch (uchClass) {
 		case CLASS_PARAHOTELID :
 			{
-				int j;
-				for (j = 0; j < 11; j++) {
+				for (int j = 0; j < 11; j++) {
 					ParaTenderKeyInformation[j].auchEptTend = Para_HotelId.auchTend[j];
 				}
 			}
 		break;
 		case CLASS_PARATEND:
 			{
-				int j;
-				for (j = 0; j < MAX_TEND_NO; j++) {
+				for (int j = 0; j < MAX_TEND_NO; j++) {
 					ParaTenderKeyInformation[j].uchTend = ParaTend[j];
 				}
 			}
 			break;
 		case CLASS_TENDERKEY_INFO:
 			{
-				int j;
-				for (j = 0; j < MAX_TEND_NO; j++) {
+				for (int j = 0; j < MAX_TEND_NO; j++) {
 					ParaTend[j] = ParaTenderKeyInformation[j].uchTend;
 				}
-				for (j = 0; j < 11; j++) {
+				for (int j = 0; j < 11; j++) {
 					Para_HotelId.auchTend[j] = ParaTenderKeyInformation[j].auchEptTend;
 				}
 			}

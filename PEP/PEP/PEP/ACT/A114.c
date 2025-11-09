@@ -84,6 +84,7 @@ static  UINT         unCurDept;     /* Current Max. No. of Department Records   
 
 static  HWND  hWndModeLess = NULL;
 
+static WCHAR  lpMnemonic[MAX_MDEPT_NO][PARA_MAJORDEPT_LEN] = { 0 };
 
 /*
 * ===========================================================================
@@ -1751,6 +1752,10 @@ VOID    A114InitDlg(HWND hDlg)
     short   nRet= OP_PERFORM;
     UINT    unCur = 0;
     WCHAR   szWork[64], szDesc[64];
+    USHORT  usRet = 0;
+
+    /* ----- Load Initial Data from Parameter File ----- */
+    ParaAllRead(CLASS_PARAMAJORDEPT, (UCHAR*)lpMnemonic, sizeof(lpMnemonic), 0, &usRet);
 
     /* ----- LOAD Dept File Name from Resorce ----- */
     LoadString(hResourceDll, IDS_FILE_NAME_DEPT, szFile, PEP_STRING_LEN_MAC(szFile));
@@ -1802,7 +1807,7 @@ VOID    A114InitDlg(HWND hDlg)
             /* ----- Load "None" Description ----- */
             LoadString(hResourceDll, IDS_A114_NONE, szDesc, PEP_STRING_LEN_MAC(szDesc));
         } else {
-            wsPepf(szDesc, WIDE("%u"), wI);
+            wsPepf(szDesc, WIDE("%u - %-.20s"), wI, lpMnemonic[wI - 1]);
         }
 
         DlgItemSendTextMessage(hDlg, IDD_A114MAJOR, CB_INSERTSTRING, (WPARAM)-1, (LPARAM)(szDesc));

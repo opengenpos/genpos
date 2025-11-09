@@ -708,8 +708,9 @@ VOID    SstResetIndTransNo(UCHAR uchUniqueAddr)
 *       InOut:  Nothing
 *
 **  Return   :
-*           Normal End: SERV_SUCCESS
-*           Error End:  SERV_ILLEGAL                                                       
+*           Server State: LDT_PROHBT_ADR
+*           Normal End: SUCCESS
+*           Error End:  TRN_ERROR                                                       
 **  Description:
 *           Create GCF/Total temporary file.
 *==========================================================================
@@ -735,9 +736,14 @@ SHORT   SerCreateTmpFile( USHORT usSize )
 
     ulFileSize = TrnCalStoSize(usSize, FLEX_CONSSTORAGE_ADR) + 1024L;
 
+    if (hsSerTmpFile >= 0) {
+        // Server temp file is open.
+        // Close the file to allow us to change it.
+        PifCloseFile(hsSerTmpFile);
+        hsSerTmpFile = -1;
+    }
     hsFileHandle = PifOpenFile(aszSerTmpFileName, auchTEMP_NEW_FILE_READ_WRITE);    /* saratoga */
     if (hsFileHandle == PIF_ERROR_FILE_EXIST) {
-        PifCloseFile(hsFileHandle);
         PifDeleteFile(aszSerTmpFileName);
         hsFileHandle = PifOpenFile(aszSerTmpFileName, auchTEMP_NEW_FILE_READ_WRITE);    /* saratoga */
     }

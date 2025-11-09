@@ -5,10 +5,6 @@
 * Program Name  :   P067.C
 * Copyright (C) :   1993, NCR Corp. E&M-OISO, All rights reserved.
 * ---------------------------------------------------------------------------
-* Compiler      :   MS-C Ver. 7.00 by Microsoft Corp.
-* Memory Model  :   Large Model
-* Options       :   /AL /W4 /G2 /GEf /GA /Zp /f- /Os /Og /Oe /Gs
-* ---------------------------------------------------------------------------
 * Abstract :
 *
 * ---------------------------------------------------------------------------
@@ -96,18 +92,13 @@ BOOL    WINAPI  P067DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
     switch (wMsg) {
 
     case WM_INITDIALOG:
-
 		SendMessage(hDlg, WM_SETFONT, (WPARAM)hResourceFont, MAKELPARAM(TRUE, 0));
-
         P67InitDlg(hDlg, (LPBYTE)abData);
-
         return TRUE;
 
 	case WM_SETFONT:
-
 		if (hResourceFont) {
-			int j;
-			for(j=IDD_P67_01; j<=IDD_P67_ADDRESS6_RNG; j++)
+			for(int j = IDD_P67_01; j <= IDD_P67_ADDRESS6_RNG; j++)
 			{
 				SendDlgItemMessage(hDlg, j, WM_SETFONT, (WPARAM)hResourceFont, 0);
 			}
@@ -117,15 +108,11 @@ BOOL    WINAPI  P067DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		return FALSE;
 
     case WM_VSCROLL:
-
         P67SpinProc(hDlg, wParam, lParam);
-
         return FALSE;
         
     case WM_COMMAND:
-
         switch (LOWORD(wParam)) {
-
         case IDD_P67_01:
         case IDD_P67_02:
 		//case IDD_P67_03:
@@ -136,29 +123,24 @@ BOOL    WINAPI  P067DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		//case IDD_P67_08:
 
             if (HIWORD(wParam) == EN_CHANGE) {
-
                 /* ----- Get Inputed Data from EditText ----- */
                 unValue = GetDlgItemInt(hDlg, LOWORD(wParam), NULL, FALSE);
-
-                /* ---- Set Maximum Value ----- */
-
-                if (LOWORD(wParam) == IDD_P67_01) {
-
+                /* ----- Check Inputed Data with Max. Value ----- */
+                switch (LOWORD(wParam)) {
+                case IDD_P67_01:
                     unMax = P67_DATA1_MAX;
                     unMin = P67_DATA_MIN;
-
-                }else if(LOWORD(wParam) == IDD_P67_02) {
-
+                    if (unValue > unMax) {
+                        P67DispErr(hDlg, wParam, unMin, unMax);
+                    }
+                    break;
+                case IDD_P67_02:
 					unMax = P67_DATA2_MAX;
                     unMin = P67_DATA_MIN;
-
-				}
-
-                /* ----- Check Inputed Data with Max. Value ----- */
-
-                if (unValue > unMax) {
-
-                    P67DispErr(hDlg, wParam, unMin, unMax);
+                    if (unValue > unMax) {
+                        P67DispErr(hDlg, wParam, unMin, unMax);
+                    }
+                    break;
                 }
                 return TRUE;
             }
@@ -166,19 +148,13 @@ BOOL    WINAPI  P067DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 
         case IDOK:
         case IDCANCEL:
-
             if (HIWORD(wParam) == BN_CLICKED) {
-
                 if (LOWORD(wParam) == IDOK) {
-
                     if (P67SaveData(hDlg)) {
-
                         return TRUE;
                     }
                 }
-
                 EndDialog(hDlg, FALSE);
-
                 return TRUE;
             }
         }
@@ -205,32 +181,23 @@ BOOL    WINAPI  P067DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 */
 VOID    P67InitDlg(HWND hDlg, LPBYTE lpbData)
 {
-    WORD    wEditID,
-            wLength;
+    WORD    wEditID, wLength;
     USHORT  usReturnLen;
 	ULONG	ulRecvFrom;
 
     /* ----- Read Initial Data from Parameter File ----- */
-
-    ParaAllRead(CLASS_PARAAUTOCPN,
-                (UCHAR *)lpbData,
-                P67_ADDR_MAX,
-                0, &usReturnLen);
-
+    ParaAllRead(CLASS_PARAAUTOCPN, (UCHAR *)lpbData, P67_ADDR_MAX, 0, &usReturnLen);
 
 	for (wEditID = IDD_P67_01; wEditID <= IDD_P67_06; wEditID++, lpbData+=4) {
 
 		/*Remove check below, the Address was reserved, but now is being used
         /* ----- Deterine Whether the Address is Reserved or Not ----- */
-
-
 		memcpy(&ulRecvFrom, (ULONG *)lpbData, sizeof(lpbData));
-        wLength = (WORD)((wEditID == IDD_P67_01) ? P67_DATA1_LEN : P67_DATA_LEN);
+        wLength = ((wEditID == IDD_P67_01) ? P67_DATA1_LEN : P67_DATA_LEN);
 
         SendDlgItemMessage(hDlg, wEditID, EM_LIMITTEXT, wLength, 0L);
 		
         /* ----- Set Initial Data to EditText ----- */
-	
         SetDlgItemInt(hDlg, wEditID, (UINT)(ulRecvFrom), FALSE);
     }
 
@@ -262,23 +229,15 @@ VOID    P67DispErr(HWND hDlg, WPARAM wParam, UINT unMin, UINT unMax)
             szCaption[PEP_CAPTION_LEN];     /* MessageBox Caption       */
 
     /* ----- Load Strings from Resource ----- */   
-
     LoadString(hResourceDll, IDS_PEP_CAPTION_P67, szCaption, PEP_STRING_LEN_MAC(szCaption));
-
     LoadString(hResourceDll, IDS_PEP_OVERRANGE, szWork, PEP_STRING_LEN_MAC(szWork));
-
     wsPepf(szMessage, szWork, unMin, unMax);
 
     /* ----- Display Error Message by MessageBox ----- */
-
     MessageBeep(MB_ICONEXCLAMATION);
-    MessageBoxPopUp(hDlg,
-               szMessage,
-               szCaption,
-               MB_OK | MB_ICONEXCLAMATION);
+    MessageBoxPopUp(hDlg, szMessage, szCaption, MB_OK | MB_ICONEXCLAMATION);
 
     /* ----- Set Focus to Error EditText ----- */
-
     SetFocus(GetDlgItem(hDlg, LOWORD(wParam)));
     SendDlgItemMessage(hDlg, LOWORD(wParam), EM_SETSEL, 1, MAKELONG(0, -1));
 }

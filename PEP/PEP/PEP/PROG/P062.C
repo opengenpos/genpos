@@ -86,6 +86,11 @@
 *           Tender Key Parameter (Program Mode #62)
 * ===========================================================================
 */
+
+// remove P62 Tender Key parameter as this is done through
+// P98 Tender Key Setup which has a control to do the same thing.
+//     Richard Chambers, Nov-08-2025
+
 BOOL    WINAPI  P062DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 {
     UINT    unValue;        /* Inputed Data Value */
