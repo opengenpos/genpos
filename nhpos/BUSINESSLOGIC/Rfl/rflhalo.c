@@ -114,6 +114,19 @@ SHORT  RflHALO_OverRide(DCURRENCY *plAmount, CHAR chHALO, USHORT usMdc, UCHAR uc
 	}
 
     /* -- get HALO amount -- */
+	//   Example 1:   chHALO = 48 or 0x2b
+	//   This indicates 4 leading digits beginning with the digit 8
+	//   Result:  8000
+	//
+	//   Example 2:  chHALO = 171 or 0xab
+	//   This indicates the HALO specifies two leading digits (0x80 set).
+	//   so we mask out the leading indicator to have:
+	//     - leading indicator == 0x80
+	//     - HALO start is 48 or 0x2b
+	//   This indicates 4 leading digits beginning with two digits 8 and 5.
+	//   We take the leading digit specified, 8 in this case, and multiply it by 10
+	//   and add five, to create a value halfway between 8000 and 9000.
+	//   Result:  8500
 	chHALO &= 0x7f;                   // remove the two leading digit indicator if set
     usQuot =  (USHORT)(chHALO / 10);
 	if (usLeadingIndic && usQuot > 1) usQuot--;
