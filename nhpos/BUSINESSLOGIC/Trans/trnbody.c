@@ -3006,6 +3006,8 @@ STRNRSLT TrnExpandFile( PifFileHandle hsFileHandle, ULONG ulInquirySize )
     STRNRSLT     sReturn;
 	TrnFileSize  usInquirySize = ulInquirySize;
 
+    if (hsFileHandle < 0) return TRN_ERROR;
+
     // WARNING: over the years file sizes have increased especially the transaction file size
     //          and the Guest Check file size. The data files used contain a maximum file size
     //          specified in the first few bytes of the file. As of this date, Jan-21-2025, this
