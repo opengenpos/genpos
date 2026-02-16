@@ -186,10 +186,11 @@ typedef signed short   SPIFRSLT;      // result variable containing PIF handle o
 
 #define PIF_ERROR_SYSTEM                (-1)
 
-#define PIF_ERROR_FILE_EXIST            (-5)
+#define PIF_ERROR_FILE_EXIST            (-5)       // GetLastError() = ERROR_FILE_EXISTS
 #define PIF_ERROR_FILE_EOF              (-6)
 #define PIF_ERROR_FILE_DISK_FULL        (-7)
-#define PIF_ERROR_FILE_NOT_FOUND        (-8)
+#define PIF_ERROR_FILE_NOT_FOUND        (-8)       // GetLastError() = ERROR_FILE_NOT_FOUND
+#define PIF_ERROR_FILE_ACESS_DENIED     (-10)      // GetLastError() = ERROR_SHARING_VIOLATION or ERROR_LOCK_VIOLATION
 
 #define PIF_ERROR_COM_POWER_FAILURE     (-2)
 #define PIF_ERROR_COM_TIMEOUT           (-3)
