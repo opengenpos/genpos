@@ -233,6 +233,17 @@ SHORT  PIFENTRY PifOpenFileNew(CONST TCHAR *pszFileName,
 {
     SHORT   sFile = 0;
 
+    NHPOS_ASSERT(pszFileName);
+    if (!pszFileName) {
+        char    aszErrorBuffer[256];
+        int  iLen = 0;
+
+        iLen = strlen(pcFilePath); if (iLen < 30) iLen = 0; else iLen -= 30;
+        sprintf(aszErrorBuffer, "**ERROR: NULL filename    File: %S Source File: %s,  Line No: %d", pszFileName, pcFilePath + iLen, iLineNo);
+        NHPOS_ASSERT_TEXT(0, aszErrorBuffer);
+        return PIF_ERROR_FILE_NOT_FOUND;
+    }
+
     EnterCriticalSection(&g_FileCriticalSection);
 
 	{
