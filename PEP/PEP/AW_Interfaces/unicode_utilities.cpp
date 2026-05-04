@@ -187,6 +187,26 @@ static LRESULT CALLBACK myEditBoxProc (HWND hWnd, UINT msg, WPARAM wParam, LPARA
 	return myEditBoxProcMem (&mem, msg, wParam, lParam);
 }
 
+int DlgItemMouseHover(UINT msgId, WPARAM wParam, LPARAM lParam, PEPMHOVER *mHover)
+{
+	switch (msgId) {
+	case WM_MOUSEMOVE:
+		if (!mHover->mbHover) {
+			mHover->mbHover = TRUE;
+			TRACKMOUSEEVENT tme = { sizeof(tme), TME_LEAVE, mHover->hWnd, 0 };
+			::TrackMouseEvent(&tme);
+			::InvalidateRect(mHover->hWnd, NULL, FALSE); // Trigger repaint to show glow
+		}
+		return 0;
+
+	case WM_MOUSELEAVE:
+		mHover->mbHover = FALSE;
+		InvalidateRect(mHover->hWnd, NULL, FALSE); // Trigger repaint to remove glow
+		return 0;
+	}
+
+	return 1;
+}
 
 EDITBOXPROC * EditBoxProcFactory (EDITBOXPROC *mem, HWND hdlg, WORD wID)
 {
@@ -197,7 +217,149 @@ EDITBOXPROC * EditBoxProcFactory (EDITBOXPROC *mem, HWND hdlg, WORD wID)
 	return mem;
 }
 
+static COLORREF DlgItemFaceColor = RGB(160, 205, 225);
+static COLORREF DlgItemCenterColor = RGB(250, 250, 250);   // White glow center
 
+static COLORREF DlgItemDarkenColor(COLORREF cr)
+{
+	//  ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
+	DWORD dwRed = cr & 0xff;
+	DWORD dwGreen = cr & 0xff00;
+	DWORD dwBlue = cr & 0xff0000;
+
+	DWORD dwDarkAmt = 20;
+
+	dwRed = (dwRed > dwDarkAmt) ? dwRed - dwDarkAmt : 0;
+	dwDarkAmt <<= 8;
+	dwGreen = (dwGreen > dwDarkAmt) ? dwGreen - dwDarkAmt : 0;
+	dwDarkAmt <<= 8;
+	dwBlue = (dwBlue > dwDarkAmt) ? dwBlue - dwDarkAmt : 0;
+
+	return (dwRed | dwGreen | dwBlue);
+}
+
+static int DlgItemOwnerDrawButtonGlow (HDC hdc, RECT rc, COLORREF crFace)
+{
+	// Define center and outer colors
+	// Note: GDI TRIVERTEX uses 16-bit color values (0x0000 - 0xff00)
+
+	TRIVERTEX vert[5];
+
+	// 0: Center Point
+	vert[0].x = (rc.left + rc.right) / 2;
+	vert[0].y = (rc.top + rc.bottom) / 2;
+	vert[0].Red = GetRValue(DlgItemCenterColor) << 8;
+	vert[0].Green = GetGValue(DlgItemCenterColor) << 8;
+	vert[0].Blue = GetBValue(DlgItemCenterColor) << 8;
+	vert[0].Alpha = 0x0000; // GradientFill ignores Alpha
+
+	// 1-4: Corner Points (set to edgeColor)
+	COLORREF corners[] = { crFace, crFace, crFace, crFace };
+	int xCoords[] = { rc.left, rc.right, rc.right, rc.left };
+	int yCoords[] = { rc.top, rc.top, rc.bottom, rc.bottom };
+
+	for (int i = 0; i < 4; i++) {
+		vert[i + 1].x = xCoords[i];
+		vert[i + 1].y = yCoords[i];
+		vert[i + 1].Red = GetRValue(corners[i]) << 8;
+		vert[i + 1].Green = GetGValue(corners[i]) << 8;
+		vert[i + 1].Blue = GetBValue(corners[i]) << 8;
+		vert[i + 1].Alpha = 0x0000;
+	}
+
+	// Define 4 triangles connecting the center to the edges
+	GRADIENT_TRIANGLE gTri[4];
+	for (int i = 0; i < 4; i++) {
+		gTri[i].Vertex1 = 0;             // Center
+		gTri[i].Vertex2 = i + 1;         // Current Corner
+		gTri[i].Vertex3 = (i == 3) ? 1 : i + 2; // Next Corner
+	}
+
+	// Draw the glow
+	::GradientFill(hdc, vert, 5, gTri, 4, GRADIENT_FILL_TRIANGLE);
+
+	return 0;
+}
+
+int DlgItemOwnerDrawButton (WPARAM wParam, LPARAM lParam, PEPMHOVER *mHover)
+{
+	LPDRAWITEMSTRUCT pDIS = (LPDRAWITEMSTRUCT)lParam;
+
+	// If this is not a button control then return without doing anything.
+	if (pDIS->CtlType != ODT_BUTTON) return FALSE;
+
+	// Set up the various parameters needed for drawing
+	// the button.
+	HDC hdc = pDIS->hDC;
+	HWND  hWnd = pDIS->hwndItem;
+	RECT rc = pDIS->rcItem;
+	UINT state = pDIS->itemState;
+
+	// Change color when pressed
+	//  consider DrawFrameControl(hdc, &rc, DFC_BUTTON, DFCS_BUTTONPUSH | DFCS_INACTIVE);
+	if (state & ODS_DISABLED)
+	{
+		// Button is disabled
+		HBRUSH hBrush = CreateSolidBrush(RGB(210, 210, 210));
+		FillRect(hdc, &rc, hBrush);
+		DeleteObject(hBrush);
+		FrameRect(hdc, &rc, (HBRUSH)GetStockObject(LTGRAY_BRUSH));
+	}
+	else {
+		if (state & ODS_DEFAULT) {
+			FrameRect(hdc, &rc, (HBRUSH)GetStockObject(BLACK_BRUSH));
+			InflateRect(&rc, -1, -1);
+		}
+
+		if (state & ODS_SELECTED)
+		{
+	#if 1
+			DlgItemOwnerDrawButtonGlow(hdc, rc, DlgItemFaceColor);
+	#else
+			// Button is pressed: draw a darker background
+			HBRUSH hBrush = CreateSolidBrush(DlgItemDarkenColor(DlgItemFaceColor));
+			FillRect(hdc, &rc, hBrush);
+			DeleteObject(hBrush);
+	#endif
+		}
+		else
+		{
+	#if 0
+			DlgItemOwnerDrawButtonGlow(hdc, rc, DlgItemFaceColor);
+	#else
+			// Button is not pressed: draw a lighter background
+			HBRUSH hBrush = CreateSolidBrush(DlgItemFaceColor);
+			FillRect(hdc, &rc, hBrush);
+			DeleteObject(hBrush);
+			FrameRect(hdc, &rc, (HBRUSH)GetStockObject(BLACK_BRUSH));
+	#endif
+		}
+	}
+
+	// Draw the button text
+	SetBkMode(hdc, TRANSPARENT);
+	wchar_t  buttonText[128] = { 0 };
+	GetWindowText(hWnd, buttonText, -1);
+	COLORREF saveCR = RGB(0, 0, 0);
+	if (state & ODS_DISABLED) {
+		saveCR = SetTextColor(hdc, GetSysColor(COLOR_GRAYTEXT));
+	}
+	else {
+		saveCR = SetTextColor(hdc, GetSysColor(COLOR_BTNTEXT));
+	}
+	DrawText(hdc, buttonText, -1, &rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+	// Draw the focus rectangle if the button has focus
+	if (state & ODS_FOCUS)
+	{
+		InflateRect(&rc, -4, -4);
+		DrawFocusRect(hdc, &rc);
+	}
+
+	SetTextColor(hdc, saveCR);    // restore the original color
+
+	return TRUE; // Handled the message
+}
 
 
 UINT DlgItemGetText (HWND hdlg, int wID, LPWSTR szString, int nMax)

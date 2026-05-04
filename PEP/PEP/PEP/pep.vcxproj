@@ -83,7 +83,7 @@
       <AdditionalIncludeDirectories>./INCLUDE;../INCLUDE;../../INCLUDE;../../../INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cascas.lib;etk.lib;opepara.lib;para.lib;plu.lib;Plu_gp.lib;progrpt.lib;rfl.lib;pepprn.lib;prog32.lib;pepcomm.lib;pepact32.lib;report.lib;file.lib;trans.lib;AW_Interfaces.lib;NCR2172Pif_20.lib;NCR2172Stub_20.lib;Imm32.lib;odbc32.lib;odbccp32.lib;PEPControl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cascas.lib;etk.lib;opepara.lib;para.lib;plu.lib;Plu_gp.lib;progrpt.lib;rfl.lib;pepprn.lib;prog32.lib;pepcomm.lib;pepact32.lib;report.lib;file.lib;trans.lib;AW_Interfaces.lib;NCR2172Pif_20.lib;NCR2172Stub_20.lib;Imm32.lib;odbc32.lib;odbccp32.lib;Msimg32.lib;PEPControl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>.\Lib\Release;..\..\Lib\Release;..\Lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateMapFile>true</GenerateMapFile>
@@ -128,7 +128,7 @@
       <AdditionalIncludeDirectories>.\INCLUDE;..\INCLUDE;..\..\INCLUDE;..\..\..\INCLUDE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cascas.lib;etk.lib;opepara.lib;para.lib;plu.lib;Plu_gp.lib;progrpt.lib;rfl.lib;pepprn.lib;prog32.lib;pepcomm.lib;pepact32.lib;report.lib;file.lib;trans.lib;AW_Interfaces.lib;NCR2172Pif_20.lib;NCR2172Stub_20.lib;Imm32.lib;odbc32.lib;odbccp32.lib;layout.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cascas.lib;etk.lib;opepara.lib;para.lib;plu.lib;Plu_gp.lib;progrpt.lib;rfl.lib;pepprn.lib;prog32.lib;pepcomm.lib;pepact32.lib;report.lib;file.lib;trans.lib;AW_Interfaces.lib;NCR2172Pif_20.lib;NCR2172Stub_20.lib;Imm32.lib;odbc32.lib;odbccp32.lib;Msimg32.lib;layout.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>.\Lib\Debug;..\..\Lib\Debug;..\Lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

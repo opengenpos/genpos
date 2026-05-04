@@ -172,6 +172,10 @@ BOOL    WINAPI  A007DlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lParam)
 		}
 		return FALSE;
 
+    case WM_DRAWITEM:
+        DlgItemOwnerDrawButton(wParam, lParam, NULL);
+        return FALSE;
+
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDOK:

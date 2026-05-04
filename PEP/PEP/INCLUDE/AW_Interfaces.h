@@ -30,6 +30,11 @@ typedef struct tagEditBoxProc {
 	WNDPROC  myEditBoxProc;
 } EDITBOXPROC, *PEDITBOXPROC;
 
+typedef struct tagPEPMHOVER {
+	HWND     hWnd;          // window of current mouse hover
+	BOOL     mbHover;       // indicates if hover (TRUE) or not (FALSE)
+} PEPMHOVER;
+
 LRESULT CALLBACK myEditBoxProcMem (EDITBOXPROC *mem, UINT msg, WPARAM wParam, LPARAM lParam);
 EDITBOXPROC *EditBoxProcFactory (EDITBOXPROC *mem, HWND hdlg, WORD wID);
 
@@ -54,6 +59,8 @@ LRESULT SendThatUnicodeString (HWND hDlg, int nCtlID, UINT uMsg, WPARAM wParam, 
 LRESULT SendUnicodeStringMsg (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 //BOOL StaticBoxRedrawText (HWND hdlg, int wID, UINT idString, size_t stLen);
+int DlgItemMouseHover(UINT msgId, WPARAM wParam, LPARAM lParam, PEPMHOVER* mHover);
+int DlgItemOwnerDrawButton(WPARAM wParam, LPARAM lParam, PEPMHOVER *mHover);
 UINT DlgItemGetText (HWND hdlg, int wID, LPWSTR szString, int nMax);
 BOOL DlgItemRedrawText (HWND hdlg, int wID, LPCWSTR idString);
 BOOL DlgItemLoadStringRedrawText(HWND hdlg, HINSTANCE hResourceDll, int strId, int cntrlId);

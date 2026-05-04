@@ -85,7 +85,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Asy16_20.lib;Kernel16_20.lib;Net16_20.lib;Sio16_20.lib;Yam16_20.lib;PifnetPc.lib;AW_Interfaces.lib;odbc32.lib;odbccp32.lib;wsock32.lib;Imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Asy16_20.lib;Kernel16_20.lib;Net16_20.lib;Sio16_20.lib;Yam16_20.lib;PifnetPc.lib;AW_Interfaces.lib;odbc32.lib;odbccp32.lib;wsock32.lib;Imm32.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\Bin\Debug/NCR2172Pif_20.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>.\Lib\Debug;..\Lib\Debug;..\..\Lib\Debug;..\NCR2172Pif\Lib\Debug;..\..\PEP\Lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -130,7 +130,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Asy16_20.lib;Kernel16_20.lib;Net16_20.lib;Sio16_20.lib;Yam16_20.lib;PifnetPc.lib;AW_Interfaces.lib;odbc32.lib;odbccp32.lib;wsock32.lib;Imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Asy16_20.lib;Kernel16_20.lib;Net16_20.lib;Sio16_20.lib;Yam16_20.lib;PifnetPc.lib;AW_Interfaces.lib;odbc32.lib;odbccp32.lib;wsock32.lib;Imm32.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\Bin\Release/NCR2172Pif_20.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>.\Lib\Release;..\Lib\Release;..\..\Lib\Release;..\NCR2172Pif\Lib\Release;..\..\PEP\Lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

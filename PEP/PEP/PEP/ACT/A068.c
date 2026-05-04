@@ -860,6 +860,10 @@ BOOL    WINAPI  A068MaintDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lPa
 
         return FALSE;
 
+    case WM_DRAWITEM:
+        DlgItemOwnerDrawButton(wParam, lParam, NULL);
+        return FALSE;
+
     case    WM_COMMAND:
         switch (LOWORD(wParam)) {
 		case IDD_A68_EXPORT_PLU:
@@ -1424,6 +1428,10 @@ BOOL    WINAPI  A068CtrlDlgProc(HWND hDlg, UINT wMsg, WPARAM wParam, LPARAM lPar
 			SendDlgItemMessage(hDlg, IDCANCEL, WM_SETFONT, (WPARAM)hResourceFont, 0);
 		}
 		return FALSE;
+
+    case WM_DRAWITEM:
+        DlgItemOwnerDrawButton(wParam, lParam, NULL);
+        return FALSE;
 
     case    WM_COMMAND:
         switch (LOWORD(wParam)) {
