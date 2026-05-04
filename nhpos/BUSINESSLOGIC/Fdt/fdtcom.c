@@ -26,7 +26,6 @@
 *        SHORT   FDTReadTransFromGCFStorePay(USHORT uchOrder2, USHORT uchOrder3, SHORT *psReturn)
 *        SHORT   FDTReadTransFromGCFDeliv(USHORT uchOrder2, USHORT uchOrder3, SHORT *psReturn)
 *        SHORT   FDTGetTrans(USHORT uchOrderNo, SHORT sType)
-*        VOID    FDTDispTotal(USHORT usScroll, SHORT sType)
 *  ------------------------------------------------------------------------
 *   Update Histories
 *   Date     :Ver.Rev.:  NAME     :Description
@@ -786,27 +785,6 @@ SHORT   FDTGetTrans(GCNUM uchOrderNo, SHORT sType)
         }
 		return(sStatus);
     }
-}
-
-/*
-*===========================================================================
-** Synopsis:    VOID    FDTDispTotal(USHORT usScroll, SHORT sType)
-*     Input:    SHORT sType(Storage#)
-*     Output:   nothing
-*     InOut:    nothing
-*
-** Return:      nothing
-*
-** Description: Display Total in case of Not Payment GCF.
-*===========================================================================
-*/
-VOID    FDTDispTotal(USHORT usScroll, SHORT sType)
-{
-     if (sType == 1) {
-        MldDispSubTotal(usScroll, FDTLocal.lMI1);
-     } else {
-        MldDispSubTotal(usScroll, FDTLocal.lMI2);
-     }
 }
 
 /*========= End of File =========*/
