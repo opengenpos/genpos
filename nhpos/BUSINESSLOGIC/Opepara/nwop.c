@@ -500,12 +500,12 @@ struct {
 	{0, 0}
 };
 
-SHORT   Op_MnemonicsFileOpenFile(USHORT usMnemonicFileId)
+PifFileHandle   Op_MnemonicsFileOpenFile(USHORT usMnemonicFileId)
 {
 	const TCHAR  *auchFileName;
 
-	if (0 == usMnemonicFileId || usMnemonicFileId > sizeof(OpMnemonicsFileTable)/sizeof(OpMnemonicsFileTable[0])) {
-		return -1;
+	if (0 == usMnemonicFileId || usMnemonicFileId >= sizeof(OpMnemonicsFileTable)/sizeof(OpMnemonicsFileTable[0])) {
+		return PIF_FILE_INVALID_HANDLE;
 	}
 
 	auchFileName = OpMnemonicsFileTable[usMnemonicFileId].auchFileName;
@@ -525,7 +525,7 @@ SHORT   OpMnemonicsFileCreate (USHORT usMnemonicFileId, USHORT usNumberOfAddress
 	const TCHAR     *auchFileName;
 	USHORT          usRecordSize;
 
-	if (0 == usMnemonicFileId || usMnemonicFileId > sizeof(OpMnemonicsFileTable)/sizeof(OpMnemonicsFileTable[0])) {
+	if (0 == usMnemonicFileId || usMnemonicFileId >= sizeof(OpMnemonicsFileTable)/sizeof(OpMnemonicsFileTable[0])) {
 		return OP_NO_MAKE_FILE;
 	}
 
@@ -626,7 +626,7 @@ SHORT   OpMnemonicsFileAssign(OPMNEMONICFILE *pMnemonicFile, USHORT usLockHnd)
 	NHPOS_ASSERT(sizeof(TCHAR) == sizeof(pMnemonicFile->aszMnemonicValue[0]));
 	NHPOS_ASSERT(sizeof(pMnemonicFile->aszMnemonicValue) >= OP_MLD_MNEMONICS_LEN * sizeof(TCHAR));
 
-	if (0 == pMnemonicFile->usMnemonicFileId || pMnemonicFile->usMnemonicFileId > sizeof(OpMnemonicsFileTable)/sizeof(OpMnemonicsFileTable[0])) {
+	if (0 == pMnemonicFile->usMnemonicFileId || pMnemonicFile->usMnemonicFileId >= sizeof(OpMnemonicsFileTable)/sizeof(OpMnemonicsFileTable[0])) {
 		return 0;
 	}
 
@@ -675,7 +675,7 @@ SHORT   OpMnemonicsFileIndRead(OPMNEMONICFILE *pMnemonicFile, USHORT usLockHnd)
 
     memset(&pMnemonicFile->aszMnemonicValue, 0, sizeof(pMnemonicFile->aszMnemonicValue));
 
-	if (0 == pMnemonicFile->usMnemonicFileId || pMnemonicFile->usMnemonicFileId > sizeof(OpMnemonicsFileTable)/sizeof(OpMnemonicsFileTable[0])) {
+	if (0 == pMnemonicFile->usMnemonicFileId || pMnemonicFile->usMnemonicFileId >= sizeof(OpMnemonicsFileTable)/sizeof(OpMnemonicsFileTable[0])) {
 		return 0;
 	}
 

@@ -233,6 +233,17 @@ SHORT  PIFENTRY PifOpenFileNew(CONST TCHAR *pszFileName,
 {
     SHORT   sFile = 0;
 
+    NHPOS_ASSERT(pszFileName);
+    if (!pszFileName) {
+        char    aszErrorBuffer[256];
+        int  iLen = 0;
+
+        iLen = strlen(pcFilePath); if (iLen < 30) iLen = 0; else iLen -= 30;
+        sprintf(aszErrorBuffer, "**ERROR: NULL filename    File: %S Source File: %s,  Line No: %d", pszFileName, pcFilePath + iLen, iLineNo);
+        NHPOS_ASSERT_TEXT(0, aszErrorBuffer);
+        return PIF_ERROR_FILE_NOT_FOUND;
+    }
+
     EnterCriticalSection(&g_FileCriticalSection);
 
 	{
@@ -1316,6 +1327,10 @@ SHORT  PifOpenFileExec(CONST TCHAR *pwszFileName, FlMode fsMode, HANDLE *hHandle
     case ERROR_FILE_NOT_FOUND:
         sReturn = PIF_ERROR_FILE_NOT_FOUND;
         break;
+    case ERROR_LOCK_VIOLATION:
+    case ERROR_SHARING_VIOLATION:
+        sReturn = PIF_ERROR_FILE_ACESS_DENIED;
+        break;
     default:
         sReturn = PIF_ERROR_SYSTEM;
 		PifLog( MODULE_PIF_OPENFILE, LOG_ERROR_CODE_FILE_01);
@@ -1777,12 +1792,21 @@ SHORT   PIFENTRY PifLoadFarData(VOID *pAddress, ULONG usSize, TCHAR *pVersion)
 		if( ulActualBytesRead < usSize)
 		{
 			SHORT  sFile2 = PifOpenFile(_T("NHPOSParaBKUP.dat"), "rw");
-			PifSeekFile(sFile2, 0, &usActualPosition);
-			PifWriteFile(sFile2, pAddress, ulActualBytesRead);
-			PifCloseFile(sFile2);
-			PifCloseFile(sFile);
-			PifFileMigration(pAddress, ulActualBytesRead, pVersion);
-			PifDeleteFile(_T("NHPOSParaBKUP.dat"));			
+            if (sFile2 >= 0) {
+			    PifSeekFile(sFile2, 0, &usActualPosition);
+			    PifWriteFile(sFile2, pAddress, ulActualBytesRead);
+			    PifCloseFile(sFile2);
+			    PifCloseFile(sFile);
+			    PifFileMigration(pAddress, ulActualBytesRead, pVersion);
+			    PifDeleteFile(_T("NHPOSParaBKUP.dat"));			
+            }
+            else {
+                char  xBuff[128];
+
+                PifCloseFile(sFile);
+                sprintf(xBuff, "==NOTE: PifLoadFarData() - NHPOSParaBKUP.dat open error %d", sFile2);
+                NHPOS_NONASSERT_TEXT(xBuff);
+            }
 			SysConfig.uchPowerUpMode |= POWER_UP_CLEAR_WHOLE_MEMORY;    // PifLoadFarData()
 			sRetStatus = -1;
 			NHPOS_NONASSERT_TEXT("==NOTE: PifLoadFarData() - size mismatch.");

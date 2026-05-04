@@ -162,11 +162,11 @@ VOID    FDTTransOpen(GCNUM uchOrder)
 				{
 					/*----- Display File #1 -----*/
                     MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle1);
-                    FDTDispTotal(MLD_TOTAL_2, 1);
+                    MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI1);
                 } else {
 					/*----- Display File #2 -----*/
                     MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle2);
-                    FDTDispTotal(MLD_TOTAL_2, 2);
+                    MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI2);
                 }
             }
         } else {
@@ -199,12 +199,11 @@ VOID    FDTTransOpen(GCNUM uchOrder)
                     /*----- Display File #1 -----*/
                     if (uchOrder3 == FDTLocal.uchOrderNo1) {
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                        FDTDispTotal(MLD_TOTAL_3, 1);
-
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
                     /*----- Display File #2 -----*/
                     } else {
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                        FDTDispTotal(MLD_TOTAL_3, 2);
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
                     }
                 }
 
@@ -311,12 +310,12 @@ VOID    FDTTransOpenStorePay(GCNUM uchOrder)
                 /*----- Display File #1 -----*/
                 if (uchOrder2 == FDTLocal.uchOrderNo1) {
                     MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle1);
-                    FDTDispTotal(MLD_TOTAL_2, 1);
+                    MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI1);
 
                 /*----- Display File #2 -----*/
                 } else {
                     MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle2);
-                    FDTDispTotal(MLD_TOTAL_2, 2);
+                    MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI2);
                 }
             }
 
@@ -340,12 +339,11 @@ VOID    FDTTransOpenStorePay(GCNUM uchOrder)
                     /*----- Display File #1 -----*/
                     if (uchOrder3 == FDTLocal.uchOrderNo1) {
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                        FDTDispTotal(MLD_TOTAL_3, 1);
-
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
                     /*----- Display File #2 -----*/
                     } else {
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                        FDTDispTotal(MLD_TOTAL_3, 2);
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
                     }
                 }
 
@@ -425,11 +423,10 @@ VOID    FDTSaveTrans(GCNUM  usGuestNo)
 
                 if (uchOrder2 == FDTLocal.uchOrderNo1) {
                     MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle1);
-                    FDTDispTotal(MLD_TOTAL_2, 1);
-
+                    MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI1);
                 } else {
                     MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle2);
-                    FDTDispTotal(MLD_TOTAL_2, 2);
+                    MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI2);
                 }
             }
 
@@ -447,11 +444,10 @@ VOID    FDTSaveTrans(GCNUM  usGuestNo)
 
                     if (uchOrder3 == FDTLocal.uchOrderNo1) {
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                        FDTDispTotal(MLD_TOTAL_3, 1);
-
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
                     } else {
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                        FDTDispTotal(MLD_TOTAL_3, 2);
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
                     }
                 }
 
@@ -542,11 +538,10 @@ VOID    FDTSaveTransStorePay(GCNUM  usGuestNo)
 
                 if (uchOrder2 == FDTLocal.uchOrderNo1) {
                     MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle1);
-                    FDTDispTotal(MLD_TOTAL_2, 1);
-
+                    MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI1);
                 } else {
                     MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle2);
-                    FDTDispTotal(MLD_TOTAL_2, 2);
+                    MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI2);
                 }
             }
 
@@ -564,11 +559,10 @@ VOID    FDTSaveTransStorePay(GCNUM  usGuestNo)
 
                     if (uchOrder3 == FDTLocal.uchOrderNo1) {
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                        FDTDispTotal(MLD_TOTAL_3, 1);
-
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
                     } else {
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                        FDTDispTotal(MLD_TOTAL_3, 2);
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
                     }
                 }
 
@@ -716,11 +710,10 @@ SHORT   FDTForward(VOID)
 
         if (uchOrderNo2 == FDTLocal.uchOrderNo1) {
             MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle1);
-            FDTDispTotal(MLD_TOTAL_2, 1);
-
+            MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI1);
         } else {
             MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle2);
-            FDTDispTotal(MLD_TOTAL_2, 2);
+            MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI2);
         }
     }
 
@@ -731,11 +724,10 @@ SHORT   FDTForward(VOID)
 
             if (uchOrderNo3 == FDTLocal.uchOrderNo1) {
                 MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                FDTDispTotal(MLD_TOTAL_3, 1);
-
+                MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
             } else {
                 MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                FDTDispTotal(MLD_TOTAL_3, 2);
+                MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
             }
         }
     }
@@ -874,11 +866,10 @@ SHORT   FDTBackward(VOID)
 
         if (uchOrderNo2 == FDTLocal.uchOrderNo1) {
             MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle1);
-            FDTDispTotal(MLD_TOTAL_2, 1);
-
+            MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI1);
         } else {
             MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle2);
-            FDTDispTotal(MLD_TOTAL_2, 2);
+            MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI2);
         }
     }
 
@@ -894,11 +885,10 @@ SHORT   FDTBackward(VOID)
 
             if (uchOrderNo3 == FDTLocal.uchOrderNo1) {
                 MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                FDTDispTotal(MLD_TOTAL_3, 1);
-
+                MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
             } else {
                 MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                FDTDispTotal(MLD_TOTAL_3, 2);
+                MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
             }
         }
     }
@@ -1138,11 +1128,10 @@ SHORT   FDTDeliveryRecall(VOID)
 
             if (uchOrder2 == FDTLocal.uchOrderNo1) {
                 MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle1);
-                FDTDispTotal(MLD_TOTAL_2, 1);
-
+                MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI1);
             } else {
                 MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle2);
-                FDTDispTotal(MLD_TOTAL_2, 2);
+                MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI2);
             }
         }
 
@@ -1157,11 +1146,10 @@ SHORT   FDTDeliveryRecall(VOID)
 
             if (uchOrder3 == FDTLocal.uchOrderNo1) {
                 MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                FDTDispTotal(MLD_TOTAL_3, 1);
-
+                MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
             } else {
                 MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                FDTDispTotal(MLD_TOTAL_3, 2);
+                MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
             }
         }
 
@@ -1235,11 +1223,10 @@ SHORT   FDTDeliveryAddon(VOID)
 
             if (uchOrder2 == FDTLocal.uchOrderNo1) {
                 MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle1);
-                FDTDispTotal(MLD_TOTAL_2, 1);
-
+                MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI1);
             } else {
                 MldPutGcfToScroll(MLD_SCROLL_2, FDTLocal.husTranHandle2);
-                FDTDispTotal(MLD_TOTAL_2, 2);
+                MldDispSubTotal(MLD_TOTAL_2, FDTLocal.lMI2);
             }
         }
 
@@ -1255,11 +1242,10 @@ SHORT   FDTDeliveryAddon(VOID)
 
             if (uchOrder3 == FDTLocal.uchOrderNo1) {
                 MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                FDTDispTotal(MLD_TOTAL_3, 1);
-
+                MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
             } else {
                 MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                FDTDispTotal(MLD_TOTAL_3, 2);
+                MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
             }
         }
 
@@ -1456,11 +1442,11 @@ SHORT   FDTPaidOrderRecallOwn(VOID)
                     if (FDTLocal.auchOrder[1] == FDTLocal.uchOrderNo1) {
                         MldDisplayInit(MLD_DRIVE_3, 0);
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                        FDTDispTotal(MLD_TOTAL_3, 1);
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
                     } else {
                         MldDisplayInit(MLD_DRIVE_3, 0);
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                        FDTDispTotal(MLD_TOTAL_3, 2);
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
                     }
                 } else {
                     MldDisplayInit(MLD_DRIVE_3, 0);
@@ -1643,11 +1629,11 @@ SHORT   FDTPaidOrderRecallGCF(GCNUM uchOrder)
                     if (FDTLocal.auchOrder[1] == FDTLocal.uchOrderNo1) {
                         MldDisplayInit(MLD_DRIVE_3, 0);
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle1);
-                        FDTDispTotal(MLD_TOTAL_3, 1);
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI1);
                     } else {
                         MldDisplayInit(MLD_DRIVE_3, 0);
                         MldPutGcfToScroll(MLD_SCROLL_3, FDTLocal.husTranHandle2);
-                        FDTDispTotal(MLD_TOTAL_3, 2);
+                        MldDispSubTotal(MLD_TOTAL_3, FDTLocal.lMI2);
                     }
                 } else {
                     MldDisplayInit(MLD_DRIVE_3, 0);
