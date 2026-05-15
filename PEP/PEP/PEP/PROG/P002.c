@@ -384,8 +384,11 @@ BOOL    P02InitDlg(HWND hDlg, LPDWORD lpdwFree, LPDWORD lpdwMem,
     /* ----- Allocate memory from global area ----- */
     *lphMem = GlobalAlloc(GHND, sizeof(P02STR));
 
+    /* ----- Lock memory area ----- */
+    if (*lphMem) lpStr = GlobalLock(*lphMem);
+
     /* ----- Check whether keep memory or not ----- */
-    if (*lphMem == 0) {
+    if (*lphMem == 0 || lpStr == 0) {
         /* ----- Get description from resource ----- */
         LoadString(hResourceDll, IDS_PEP_ALLOC_ERR, szErr, PEP_STRING_LEN_MAC(szErr));
         LoadString(hResourceDll, IDS_PEP_CAPTION_P02, szCap, PEP_STRING_LEN_MAC(szCap));
@@ -396,14 +399,11 @@ BOOL    P02InitDlg(HWND hDlg, LPDWORD lpdwFree, LPDWORD lpdwMem,
         return TRUE;
     }
 
-    /* ----- Lock memory area ----- */
-    lpStr = (LPP02STR)GlobalLock(*lphMem);
-
     /* ----- Get description from resource ----- */
 	/*added an additional FOR loop to accomodate the change, renamed some of the resources that it was reading
 	from IDS_P02_.... to IDS_PEP_.... so that it can be used in multiple places instead of making new mnemonics up that were
 	already defined.*/
-    for (wI = 0, wID = IDS_PEP_FILE_DEPT; wI < P02_DSCRB_NO, wID <= IDS_PEP_FILE_PPI; wI++, wID++) {
+    for (wI = 0, wID = IDS_PEP_FILE_DEPT; wI < P02_DSCRB_NO && wID <= IDS_PEP_FILE_PPI; wI++, wID++) {
 		LoadString(hResourceDll, wID, lpStr->aszDscrb[wI], P02_DSCRB_LEN);
     } 
 	for ( wI2 = wI, wID = IDS_P02_FILE_CLR; wI2 < P02_DSCRB_NO; wI2++, wID++){

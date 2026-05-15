@@ -421,9 +421,9 @@ short TransTermReceiveData(HWND hWnd)
 {
     short   sStatus;
     SHORT   sFlexRead;
-    FLEXMEM PrevFlexMem[TRANS_FLEX_ADR_MAX];
-    FLEXMEM NewFlexMem[TRANS_FLEX_ADR_MAX];
-	ULONG   ulTouchFileSize, ulKeyBrdFileSize, ulLogoFileSize; //ESMITH LAYOUT
+    FLEXMEM PrevFlexMem[TRANS_FLEX_ADR_MAX] = { 0 };
+    FLEXMEM NewFlexMem[TRANS_FLEX_ADR_MAX] = { 0 };
+	ULONG   ulTouchFileSize = 0, ulKeyBrdFileSize = 0, ulLogoFileSize = 0; //ESMITH LAYOUT
 
 	if(getTransFwTransTerm() & TRANS_ACCESS_LAYTOUCH)
 	{
@@ -919,7 +919,7 @@ SHORT TransTermReceiveParaClass(HWND hWnd, UCHAR uchClass)
     USHORT  usStart = 0;
     SHORT   sStatus;
     HGLOBAL hBuffer;
-    VOID FAR *pBuffer;
+    VOID    *pBuffer;
 
     /* ----- check abort by user ----- */
     if (TransAbortQueryStatus() == TRUE) {
@@ -973,7 +973,7 @@ SHORT TransTermReceiveParaFlex(HWND hWnd, UCHAR uchClass)
     USHORT  usWrite;
     SHORT   sStatus;
     HGLOBAL hBuffer;
-    VOID FAR *pBuffer;
+    VOID    *pBuffer;
 
     /* ----- check abort by user ----- */
     if (TransAbortQueryStatus() == TRUE) {
@@ -1039,7 +1039,7 @@ short TransTermReceiveFile(HWND hWnd, WCHAR *szFile, WORD wFlag,
 	ULONG	ulRmtPos=0;				/* remote position of read */
 	ULONG	ulRmtActualPos;			/* remote actual read position */
     HGLOBAL hBuffer;                /* handle of global allocation memory */
-    VOID FAR *pBuffer;
+    VOID    *pBuffer;
     short   nCount = 0;
 
     /* ----- check user by abort ----- */

@@ -565,7 +565,7 @@ static void doMenuModification(HWND hWnd)
 
 		// Reallocate the structure to the minimum required size.
 		// make sure realloc() worked before using pointer returned.
-		MYITEM* pMyItem2 = (MYITEM*)realloc(pMyItem, sizeof(MYITEM) + MENUTEXTSTRING(mii.cch), LMEM_MOVEABLE);
+		MYITEM* pMyItem2 = (MYITEM*)realloc(pMyItem, sizeof(MYITEM) + MENUTEXTSTRING(mii.cch));
 		if (pMyItem2) pMyItem = pMyItem2;
 
 		// Create the font used to draw the item. 
