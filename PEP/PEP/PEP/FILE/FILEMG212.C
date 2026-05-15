@@ -626,7 +626,7 @@ BOOL  FileMigrateGP_205_212_Para (UNINIRAM_HGV_2_0_5 *pOldPara, UNINIRAM_HGV_2_1
 	memcpy(&pNewPara->ChargePostInformation, &pOldPara->ChargePostInformation, sizeof(pOldPara->ChargePostInformation));
 
 	//Prog. 97 TERMINAL INFORMATION
-	for( i = 0; i <= MAX_TERMINALINFO_SIZE_HGV_2_0_5; i++) 
+	for( i = 0; i < MAX_TERMINALINFO_SIZE_HGV_2_0_5; i++) 
 	{
 		pNewPara->TerminalInformation[i].ulCodePage = pOldPara->TerminalInformation[i].ulCodePage;
 		pNewPara->TerminalInformation[i].usLanguageID = pOldPara->TerminalInformation[i].usLanguageID;
@@ -1020,7 +1020,7 @@ BOOL  FileMigrateGP_210_212_Para (UNINIRAM_HGV_2_1_0 *pOldPara, UNINIRAM_HGV_2_1
 	memcpy(&pNewPara->ChargePostInformation, &pOldPara->ChargePostInformation, sizeof(pOldPara->ChargePostInformation));
 
 	//Prog. 97 TERMINAL INFORMATION
-	for( i = 0; i <= MAX_TERMINALINFO_SIZE_HGV_2_1_0; i++) 
+	for( i = 0; i < MAX_TERMINALINFO_SIZE_HGV_2_1_0; i++) 
 	{
 		pNewPara->TerminalInformation[i].ulCodePage = pOldPara->TerminalInformation[i].ulCodePage;
 		pNewPara->TerminalInformation[i].usLanguageID = pOldPara->TerminalInformation[i].usLanguageID;

@@ -561,6 +561,9 @@ BOOL  FileMigrateGP_212_220_Para (UNINIRAM_HGV_2_1_2 *pOldPara, UNINIRAM_HGV_2_2
 BOOL  FileMigrateGP_220_221_Para (UNINIRAM_HGV_2_2_0 *pOldPara, UNINIRAM *pNewPara);
 #endif
 
+BOOL GenFileReadAtOffset(HANDLE iFile, LONG lOffset, VOID* readTo, ULONG size);
+BOOL GenFileRead(HANDLE iFile, VOID* readTo, ULONG size);
+
 /************************************\
 |*  External Work Area Declarations *|
 \************************************/
