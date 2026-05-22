@@ -76,6 +76,13 @@ CFrameworkWndItem::CFrameworkWndItem(int id, int row, int column, int width, int
 	m_nPickCount = 0;
 	m_bInsideSuperIntrv = 0;
 	m_pWebBrowser = 0;
+	m_pScrollReport = 0;
+	m_pScrollDocument = 0;
+	m_nRollupState = 0;			// current state of the rollup window. UserDefaultWin_ROLLUP_WIN
+	m_nRollupRow[0] = m_nRollupRow[1] = 0;
+	m_nRollupColumn[0] = m_nRollupColumn[1] = 0;
+	m_nRollupHeight[0] = m_nRollupHeight[1] = 0;
+	m_nRollupWidth[0] = m_nRollupWidth[1] = 0;
 }
 
 	
@@ -86,6 +93,8 @@ CFrameworkWndItem::CFrameworkWndItem(CWindowControl *wc) :
 	m_nPickCount = 0;
 	m_bInsideSuperIntrv = 0;
 	m_pWebBrowser = 0;
+	m_pScrollReport = 0;
+	m_pScrollDocument = 0;
 	m_nRollupState = 0;			// current state of the rollup window. UserDefaultWin_ROLLUP_WIN
 	m_nRollupRow[0] = m_nRollupRow[1] = 0;
 	m_nRollupColumn[0] = m_nRollupColumn[1] = 0;

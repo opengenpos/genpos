@@ -236,7 +236,7 @@ int CFrameworkWndButton::ChangeRefreshIcon(TCHAR *tcsIconFileName)
 
 	if (m_Icon.GetLength() > 0) {
 		CString iconPath;
-		iconPath.Format(ICON_FILES_DIR_FORMAT, m_Icon);
+		iconPath.Format(ICON_FILES_DIR_FORMAT, (LPCTSTR)m_Icon);
 		m_hBitmapFocus = (HBITMAP)LoadImage(NULL, iconPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 		if (m_hBitmapFocus) {
 			int iNoBytes = GetObject(m_hBitmapFocus, sizeof(BITMAP), &m_bitmapFocus);
@@ -383,7 +383,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayFocus (CDC* pDC)
 	if (m_Icon.GetLength() > 0) {
 		if (!m_hBitmapFocus) {
 			CString iconPath;
-			iconPath.Format(ICON_FILES_DIR_FORMAT, m_Icon);
+			iconPath.Format(ICON_FILES_DIR_FORMAT, (LPCTSTR)m_Icon);
 			m_hBitmapFocus = (HBITMAP)LoadImage(NULL, iconPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 			if (m_hBitmapFocus) {
 				int iNoBytes = GetObject(m_hBitmapFocus, sizeof(BITMAP), &m_bitmapFocus);
@@ -704,7 +704,7 @@ void CFrameworkWndButton::DrawButtonOnDisplayNoFocus (CDC* pDC)
 		// we have arbitrarily decided to use m_hBitmapFocus.
 		if (!m_hBitmapFocus) {
 			CString iconPath;
-			iconPath.Format(ICON_FILES_DIR_FORMAT, m_Icon);
+			iconPath.Format(ICON_FILES_DIR_FORMAT, (LPCTSTR)m_Icon);
 			m_hBitmapFocus = (HBITMAP)LoadImage(NULL, iconPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 			if (m_hBitmapFocus) {
 				int iNoBytes = GetObject(m_hBitmapFocus, sizeof(BITMAP), &m_bitmapFocus);
