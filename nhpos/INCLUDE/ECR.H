@@ -1103,4 +1103,13 @@ OutputDebugStringW(
 #define NHPOS_DEBUG_DUMP(structure, type, size) { PifDebugDump( #type, __FILE__ , __LINE__,(structure) ,size);}
 #endif
 
+// Following creates a macro to use with #pragma to generate
+// a note in the Output listing containing a link to the line
+// generating the message.
+// Example:  #pragma PRAGA_NOTE("A message with file name and line number.')
+
+#define PRAGMA_NOTE_STRING2(x) #x
+#define PRAGMA_NOTE_STRING(x) PRAGMA_NOTE_STRING2(x)
+#define PRAGMA_NOTE(msg) message(__FILE__ "(" PRAGMA_NOTE_STRING(__LINE__) "): Message: " msg)
+
 #endif                                      /* _INC_ECR */
