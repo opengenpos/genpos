@@ -1159,7 +1159,7 @@ static SHORT ProcessXmlFileTenderRulesReturnsRules (SHORT hsParamtdr, TCHAR *asz
 	SHORT  sStatus = 0;
 	TCHAR  *ptcsToken = 0, *ptcsTokenEnd = 0;
 	TCHAR  aszAccountNumber[32], aszAccountNumberLast[32];
-	USHORT usLength, usTenderKey;
+	USHORT usLength = 0, usTenderKey = 0;
 	USHORT usInRule = 0, usInRange = 0, usUseRules = 1;
 	USHORT usUseTender = 0;
 	USHORT usType = 0, usUseType = 0, usGlobalRules = 0;
