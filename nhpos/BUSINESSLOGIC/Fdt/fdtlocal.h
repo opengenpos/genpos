@@ -112,7 +112,6 @@ SHORT   FDTReadTransFromGCF(GCNUM uchOrder2, GCNUM uchOrder3, SHORT *psReturn);
 SHORT   FDTReadTransFromGCFStorePay(GCNUM uchOrder2, GCNUM uchOrder3, SHORT *psReturn);
 SHORT   FDTReadTransFromGCFDeliv(GCNUM uchOrder2, GCNUM uchOrder3, SHORT *psReturn);
 SHORT   FDTGetTrans(GCNUM uchOrderNo, SHORT sType);
-VOID    FDTDispTotal(USHORT usScroll, SHORT sType);
 
 /*
 -------------------------------------

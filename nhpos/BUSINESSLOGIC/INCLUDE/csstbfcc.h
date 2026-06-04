@@ -86,14 +86,13 @@
 	See also values defined in file cscas.h
 -------------------------------------------------*/
 #define     CLI_ALLTRANSNO      16      /* max. number of terminal, STD_NUM_OF_TERMINALS */
-#define     CLI_CASHIERNAME     20      /* Cashier name, V3.3 */
-#define     CLI_CASHIERSTATUS    6      /* cashier status, V3.3 */
-#define     CLI_WAITERNAME      10      /* Waiter name */
-#define     CLI_PASSWORD        10      /* Maximum PC passward */
+#define     CLI_CASHIERNAME     PARA_CASHIER_LEN             /* Cashier name, V3.3 */
+#define     CLI_CASHIERSTATUS   PARA_LEN_CASHIER_STATUS      /* cashier status, V3.3 */
+#define     CLI_PASSWORD        PARA_PASSWORD_LEN            /* Maximum PC passward */
 
 #define     CLI_PLU_MAX_NO       5      /* Maximum No of PLU,   Saratoga 
 										 * Must match value of CLI_PLU_MAX_NO in PEP/PCIF */
-#define     CLI_EMPLOYEE_NAME   /*16*/20      /* Employee Name, R3.1 */
+#define     CLI_EMPLOYEE_NAME   20      /* Employee Name, R3.1 */
 #define     CLI_ISPLOG_LEN      24      /* ISP LOG Length, V3.3 */
 #define     CLI_PLU_LEN         STD_PLU_NUMBER_LEN      /* PLU Length,          Saratoga */
 #define     CLI_PLU_NAME_SIZE   STD_PLU_MNEMONIC_LEN
@@ -684,36 +683,6 @@ typedef struct {
 	ULONG	ulGroupAssociations;
 } CLIRESCASHIER;
 
-/*--------------------------------------
-    Waiter Message (Request)
----------------------------------------*/
-typedef struct {
-    USHORT  usFunCode;        // standard request header, CLIREQCOM, two members
-    USHORT  usSeqNo;
-    ULONG   ulWaiterNo;                     /* waiter number */
-    WCHAR   auchWaiName[CLI_WAITERNAME];    /* waiter name */
-    ULONG   ulStatus;                       /* waiter status */
-    ULONG   ulSecretNo;                     /* secet code */
-    USHORT  usStartGCN;                     /* start Guest Check Number */
-    USHORT  usEndGCN;                       /* end Guest Check Number */
-    USHORT  usTerminalNo;                   /* terminal# to lock/unlock R3.1 */
-} CLIREQWAITER;
-
-/*--------------------------------------
-    Waiter Message (Response)
----------------------------------------*/
-typedef struct {
-    USHORT  usFunCode;        // standard response header, CLIRESCOM, four members
-    USHORT  usSeqNo;
-    SHORT   sResCode;
-    SHORT   sReturn;
-    ULONG   ulWaiterNo;                     /* waiter number */
-    WCHAR   auchWaiName[CLI_CASHIERNAME];   /* waiter name */
-    UCHAR   fbStatus;                       /* waiter status */
-    ULONG   ulSecretNo;                    /* secet code */
-    USHORT  usStartGCN;                     /* start Guest Check Number */
-    USHORT  usEndGCN;                       /* end Guest Check Number */
-} CLIRESWAITER;
 
 /*--------------------------------------
     GCF Message (Request)
