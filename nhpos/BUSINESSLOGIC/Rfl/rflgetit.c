@@ -799,6 +799,141 @@ BOOL RflIsSalesItemDisc( VOID *puchItem )
     return ( FALSE );
 }
 
+
+/*
+*===========================================================================
+** Format   : int RflDeptStatusToPluStatus( UCHAR *puchItem )
+*
+*    Input  : UCHAR *puchItem - address of item data to determine
+*   Output  : none
+*    InOut  : none
+** Return   : 0 -   PLU has Use Department set
+*             1 -   PLU does not have Use Department set, PLU_HASH by Department
+*
+** Synopsis : Transfer the PLU Status codes indicating PLU parameters
+*             from a Department into the PLU. This function is normally
+*             used for initializing a PLU with Department status codes
+*             when the Use Department Settings status bit is set for the PLU.
+* 
+*   WARNING: This function is for copying Department Status Bits array into a PLU Status
+*            Bits array. The ITEMSALES struct has PLU Status bits however some of those
+*            are in different members of the Status Bits array than they are in the PLU
+*            Status Bits array. ITEMSALES also has Status Bits reflecting MDC bit settings
+*            such as pItemSales->ControlCode.auchPluStatus[5] |= (ITM_SALES_HOURLY | ITM_HASH_FINANC).
+*              - pItemSales->ControlCode.auchPluStatus[6] = DeptRecRcvBuffer.ParaDept.auchControlCode[4]
+*              - pPluIf->ParaPlu.ContPlu.auchContOther[5] = pDeptIf->ParaDept.auchControlCode[4]
+*===========================================================================
+*/
+int RflDeptStatusToPluStatus(UCHAR auchContOther[OP_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE])
+{
+	int iRet;
+
+	// See comments preceeding definition for the struct PLU_CONTROL for a discussion
+	// on the differences in the control code and status bits of ITEMSALES, OPPLU_PARAENTRY, and OPDEPT_PARAENTRY.
+	// NOTE: See function ItemSalesSetupStatus() which performs some kind of sanity check
+	//        on the status bits.
+	if (auchContOther[2] & PLU_USE_DEPTCTL) {
+		auchContOther[0] = auchControlCode[0];    /* Copy Bit Status 0, See PLU_MINUS etc. */
+		auchContOther[1] = auchControlCode[1];    /* Copy Bit Status 1, See PLU_AFFECT_TAX1 etc. */
+		auchContOther[2] = auchControlCode[2];    /* Copy Bit Status 2, See PLU_SCALABLE etc. */
+		auchContOther[3] = auchControlCode[3];    /* Copy Bit Status 3, See PLU_NOT_BONUS etc. */
+		/* --- increase control code at R3.1 --- */
+		auchContOther[5] = auchControlCode[4];    /* Copy Bit Status 5, CRT No5 - No 8, sales restriction, See PLU_SND_KITCH5 */
+		iRet = 0;
+	}
+	else {
+		/* FOR HASH DEPT/ PLU. See the comments titled What is a Hash Department in rptdept.c */
+		// set the PLU_HASH status bit in the PLU according to what the Department setting is.
+		auchContOther[2] = (auchContOther[2] & ~PLU_HASH) | (auchControlCode[2] & PLU_HASH);
+		iRet = 1;
+	}
+
+	return iRet;
+}
+
+int RflDeptStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE])
+{
+	int iRet;
+
+	// See comments preceeding definition for the struct PLU_CONTROL for a discussion
+	// on the differences in the control code and status bits of ITEMSALES, OPPLU_PARAENTRY, and OPDEPT_PARAENTRY.
+	// NOTE: See function ItemSalesSetupStatus() which performs some kind of sanity check
+	//        on the status bits.
+	if (auchPluStatus[2] & PLU_USE_DEPTCTL) {
+		// copy the control codes/status codes that are common, OP_PLU_SHARED_STATUS_LEN
+		auchPluStatus[0] = auchControlCode[0];    /* Copy Bit Status 0, See PLU_MINUS etc. */
+		auchPluStatus[1] = auchControlCode[1];    /* Copy Bit Status 1, See PLU_AFFECT_TAX1 etc. */
+		auchPluStatus[2] = auchControlCode[2];    /* Copy Bit Status 2, See PLU_SCALABLE etc. */
+		auchPluStatus[3] = auchControlCode[3];    /* Copy Bit Status 3, See PLU_NOT_BONUS etc. */
+		/* --- increase control code at R3.1 --- */
+		auchPluStatus[PLU_CONTROLCODE_ADR_6] = auchControlCode[4];    /* Copy Bit Status 6, CRT No5 - No 8, sales restriction, See PLU_SND_KITCH5 */
+		iRet = 0;
+	}
+	else {
+		/* FOR HASH DEPT/ PLU. See the comments titled What is a Hash Department in rptdept.c */
+		 // set the PLU_HASH status bit in the ITEMSALES PLU data according to what the Department setting is.
+		auchPluStatus[2] = (auchPluStatus[2] & ~PLU_HASH) | (auchControlCode[2] & PLU_HASH);
+		iRet = 1;
+	}
+
+	return iRet;
+}
+
+int RflPluStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchContOther[OP_PLU_CONT_OTHER])
+{
+	// See comments preceeding definition for the struct PLU_CONTROL for a discussion
+	// on the differences in the control code and status bits of ITEMSALES, OPPLU_PARAENTRY, and OPDEPT_PARAENTRY.
+	memcpy(auchPluStatus, auchContOther, OP_PLU_PLU_SHARED_STATUS_LEN);      //  bytes [0] thru [4]
+	/* copy control code - remember ITEMSALES ControlCode.auchPluStatus[5] used for ItemSales status info */
+	memcpy(auchPluStatus + 6, auchContOther + 5, OP_PLU_OPTIONS_STATUS_LEN);
+
+	return 0;
+}
+
+
+int RflDeptDataToPluData(OPPLU_PARAENTRY *ParaPlu, CONST OPDEPT_PARAENTRY  *ParaDept)
+{
+	int iRet = 0;  // indicate we have changed the PLU data.
+
+	// See comments preceeding definition for the struct PLU_CONTROL for a discussion
+	// on the differences in the control code and status bits of ITEMSALES, OPPLU_PARAENTRY, and OPDEPT_PARAENTRY.
+	// NOTE: See function ItemSalesSetupStatus() which performs some kind of sanity check
+	//        on the status bits.
+	ParaPlu->ContPlu.auchContOther[0] = ParaDept->auchControlCode[0];    /* Copy Bit Status 0, See PLU_MINUS etc. */
+	ParaPlu->ContPlu.auchContOther[1] = ParaDept->auchControlCode[1];    /* Copy Bit Status 1, See PLU_AFFECT_TAX1 etc. */
+	ParaPlu->ContPlu.auchContOther[2] = ParaDept->auchControlCode[2];    /* Copy Bit Status 2, See PLU_SCALABLE etc. */
+	ParaPlu->ContPlu.auchContOther[3] = ParaDept->auchControlCode[3];    /* Copy Bit Status 3, See PLU_NOT_BONUS etc. */
+	/* --- increase control code at R3.1 --- */
+	ParaPlu->ContPlu.auchContOther[5] = ParaDept->auchControlCode[4];    /* Copy Bit Status 5, CRT No5 - No 8, sales restriction, See PLU_SND_KITCH5 */
+		
+	// PLU is to be populated with Departmental data. Continue doing so.
+	ParaPlu->uchPrintPriority = ParaDept->uchPrintPriority;
+	ParaPlu->ContPlu.usBonusIndex = ParaDept->usBonusIndex;
+
+	/* copy dept's mnemonics to pItemSales*/
+	_tcsncpy(ParaPlu->auchPluName, ParaDept->auchMnemonic, OP_DEPT_NAME_SIZE);
+	memset(ParaPlu->auchAltPluName, 0, sizeof(ParaPlu->auchAltPluName));
+
+
+	ParaPlu->usTareInformation = ParaDept->usTareInformation;
+
+	/*
+		set building report code, V1.0.04
+		set building group number, V2.0.4 for Compass dynamic PLU screens
+	 */
+	ParaPlu->ContPlu.uchRept = PLU_STANDARD_RPT_CODE;
+	ParaPlu->uchGroupNumber = PLU_STANDARD_GROUP_NO;
+
+	// Department data extensions for the future.
+//	ParaPlu->uchColorPaletteCode = ParaDept->uchColorPaletteCode;
+//	ParaPlu->uchRestrict = ParaDept->uchRestrict;
+//	ParaPlu->uchTableNumber = ParaDept->uchTableNumber;
+//	ParaPlu->uchGroupNumber = ParaDept->uchGroupNumber;
+//	ParaPlu->ContPlu.uchRept = ParaDept->uchRept;
+
+	return iRet;
+}
+
 /*
 *===========================================================================
 ** Format   : BOOL RflGetStorageItemLen( UCHAR *puchItem )
@@ -835,5 +970,221 @@ USHORT RflGetStorageItemLen (VOID *pSource, ULONG ulActualBytes)
 
     return( puchRead [0] + usCmpLen );               /* return read length */
 }
+
+#if 0
+
+// pif.h  near PIF_ERROR_COM_POWER_FAILURE
+
+#define PIF_ERROR_FILE_LESS_RQT        (-10)    // number of bytes read or written is less than requested.
+#define PIF_ERROR_FILE_SEEK_FAIL       (-11)    // PifSeek() failed.
+
+
+/**Synopsis:   SHORT RflReadFileFH(ULONG offulSeekPos, VOID* pReadBuffer, ULONG ulReadSize, SHORT hsFileHandle)
+*
+* Input :  ULONG     offulSeekPos   Seek value from file head
+*          ULONG     ulReadSize     Read buffer size
+*          SHORT     hsFileHandle   File handle of file to be read data
+*
+* Output : VOID * pReadBuffer - Read buffer
+*          ULONG * pulActualBytesRead - number of bytes actually read.
+*
+*InOut :   Nothing
+*
+**Return : SUCCESS - successful seek and read operation
+*          PIF_ERROR_SYSTEM - file handle error or
+*          PIF_ERROR_FILE_EOF - offset is past end of file
+*          PIF_ERROR_FILE_DISK_FULL - disk is full, no space
+*
+** Description : Read data from target file.This is a generic function
+*                to replace the usage of the following functions that
+*                in most respects are duplicates of each other:
+*                  - Gcf_ReadFileFH()
+*                  - TtlReadFileFH()
+*                  - SstReadFileFH()
+*                  - TrnReadFile()
+*
+*                 See as well the following specialized functions:
+*                  - EJ_ReadFileA()
+*= ======================================================================== =
+*/
+#if defined(RflReadFileFH)
+#pragma message("RflReadFileFH defined")
+SPIFRSLT RflReadFileFH_Special(ULONG ulOffset, VOID* pData, ULONG ulSize, PifFileHandle hsFileHandle, ULONG* pulActualBytesRead);
+
+SPIFRSLT RflReadFileFH_Debug(ULONG ulOffset, VOID* pData, ULONG ulSize, PifFileHandle hsFileHandle,
+	ULONG* pulActualBytesRead, CONST char* aszFilePath, int nLineNo)
+{
+	SPIFRSLT  sReturn;
+
+	sReturn = RflReadFileFH_Special(ulOffset, pData, ulSize, hsFileHandle, pulActualBytesRead);
+	if (sReturn != SUCCESS) {
+		int iLen = 0;
+		char  xBuffer[256];
+
+		iLen = strlen(aszFilePath);
+		if (iLen > 30) {
+			iLen = iLen - 30;
+		}
+		else {
+			iLen = 0;
+		}
+
+		sprintf(xBuffer, "RflReadFileFH_Debug(): Error = %d, File %s, lineno = %d", sReturn, aszFilePath + iLen, nLineNo);
+		NHPOS_ASSERT_TEXT(0, xBuffer);
+	}
+
+	return sReturn;
+}
+
+SPIFRSLT RflReadFileFH_Special(ULONG ulOffset, VOID* pData, ULONG ulSize, PifFileHandle hsFileHandle, ULONG* pulActualBytesRead)
+#else
+SPIFRSLT RflReadFileFH(ULONG offulSeekPos, VOID* pReadBuffer, ULONG ulReadSize, PifFileHandle hsFileHandle, ULONG* pulActualBytesRead)
+#endif
+{
+	ULONG     ulActualPosition;
+	ULONG	  ulActualBytesRead; //RPH 11-7-3
+	SPIFRSLT  sCallStat = 0;
+
+	if (pulActualBytesRead == NULL) pulActualBytesRead = &ulActualBytesRead;
+
+	*pulActualBytesRead = 0;
+
+	if (hsFileHandle < 0) {
+		char xBuff[64];
+		sprintf(xBuff, "==ERROR: RflReadFileFH() hsFileHandle = %d", hsFileHandle);
+		NHPOS_ASSERT_TEXT(hsFileHandle >= 0, xBuff);
+		// No return here. Let PifSeekFile() abort.
+	}
+
+	sCallStat = PifSeekFile(hsFileHandle, offulSeekPos, &ulActualPosition);
+	if (sCallStat < 0) {
+		char xBuff[64];
+		sprintf(xBuff, "==ERROR: RflReadFileFH() PifSeekFile() = %d", sCallStat);
+		NHPOS_ASSERT_TEXT(sCallStat >= 0, xBuff);
+		return sCallStat;
+	}
+
+	// allow this function to set the read pointer position regardless
+	// of whether the number of bytes to read or invalid buffer address.
+	if (ulReadSize == 0 || pReadBuffer == NULL) {
+		return SUCCESS;
+	}
+
+	//RPH 11-7-3 Changes for PifReadFile
+	sCallStat = PifReadFile(hsFileHandle, pReadBuffer, ulReadSize, pulActualBytesRead);
+	if (sCallStat < 0) {
+		char xBuff[64];
+		sprintf(xBuff, "==ERROR: RflReadFileFH() PifReadFile() = %d", sCallStat);
+		NHPOS_ASSERT_TEXT(sCallStat >= 0, xBuff);
+		return sCallStat;
+	}
+
+	if (*pulActualBytesRead != ulReadSize) {
+		return PIF_ERROR_FILE_LESS_RQT;
+	}
+
+	return SUCCESS;
+}
+
+/*
+*==========================================================================
+**    Synopsis:   SHORT RflWriteFileFH(ULONG  offulSeekPos,
+*                                     VOID   *pWriteBuffer,
+*                                     ULONG  ulWriteSize,
+*                                     SHORT  hsFileHandle)
+*
+*       Input:    ULONG     offulSeekPos   Seek value from file head for writing.
+*                 VOID      *pWriteBuffer  Write buffer
+*                 ULONG     ulWriteSize    Write buffer size
+*                 SHORT     hsFileHandle   File handle of file to be written data
+*
+*      Output:    Nothing
+*       InOut:
+*
+**Return : SUCCESS - successful seek and read operation
+*          PIF_ERROR_SYSTEM - file handle error or
+*          PIF_ERROR_FILE_EOF - offset is past end of file
+*          PIF_ERROR_FILE_DISK_FULL - disk is full, no space
+*
+**  Description:  Write data from target file. This is a generic function
+*                 to replace the usage of the following functions that
+*                 in most respects are duplicates of each other:
+*                   - Gcf_WriteFileFH()
+*                   - SstWriteFileFH()
+*                   - TrnWriteFile()
+*
+*                 See as well the following specialized functions:
+*                   - EJ_WriteFile()
+*==========================================================================
+*/
+#if defined(RflWriteFileFH)
+#pragma message("RflWriteFileFH defined")
+SPIFRSLT RflWriteFileFH_Special(ULONG ulOffset, const VOID* pData, ULONG ulSize, PifFileHandle hsFileHandle);
+
+SPIFRSLT RflWriteFileFH_Debug(ULONG ulOffset, const VOID* pData, ULONG ulSize, PifFileHandle hsFileHandle,
+	CONST char* aszFilePath, int nLineNo)
+{
+	SPIFRSLT   sReturn;
+
+	sReturn = RflWriteFileFH_Special(ulOffset, pData, ulSize, hsFileHandle);
+	if (sReturn != SUCCESS) {
+		int iLen = 0;
+		char  xBuffer[256];
+
+		iLen = strlen(aszFilePath);
+		if (iLen > 30) {
+			iLen = iLen - 30;
+		}
+		else {
+			iLen = 0;
+		}
+
+		sprintf(xBuffer, "RflWriteFileFH_Debug(): Error = %d, File %s, lineno = %d", sReturn, aszFilePath + iLen, nLineNo);
+		NHPOS_ASSERT_TEXT(0, xBuffer);
+	}
+
+	return sReturn;
+}
+
+SPIFRSLT RflWriteFileFH_Special(ULONG ulOffset, const VOID* pData, ULONG ulSize, PifFileHandle hsFileHandle)
+#else
+SPIFRSLT RflWriteFileFH(ULONG offulSeekPos, VOID* pWriteBuffer, ULONG ulWriteSize, PifFileHandle  hsFileHandle)
+#endif
+{
+	ULONG     ulActualPosition;           /* for seek */
+	SPIFRSLT  sCallStat = 0;
+
+	if (hsFileHandle < 0) {
+		char xBuff[64];
+		sprintf(xBuff, "==ERROR: RflWriteFileFH() hsFileHandle = %d", hsFileHandle);
+		NHPOS_ASSERT_TEXT(hsFileHandle >= 0, xBuff);
+		// No return here. Let PifSeekFile() abort.
+	}
+
+	sCallStat = PifSeekFile(hsFileHandle, offulSeekPos, &ulActualPosition);
+	if (sCallStat < 0) {
+		char xBuff[64];
+		sprintf(xBuff, "==ERROR: RflWriteFileFH() PifSeekFile() = %d", sCallStat);
+		NHPOS_ASSERT_TEXT(sCallStat >= 0, xBuff);
+		return sCallStat;
+	}
+
+	// allow this function to set the read pointer position regardless
+	// of whether the number of bytes to read or invalid buffer address.
+	if (ulWriteSize == 0 || pWriteBuffer == NULL) {
+		return SUCCESS;
+	}
+
+	sCallStat = PifWriteFile(hsFileHandle, pWriteBuffer, ulWriteSize);
+	if (sCallStat < 0) {
+		char xBuff[64];
+		sprintf(xBuff, "==ERROR: RflWriteFileFH() PifWriteFile() = %d", sCallStat);
+		NHPOS_ASSERT_TEXT(sCallStat >= 0, xBuff);
+		return sCallStat;
+	}
+
+	return SUCCESS;
+}
+#endif
 
 /****** End of Source ******/

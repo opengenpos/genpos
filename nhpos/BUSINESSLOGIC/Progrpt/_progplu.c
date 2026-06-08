@@ -1202,6 +1202,9 @@ SHORT ProgRpt_PluFindPlu( PLUIF     *pPluIf,
 
         if (sReturn == OP_PERFORM) {
             if ( pPluIf->ParaPlu.ContPlu.auchContOther[ 2 ] & PLU_USE_DEPTCTL ) {
+#if 0
+                RflDeptStatusToPluStatus(pPluIf->ParaPlu.ContPlu.auchContOther, DeptIf.ParaDept.auchControlCode);
+#else
                 pPluIf->ParaPlu.ContPlu.auchContOther[0] = DeptIf.ParaDept.auchControlCode[0];
                 pPluIf->ParaPlu.ContPlu.auchContOther[1] = DeptIf.ParaDept.auchControlCode[1];
                 pPluIf->ParaPlu.ContPlu.auchContOther[2] = DeptIf.ParaDept.auchControlCode[2];
@@ -1213,6 +1216,7 @@ SHORT ProgRpt_PluFindPlu( PLUIF     *pPluIf,
                 } else {
                     pPluIf->ParaPlu.ContPlu.auchContOther[2] &= ~PLU_HASH;
                 }
+#endif
             }
         }
     }

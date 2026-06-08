@@ -62,6 +62,7 @@
 #include "ecr.h"
 #include "regstrct.h"
 #include "para.h"
+#include "csop.h"
 
 /**
 ;========================================================================
@@ -350,7 +351,22 @@ SHORT  RflRateCalcHuge3(D13DIGITS *phuModAmount, D13DIGITS *phuAmount, ULONG ulR
 SHORT  RflRateCalcHuge4(D13DIGITS *phuModAmount, D13DIGITS *phuAmount, ULONG ulRate, UCHAR uchType);  /* rate :RflRound.c */
 
 BOOL   RflIsSalesItemDisc( VOID *puchItem );
+int    RflDeptStatusToPluStatus(UCHAR auchContOther[OP_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE]);
+int    RflDeptStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE]);
+int    RflDeptDataToPluData(OPPLU_PARAENTRY* ParaPlu, CONST OPDEPT_PARAENTRY* ParaDept);
+int    RflPluStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchContOther[OP_PLU_CONT_OTHER]);
 USHORT RflGetStorageItemLen (VOID *pSource, ULONG ulActualBytes);
+
+#if 0
+SPIFRSLT RflReadFileFH_Debug(ULONG ulOffset, VOID* pData, ULONG ulSize, PifFileHandle hsFileHandle, ULONG* pulActualBytesRead, CONST char* aszFilePath, int nLineNo);
+#define RflReadFileFH(os, pd, us, hfh, pbr) RflReadFileFH_Debug(os, pd, us, hfh, pbr, __FILE__, __LINE__)
+
+SPIFRSLT RflWriteFileFH_Debug(ULONG ulOffset, const VOID* pData, ULONG ulSize, PifFileHandle hsFileHandle, CONST char* aszFilePath, int nLineNo);
+#define RflWriteFileFH(os, pd, us, hfh) RflWriteFileFH_Debug(os, pd, us, hfh, __FILE__, __LINE__)
+#else
+SPIFRSLT RflReadFileFH(ULONG offulSeekPos, VOID* pReadBuffer, ULONG ulReadSize, PifFileHandle hsFileHandle, ULONG* pulActualBytesRead);
+SPIFRSLT RflWriteFileFH(ULONG offulSeekPos, VOID* pWriteBuffer, ULONG ulWriteSize, PifFileHandle  hsFileHandle);
+#endif
 
 UCHAR  RflMakeCD(ULONG ulNumber);          /* generate check digits :RflCD.c */
 SHORT  RflCheckCD(ULONG ulNumber);         /* confirm check digits :RflCD.c */

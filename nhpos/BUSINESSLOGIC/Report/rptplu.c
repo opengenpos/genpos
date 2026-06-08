@@ -372,6 +372,9 @@ SHORT   RptPLUEditInd(UCHAR uchMinorClass, UCHAR uchType, TCHAR *puchPLUNumber)
     sReturn = CliOpDeptIndRead(&DeptIf, 0);                                 /* Get DEPT Status */
     if (sReturn == OP_PERFORM) {
         if (PluIf.ParaPlu.ContPlu.auchContOther[2] & PLU_USE_DEPTCTL) {         /* Use Dept Status ? */
+#if 0
+            RflDeptStatusToPluStatus(PluIf.ParaPlu.ContPlu.auchContOther, DeptIf.ParaDept.auchControlCode);
+#else
             PluIf.ParaPlu.ContPlu.auchContOther[0] = DeptIf.ParaDept.auchControlCode[0];    /* Copy Bit Status 0 */
             PluIf.ParaPlu.ContPlu.auchContOther[1] = DeptIf.ParaDept.auchControlCode[1];    /* Copy Bit Status 1 */
             PluIf.ParaPlu.ContPlu.auchContOther[2] = DeptIf.ParaDept.auchControlCode[2];    /* Copy Bit Status 2 */
@@ -382,6 +385,7 @@ SHORT   RptPLUEditInd(UCHAR uchMinorClass, UCHAR uchType, TCHAR *puchPLUNumber)
             DeptIf.ParaDept.auchControlCode[2] &= PLU_HASH;                                 /* Clear 0x04 in ...Code */
             PluIf.ParaPlu.ContPlu.auchContOther[2] &= ~PLU_HASH;                            /* Clear 0xfb in ...Code */
             PluIf.ParaPlu.ContPlu.auchContOther[2] |= DeptIf.ParaDept.auchControlCode[2];   /* Copy Bit Status 2 */
+#endif
         }
     } else if (sReturn != OP_NOT_IN_FILE) {
         sReturn = OpConvertError(sReturn);
@@ -863,6 +867,9 @@ SHORT   RptPLUCode(UCHAR uchMinorClass, UCHAR uchType, USHORT usStatus,
 
         if (sReturn == OP_PERFORM) {
             if (PluIf_Rep.ParaPlu.ContPlu.auchContOther[2] & PLU_USE_DEPTCTL) {         /* Use Dept Status ? */
+#if 0
+                RflDeptStatusToPluStatus(PluIf_Rep.ParaPlu.ContPlu.auchContOther, DeptIf.ParaDept.auchControlCode);
+#else
                 PluIf_Rep.ParaPlu.ContPlu.auchContOther[0] = DeptIf.ParaDept.auchControlCode[0];    /* Copy Bit Status 0 */
                 PluIf_Rep.ParaPlu.ContPlu.auchContOther[1] = DeptIf.ParaDept.auchControlCode[1];    /* Copy Bit Status 1 */
                 PluIf_Rep.ParaPlu.ContPlu.auchContOther[2] = DeptIf.ParaDept.auchControlCode[2];    /* Copy Bit Status 2 */
@@ -873,6 +880,7 @@ SHORT   RptPLUCode(UCHAR uchMinorClass, UCHAR uchType, USHORT usStatus,
                 DeptIf.ParaDept.auchControlCode[2] &= PLU_HASH;                                     /* Clear 0x04 in ...Code */
                 PluIf_Rep.ParaPlu.ContPlu.auchContOther[2] &= ~PLU_HASH;                            /* Clear 0xfb in ...Code */
                 PluIf_Rep.ParaPlu.ContPlu.auchContOther[2] |= DeptIf.ParaDept.auchControlCode[2];   /* Copy Bit Status 2 */
+#endif
             }
         } 
 
@@ -2619,6 +2627,9 @@ SHORT   RptPLUByPLU(UCHAR uchMinorClass, UCHAR uchType,
 
     if (sReturn == OP_PERFORM) {
         if (pPluIf->ParaPlu.ContPlu.auchContOther[2] & PLU_USE_DEPTCTL) {          /* Use Dept Status ? */
+#if 0
+            RflDeptStatusToPluStatus(pPluIf->ParaPlu.ContPlu.auchContOther, DeptIf.ParaDept.auchControlCode);
+#else
             pPluIf->ParaPlu.ContPlu.auchContOther[0] = DeptIf.ParaDept.auchControlCode[0];    /* Copy Bit Status 0 */
             pPluIf->ParaPlu.ContPlu.auchContOther[1] = DeptIf.ParaDept.auchControlCode[1];    /* Copy Bit Status 1 */
             pPluIf->ParaPlu.ContPlu.auchContOther[2] = DeptIf.ParaDept.auchControlCode[2];    /* Copy Bit Status 2 */
@@ -2628,6 +2639,7 @@ SHORT   RptPLUByPLU(UCHAR uchMinorClass, UCHAR uchType,
             DeptIf.ParaDept.auchControlCode[2] &= PLU_HASH;                /* Clear 0x04 in ...Code */
             pPluIf->ParaPlu.ContPlu.auchContOther[2] &= ~PLU_HASH;                            /* Clear 0xfb in ...Code */
             pPluIf->ParaPlu.ContPlu.auchContOther[2] |= DeptIf.ParaDept.auchControlCode[2];    /* Copy Bit Status 2 */
+#endif
         }
     }
 
@@ -2851,6 +2863,9 @@ SHORT   RptPLUByACTPLU(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchResetType, U
 
     if (sReturn == OP_PERFORM) {
         if (pPluIf->ParaPlu.ContPlu.auchContOther[2] & PLU_USE_DEPTCTL) {         /* Use Dept Status ? */
+#if 0
+            RflDeptStatusToPluStatus(pPluIf->ParaPlu.ContPlu.auchContOther, DeptIf.ParaDept.auchControlCode);
+#else
             pPluIf->ParaPlu.ContPlu.auchContOther[0] = DeptIf.ParaDept.auchControlCode[0];    /* Copy Bit Status 0 */
             pPluIf->ParaPlu.ContPlu.auchContOther[1] = DeptIf.ParaDept.auchControlCode[1];    /* Copy Bit Status 1 */
             pPluIf->ParaPlu.ContPlu.auchContOther[2] = DeptIf.ParaDept.auchControlCode[2];    /* Copy Bit Status 2 */
@@ -2862,6 +2877,7 @@ SHORT   RptPLUByACTPLU(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchResetType, U
             DeptIf.ParaDept.auchControlCode[2] &= PLU_HASH;                                     /* Clear 0x04 in ...Code */
             pPluIf->ParaPlu.ContPlu.auchContOther[2] &= ~PLU_HASH;                            /* Clear 0xfb in ...Code */
             pPluIf->ParaPlu.ContPlu.auchContOther[2] |= DeptIf.ParaDept.auchControlCode[2];   /* Copy Bit Status 2 */
+#endif
         }
     }
     /*----- Clear 0xc0 in PluIf_Rep...uchDEPT -----*/
@@ -3042,6 +3058,9 @@ SHORT   RptPLUByACTPLUSat(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchResetType
 
     if (sReturn == OP_PERFORM) {
         if (pPluIf->ParaPlu.ContPlu.auchContOther[2] & PLU_USE_DEPTCTL) {
+#if 0
+            RflDeptStatusToPluStatus(pPluIf->ParaPlu.ContPlu.auchContOther, DeptIf.ParaDept.auchControlCode);
+#else
             pPluIf->ParaPlu.ContPlu.auchContOther[0] = DeptIf.ParaDept.auchControlCode[0];    /* Copy Bit Status 0 */
             pPluIf->ParaPlu.ContPlu.auchContOther[1] = DeptIf.ParaDept.auchControlCode[1];    /* Copy Bit Status 1 */
             pPluIf->ParaPlu.ContPlu.auchContOther[2] = DeptIf.ParaDept.auchControlCode[2];    /* Copy Bit Status 2 */
@@ -3053,6 +3072,7 @@ SHORT   RptPLUByACTPLUSat(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchResetType
             DeptIf.ParaDept.auchControlCode[2] &= PLU_HASH;                                     /* Clear 0x04 in ...Code */
             pPluIf->ParaPlu.ContPlu.auchContOther[2] &= ~PLU_HASH;                            /* Clear 0xfb in ...Code */
             pPluIf->ParaPlu.ContPlu.auchContOther[2] |= DeptIf.ParaDept.auchControlCode[2];   /* Copy Bit Status 2 */
+#endif
         }
     }
     /*----- Clear 0xc0 in PluIf_Rep...uchDEPT -----*/
@@ -3273,6 +3293,9 @@ SHORT   RptPLUByDEPT(UCHAR uchMinorClass, UCHAR uchType, USHORT usStatus,
 
         if (sReturn == OP_PERFORM) {
             if (PluIf_Dep.ParaPlu.ContPlu.auchContOther[2] & PLU_USE_DEPTCTL) {     /* Use Dept Status ? */
+#if 0
+                RflDeptStatusToPluStatus(PluIf_Dep.ParaPlu.ContPlu.auchContOther, DeptIf.ParaDept.auchControlCode);
+#else
                                                                                     /* Copy Bit Status 0 */
                 PluIf_Dep.ParaPlu.ContPlu.auchContOther[0] = DeptIf.ParaDept.auchControlCode[0];
                                                                                     /* Copy Bit Status 1 */
@@ -3291,6 +3314,7 @@ SHORT   RptPLUByDEPT(UCHAR uchMinorClass, UCHAR uchType, USHORT usStatus,
                 PluIf_Dep.ParaPlu.ContPlu.auchContOther[2] &= ~PLU_HASH;
                                                                                     /* Copy Bit Status 2 */
                 PluIf_Dep.ParaPlu.ContPlu.auchContOther[2] |= DeptIf.ParaDept.auchControlCode[2];
+#endif
             }
         }
                                                                                 /* Clear 0xc0 in ...uchDEPT */
