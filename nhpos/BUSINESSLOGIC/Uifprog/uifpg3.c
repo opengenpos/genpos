@@ -488,7 +488,7 @@ SHORT UifPG3EnterData2(KEYMSG *pKeyMsg)
 			//           where FSC_SCANNER input with a PLU label should also be used to allow for RSS-14.
 			//             Richard Chambers, Oct-16-2017, GenPOS Rel 2.2.2
 			//
-#pragma message("  *** WARNING: inconsistency with RSS-14 bar code and error with more than 14 digits.\z")
+            #pragma PRAGMA_NOTE("  *** WARNING: inconsistency with RSS-14 bar code and error with more than 14 digits.")
             if((pKeyMsg->SEL.INPUT.DEV.SCA.uchStrLen > UIF_DIGIT77/*Changed for RSS14 UIF_DIGIT14*/) ||  /* Over digit */
                (pKeyMsg->SEL.INPUT.DEV.SCA.uchStrLen == 0)) {           /* or no entry */
                 return(LDT_KEYOVER_ADR);

@@ -2088,7 +2088,7 @@ VOID THREADENTRY TtlTUMJoinDisconnectedSatellite(VOID)
 				TtlTReadUpdateCpn();            /* R3.0 */
 
 				//  Need to also handle TTLCSCPNMISC struct
-#pragma message("------------------------------------    TtlTUMJoinDisconnectedSatellite() incomplete  \z  -----------------------")
+				#pragma PRAGMA_NOTE("-----    TtlTUMJoinDisconnectedSatellite() incomplete  ----------")
 				for (iLoop = 0; iLoop < FLEX_CPN_MAX; iLoop++) {
 					TtlAddTtlTotal(TtlCpnDayWork.CpnDayTotal + iLoop, area1.TtlCpnDayWork.CpnDayTotal + iLoop);
 					TtlAddTtlTotal(TtlCpnPTDWork.CpnPTDTotal + iLoop, area2.TtlCpnPTDWork.CpnPTDTotal + iLoop);

@@ -681,7 +681,7 @@ VOID    ItemTendAffectTax(UIFREGTENDER *pUifRegTender)
 
         if (ItemCommonTaxSystem() == ITM_TAX_CANADA) {
             ItemCanTax( &auchTotalStatus[1], &WorkTax, ITM_NOT_SPLIT );
-#pragma message("Remove this check once we determine TH ISSUE JHHJ \z added to cause compiler warning.")
+            #pragma PRAGMA_NOTE("Remove this Canadian tax check once we determine Tim Horton TH ISSUE JHHJ.")
 			if(WorkTax.alTaxable[1] > 100000)
 			{
 				// Tim Horton's of Canada was having a problem with a tax calculation error
