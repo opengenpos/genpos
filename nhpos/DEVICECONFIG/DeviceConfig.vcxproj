@@ -313,17 +313,17 @@
 echo copy %(FullPath) $(OutDir)
 copy "%(FullPath)" "$(OutDir)"
 </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetName);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)$(TargetName).txt</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">cd
 echo copy %(FullPath) $(OutDir)
 copy %(FullPath) $(OutDir)
 </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">$(TargetName);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Demo Release|Win32'">$(OutDir)$(TargetName).txt</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd
 echo copy %(FullPath) $(OutDir)
 copy "%(FullPath)" "$(OutDir)"
 </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetName);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)$(TargetName).txt</Outputs>
     </CustomBuild>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
