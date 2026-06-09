@@ -272,6 +272,8 @@ SHORT CliEJRead(UCHAR uchUAddr, EJ_READ *pEJRead, TCHAR *pBuff, UCHAR uchType)
     PifRequestSem( husCliExeNet );
 
     /* --- make request message structure --- */
+    // generate a compiler error if there is insufficient space for an EJ_READ
+    COMPILE_CHECK(sizeof(EJ_READ) <= sizeof(ReqMsgH.auchEJRead))
     memcpy( ReqMsgH.auchEJRead, pEJRead, sizeof( EJ_READ ));
     ReqMsgH.uchType = uchType;
 

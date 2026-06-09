@@ -1112,4 +1112,11 @@ OutputDebugStringW(
 #define PRAGMA_NOTE_STRING(x) PRAGMA_NOTE_STRING2(x)
 #define PRAGMA_NOTE(msg) message(__FILE__ "(" PRAGMA_NOTE_STRING(__LINE__) "): Message: " msg)
 
+// the following define generates a compile time check that the value of the
+// logical expression x is true, 1, rather than false, 0. The logical expression
+// must be a logical expression that can be evaluated at compile time to generate
+// a constant value such as: sizeof(EJ_READ) <= sizeof(ReqMsgH.auchEJRead) which
+// will can be evaluated at compile time and will generate either true or false.
+#define COMPILE_CHECK(x)     switch (0) { case 0: break; case (x) : break; }
+
 #endif                                      /* _INC_ECR */
