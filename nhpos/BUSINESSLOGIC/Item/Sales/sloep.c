@@ -446,9 +446,7 @@ SHORT ItemSalesOEPNextPlu(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
         if (pszGroups[usGroupPos] >= SLOEP_FREEONE) { /* with option */
             ausOption[usNoOfOption] = pszGroups[usGroupPos];       /* check option R3.1 */
             if (ausOption[usNoOfOption] == SLOEP_SELFROMKEY) {     /* if 97 option */
-                for(usGroupPos++, i=0;
-                        pszGroups[usGroupPos] != 0;
-                        usGroupPos++) {
+                for(usGroupPos++, i=0; pszGroups[usGroupPos] != 0; usGroupPos++) {
 
                     if (pszGroups[usGroupPos] < SLOEP_FREEONE) {
                         auchGroupNo[i] = pszGroups[usGroupPos];  /* set terget group no */
@@ -1188,13 +1186,15 @@ SUIFRSLT ItemSalesOEPOrderPlu(USHORT *pusOrderNo, UCHAR *puchAdjNo,
         /* --- get target item --- */
         if (usOption3 == SLOEP_SELFROMKEY) {
             /* allow 13 digit plu no entry, 2172 */
-            if (UifDiaOEPKey(&UI) != UIF_SUCCESS) {    /* abort by user     */
+            SHORT  sRsltUifDiaOep = UifDiaOEPKey(&UI);
+            if (sRsltUifDiaOep != UIF_SUCCESS) {    /* abort by user     */
                 ItemOtherClear();                   /* clear descriptor  */
                 return (UIF_CANCEL);                /* exit ...          */
             }
         } else {
             /* usControl = UieNotonFile(UIE_ENABLE);                   / disable using scanner */
-            if (UifDiaOEP(&UI, 0) != UIF_SUCCESS) {    /* abort by user     */
+            SHORT  sRsltUifDiaOep = UifDiaOEP(&UI, 0);
+            if (sRsltUifDiaOep != UIF_SUCCESS) {    /* abort by user     */
                 ItemOtherClear();                   /* clear descriptor  */
                 /* UieNotonFile(usControl);                      / enable scanner */
                 return (UIF_CANCEL);                /* exit ...          */
@@ -1276,7 +1276,8 @@ SUIFRSLT ItemSalesOEPOrderPlu(USHORT *pusOrderNo, UCHAR *puchAdjNo,
         } else if (UI.auchFsc[0] == FSC_CLEAR) {
 			// FSC_CLEAR is being used to indicate that NONE/DONE button
 			// in the OEP window was pressed - CFrameworkWndButton::SPL_BTN_DONE
-			UI.ulData = 0;
+            ItemOtherClear();                   /* clear descriptor  */
+            UI.ulData = 0;
             *pusOrderNo = 0;
             return (UIF_CANCEL);      // was UIF_DIA_ABORT but wasn't clearing lead thru message area.
 		}
