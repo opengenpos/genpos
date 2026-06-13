@@ -3897,20 +3897,26 @@ typedef unsigned char  UCSPCADRS;       // variable contains address of special 
 #define ITM_MOD_AFFECT_DEPT_PLU     0x20            /* mod disc affection, set based on MDC 37, MDC_MODID23_ADR */
 
 
-/* PLU Record Address 18 R3.1 ControlCode.auchStatus[PLU_CONTROLCODE_ADR_6] */
+/* PLU Record Address 18 R3.1
+ *    OPPLU_PARAENTRY ContPlu.auchContOther[5]
+ * or ITEMSALES ControlCode.auchPluStatus[PLU_CONTROLCODE_ADR_6]
+ */
 #define PLU_SND_KITCH5          0x01    /* Send Kitchen Printer #5 */
 #define PLU_SND_KITCH6          0x02    /* Send Kitchen Printer #6 */
 #define PLU_SND_KITCH7          0x04    /* Send Kitchen Printer #7 */
 #define PLU_SND_KITCH8          0x08    /* Send Kitchen Printer #8 */
 #define PLU_SALES_KP_NO_5_8     0x0f    // Mask to isolate indicators to use kitchen printer or CRT numbers 5 through 8
-  // PLU Record Address 19 R3.1 ControlCode.auchStatus[PLU_CONTROLCODE_ADR_6] */
+  // PLU Record Address 19 R3.1  */
 #define PLU_BIRTHDAY_CONTROL_M  0x30    /* Mask used to isolate Age Type setting */ 
 #define PLU_BIRTHDAY_CONTROL1   0x10    /* Age Type setting, Birthday Control 1 */
 #define PLU_BIRTHDAY_CONTROL2   0x20    /* Age Type setting, Birthday Control 2 */
 #define PLU_BIRTHDAY_CONTROL3   0x30    /* Age Type setting, Birthday Control 3 */
 #define PLU_SALES_WIC_ITEM      0x40    /* this is a WIC item PLU */
 
-/* PLU Record Address 20 R3.1 ControlCode.auchStatus[PLU_CONTROLCODE_ADR_7] */
+/* PLU Record Address 20 R3.1
+ *    OPPLU_PARAENTRY ContPlu.auchContOther[6]
+ * or ITEMSALES ControlCode.auchPluStatus[PLU_CONTROLCODE_ADR_7]
+ */
 #define PLU_ALLOW_0_TEND		0x01    // Allows tender of $0
 #define PLU_NOT_ALLOW_QR		0x02	//Quantity Restriction 
 #define PLU_REQUIRE_QR			0x04	//Require Quantity
@@ -3924,18 +3930,18 @@ typedef unsigned char  UCSPCADRS;       // variable contains address of special 
 #define PLU_REQ_TARE		0xf000
 #define PLU_REQ_TARE_MASK	0x001f    // max value is 30 but we use the masking of the lower 5 bits
 
-// Plu Controll Code index (used in ControlCode.auchStatus)   ***PDINU
-// These indexes have not been implemented for auchStatus[0] 
-// through auchStatus[5].  Modifications have only been made to
-// auchStatus[6]
-#define	PLU_CONTROLCODE_ADR_0	0		//Index of ControlCode.auchStatus (A68_CTRL_0 in PEP)
-#define	PLU_CONTROLCODE_ADR_1	1		//Index of ControlCode.auchStatus (A68_CTRL_1 in PEP)
-#define	PLU_CONTROLCODE_ADR_2	2		//Index of ControlCode.auchStatus (A68_CTRL_2 in PEP)
-#define	PLU_CONTROLCODE_ADR_3	3		//Index of ControlCode.auchStatus (A68_CTRL_3 in PEP)
-#define	PLU_CONTROLCODE_ADR_4	4		//Index of ControlCode.auchStatus (A68_CTRL_4 in PEP)
-#define	PLU_CONTROLCODE_ADR_5	5		//Index of ControlCode.auchStatus set based on MDC 27/29/37, MDC_DEPT1_ADR, MDC_SCALE_ADR, MDC_MODID23_ADR
-#define	PLU_CONTROLCODE_ADR_6	6		//Index of ControlCode.auchStatus for address 18 and address 19 (A68_CTRL_5 in PEP)
-#define	PLU_CONTROLCODE_ADR_7	7		//Index of ControlCode.auchStatus for address 20 (A68_CTRL_6 in PEP)
+// Plu Control Code index (used in ControlCode.auchPluStatus)   ***PDINU
+// These indexes have not been implemented for auchPluStatus[0] 
+// through auchPluStatus[5].  Modifications have only been made to
+// auchPluStatus[6]
+#define	PLU_CONTROLCODE_ADR_0	0		//Index of ITEMSALES ControlCode.auchPluStatus (A68_CTRL_0 in PEP)
+#define	PLU_CONTROLCODE_ADR_1	1		//Index of ITEMSALES ControlCode.auchPluStatus (A68_CTRL_1 in PEP)
+#define	PLU_CONTROLCODE_ADR_2	2		//Index of ITEMSALES ControlCode.auchPluStatus (A68_CTRL_2 in PEP)
+#define	PLU_CONTROLCODE_ADR_3	3		//Index of ITEMSALES ControlCode.auchPluStatus (A68_CTRL_3 in PEP)
+#define	PLU_CONTROLCODE_ADR_4	4		//Index of ITEMSALES ControlCode.auchPluStatus (A68_CTRL_4 in PEP)
+#define	PLU_CONTROLCODE_ADR_5	5		//Index of ITEMSALES ControlCode.auchPluStatus set based on MDC 27/29/37, MDC_DEPT1_ADR, MDC_SCALE_ADR, MDC_MODID23_ADR
+#define	PLU_CONTROLCODE_ADR_6	6		//Index of ITEMSALES ControlCode.auchPluStatus for address 18 and address 19 (A68_CTRL_5 in PEP)
+#define	PLU_CONTROLCODE_ADR_7	7		//Index of ITEMSALES ControlCode.auchPluStatus for address 20 (A68_CTRL_6 in PEP)
 
 /*------------------------------------------------------------------------*\
 *   PARAMETER - ERROR STATUS DEFINE
