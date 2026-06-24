@@ -213,7 +213,7 @@ SHORT MldCreateIndexFile( USHORT usNoOfItem,
     sSeekStatus = TrnExpandFile( hsIndexFile, ulInquirySize );
 
     /* --- determine index file creation is successful or not --- */
-    if ( sSeekStatus != MLD_SUCCESS ) {
+    if ( sSeekStatus != TRN_SUCCESS) {
 		PifCloseFile( hsIndexFile );
 		PifDeleteFile( lpszIndexName );
         return ( MLD_ERROR );
