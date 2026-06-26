@@ -333,9 +333,7 @@ SHORT   ItemSalesGetPrice(ITEMSALES *pItemSales, DCURRENCY *plPrice)
 
 			if (WorkUI.lAmount != lCmp) {
                 if (CliParaMDCCheck(MDC_PLU3_ADR, EVEN_MDC_BIT0)) {
-					char  xBuff[128];
-					sprintf (xBuff, "==PROVISIONING: ItemSalesGetPrice() PPI LDT_BLOCKEDBYMDC_ADR MDC 296 Bit D.");
-					NHPOS_NONASSERT_NOTE ("==PROVISION", xBuff);
+					NHPOS_NONASSERT_NOTE ("==PROVISION", "==PROVISIONING: ItemSalesGetPrice() PPI LDT_BLOCKEDBYMDC_ADR MDC 296 Bit D.");
                     return (LDT_BLOCKEDBYMDC_ADR);
                 }
                 return (ITM_PRICECHANGE);
@@ -349,9 +347,7 @@ SHORT   ItemSalesGetPrice(ITEMSALES *pItemSales, DCURRENCY *plPrice)
 
 			if (WorkUI.lAmount != lCmp) {
                 if (CliParaMDCCheck(MDC_PLU3_ADR, EVEN_MDC_BIT0)) {
-					char  xBuff[128];
-					sprintf (xBuff, "==PROVISIONING: ItemSalesGetPrice() LDT_BLOCKEDBYMDC_ADR MDC 296 Bit D.");
-					NHPOS_NONASSERT_NOTE ("==PROVISION", xBuff);
+					NHPOS_NONASSERT_NOTE ("==PROVISION", "==PROVISIONING: ItemSalesGetPrice() LDT_BLOCKEDBYMDC_ADR MDC 296 Bit D.");
                     return (LDT_BLOCKEDBYMDC_ADR);
                 }
                 return (ITM_PRICECHANGE);
@@ -363,9 +359,7 @@ SHORT   ItemSalesGetPrice(ITEMSALES *pItemSales, DCURRENCY *plPrice)
         /* not price entry */
         if (CliParaMDCCheck(MDC_PLU3_ADR, EVEN_MDC_BIT1)) {
             /* compulsory new price entry */
-			char  xBuff[128];
-			sprintf (xBuff, "==PROVISIONING: ItemSalesGetPrice() LDT_BLOCKEDBYMDC_ADR MDC 296 Bit C.");
-			NHPOS_NONASSERT_NOTE ("==PROVISION", xBuff);
+			NHPOS_NONASSERT_NOTE ("==PROVISION", "==PROVISIONING: ItemSalesGetPrice() LDT_BLOCKEDBYMDC_ADR MDC 296 Bit C.");
             return (LDT_BLOCKEDBYMDC_ADR);
         }
 

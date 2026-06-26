@@ -2183,10 +2183,12 @@ static SHORT   ItemMiscCheckTransCheck( VOID )
     /* check GCF(training mode) */
     if ( pTranGCFQualL->fsGCFStatus & GCFQUAL_TRAINING ) {
         if ( (pTranCurQualL->fsCurStatus & CURQUAL_TRAINING ) != CURQUAL_TRAINING ) {
+            NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION:  Cashier record status CURQUAL_TRAINING not match GC.");
             return( LDT_PROHBT_ADR );
         }
     } else { 
         if ( ( pTranCurQualL->fsCurStatus & CURQUAL_TRAINING) == CURQUAL_TRAINING) {
+            NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION:  Cashier record status CURQUAL_TRAINING not match GC.");
             return( LDT_PROHBT_ADR );
         }
     }
@@ -2195,6 +2197,7 @@ static SHORT   ItemMiscCheckTransCheck( VOID )
     if (pTranModeQualL->auchCasStatus[CAS_CASHIERSTATUS_1] & CAS_USE_TEAM) {               /* not use team */
         if (pTranModeQualL->uchCasTeamNo != 0) {                          /* not head cashier */
             if (pTranModeQualL->uchCasTeamNo != pTranGCFQualL->uchTeamNo) {/* team no unmatch */
+                NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION:  Cashier record status CAS_USE_TEAM. Not match GC team no.");
                 return( LDT_PROHBT_ADR );
             }
         }
@@ -2375,13 +2378,15 @@ SHORT   ItemMiscCheckTrans(UIFREGMISC *UifMisc)
 
     if (RflGetSystemType () == FLEX_STORE_RECALL) {
 		// This operation not allowed with a Store Recall System.
-        return(LDT_PROHBT_ADR); 
+        NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION:  Not allowed RflGetSystemType () == FLEX_STORE_RECALL.");
+        return(LDT_EQUIPPROVERROR_ADR);
 	}
 
     /* check if tax modifier key was used ? */
     if (ItemModLocalPtr->fsTaxable != 0) {
 		/* sequence error if tax modifier key has been used */
-        return(LDT_SEQERR_ADR); 
+        NHPOS_NONASSERT_NOTE("==PROCEDURE", "==PROCEDURE:  Not allowed if use tax modifier key.");
+        return(LDT_SEQERR_ADR);
     }
 
 	{
@@ -2432,6 +2437,7 @@ SHORT   ItemMiscCheckTrans(UIFREGMISC *UifMisc)
 		TRANGCFQUAL     WorkGCF = {0};
         WorkGCF.usGuestNo = MiscFrom.usGuestNo;
         ItemCommonCancelGC(&WorkGCF);
+        NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION:  Cashier record status CURQUAL_TRAINING or CAS_USE_TEAM.");
         return(LDT_GCFSUNMT_ADR);
     }
 
@@ -2671,17 +2677,20 @@ SHORT   ItemMiscCheckTransGC2GCChecker(ULONG *pulCasNo, USHORT usGuestNo)
         if ((CasIf.fbCashierStatus[CAS_CASHIERSTATUS_1] & CAS_USE_TEAM) && (CasIf.uchTeamNo)) {
 			/* not using team however target is a team menber and not head operator */
             ItemCasSignInCancel(&CasIf);    /* sign-out */
+            NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION:  Cashier record status CAS_USE_TEAM or team no. not match GC status or team no.");
             return(LDT_PROHBT_ADR);
         }
     } else {
         if ((CasIf.fbCashierStatus[CAS_CASHIERSTATUS_1] & CAS_USE_TEAM) == 0) {
 			/* using team however target is not a team menber */
             ItemCasSignInCancel(&CasIf);    /* sign-out */
+            NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION:  Cashier record status CAS_USE_TEAM or team no. not match GC status or team no.");
             return(LDT_PROHBT_ADR);
         } else {
             if ((CasIf.uchTeamNo) && (CasIf.uchTeamNo != TranModeQualPtr->uchCasTeamNo)) {
 				/* using team however target is not in this team and target is not head operator */
                 ItemCasSignInCancel(&CasIf);    /* sign-out */
+                NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION:  Cashier record status CAS_USE_TEAM or team no. not match GC status or team no.");
                 return(LDT_PROHBT_ADR);
             }
         }
@@ -2692,6 +2701,7 @@ SHORT   ItemMiscCheckTransGC2GCChecker(ULONG *pulCasNo, USHORT usGuestNo)
         ((CasIf.usGstCheckEndNo)&&(usGuestNo > CasIf.usGstCheckEndNo)))
 	{
         ItemCasSignInCancel(&CasIf);    /* sign-out */
+        NHPOS_NONASSERT_NOTE("==PROVISION", "==PROVISION:  GC no. not in Cashier record GC no. range.");
         return(LDT_PROHBT_ADR);
     }
 
