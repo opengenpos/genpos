@@ -157,7 +157,7 @@ USHORT ItemClassIsOneOf (UCHAR uchMajorMinorClass, ...)
 	return 0;
 }
 
-
+#if defined(POSSIBLE_DEAD_CODE)
 /*
  * Description: There are several PLU and Department characteristics that are shared between
  *              these two entities. This function is designed to be used by a variety of different
@@ -178,9 +178,6 @@ USHORT ItemClassIsOneOf (UCHAR uchMajorMinorClass, ...)
 */
 ULONG  ItemSalesItemPluTypeInfo (UCHAR *auchContOther)
 {
-	ITEMCONTCODE      *pItemContCode = NULL;
-	PLU_CONTROL       *pPluControl = NULL;
-	OPDEPT_PARAENTRY  *pOpDeptParaEntry = NULL;
 	ULONG  ulBitMapPluType = 0;
 
 	// Any additions to this list should recognize that only array elements 0 through 3 should
@@ -212,10 +209,10 @@ ULONG  ItemSalesItemPluKitchenPrint (UCHAR *auchContOther)
 	ulBitMapPluType |= (auchContOther[2] & PLU_SND_KITCH3) ? PLU_BM_KP_PRINT3 : 0;
 	ulBitMapPluType |= (auchContOther[2] & PLU_SND_KITCH4) ? PLU_BM_KP_PRINT4 : 0;
 
-	ulBitMapPluType |= (auchContOther[6] & PLU_SND_KITCH5) ? PLU_BM_KP_PRINT5 : 0;
-	ulBitMapPluType |= (auchContOther[6] & PLU_SND_KITCH6) ? PLU_BM_KP_PRINT6 : 0;
-	ulBitMapPluType |= (auchContOther[6] & PLU_SND_KITCH7) ? PLU_BM_KP_PRINT7 : 0;
-	ulBitMapPluType |= (auchContOther[6] & PLU_SND_KITCH8) ? PLU_BM_KP_PRINT8 : 0;
+	ulBitMapPluType |= (auchContOther[5] & PLU_SND_KITCH5) ? PLU_BM_KP_PRINT5 : 0;
+	ulBitMapPluType |= (auchContOther[5] & PLU_SND_KITCH6) ? PLU_BM_KP_PRINT6 : 0;
+	ulBitMapPluType |= (auchContOther[5] & PLU_SND_KITCH7) ? PLU_BM_KP_PRINT7 : 0;
+	ulBitMapPluType |= (auchContOther[5] & PLU_SND_KITCH8) ? PLU_BM_KP_PRINT8 : 0;
 
 	return ulBitMapPluType;
 }
@@ -297,6 +294,7 @@ BOOL  ItemSalesItemPluTypeInfoBoolRequired (UCHAR *auchContOther, ULONG ulMaskSe
 
 	return (((ulPluBm & ulMaskSetRequiredOn) == ulMaskSetRequiredOn) && ((ulPluBm & ulMaskSetRequiredOff) == 0)) ;
 }
+#endif
 
 /*
 *===========================================================================
