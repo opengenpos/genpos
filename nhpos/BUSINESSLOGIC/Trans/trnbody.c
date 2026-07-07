@@ -3532,24 +3532,9 @@ SHORT   TrnTaxSystem(VOID)
     // compile time check that defined constants
     // returned by ItemCommonTaxSystem() are the
     // same values as are used for TrnCheckTaxSystem().
-    switch (0) {
-    case 0:
-        break;
-    case (TRN_TAX_INTL == ITM_TAX_INTL):
-        break;
-    }
-    switch (0) {
-    case 0:
-        break;
-    case (TRN_TAX_CANADA == ITM_TAX_CANADA):
-        break;
-    }
-    switch (0) {
-    case 0:
-        break;
-    case (TRN_TAX_US == ITM_TAX_US):
-        break;
-    }
+    COMPILE_CHECK(TRN_TAX_INTL == ITM_TAX_INTL);
+    COMPILE_CHECK(TRN_TAX_CANADA == ITM_TAX_CANADA);
+    COMPILE_CHECK(TRN_TAX_US == ITM_TAX_US);
     return ItemCommonTaxSystem();
 #else
     if (TrnInformation.TranModeQual.fsModeStatus & MODEQUAL_INTL) {

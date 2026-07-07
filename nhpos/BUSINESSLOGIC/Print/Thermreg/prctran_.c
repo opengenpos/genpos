@@ -939,10 +939,7 @@ VOID PrtCallIPDTicketInfo ( TRANINFORMATION *pTran, PifFileHandle hsStorage, Plu
 #if defined(_DEBUG)
             // compile time check that the buffer sizes for reading compressed transaction data and
             // converting to uncompressed transaction data are still appropriate.
-            switch (0) {
-            case 0: break;
-            case sizeof(ITEMDATASIZEUNION) < CONSOLIMAXSIZE: break;
-            }
+            COMPILE_CHECK(sizeof(ITEMDATASIZEUNION) < CONSOLIMAXSIZE);
 #endif
 			ulStorageReadOffset = pPrtIdxCurrent->usItemOffset;
 			if (ulStorageReadOffset < 1) continue;  // if the offset is zero, invalid, then skip this index and go to next.
@@ -1172,10 +1169,7 @@ static VOID PrtPrintItemPrints ( TRANINFORMATION *pTran, PifFileHandle hsStorage
 #if defined(_DEBUG)
             // compile time check that the buffer sizes for reading compressed transaction data and
             // converting to uncompressed transaction data are still appropriate.
-            switch (0) {
-            case 0: break;
-            case sizeof(ITEMDATASIZEUNION) < CONSOLIMAXSIZE: break;
-            }
+            COMPILE_CHECK(sizeof(ITEMDATASIZEUNION) < CONSOLIMAXSIZE);
 #endif
             if (ulStorageReadOffset < 1) continue;  // if the offset is zero, invalid, then skip this index and go to next.
 			TrnReadFile( ulStorageReadOffset, auchStorageWork, sizeof( auchStorageWork ), hsStorage, &ulStorageReadSize);

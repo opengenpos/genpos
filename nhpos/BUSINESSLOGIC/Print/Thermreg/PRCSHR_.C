@@ -230,7 +230,7 @@ VOID    PrtShrPrintMeta(CONST VOID *ucBuff, USHORT  usUcharLen)
 	 */
     // check that the len is within the size limit and whether the warning eliminating cast is needed or not.
     NHPOS_ASSERT(usUcharLen < 256);
-    switch (0) { case 0: break; case sizeof(PrtShrInf.auchPrtData[usPrtShrOffset]) == sizeof(UCHAR) : break; }  // is the cast below needed?
+    COMPILE_CHECK(sizeof(PrtShrInf.auchPrtData[usPrtShrOffset]) == sizeof(UCHAR));  // is the cast below needed?
     PrtShrInf.auchPrtData[usPrtShrOffset] = (UCHAR)usUcharLen;
 	usPrtShrOffset ++;
     PrtShrInf.HdInf.usILI ++;

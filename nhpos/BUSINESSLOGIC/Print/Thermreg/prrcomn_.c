@@ -3350,24 +3350,9 @@ SHORT   PrtCheckTaxSystem(VOID)
     // compile time check that defined constants
     // returned by ItemCommonTaxSystem() are the
     // same values as are used for PrtCheckTaxSystem().
-    switch (0) {
-    case 0:
-        break;
-    case (PRT_TAX_INTL == ITM_TAX_INTL):
-        break;
-    }
-    switch (0) {
-    case 0:
-        break;
-    case (PRT_TAX_CANADA == ITM_TAX_CANADA):
-        break;
-    }
-    switch (0) {
-    case 0:
-        break;
-    case (PRT_TAX_US == ITM_TAX_US):
-        break;
-    }
+    COMPILE_CHECK(PRT_TAX_INTL == ITM_TAX_INTL);
+    COMPILE_CHECK(PRT_TAX_CANADA == ITM_TAX_CANADA);
+    COMPILE_CHECK(PRT_TAX_US == ITM_TAX_US);
     return ItemCommonTaxSystem();
 #else
     if (CliParaMDCCheck(MDC_TAX_ADR, ODD_MDC_BIT0)) {
