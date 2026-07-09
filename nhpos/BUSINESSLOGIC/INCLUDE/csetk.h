@@ -213,8 +213,8 @@ SHORT   EtkIssuedSet(VOID);
 SHORT   EtkIssuedClear(VOID);
 SHORT   EtkOpenFile(CONST CHAR *pszMode, UCHAR uchFileType, SHORT *phsEtkFile);
 VOID    EtkCloseFile(SHORT hsEtkFile);
-SHORT   EtkReadFile(SHORT hsEtkFile, ULONG ulOffset, ULONG ulLen, UCHAR *puchReadData, ULONG *pulActualBytesRead);
-VOID    EtkWriteFile(SHORT hsEtkFile, ULONG ulOffset, ULONG ulLen, UCHAR  *puchWriteData);
+SHORT   EtkReadFile(SHORT hsEtkFile, ULONG ulOffset, ULONG ulLen, VOID *puchReadData, ULONG *pulActualBytesRead);
+VOID    EtkWriteFile(SHORT hsEtkFile, ULONG ulOffset, ULONG ulLen, VOID  *puchWriteData);
 USLDTERR  EtkConvertErrorWithLineNumber(SHORT sError, ULONG ulCalledFromLineNo);
 #define EtkConvertError(sError) EtkConvertErrorWithLineNumber(sError,__LINE__)
 SHORT   EtkAllDataCheck(UCHAR uchMinor);

@@ -1646,7 +1646,7 @@ VOID   EtkCloseFile(SHORT hsEtkFile)
 SHORT    EtkReadFile(SHORT hsEtkFile,
                      ULONG ulOffset,
                      ULONG ulLen,
-                     UCHAR  *puchReadData,
+                     VOID  *puchReadData,
 					 ULONG	*pulActualBytesRead)
 {
     ULONG   ulActualPosition;
@@ -1689,7 +1689,7 @@ SHORT    EtkReadFile(SHORT hsEtkFile,
 VOID    EtkWriteFile(SHORT hsEtkFile,
                               ULONG ulOffset,
                               ULONG usLen,
-                              UCHAR  *puchWriteData)
+                              VOID  *puchWriteData)
 {
     PifRequestSem(husEtkSem);       /* reqest semaphore */
 
