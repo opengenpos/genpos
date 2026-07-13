@@ -1449,6 +1449,7 @@ VOID    ItemCommonShiftPage(UCHAR uchPage);
 VOID    ItemCommonDispSubTotal(CONST VOID *pData);
 VOID    ItemCommonDispECSubTotal(CONST VOID *pData);  /* add R3.0 */
 SHORT   ItemCommonCheckSize(VOID *pData, USHORT usSize);
+SHORT   ItemCommonCancelGC2(ULONG fsGCFStatus, GCNUM usGuestNo);
 VOID    ItemCommonCancelGC(const TRANGCFQUAL *pData);
 VOID    ItemCommonScrollPause( VOID );          /* add R3.1 */
 SHORT   ItemCommonCheckNonGCTrans( VOID );

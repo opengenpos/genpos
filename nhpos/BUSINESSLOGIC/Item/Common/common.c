@@ -2174,6 +2174,47 @@ SHORT   ItemCommonCheckSize(VOID *pData, USHORT usSize)
 ** Description: Check Storage Size(Transaction and Display Storage).
 *===========================================================================
 */
+SHORT    ItemCommonCancelGC2(ULONG fsGCFStatus, GCNUM usGuestNo)
+{
+    SHORT     sStatus;
+    USHORT    usType = GCF_NO_APPEND;   // assume Counter Type GCF and change if drive thru
+
+    if (RflGetSystemType() == FLEX_STORE_RECALL) {
+        FDTPARA     WorkFDT = { 0 };
+
+        FDTParameter(&WorkFDT);
+        if (WorkFDT.uchTypeTerm == FX_DRIVE_ORDER_TERM_1
+            || WorkFDT.uchTypeTerm == FX_DRIVE_ORDER_PAYMENT_TERM_1
+            || WorkFDT.uchTypeTerm == FX_DRIVE_PAYMENT_TERM_1
+            || WorkFDT.uchTypeTerm == FX_DRIVE_ORDER_FUL_TERM_1) {
+
+            /*----- Drive Through Type GCF -----*/
+            if (fsGCFStatus & GCFQUAL_DRIVE_THROUGH) {
+                usType = GCF_APPEND_QUEUE1;
+            }
+        }
+        else if (WorkFDT.uchTypeTerm == FX_DRIVE_ORDER_TERM_2
+            || WorkFDT.uchTypeTerm == FX_DRIVE_ORDER_PAYMENT_TERM_2
+            || WorkFDT.uchTypeTerm == FX_DRIVE_PAYMENT_TERM_2
+            || WorkFDT.uchTypeTerm == FX_DRIVE_ORDER_FUL_TERM_2) {
+
+            if (fsGCFStatus & GCFQUAL_DRIVE_THROUGH) {
+                /*----- Drive Through Type GCF -----*/
+                usType = GCF_APPEND_QUEUE2;
+            }
+        }
+    }
+
+    // Try to get the guest check.  If there is an error, then
+    // popup a warning dialog.
+    while ((sStatus = TrnCancelGC(usGuestNo, usType)) != TRN_SUCCESS) {
+        USHORT   usStatus = GusConvertError(sStatus);
+        UieErrorMsg(usStatus, UIE_WITHOUT);
+    }
+
+    return sStatus;
+}
+
 VOID    ItemCommonCancelGC(const TRANGCFQUAL *pData)
 {
     SHORT           sStatus;
