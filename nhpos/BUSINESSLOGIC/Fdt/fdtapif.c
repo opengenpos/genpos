@@ -77,6 +77,10 @@
 
 
 // used in someplaces as more than max GCNUM value.  was 0xff
+// See also the following defines for their maxium number of guest checks:
+//   - GCF_MAX_GCF_NUMBER     Maximum drive thru size 
+//   - GCF_MAX_DRIVE_NUMBER   Define Maximum Drive Thorugh Number 
+//   - GCF_MAX_CHK_NUMBER	  Define Maximum Check Number for Non Store/Recall Guestchecks
 #define     FDT_OVER_MAX_GCNUM        0x7fff
 
 
