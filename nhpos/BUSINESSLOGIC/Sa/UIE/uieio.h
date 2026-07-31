@@ -78,7 +78,6 @@
 *   General Define Declarations
 *===========================================================================
 */
-#define UIE_INIT_MODE           0xFF        /* not initialization  */
 
 #define UIE_FUNC_KEY            1           /* function key        */
 #define UIE_AN_KEY              2           /* alpha/numeric key   */
@@ -112,6 +111,8 @@ typedef struct _UIEMACRO {
 */
 #define UIE_MODE_CHG            0x01        /* on - mode changable */
 #define UIE_MODE_LOCK           0x02        /* on - mode lock      */
+
+#define UIE_INIT_MODE           0xFF        /* not initialization  */
 
 typedef struct _UIEMODE {
     UCHAR   uchReally;                      /* really position     */
