@@ -1818,22 +1818,38 @@ USHORT CONST * PIFENTRY PifGetProcessId(VOID); /* for the Recovery Manager */
 ULONG PIFENTRY PifGetThreadId(VOID);     /* for the users */
 
 /* --- Semaphore --- */
-USHORT PIFENTRY PifCreateSem(USHORT usCount);
+#define PifCreateSem(usCount)  PifCreateSemNew((usCount), (usCount), __FILE__, __LINE__)
+USHORT PIFENTRY PifCreateSemNew(USHORT usCount, USHORT usInit, CHAR* pcFilePath, int iLineNo);
 VOID   PIFENTRY PifDeleteSem(USHORT usSem);
+
+#define PifRequestSemNew_debug 1        // enable logging of location of PifRequestSem() call
+#define PifReleaseSemNew_debug 1        // enable logging of location of PifReleaseSem() call
+#define PifTrackSemNew_debug   0        // allow for the tracking versions and their logs or not
+
 SHORT  PIFENTRY PifRequestSem(USHORT usSem);
 SHORT  PIFENTRY PifRequestSemNew(USHORT usSem, char *aszFilePath, int iLineNo);
-#define PifRequestSemNew_debug 1
+SHORT  RflPifRequestSemNewTrack(USHORT usSem, char* aszFilePath, int iLineNo);
 #if PifRequestSemNew_debug
 #define PifRequestSem(usSem)  PifRequestSemNew(usSem,__FILE__,__LINE__)
 #endif
+
 SHORT  PIFENTRY PifReleaseSem(USHORT usSem);
 SHORT  PIFENTRY PifReleaseSemNew(USHORT usSem, char *aszFilePath, int iLineNo);
-#define PifReleaseSemNew_debug 1
+SHORT  RflPifReleaseSemNewTrack(USHORT usSem, char* aszFilePath, int iLineNo);
 #if PifReleaseSemNew_debug
 #define PifReleaseSem(usSem)  PifReleaseSemNew(usSem,__FILE__,__LINE__)
 #endif
+
 SHORT  PIFENTRY PifRetrieveValueSem(USHORT usSem);
-USHORT PIFENTRY PifCreateSemNew(USHORT usCount, USHORT usInit, CHAR *pcFilePath, int iLineNo);
+
+#if PifTrackSemNew_debug
+#define PifReleaseSemTrack(usSem)  RflPifReleaseSemNewTrack(usSem,__FILE__,__LINE__)
+#define PifRequestSemTrack(usSem)  RflPifRequestSemNewTrack(usSem,__FILE__,__LINE__)
+#else
+// if we are not asking for debugging tracking then use standard PifReleaseSem()
+#define PifReleaseSemTrack(usSem) PifReleaseSem(usSem)
+#define PifRequestSemTrack(usSem)  PifRequestSem(usSem)
+#endif
 
 /* --- Queue --- */
 USHORT PIFENTRY PifCreateQueue(USHORT usCount);
@@ -1963,9 +1979,6 @@ USHORT PIFENTRY PifTurnOffPowerEx(USHORT usLock);
 
 SHORT  PIFENTRY PifOpenMsr(VOID);
 VOID   PIFENTRY PifCloseMsr(VOID);
-
-/* loggign function */
-VOID   CDECL PifSubLogging(USHORT usFuncId);
 
 /* --- Viode I/O --- */
 VOID    PIFENTRY PifVioStrAttr(USHORT usRow, USHORT usColumn, CONST UCHAR *puchString, USHORT usChars, USHORT usPage);

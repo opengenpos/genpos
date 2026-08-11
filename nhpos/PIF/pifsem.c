@@ -495,7 +495,7 @@ SHORT  PIFENTRY PifReleaseSemNew(USHORT usSem, char *aszFilePath, int iLineNo)
 	if ( (sRetStatus = PifReleaseSem(usSem)) < 0 || sRetStatus > 0) {
 		char  xBuff[256];
 
-		sprintf_s (xBuff, 254, "==LOG: PifReleaseSemNew(): usSem %d  %s  %d - last %s  %d", usSem, aszFilePath + iLen, iLineNo, aPifSemTable[usSem].szLastRelFile, aPifSemTable[usSem].ulLastRelLineNo);
+		sprintf_s (xBuff, 254, "==LOG: PifReleaseSemNew(): usSem %d %d  %s %d - last %s %d", usSem, sRetStatus, aszFilePath + iLen, iLineNo, aPifSemTable[usSem].szLastRelFile, aPifSemTable[usSem].ulLastRelLineNo);
 		NHPOS_NONASSERT_TEXT(xBuff);
 		if (sRetStatus < 0)
 			PifAbort(FAULT_AT_PIFRELEASESEM, FAULT_INVALID_HANDLE);
@@ -563,17 +563,19 @@ SHORT   PIFENTRY PifReleaseSem(USHORT usSem)
 	LeaveCriticalSection(&g_SemCriticalSection);
 
 	fReturn = ReleaseSemaphore(hSemaphoreHandle, 1, &lPrevCount);
-	aPifSemTable[usSem].lPrevCount = lPrevCount;
 	if (fReturn == 0) {
 		dwError = GetLastError();
 		PifLog(MODULE_PIF_RELEASESEM, LOG_ERROR_PIFSEM_CODE_08);
 		PifLog(MODULE_DATA_VALUE(MODULE_PIF_RELEASESEM), usSem);
-		PifLog(MODULE_DATA_VALUE(MODULE_PIF_RELEASESEM), (USHORT)lPrevCount);
+		PifLog(MODULE_DATA_VALUE(MODULE_PIF_RELEASESEM), (USHORT)aPifSemTable[usSem].lPrevCount);
 		PifLog(MODULE_ERROR_NO(MODULE_PIF_RELEASESEM), (USHORT)dwError);
 		PifLog(MODULE_DATA_VALUE(MODULE_PIF_RELEASESEM), aPifSemTable[usSem].sCount);
 		PifLog(MODULE_DATA_VALUE(MODULE_PIF_RELEASESEM), (USHORT)GetCurrentThreadId());
 		aPifSemTable[usSem].ulReleaseErrorCount++;
 		sRetStatus = 2 * 1000 + usSem;
+	}
+	else {
+		aPifSemTable[usSem].lPrevCount = lPrevCount;   // if ReleaseSemaphore() returns false then lPrevCount value is undefined.
 	}
 
 	if (aPifSemTable[usSem].ulActionFlags & PIF_SEM_ACTION_FLAGS_REL_NONZERO) {

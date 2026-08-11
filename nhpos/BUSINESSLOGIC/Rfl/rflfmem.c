@@ -45,7 +45,11 @@
 ;========================================================================
 **/
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
 #include "ecr.h"
+#include "pif.h"
 
 /**
 ;========================================================================
@@ -88,6 +92,58 @@ ULONG  RflMemHash (const VOID *pSrc, ULONG ulLen, ULONG ulHashStart)
 
 	return ulHash;
 }
+
+
+#if PifTrackSemNew_debug
+
+// following are debugging routines that are enabled by setting PifTrackSemNew_debug to 1.
+// these routines provide an interface to issue an ASSRTLOG when a semaphore Request or Release
+// is called.
+//
+// WARNING: A large volume of output could be generated so typically these are only used during
+//          testing.
+
+#pragma PRAGMA_NOTE("PifTrackSemNew_debug is enabled. Is this desired?")
+
+SHORT  RflPifReleaseSemNewTrack(USHORT usSem, char* aszFilePath, int iLineNo) {
+    {
+        char xBuff[128] = { 0 };
+        int    iLen = 0;
+
+        iLen = strlen(aszFilePath);
+        if (iLen > 20) {
+            iLen = iLen - 20;
+        }
+        else {
+            iLen = 0;
+        }
+        sprintf(xBuff, "==LOG: ReleaseSemTrack usSem %d called from %s %d", usSem, aszFilePath + iLen, iLineNo);
+        NHPOS_NONASSERT_NOTE("==LOG", xBuff);
+    }
+
+    return PifReleaseSemNew(usSem, aszFilePath, iLineNo);
+}
+
+SHORT  RflPifRequestSemNewTrack(USHORT usSem, char* aszFilePath, int iLineNo) {
+    {
+        char xBuff[128] = { 0 };
+        int    iLen = 0;
+
+        iLen = strlen(aszFilePath);
+        if (iLen > 20) {
+            iLen = iLen - 20;
+        }
+        else {
+            iLen = 0;
+        }
+        sprintf(xBuff, "==LOG: RequestSemTrack usSem %d called from %s %d", usSem, aszFilePath + iLen, iLineNo);
+        NHPOS_NONASSERT_NOTE("==LOG", xBuff);
+    }
+
+    return PifRequestSemNew(usSem, aszFilePath, iLineNo);
+}
+
+#endif
 
 /**
 ;============================================================================
