@@ -13,10 +13,6 @@
 * Category    : Client/Server STUB, Hospitality US Model
 * Program Name: CSSTBEJ.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.
-* Memory Model: Medium Model
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp
-* --------------------------------------------------------------------------
 * Abstract: The provided function names are as follows:
 *
 *               CliEJCreat()        Create EJ File
@@ -211,7 +207,7 @@ SHORT CliEJClear( UCHAR uchUAddr )
 **  Description: Write data to EJ File.
 *==========================================================================
 */
-SHORT CliEJWrite(EJT_HEADER FAR *pCHeader, USHORT usWSize, UCHAR FAR *pBuff,
+SHORT CliEJWrite(EJT_HEADER *pCHeader, USHORT usWSize, UCHAR *pBuff,
                                             UCHAR uchType, UCHAR uchOption)
 {
     return(EJWrite(pCHeader, usWSize, pBuff, uchType, uchOption));
@@ -263,7 +259,6 @@ SHORT CliEJReverse(EJ_READ *pEJRead, WCHAR *pBuff, UCHAR uchType)
 SHORT CliEJRead(UCHAR uchUAddr, EJ_READ *pEJRead, TCHAR *pBuff, UCHAR uchType)
 {
     /* === Add E/J Cluster Reset (Release 3.1) BEGIN === */
-    CLIRESEJREPT *pResReptMsgH;
 	CLIREQEJ    ReqMsgH = {0};
     CLIRESEJ    ResMsgH = {0};
     SHORT       sRetCode;
@@ -273,8 +268,7 @@ SHORT CliEJRead(UCHAR uchUAddr, EJ_READ *pEJRead, TCHAR *pBuff, UCHAR uchType)
 
     /* --- make request message structure --- */
     // generate a compiler error if there is insufficient space for an EJ_READ
-    COMPILE_CHECK(sizeof(EJ_READ) <= sizeof(ReqMsgH.auchEJRead))
-    memcpy( ReqMsgH.auchEJRead, pEJRead, sizeof( EJ_READ ));
+    ReqMsgH.auchEJRead = *pEJRead;
     ReqMsgH.uchType = uchType;
 
     /* --- link request message to client/server message area --- */    
@@ -298,9 +292,9 @@ SHORT CliEJRead(UCHAR uchUAddr, EJ_READ *pEJRead, TCHAR *pBuff, UCHAR uchType)
     } else {
         /* --- copy retrieved data to user's area, if function is successful --- */
         if ( 0 <= CliMsg.sRetCode ) {
-            pResReptMsgH = ( CLIRESEJREPT * )&ResMsgH;
+            CLIRESEJREPT* pResReptMsgH = (CLIRESEJREPT*)&ResMsgH;
             memcpy( pBuff,   pResReptMsgH->auchEJData, CLI_MAX_EJREPTDATA );
-            memcpy( pEJRead, pResReptMsgH->auchEJRead, sizeof( EJ_READ ));
+            *pEJRead = pResReptMsgH->auchEJRead;
         }
     }
 

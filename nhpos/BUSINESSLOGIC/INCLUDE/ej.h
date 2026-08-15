@@ -42,6 +42,12 @@
 :    $Log$
 \*-----------------------------------------------------------------------*/
 
+#if !defined(INCLUDE_EJ_H)
+
+#define INCLUDE_EJ_H
+
+#pragma once
+
 /*
 ===========================================================================
     DEFINE
@@ -313,4 +319,5 @@ SHORT   EJUnLock( UCHAR uchLock );
 #endif
 USHORT EJDelayBalanceUpdateFile(VOID);
 
+#endif
 /* --- End of Header --- */

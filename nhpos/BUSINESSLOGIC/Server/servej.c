@@ -63,19 +63,12 @@
 */
 VOID    SerRecvEJ( VOID )
 {
-    CLIREQEJ    *pReqMsgH;
-    CLIRESEJ    ResMsgH;
-    CLIRESEJREPT *pResReptMsgH;
+    CLIREQEJ* const pReqMsgH = (CLIREQEJ*)SerRcvBuf.auchData;
+    CLIRESEJ    ResMsgH = { 0 };
+    CLIRESEJREPT* const pResReptMsgH = (CLIRESEJREPT*)&ResMsgH;
     USHORT      usLen;
 	SHORT       sSerSendStatus = 0;
 
-    pReqMsgH = ( CLIREQEJ * )SerRcvBuf.auchData;
-
-	NHPOS_ASSERT(sizeof(pReqMsgH->auchEJRead) >= sizeof(EJ_READ));
-	NHPOS_ASSERT(sizeof(pResReptMsgH->auchEJRead) >= CLI_MAX_EJREAD);
-	NHPOS_ASSERT(sizeof(pResReptMsgH->auchEJRead[0]) == sizeof(UCHAR));
-
-    memset( &ResMsgH, 0, sizeof( CLIRESEJ ));
     ResMsgH.usFunCode   = pReqMsgH->usFunCode;
     ResMsgH.usSeqNo     = pReqMsgH->usSeqNo & CLI_SEQ_CONT;
     ResMsgH.ulDataLen   = 0;
@@ -92,12 +85,10 @@ VOID    SerRecvEJ( VOID )
         break;             
 
     case CLI_FCEJREAD:      /* EJ read */
-        pResReptMsgH = ( CLIRESEJREPT * )&ResMsgH;
-        ResMsgH.sReturn = EJRead(( EJ_READ * )pReqMsgH->auchEJRead, pResReptMsgH->auchEJData, pReqMsgH->uchType );
+        ResMsgH.sReturn = EJRead(&pReqMsgH->auchEJRead, pResReptMsgH->auchEJData, pReqMsgH->uchType );
         pResReptMsgH->usDataLen = CLI_MAX_EJREPTDATA;
-        //_tcsncpy( pResReptMsgH->auchEJRead, pReqMsgH->auchEJRead, CLI_MAX_EJREAD );
-        memcpy( pResReptMsgH->auchEJRead, pReqMsgH->auchEJRead, CLI_MAX_EJREAD );
-        pResReptMsgH->usDataLen += CLI_MAX_EJREAD;
+        pResReptMsgH->auchEJRead = pReqMsgH->auchEJRead;
+        pResReptMsgH->usDataLen += sizeof(pResReptMsgH->auchEJRead);
         break;
 
     case CLI_FCEJLOCK:     /* EJ Lock, V3.3    */

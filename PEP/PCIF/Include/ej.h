@@ -15,6 +15,13 @@
 *   Dec-08-95          : 03.01.00   :M.Ozawa      :Change EJWrite argument to FAR
 *   Mar-14-97          : 02.00.05   :hrkato       :R2.0(Migration)
 \*=======================================================================*/
+
+#if !defined(INCLUDE_EJ_H)
+
+#define INCLUDE_EJ_H
+
+#pragma once
+
 /*
 ===========================================================================
     DEFINE
@@ -219,5 +226,7 @@ USHORT  EJReadTrans(ULONG *pulOffset,
 SHORT   EJCheckSpace(EJF_HEADER *pFHeader);
 SHORT   EJLock( UCHAR uchLock );
 SHORT   EJUnLock( UCHAR uchLock );
+
+#endif
 
 /* --- End of Header --- */

@@ -47,6 +47,11 @@
 */
 #if !defined(PCSTBFCC_INCLUDED)
 #define PCSTBFCC_INCLUDED
+
+#include "plu.h"
+#include "csttl.h"
+#include "ej.h"
+
 /*------------------------------
     DEFINE FOR RETUR VALUE
 ------------------------------*/
@@ -890,7 +895,8 @@ typedef struct {
     USHORT  usFunCode;
     USHORT  usSeqNo;
     ULONG   ulOffset;
-    UCHAR   auchEJRead[CLI_MAX_EJREAD ];    /* Add R3.1 (sizeof(EJ_READ)-2) */
+    //    UCHAR   auchEJRead[CLI_MAX_EJREAD ];    /* Add R3.1 (sizeof(EJ_READ)-2) */
+    EJ_READ  auchEJRead;                    // replace the old UCHAR array with the correct actual type
     UCHAR   uchType;                        /* Add R3.1 */
     USHORT  usNumTrans;                     /* V3.3 */
 } CLIREQEJ;
@@ -917,7 +923,8 @@ typedef struct {    /* Add at R3.1 */
     ULONG   ulOffset;
     USHORT  usDataLen;
     WCHAR   auchEJData[CLI_MAX_EJREPTDATA];
-    UCHAR   auchEJRead[CLI_MAX_EJREAD ];
+    //    UCHAR   auchEJRead[CLI_MAX_EJREAD];      // must be same size as CLIREQEJ auchEJRead[] and large as EJ_READ
+    EJ_READ auchEJRead;    // replace the old UCHAR array with the correct actual type
 } CLIRESEJREPT;     /* Add at R3.1 */
 
 /*------------------------------------------

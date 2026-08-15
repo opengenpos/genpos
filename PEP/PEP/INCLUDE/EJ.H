@@ -28,6 +28,13 @@
 *
 *
 \*=======================================================================*/
+
+#if !defined(INCLUDE_EJ_H)
+
+#define INCLUDE_EJ_H
+
+#pragma once
+
 /*=======================================================================*\
 :   PVCS ENTRY
 :-------------------------------------------------------------------------
@@ -226,5 +233,7 @@ USHORT  EJReadTrans(ULONG *pulOffset, VOID *pData, USHORT usDataLen, USHORT *pus
 SHORT   EJCheckSpace(EJF_HEADER *pFHeader);
 SHORT   EJLock( UCHAR uchLock );
 SHORT   EJUnLock( UCHAR uchLock );
+
+#endif
 
 /* --- End of Header --- */
