@@ -3083,12 +3083,16 @@ SHORT   OpReqFileTransfer (USHORT usFcCode, TCHAR CONST *ptcsFileName, UCHAR uch
 
 SHORT   OpReqBiometrics(USHORT usFcCode, USHORT usLockHnd)
 {
+#if REMOVE_DFPR_DB
+    return OP_PERFORM;
+#else
     /*  LOCK CHECK */
     if (Op_LockCheck(usLockHnd) == OP_LOCK) {
         return(OP_LOCK);
     }
 
 	return OpReqFileTransfer (usFcCode, auchOP_DFPR, OP_BIOMETRICS_FILE, usLockHnd);
+#endif
 }
 
 SHORT   OpReqReasonCodes(USHORT usFcCode, USHORT usLockHnd)
@@ -3186,7 +3190,11 @@ SHORT   OpResBiometrics (UCHAR  *puchRcvData,
                  USHORT *pusSndLen,
                  USHORT  usLockHnd)
 {
+#if REMOVE_DFPR_DB
+    return OP_PERFORM;
+#else
 	return OpResFileTransfer (puchRcvData, usRcvLen, puchSndData, pusSndLen, auchOP_DFPR, usLockHnd);
+#endif
 }
 
 SHORT   OpResReasonCodes (UCHAR  *puchRcvData,

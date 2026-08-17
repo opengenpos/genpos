@@ -498,12 +498,14 @@ short TransTermReceiveData(HWND hWnd)
         if ((sStatus = TransTermReceiveFile(hWnd, szTransCashier, TRANS_ACCESS_CASHIER, NewFlexMem[FLEX_CAS_ADR - 1].ulRecordNumber, IDS_TRANS_RECEIVE_CASHIER)) < 0) {
             break;
         }
-		
+
+#if ! REMOVE_DFPR_DB
 		// recieve Fingerprint file
 		// doesn't exist in the NewFlexMem table, so passing a blocksize of 1 to indicate the file has contents to transfer
 		if((sStatus = TransTermReceiveFile(hWnd, szTransFPDB, TRANS_ACCESS_CASHIER,	1, IDS_TRANS_RECEIVE_FPDB)) < 0){
 			break;
 		}
+#endif
 
         /* ----- receive ETK file ----- */
         if((sStatus = TransTermReceiveFile(hWnd, szTransEtk, TRANS_ACCESS_ETK, NewFlexMem[FLEX_ETK_ADR - 1].ulRecordNumber, IDS_TRANS_RECEIVE_ETK)) < 0) {

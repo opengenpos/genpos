@@ -672,14 +672,13 @@ short TransTermSendData(HWND hWnd)
         }
 		// send Fingerprint DB (using cashier access flag)
 		// doesn't exist in the NewFlexMem table, so passing a blocksize of 1 to indicate the file has contents to transfer
-#if 0
+#if ! REMOVE_DFPR_DB
 		if ((sStatus = TransTermSendFile(hWnd, szTransFPDB, TRANS_ACCESS_CASHIER, 1, IDS_TRANS_SEND_FPDB)) < 0){
 			break;
 		}
-#else
+#endif
         // continue regardless of whether Cashier fingerprint file transfer worked or not.
         sStatus = TransTermSendFile(hWnd, szTransFPDB, TRANS_ACCESS_CASHIER, 1, IDS_TRANS_SEND_FPDB);
-#endif
         if ((getTransFwTransTerm() & TRANS_ACCESS_CASHIER) &&   /* user selected */
             (sStatTerm != ISP_WORK_AS_SATELLITE) && /* terminal is master */
             (NewFlexMem[FLEX_CAS_ADR - 1].ulRecordNumber != 0L)) { /*NCR2172*/

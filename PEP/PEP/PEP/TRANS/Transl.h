@@ -187,6 +187,8 @@ extern WCHAR szTransKeyboardLAY[];
 extern WCHAR szTransReceiptLogo[]; //Receipt Logo JHALL
 extern WCHAR szTransLogoIndex[];
 extern WCHAR szTransLogoFile[];
+// remove DFPR_DB from build.
+#define REMOVE_DFPR_DB     1
 extern WCHAR szTransFPDB[];
 
 /*

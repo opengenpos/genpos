@@ -99,7 +99,7 @@ WCHAR	 szTransKeyboardLAY[]	= WIDE("PARAMLB");
 WCHAR	 szTransReceiptLogo[]	= WIDE("PARAMLO1");
 WCHAR	 szTransLogoFile[]		= WIDE("PARAMLO%d");
 WCHAR	 szTransLogoIndex[]		= WIDE("PARAMLID");
-WCHAR	 szTransFPDB[]			= WIDE("DFPR_DB");
+WCHAR	 szTransFPDB[]			= WIDE("DFPR_DB");       // fingerprint file for biometrics. removed from OpenGenPOS.
 
 WCHAR        szTransIPFileName[] = WIDE("PEPHOSTS.INI");
 

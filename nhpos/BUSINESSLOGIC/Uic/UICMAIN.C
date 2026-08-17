@@ -396,10 +396,12 @@ SHORT  UicRPHand(NBMESSAGE_T uchReq, USHORT usSys)
 				sStatus = OpConvertError(sRet);
 			}
 
+#if REMOVE_DFPR_DB
 			sRet = OpReqFile(_T("DFPR_DB"), 0);
 			if (sRet != OP_PERFORM) {
 				sStatus = OpConvertError(sRet);
 			}
+#endif
 
 			sRet = OpReqFile(_T("PARAMDEP"), 0);
 			if (sRet != OP_PERFORM) {

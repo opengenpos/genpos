@@ -483,6 +483,8 @@ extern TCHAR CONST auchOP_CSTR[];
 extern TCHAR CONST auchOP_PPI[];     /* === Add PPI (Promotional Pricing Item) File (Release 3.1) BEGIN === */
 extern TCHAR CONST auchOP_MLD[];     /* Mld Mnemonics File, V3.3 */
 extern TCHAR CONST auchOP_RSN[];     /* Reason Code file for Rel 2.2.1 and Amtrak/VCS */
+// remove DFPR_DB from build.
+#define REMOVE_DFPR_DB     1
 extern TCHAR CONST auchOP_DFPR[];    /* DFPR_FNAME biometrics file for Rel 2.2.1 and Amtrak/VCS */
 
 #endif
