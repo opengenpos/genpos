@@ -118,8 +118,6 @@ VOID ItemEptMsgTextCopyReplace (TCHAR *pDest, TCHAR *pSource, int iMaxDestLen)
 		pDigit = pSource + iLen;
 
 		if (*pDigit >= _T('0') && *pDigit <= _T('9')) {
-			PARATRANSMNEMO  ParaTransMnemoLD;
-
 			usP20Address = usP20Address * 10 + (*pDigit++ - _T('0'));
 			iLen++;
 			if (*pDigit >= _T('0') && *pDigit <= _T('9')) {
@@ -131,10 +129,7 @@ VOID ItemEptMsgTextCopyReplace (TCHAR *pDest, TCHAR *pSource, int iMaxDestLen)
 				}
 			}
 
-			ParaTransMnemoLD.uchMajorClass =  CLASS_PARATRANSMNEMO;
-			ParaTransMnemoLD.uchAddress = usP20Address;
-			CliParaRead( &ParaTransMnemoLD );
-			_tcsncpy( pDest, ParaTransMnemoLD.aszMnemonics, NUM_TRANSMNEM);
+            RflGetTranMnem(pDest, usP20Address);
 			iLoop = _tcslen (pDest);
 			iMaxDestLen -= iLoop;
 
