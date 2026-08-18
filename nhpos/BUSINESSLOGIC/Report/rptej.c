@@ -595,14 +595,10 @@ SHORT Rpt_EJEdit_Print( SHORT sType, UCHAR uchUAddr  )
 */
 SHORT Rpt_EJEdit_Print_SingleColumn( VOID )
 {
-    TCHAR       auchRBuff[4][EJ_REPORT_WIDE];
+    TCHAR       auchRBuff[4][EJ_REPORT_WIDE] = { 0 };
     SHORT       sError;
-    RPTEJ       EJEdit;
-    EJ_READ     EJRead;
-
-    /* Initialize Work */
-    memset(&EJEdit, '\0', sizeof(RPTEJ));
-    memset(auchRBuff, '\0', sizeof(auchRBuff));
+    RPTEJ       EJEdit = { 0 };
+    EJ_READ     EJRead = { 0 };
 
     /* Set Major Class and Print Control */
     EJEdit.uchMajorClass = CLASS_RPTEJ;
@@ -643,8 +639,6 @@ SHORT Rpt_EJEdit_Print_SingleColumn( VOID )
         /* Get EJ records from EJ File */
         EJRead.usSize = sizeof(auchRBuff);
         sError = CliEJRead1Line(&EJRead, auchRBuff[0], 0);
-
-        /* Check Error Status */
         if (sError < 0) {                   /* Error Case */               
             return(EJConvertError(sError));
         }
@@ -685,15 +679,11 @@ SHORT Rpt_EJEdit_Print_SingleColumn( VOID )
 */
 SHORT Rpt_EJEdit_Display( VOID )
 {
-    TCHAR       auchRBuff[4][EJ_REPORT_WIDE];
+    TCHAR       auchRBuff[4][EJ_REPORT_WIDE] = { 0 };
     SHORT       sError;
-    RPTEJ       EJEdit;
-    EJ_READ     EJRead;
+    RPTEJ       EJEdit = { 0 };
+    EJ_READ     EJRead = { 0 };
 
-
-    /* Initialize Work */
-    memset(&EJEdit, '\0', sizeof(RPTEJ));
-    memset(auchRBuff, '\0', sizeof(auchRBuff));
 
     /* Set Major Class and Print Control */
     EJEdit.uchMajorClass = CLASS_RPTEJ;
@@ -772,9 +762,7 @@ SHORT Rpt_EJEdit_Display( VOID )
 */
 VOID Rpt_EJChgNULL( TCHAR *pData, UCHAR uchLen )
 {
-    UCHAR   i;
-    
-    for (i = 0; i < uchLen; i++) {
+    for (UCHAR i = 0; i < uchLen; i++) {
         if (*(pData + i) == 0) {
             *(pData + i) = _T(' ');
         }
@@ -799,12 +787,11 @@ VOID Rpt_EJChgNULL( TCHAR *pData, UCHAR uchLen )
 UCHAR Rpt_EJChkShr( VOID )
 {
     UCHAR           uchReturn;
-    PARASHAREDPRT   ParaSharedPrt;
+    PARASHAREDPRT   ParaSharedPrt = { 0 };
 
     /* check shared printer system */
     ParaSharedPrt.uchMajorClass = CLASS_PARASHRPRT;
-    ParaSharedPrt.uchAddress = CliReadUAddr();
-    ParaSharedPrt.uchAddress = ( UCHAR)2 * ParaSharedPrt.uchAddress - ( UCHAR)1;
+    ParaSharedPrt.uchAddress = PARASHAREDPRT_SHARED(CliReadUAddr());  // address of shared of shared/alternate printer pair
     CliParaRead(&ParaSharedPrt);
 
     uchReturn = ParaSharedPrt.uchTermNo;
@@ -875,7 +862,7 @@ SHORT Rpt_EJConfirmation(SHORT sError, SHORT sErrorType)
 */
 SHORT Rpt_EJPrtError( SHORT sError )
 {
-    MAINTERRORCODE  MaintErrCode;
+    MAINTERRORCODE  MaintErrCode = { 0 };
 
     /* Print error Code */
     MaintErrCode.uchMajorClass = CLASS_MAINTERRORCODE;
