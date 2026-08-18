@@ -181,16 +181,12 @@ SHORT  RptPLUGroupRead(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchNumber)
 SHORT  RptPLUGroupIndProc(UCHAR uchMinorClass, UCHAR uchGroupNumber, UCHAR uchType)
 {    
     SHORT    sReturn, sTempReturn;
-	RPTPLU		RptPLUGroup;
-	BL_PLU_INFO		pluInfo;
-	WCHAR     auchTempPLUNo[16];   // PLU number should be at least as big as OP_PLU_LEN
-    LABELANALYSIS   PluLabel;
-	PLUIF pluIf;
+    RPTPLU       RptPLUGroup = { 0 };
+    BL_PLU_INFO  pluInfo = { 0 };
+
     if (uchRptMldAbortStatus) {                         /* aborted by MLD */
         return (RPT_ABORTED);
     }
-
-    memset(&RptPLUGroup, 0, sizeof(RptPLUGroup));
 
     if(!(CliParaMDCCheck(MDC_PCTL_ADR, EVEN_MDC_BIT0))) {
         RptPLUGroup.usPrintControl |=  PRT_JOURNAL;
@@ -206,7 +202,6 @@ SHORT  RptPLUGroupIndProc(UCHAR uchMinorClass, UCHAR uchGroupNumber, UCHAR uchTy
     RptPLUGroup.uchMinorClass = CLASS_RPTPLUGROUP_PRTGRP;       /* PLU Group Number Set */
 	RptPLUGroup.usReportCode = uchGroupNumber;
 
-	memset(&pluInfo, 0, sizeof(pluInfo));
 	// get the first PLU member of the selected group
 	sReturn = BlFwIfIntrnlGetGroupPluInformationFirst(0, uchGroupNumber, 0, 0L, 0, &pluInfo);
 
@@ -220,6 +215,10 @@ SHORT  RptPLUGroupIndProc(UCHAR uchMinorClass, UCHAR uchGroupNumber, UCHAR uchTy
 
 	while (sReturn == 0)
 	{
+        LABELANALYSIS   PluLabel = { 0 };
+        PLUIF  pluIf = { 0 };
+        WCHAR  auchTempPLUNo[STD_PLU_NUMBER_LEN + 2] = { 0 };   // PLU number should be at least as big as STD_PLU_NUMBER_LEN
+
 		RptPLUGroup.uchMinorClass = CLASS_RPTPLUGROUP_PRTPLU;
 		RptPLUGroup.usReportCode = pluInfo.usGroupNo;
 		RptPLUGroup.usDEPTNumber = pluInfo.usDeptNo;
@@ -233,16 +232,11 @@ SHORT  RptPLUGroupIndProc(UCHAR uchMinorClass, UCHAR uchGroupNumber, UCHAR uchTy
 		}
 
 		//get PLU Dept. No.
-		memset(&pluIf, 0, sizeof(pluIf));
-		memset(&PluLabel, 0, sizeof(PluLabel));
-
 		RflConvertPLU(auchTempPLUNo, pluInfo.auchPluNo);
-
-		_tcsncpy(PluLabel.aszScanPlu, auchTempPLUNo, OP_PLU_LEN);
-
+		_tcsncpy(PluLabel.aszScanPlu, auchTempPLUNo, STD_PLU_NUMBER_LEN);
 		RflLabelAnalysis(&PluLabel);
 
-		_tcsncpy(pluIf.auchPluNo, /*auchTempPLUNo*/PluLabel.aszLookPlu, NUM_PLU_LEN);        // Set PLU No   
+		_tcsncpy(pluIf.auchPluNo, PluLabel.aszLookPlu, STD_PLU_NUMBER_LEN);        // Set PLU No   
 		pluIf.uchPluAdj = 1;                                         // Must put 1 to read 1st PLU  
 		
 		if ((sTempReturn = CliOpPluIndRead(&pluIf, 0)) != OP_PERFORM) {
@@ -256,7 +250,7 @@ SHORT  RptPLUGroupIndProc(UCHAR uchMinorClass, UCHAR uchGroupNumber, UCHAR uchTy
 		_tcsncpy(RptPLUGroup.aszMnemo, pluInfo.uchPluName, PARA_PLU_LEN);              /* Copy Mnemonics */
 
 		if (RptCheckReportOnMld()) {
-			uchRptMldAbortStatus = (UCHAR)MldDispItem(&RptPLUGroup, (USHORT)uchType);  /* Print each Element  */
+			uchRptMldAbortStatus = (UCHAR)MldDispItem(&RptPLUGroup, uchType);  /* Print each Element  */
 			RptPLUGroup.usPrintControl &= PRT_JOURNAL;            /* Reset Receipt print status so only goes to Electronic Journal if set */
 		}
 
@@ -306,18 +300,11 @@ SHORT  RptPLUGroupIndProc(UCHAR uchMinorClass, UCHAR uchGroupNumber, UCHAR uchTy
 SHORT  RptPLUGroupAllProc(UCHAR uchMinorClass, UCHAR uchType)
 {    
     SHORT    sReturn, sTempReturn;
-	RPTPLU		RptPLUGroup;
-	PLUIF		pluIf;
-	BL_PLU_INFO		pluInfo;
-    USHORT    uchPLUGroupNumber;
-	TCHAR     auchTempPLUNo[16];   // PLU number should be at least as big as OP_PLU_LEN
-    LABELANALYSIS   PluLabel;
+    RPTPLU	 RptPLUGroup = { 0 };
 
     if (uchRptMldAbortStatus) {                         /* aborted by MLD */
         return (RPT_ABORTED);
     }
-
-	memset(&RptPLUGroup, 0, sizeof(RptPLUGroup));
 
 	RptPLUGroup.uchMajorClass = CLASS_RPTPLU;	/* PLU (Group) Report Set */
 	RptPLUGroup.uchMinorClass = CLASS_RPTPLUGROUP_PRTGRP;	/* PLU (Group) Report Set */
@@ -345,12 +332,11 @@ SHORT  RptPLUGroupAllProc(UCHAR uchMinorClass, UCHAR uchType)
     }    
     usRptPrintStatus = RptPLUGroup.usPrintControl;
 
-    for (uchPLUGroupNumber = 1; uchPLUGroupNumber <= (ULONG)PLU_OEPGRP_MAX; uchPLUGroupNumber++){  /* Saratoga */
+    for (USHORT uchPLUGroupNumber = 1; uchPLUGroupNumber <= PLU_OEPGRP_MAX; uchPLUGroupNumber++){  /* Saratoga */
+        BL_PLU_INFO		pluInfo = { 0 };
 
 		RptPLUGroup.uchMinorClass = CLASS_RPTPLUGROUP_PRTGRP;	/* PLU (Group) Report Set */
         RptPLUGroup.usReportCode = uchPLUGroupNumber;             /* PLU Group Number Set */
-
-		memset(&pluInfo, 0, sizeof(pluInfo));
 
 		// get current group's first PLU info.
 		sReturn = BlFwIfIntrnlGetGroupPluInformationFirst(0, uchPLUGroupNumber, 0, 0L, 0, &pluInfo);
@@ -371,6 +357,10 @@ SHORT  RptPLUGroupAllProc(UCHAR uchMinorClass, UCHAR uchType)
 
 		while (sReturn == 0)
 		{
+            PLUIF		    pluIf = { 0 };
+            LABELANALYSIS   PluLabel = { 0 };
+            TCHAR           auchTempPLUNo[STD_PLU_NUMBER_LEN + 2] = { 0 };   // PLU number should be at least as big as OP_PLU_LEN
+
 			RptPLUGroup.uchMinorClass = CLASS_RPTPLUGROUP_PRTPLU;	/* PLU (Group) Report Set */
 			RptPLUGroup.usReportCode = pluInfo.usGroupNo;
 			//RptPLUGroup.usDEPTNumber = pluInfo.usDeptNo;
@@ -384,16 +374,11 @@ SHORT  RptPLUGroupAllProc(UCHAR uchMinorClass, UCHAR uchType)
 			}
 
 			//get PLU Dept. No.
-			memset(&pluIf, 0, sizeof(pluIf));
-			memset(&PluLabel, 0, sizeof(PluLabel));
-
 			RflConvertPLU(auchTempPLUNo, pluInfo.auchPluNo);
-
-			_tcsncpy(PluLabel.aszScanPlu, auchTempPLUNo, OP_PLU_LEN);
-
+			_tcsncpy(PluLabel.aszScanPlu, auchTempPLUNo, STD_PLU_NUMBER_LEN);
 			RflLabelAnalysis(&PluLabel);
 
-			_tcsncpy(pluIf.auchPluNo, /*auchTempPLUNo*/PluLabel.aszLookPlu, NUM_PLU_LEN);        // Set PLU No   
+			_tcsncpy(pluIf.auchPluNo, PluLabel.aszLookPlu, STD_PLU_NUMBER_LEN);        // Set PLU No   
 			pluIf.uchPluAdj = 1;                                         // Must put 1 to read 1st PLU  
 			
 			if ((sTempReturn = CliOpPluIndRead(&pluIf, 0)) != OP_PERFORM) {
@@ -407,7 +392,7 @@ SHORT  RptPLUGroupAllProc(UCHAR uchMinorClass, UCHAR uchType)
 		    _tcsncpy(RptPLUGroup.aszMnemo, pluInfo.uchPluName, PARA_PLU_LEN);              /* Copy Mnemonics */
 
 			if (RptCheckReportOnMld()) {
-				uchRptMldAbortStatus = (UCHAR)MldDispItem(&RptPLUGroup, (USHORT)uchType);  /* Print each Element  */
+				uchRptMldAbortStatus = (UCHAR)MldDispItem(&RptPLUGroup, uchType);  /* Print each Element  */
 				RptPLUGroup.usPrintControl &= PRT_JOURNAL;            /* Reset Receipt print status so only goes to Electronic Journal if set */
 			}
 
@@ -584,22 +569,17 @@ SHORT RptPLUGroupHeader(UCHAR uchMinorClass, UCHAR uchType)
 */
 VOID RptPLUGroupGrandTtlPrt(LTOTAL *pTotal, UCHAR uchType)
 {
-    RPTCPN   RptCpn;
-    PARATRANSMNEMO Mnemo;
+    RPTCPN   RptCpn = {0};
 
     if (uchRptMldAbortStatus) {                         /* aborted by MLD */
         return;
     }
-    memset(&RptCpn, 0, sizeof(RptCpn));                            
+
     RptCpn.uchMajorClass = CLASS_RPTCPN;
     RptCpn.uchMinorClass = CLASS_RPTCPN_TOTAL;
     RptCpn.CpnTotal.lAmount = pTotal->lAmount;                    /* Store GrandTotal */
     RptCpn.CpnTotal.lCounter = pTotal->lCounter;                  /* Store Counter    */
-/*    memset(&Mnemo.aszMnemonics, '\0', sizeof(Mnemo.aszMnemonics)); */
-    Mnemo.uchMajorClass = CLASS_PARATRANSMNEMO;                     /* Set Major Class  */
-    Mnemo.uchAddress = TRN_TTLR_ADR;                                /* Set Address      */
-    CliParaRead(&Mnemo);                                            /* Get Mnemonics    */
-    _tcsncpy(RptCpn.aszMnemo, Mnemo.aszMnemonics, PARA_CPN_LEN);    /* Copy Mnemonics   */
+    RflGetTranMnem(RptCpn.aszMnemo, TRN_TTLR_ADR);
     RptCpn.usPrintControl = usRptPrintStatus;
     if (RptCheckReportOnMld()) {
         uchRptMldAbortStatus = (UCHAR)MldDispItem(&RptCpn, (USHORT)uchType);  /* Print each Element  */
@@ -632,11 +612,9 @@ VOID RptPLUGroupGrandTtlPrt(LTOTAL *pTotal, UCHAR uchType)
 */
 SHORT RptPLUGroupReset(UCHAR uchMinorClass, UCHAR uchType)
 {
-    UCHAR   uchSpecReset,
-            uchSpecMnemo;
+    UCHAR   uchSpecReset;
     SHORT   sReturn;
-/*    CPNIF   CpnIf; */
-    TTLCPN  TtlCpn;
+    TTLCPN  TtlCpn = { 0 };
 
     /*----- Reset All Coupon Total -----*/
 
@@ -667,6 +645,7 @@ SHORT RptPLUGroupReset(UCHAR uchMinorClass, UCHAR uchType)
     /*----- Only Reset Case -----*/
 
     if (uchType == RPT_ONLY_RESET) {
+        UCHAR   uchSpecMnemo;
 
         if (uchMinorClass == CLASS_TTLSAVDAY) {
             uchSpecMnemo = SPC_DAIRST_ADR;                      /* Set Daily Special Mnemonics */
@@ -711,8 +690,7 @@ SHORT RptPLUGroupLock(VOID)
 {
     SHORT  sReturn;
 
-    if (((sReturn = SerCasAllLock()) != CAS_PERFORM) &&
-        (sReturn != CAS_FILE_NOT_FOUND)) {
+    if (((sReturn = SerCasAllLock()) != CAS_PERFORM) && (sReturn != CAS_FILE_NOT_FOUND)) {
         return(CasConvertError(sReturn));                           /* Return Error */
     }
 
