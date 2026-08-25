@@ -2,6 +2,8 @@
 //
 
 #include "stdafx.h"
+#include <string>
+
 #include "pcsample.h"
 #if defined(POSSIBLE_DEAD_CODE)
 		// This code is a candidate for removal with the next release of source code
@@ -87,12 +89,12 @@ void CLanDlg::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxByte(pDX, m_bIPAddress2, 0, 254);
 	DDX_Text(pDX, IDC_EDIT_IP3, m_bIPAddress3);
 	DDV_MinMaxByte(pDX, m_bIPAddress3, 0, 254);
-	DDX_Text(pDX, IDC_EDIT_PASSWORD_LAN, m_strPassword);
-	DDV_MaxChars(pDX, m_strPassword, 10);
-	DDX_Text(pDX, IDC_EDIT_HOST_LAN, m_strHostName);	//Pdinu
-	DDV_MaxChars(pDX, m_strHostName, 20);	//PDINU
 	DDX_Text(pDX, IDC_EDIT_IP4, m_bTerminalNo);
 	DDX_Text(pDX, IDC_EDITTERMNO_LAN, m_bTerminalNum);
+	DDX_Text(pDX, IDC_EDIT_HOST_LAN, m_strHostName);	//Pdinu
+	DDV_MaxChars(pDX, m_strHostName, 20);	//PDINU
+	DDX_Text(pDX, IDC_EDIT_PASSWORD_LAN, m_strPassword);
+	DDV_MaxChars(pDX, m_strPassword, 10);
 	DDX_Control(pDX, IDC_HOST_CONNECT, m_HostConnect);
 	DDX_Control(pDX, IDC_IP_CONNECT, m_IpConnect);
 	DDX_Text(pDX, IDC_EDIT_DB_NAME, m_strDbFileName);
@@ -103,30 +105,58 @@ void CLanDlg::DoDataExchange(CDataExchange* pDX)
 
 	//writes the input numbers to the registry to be stored for the ip connecton
 	//saved in the registry
-	theApp.WriteProfileInt(_T(""),_T("IP1"), m_bIPAddress1);
-	theApp.WriteProfileInt(_T(""),_T("IP2"), m_bIPAddress2);
-	theApp.WriteProfileInt(_T(""),_T("IP3"), m_bIPAddress3);
-	theApp.WriteProfileInt(_T(""),_T("IP4"), m_bTerminalNo);
-	theApp.WriteProfileString(_T(""),_T("Host Name"), m_strHostName);	//PDINU
-	theApp.WriteProfileString(_T(""),_T("Database Name"), m_strDbFileName);
-	theApp.WriteProfileInt(_T(""),_T("SaveResetToDatabase"), m_SaveResetDataToDatabase);
-
-	if(pDX->m_bSaveAndValidate)
+	if (pDX->m_bSaveAndValidate)
 	{
+		std::wstring  input(m_strHostName.GetString());
+
+		// 1. Find the position of the wide hyphen character
+		size_t hyphenPos = input.find(L'-');
+
+		if (hyphenPos != std::wstring::npos) {
+			// 2. Extract everything after the hyphen
+			std::wstring numStr = input.substr(hyphenPos + 1);
+
+			try {
+				// 3. Convert the wide substring to an integer
+				m_bTerminalNum = std::stoi(numStr);
+			}
+			catch (...) {
+			}
+		}
+		else {
+			// Display host name malformed and needs dash.
+			// Indicate the data entry control in error, display error message, fail validation.
+			pDX->PrepareEditCtrl(IDC_HOST_CONNECT);
+			AfxMessageBox(_T("Error: Dash number required. Host name is of form hostname-1."));
+			pDX->Fail();
+		}
+
+		theApp.WriteProfileInt(_T(""), _T("IP1"), m_bIPAddress1);
+		theApp.WriteProfileInt(_T(""), _T("IP2"), m_bIPAddress2);
+		theApp.WriteProfileInt(_T(""), _T("IP3"), m_bIPAddress3);
+		theApp.WriteProfileInt(_T(""), _T("IP4"), m_bTerminalNo);
+		theApp.WriteProfileString(_T(""), _T("Host Name"), m_strHostName);	//PDINU
+		theApp.WriteProfileString(_T(""), _T("Database Name"), m_strDbFileName);
+		theApp.WriteProfileInt(_T(""), _T("SaveResetToDatabase"), m_SaveResetDataToDatabase);
+
 		if (m_HostConnect.GetCheck())
 		{
-			m_HostConnectType = HostConnectHost;
+			m_HostConnectType = HostConnectType::HostConnectHost;
 		}
 		if (m_IpConnect.GetCheck())
 		{
-			m_HostConnectType = HostConnectIP;
+			m_HostConnectType = HostConnectType::HostConnectIP;
 		}
 	}
 	else{
 		/*  --- Initialize the IP radio button --- */
-		m_IpConnect.SetCheck(TRUE);
-		m_HostConnect.SetCheck(FALSE);
-		GetDlgItem(IDC_EDIT_HOST_LAN)->EnableWindow(FALSE);
+		m_IpConnect.SetCheck(FALSE);
+		m_HostConnect.SetCheck(TRUE);
+		GetDlgItem(IDC_EDIT_IP1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_IP2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_IP3)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_IP4)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDITTERMNO_LAN)->EnableWindow(FALSE);
 	}
 }
 
@@ -149,6 +179,7 @@ void CLanDlg::OnIpConnect()
 	GetDlgItem(IDC_EDIT_IP3)->EnableWindow(TRUE);
 	GetDlgItem(IDC_EDIT_IP4)->EnableWindow(TRUE);
 	GetDlgItem(IDC_EDIT_IP4)->EnableWindow(TRUE);
+	GetDlgItem(IDC_EDITTERMNO_LAN)->EnableWindow(TRUE);
 }
 
 void CLanDlg::OnHostConnect() 
@@ -158,6 +189,7 @@ void CLanDlg::OnHostConnect()
 	GetDlgItem(IDC_EDIT_IP2)->EnableWindow(FALSE);
 	GetDlgItem(IDC_EDIT_IP3)->EnableWindow(FALSE);
 	GetDlgItem(IDC_EDIT_IP4)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDITTERMNO_LAN)->EnableWindow(FALSE);
 }
 
 

@@ -978,7 +978,7 @@ void CPCSampleView::OnReadIndfin()
 		// --- read current daily total of selected terminal ---
         CTtlIndFin  ttlIndFin;
 
-        if ( ttlIndFin.Read( CLASS_TTLCURDAY, dlg.m_bTerminalNo ))
+        if ( ttlIndFin.Read( CLASS_TTLCURDAY, dlg.m_dlgTerminalNo))
         {
 			CParaMdcMem   mdcMem;
 
@@ -999,7 +999,7 @@ void CPCSampleView::OnReadIndfin()
         else
         {
             // --- function is failed, and report its error ---
-            pDoc->ReportError( CLASS_TTLINDFIN, pcsample::ERR_TTLREAD, ttlIndFin.GetLastError(), dlg.m_bTerminalNo );
+            pDoc->ReportError( CLASS_TTLINDFIN, pcsample::ERR_TTLREAD, ttlIndFin.GetLastError(), dlg.m_dlgTerminalNo);
         }
     }
 }
@@ -1022,7 +1022,7 @@ void CPCSampleView::OnResetIndfin()
     if ( dlg.DoModal() == IDOK )
     {
 
-		USHORT  usTerminalNo = dlg.m_bTerminalNo;
+		USHORT  usTerminalNo = dlg.m_dlgTerminalNo;
 
         CPCSampleDoc*   pDoc;
         pDoc = GetDocument();

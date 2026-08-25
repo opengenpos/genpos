@@ -429,7 +429,7 @@ void CMainFrame::OnConnectLanOn()
 		}
 		else
 		{
-            if (dlg.m_HostConnectType == CLanDlg::HostConnectHost )  //Connect with Host is selected
+            if (dlg.m_HostConnectType == CLanDlg::HostConnectType::HostConnectHost )  //Connect with Host is selected
 			{
 				if (m_Terminal.HostLogon(dlg.m_strHostName, dlg.m_strPassword, dlg.m_bTerminalNum))
 				{
@@ -1021,7 +1021,7 @@ void CMainFrame::OnReadEJ()
     CTerminalNoDlg  dlg;
 	if(m_PcIfPort.IsLanConnected())
 	{
-		dlg.m_bTerminalNo = (UCHAR) theApp.GetProfileInt(_T(""),_T("IP4"), 0);
+		dlg.m_dlgTerminalNo = (UCHAR) theApp.GetProfileInt(_T(""),_T("IP4"), 0);
 	}
 	
     if ( dlg.DoModal() == IDOK )
@@ -1042,7 +1042,7 @@ void CMainFrame::OnReadEJ()
 		// this will cause the assert in Terminal.cpp function UnlockKeyboard()
 		// to fail. As far as I know there's no need to lock the terminal, so we
 		// will simply log on as in the OnResetEJ(Non)Override functions. JV 1/08
-        if ( m_Terminal.LogOn( dlg.m_bTerminalNo ))
+        if ( m_Terminal.LogOn( dlg.m_dlgTerminalNo))
         {
             // --- read and report EJ in locked terminal ---
             ReadLockedEJ( reportEJ );
@@ -1053,7 +1053,7 @@ void CMainFrame::OnReadEJ()
         }
 
         // --- is the previous terminal the same as current ? ---
-        if ( dlg.m_bTerminalNo == usThisTerminal )
+        if ( dlg.m_dlgTerminalNo == usThisTerminal )
         {
             // --- unlock locked keyboard before exit function ---
             if ( ! m_Terminal.UnlockKeyboard())
@@ -1103,7 +1103,7 @@ void CMainFrame::OnResetEJ()
         CReportEJ   reportEJ;
 
         // --- log on and lock terminal, and then read EJ ---
-        if (( LogOnAndLockTerminal( dlg.m_bTerminalNo )) && ( ReadLockedEJ( reportEJ )))
+        if (( LogOnAndLockTerminal( dlg.m_dlgTerminalNo)) && ( ReadLockedEJ( reportEJ )))
         {
             // --- reset EJ in locked terminal ---
             if ( ! reportEJ.Reset())
@@ -1118,7 +1118,7 @@ void CMainFrame::OnResetEJ()
         }
 
         // --- is the previous terminal the same as current ? ---
-        if ( dlg.m_bTerminalNo == usThisTerminal )
+        if ( dlg.m_dlgTerminalNo == usThisTerminal )
         {
             // --- unlock locked keyboard before exit function ---
             if ( ! m_Terminal.UnlockKeyboard())
@@ -1170,7 +1170,7 @@ void CMainFrame::OnResetEJOverride()
         CReportEJ   reportEJ;
 
         // --- attept to log on the selected terminal ---
-        if ( m_Terminal.LogOn( dlg.m_bTerminalNo ))
+        if ( m_Terminal.LogOn( dlg.m_dlgTerminalNo))
         {
             // --- read and reset override EJ ----
 			reportEJ.m_usTerminalNo = usThisTerminal;
@@ -1227,7 +1227,7 @@ void CMainFrame::OnResetEJNonOverride()
         CReportEJ   reportEJ;
 
         // --- attept to log on the selected terminal ---
-        if ( m_Terminal.LogOn( dlg.m_bTerminalNo ))
+        if ( m_Terminal.LogOn( dlg.m_dlgTerminalNo))
         {
             // --- read and reset non-override EJ ----
 			reportEJ.m_usTerminalNo = usThisTerminal;

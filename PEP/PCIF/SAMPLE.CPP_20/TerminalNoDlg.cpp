@@ -67,7 +67,7 @@ CTerminalNoDlg::CTerminalNoDlg( CWnd* pParent ) :
     CDialog( CTerminalNoDlg::IDD, pParent )
 {
 	//{{AFX_DATA_INIT(CTerminalNoDlg)
-	m_bTerminalNo = 1;
+	m_dlgTerminalNo = 1;
 	//}}AFX_DATA_INIT
 }
 
@@ -85,8 +85,8 @@ void CTerminalNoDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CTerminalNoDlg)
-	DDX_Text(pDX, IDC_EDIT_TERMNO, m_bTerminalNo);
-	DDV_MinMaxByte(pDX, m_bTerminalNo, 1, 255);
+	DDX_Text(pDX, IDC_EDIT_TERMNO, m_dlgTerminalNo);
+	DDV_MinMaxByte(pDX, m_dlgTerminalNo, 1, 255);
 	//}}AFX_DATA_MAP
 }
 

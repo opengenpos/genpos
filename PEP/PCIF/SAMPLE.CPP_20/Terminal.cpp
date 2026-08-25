@@ -200,82 +200,52 @@ BOOL CTerminal::LogOn( const USHORT IPAddy1,const USHORT IPAddy2,const USHORT IP
 
     pcsample::TraceFunction( _T("BEGIN >> CTerminal::LogOn()") );
 
-    BOOL    fSuccess;
+    BOOL    fSuccess = TRUE;   // --- assume we already log on this terminal, do nothing ---
 
     // --- is the target not the same as current logged on terminal ? ---
-
     if ( m_usLoggedOnTerminalNo != usTerminalNo )
     {
         // --- at first, attempt to log off from current terminal  ---
-
-        if ( LogOff())
+        fSuccess = LogOff();
+        if (fSuccess)
         {
-            UCHAR   auchIPAddress[ 4 ];
-            TCHAR   auchPassword[ MAX_PCIF_SIZE +1]; //UCHAR to TCHAR ESMITH
+            UCHAR   auchIPAddress[4] = { 0 };
+            TCHAR   auchPassword[MAX_PCIF_SIZE + 1] = { 0 }; //UCHAR to TCHAR ESMITH
 
             // --- get IP address from dialog box---
-
             auchIPAddress[ 0 ] = static_cast< UCHAR >( IPAddy1 );
             auchIPAddress[ 1 ] = static_cast< UCHAR >( IPAddy2 );
             auchIPAddress[ 2 ] = static_cast< UCHAR >( IPAddy3 );
             auchIPAddress[ 3 ] = static_cast< UCHAR >( IPAddy4 );
 
             // --- get PC Interface password ---
-
-			memset( auchPassword, 0, sizeof( auchPassword ));
 			_tcsncpy(auchPassword,strPassword, MAX_PCIF_SIZE);
 
             // --- attempt to log on to the target terminal ---
-
             m_sLastError = ::IspLogOn( auchIPAddress, auchPassword );
 
 			CString str;
             str.Format( _T("\t::IspLogOn() - Called (%d)"), m_sLastError );
             str += CString( "...IP#%d.%d.%d.%d, Password:%s" );
-            pcsample::TraceFunction( str,
-                                     auchIPAddress[ 0 ],
-                                     auchIPAddress[ 1 ],
-                                     auchIPAddress[ 2 ],
-                                     auchIPAddress[ 3 ],
-                                     strPassword );
+            pcsample::TraceFunction( str, auchIPAddress[ 0 ], auchIPAddress[ 1 ], auchIPAddress[ 2 ], auchIPAddress[ 3 ], strPassword );
 
            fSuccess = ( m_sLastError == ISP_SUCCESS ) ? TRUE : FALSE;
 
-		       // --- format string by user defined format list ---
-
-
-		  		
-        }
-        else
-        {
-            // --- function is failed ---
-
-            fSuccess = FALSE;
+		   // --- format string by user defined format list ---
         }
     }
-    else
-    {
-        // --- we already log on this terminal, do nothing ---
 
-        fSuccess = TRUE;
-    }
-
+	memset( m_auchPassword, 0, (MAX_PCIF_SIZE + 1) * sizeof(TCHAR));
     if ( fSuccess )
     {
         // --- save current logged on terminal# and password ---
-
         m_usLoggedOnTerminalNo = usTerminalNo;
-
-		memset( m_auchPassword, 0, (MAX_PCIF_SIZE + 1) * sizeof(TCHAR));
 		_tcsncpy(m_auchPassword, strPassword, MAX_PCIF_SIZE);
     }
     else
     {
         // --- an error occurs, clear logged on terminal# and password ---
-
         m_usLoggedOnTerminalNo = 0;
-		memset(m_auchPassword,0, (MAX_PCIF_SIZE + 1) * sizeof(TCHAR));
-        ::ZeroMemory( m_auchPassword, sizeof( m_auchPassword ));
     }
 
     pcsample::TraceFunction( _T("END   >> CTerminal::LogOn() = %d"), fSuccess );

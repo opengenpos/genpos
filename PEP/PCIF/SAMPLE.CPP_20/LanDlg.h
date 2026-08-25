@@ -15,7 +15,7 @@ class CLanDlg : public CDialog
 {
 // Construction
 public:
-	typedef enum {HostConnectIP = 1, HostConnectHost = 2 } HostConnectType;
+	enum class HostConnectType {HostConnectIP = 1, HostConnectHost = 2 } ;
 
 	CLanDlg(CWnd* pParent = NULL);   // standard constructor
     CLanDlg(const BYTE bTerminalNo, const CSerialInfo& r_SerialInfo, CWnd* pParent = NULL );
@@ -23,18 +23,18 @@ public:
 
     CSerialInfo m_infoSerial;
 
-	HostConnectType  m_HostConnectType;
+	HostConnectType  m_HostConnectType = HostConnectType::HostConnectHost;
 
 // Dialog Data
 	//{{AFX_DATA(CLanDlg)
 	enum { IDD = IDD_CONNECT_LAN };
-	BYTE	m_bIPAddress1;
-	BYTE	m_bIPAddress2;
-	BYTE	m_bIPAddress3;
+	BYTE	m_bIPAddress1 = 192;
+	BYTE	m_bIPAddress2 = 168;
+	BYTE	m_bIPAddress3 = 0;
+	BYTE	m_bTerminalNo = 1;     // octet 4 of IPv4 address
 	CString	m_strPassword;
     CString m_strHostName;	//PDINU
-	BYTE	m_bTerminalNum;
-	BYTE	m_bTerminalNo;
+	BYTE	m_bTerminalNum = 1;
 	CButton m_HostConnect;
 	CButton m_IpConnect;
 	BOOL m_SaveResetDataToDatabase;

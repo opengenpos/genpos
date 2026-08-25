@@ -39,7 +39,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CTerminalNoDlg)
 	enum { IDD = IDD_SET_TERMINALNO };
-	BYTE	m_bTerminalNo;
+	BYTE	m_dlgTerminalNo;
 	//}}AFX_DATA
 
 // Overrides
