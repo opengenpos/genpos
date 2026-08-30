@@ -12,10 +12,6 @@
 *   Category           : EJ module
 *   Program Name       : EJ.H
 *  ------------------------------------------------------------------------
-*   Compile            : MS-C Ver. 6.00 A by Microsoft Corp.
-*   Memory Model       : Medium Model
-*   Options            :  /c /AM /G1s /Os /Za /Zp /W4
-*  ------------------------------------------------------------------------
 *   Abstract           : define,typedef,struct,prototype,memory
 *
 *  ------------------------------------------------------------------------
@@ -31,6 +27,10 @@
 ** NCR2172 **
 *
 *   Oct-05-99          : 01.00.00   :M.Teraki     :initial (for 2172)
+* 
+** NHPOS **
+* 
+*                      : 02.00.00   :J.Hall       : Delayed balance EJ functionality. AC275 and AC276.
 *
 \*=======================================================================*/
 /*=======================================================================*\
@@ -149,9 +149,10 @@ typedef  struct {
     ULONG    ulPrevPoint;    /* Start point of last transaction in the list of entries */
     ULONG    ulNextPoint;    /* Start point of next transaction or next location to put an entry */
     ULONG    ulEndofPoint;   /* Ending point of end of the last transaction physically stored in the file */
-}EJF_HEADER;
+}EJF_HEADER;   // EJ File header containing data for managing the content of the file
 
 #define EJT_HEADER_SIGNATURE  0xF234
+// EJ file item header containing the data for a specific EJ item or EJ entry.
 typedef  struct {
     USHORT  usPVLI;        /* Previous Length */
     USHORT  usCVLI;        /* Current Length */
@@ -165,7 +166,7 @@ typedef  struct {
     USHORT  usDate;        /* Start Date */
     USHORT  usTime;        /* Start Time */
     USHORT  usEjSignature; /* Reserve now used for signature */
-}EJT_HEADER;
+}EJT_HEADER;    // EJ file item header containing the data for a specific EJ item or EJ entry.
 
 /* typedef  struct {
     EJT_HEADER   TrHeader;

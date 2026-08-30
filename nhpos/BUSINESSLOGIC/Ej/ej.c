@@ -13,10 +13,6 @@
 * Category    : EJMGR, NCR 2170 INT'L Hospitarity Application
 * Program Name: EJ.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.
-* Memory Model: Medium Model
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp
-* --------------------------------------------------------------------------
 * Abstract:
 *       EJInit()            : Create Electronic Journal Semaphore
 *       EJCreat()           : Create Electronic Journal File
@@ -61,6 +57,11 @@
 *
 ** NCR2171 **
 * Aug-26-99:01.00.00:M.Teraki   : initial (for 2171)
+*
+** NHPOS **
+*
+*          : 02.00.00:J.Hall    : Delayed balance EJ functionality. AC275 and AC276.
+*
 *===========================================================================
 *===========================================================================
 * PVCS Entry
@@ -105,19 +106,19 @@ static UCHAR    fchEJFlag;                      /* E.J. Status Used by EJRead() 
                                                 /* EJ_Set_End(), EJ_Set_Left(), */
                                                 /* EJ_Set_Right() */
 
-static SHORT    hsEJFileHandle = PIF_FILE_INVALID_HANDLE;     /* E.J. File Handle */
-static SHORT	hsEJDBFileHandle = PIF_FILE_INVALID_HANDLE;   /* DB E.J. File Handle */
-static USHORT   husEJSem = PIF_FILE_INVALID_HANDLE;           /* E.J. Semaphore */
+static PifFileHandle    hsEJFileHandle = PIF_FILE_INVALID_HANDLE;     /* E.J. File Handle */
+static PifFileHandle	hsEJDBFileHandle = PIF_FILE_INVALID_HANDLE;   /* DB E.J. File Handle */
+static PifSemHandle   husEJSem = PIF_FILE_INVALID_HANDLE;           /* E.J. Semaphore */
 
-static TCHAR FARCONST aszEJFileName[] = _T("TOTALEJF");       /* File Name of Electronic Journal */
-static TCHAR FARCONST aszEJDBFileName[]  = _T("TOTALEJFDB");  /*File Name of EJ Delay Balance*/
+static TCHAR CONST aszEJFileName[] = _T("TOTALEJF");       /* File Name of Electronic Journal */
+static TCHAR CONST aszEJDBFileName[]  = _T("TOTALEJFDB");  /*File Name of EJ Delay Balance*/
 
 USHORT   usIspEJState = 0;            /* E/J read/reset state, V3.3 */
 
 
 struct {
-	TCHAR	*aszFileName;             // pointer to file name
-	SHORT   phsHandle;               // pointer to global file handle
+	CONST TCHAR	*aszFileName;             // pointer to file name
+	PifFileHandle   phsHandle;               // pointer to global file handle
 } stEJFiles [] = {
 	{aszEJFileName, -1},
 	{aszEJDBFileName, -1},
