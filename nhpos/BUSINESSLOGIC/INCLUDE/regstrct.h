@@ -1167,7 +1167,6 @@
 #endif
 #define     NUM_MAX_CRSPCO_BUF   ((NUM_CPRSPCO_EPT) * (NUM_CPRSPTEXT))  // size of EPT auchMsgText in struct EEPTRSPDATA
 #define     NUM_APPROVAL        6                        // approval code          */
-#define     NUM_ETK_NAME        (STD_ETK_NAME_LEN+1)       // ETK Name,   R3.1 */
 #define     NUM_SCAN_NUMBER     13                       // Account Number,  V3.3 */
 #define     NUM_ACCT_NUMBER     10                       // Account Number,  V3.3 */
 #define     NUM_BARCODE_LEN     24                       // maximum number of digits for bar code for unique identifier
@@ -2337,7 +2336,7 @@ typedef struct {
         USHORT  usTimeinMinute;                 /* 24:Minute to be time in */
         USHORT  usTimeOutTime;                  /* 26:Time to be time out */
         USHORT  usTimeOutMinute;                /* 28:Minute to be time out */
-        TCHAR   aszMnemonic[NUM_ETK_NAME];      /* ETK mnemonic,         R3.1 */
+        TCHAR   aszMnemonic[STD_CASHIERNAME_LEN + 1];      /* ETK mnemonic,         R3.1 */
         UCHAR   uchTendMinor;           /* tender minor 2172 */
         LONG         lQTY;                      /* quantity 2172, ITEMMISC    */
 		DUNITPRICE   lUnitPrice;                /* unit price 2172, ITEMMISC  */

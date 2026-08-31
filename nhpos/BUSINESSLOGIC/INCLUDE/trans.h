@@ -381,7 +381,7 @@
         USHORT      usTimeinMinute;             /* 24:Minute to be time in */
         USHORT      usTimeOutTime;              /* 26:Time to be time out */
         USHORT      usTimeOutMinute;            /* 28:Minute to be time out */
-        TCHAR       aszMnemonic[NUM_ETK_NAME];  /* ETK mnemonic,         R3.1 */
+        TCHAR       aszMnemonic[STD_CASHIERNAME_LEN + 1];  /* ETK mnemonic,         R3.1 */
         UCHAR       uchTendMinor;               /*  tender minor 2172 */
         LONG        lQTY;                       /*  quantity 2172    */
 		DUNITPRICE  lUnitPrice;                 /*  unit price 2172  */
