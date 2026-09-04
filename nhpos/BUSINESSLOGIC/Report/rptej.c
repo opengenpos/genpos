@@ -335,7 +335,7 @@ USLDTERR RptEJReverse( VOID )
     }
 
     /* Initialize Work */
-    memset(&EJEdit, '\0', sizeof(RPTEJ));
+    memset(&EJEdit, '\0', sizeof(EJEdit));
     memset(auchRBuff, '\0', sizeof(auchRBuff));
 
     /* Set Major Class and Print Control */
@@ -377,7 +377,7 @@ USLDTERR RptEJReverse( VOID )
     for ( ;; ) {
         /* Initialize Buffer */    
         memset(auchRBuff, '\0', sizeof(auchRBuff));
-        memset(EJEdit.aszLineData, '\0', EJ_REPORT_WIDE + 1);
+        memset(EJEdit.aszLineData, '\0', sizeof(EJEdit.aszLineData));
 
         /* Get EJ records from EJ File */
         EJRead.usSize = sizeof(auchRBuff) - sizeof(auchRBuff[0]); //ESMITH EJ PRINT
@@ -454,7 +454,7 @@ SHORT Rpt_EJEdit_Print( SHORT sType, UCHAR uchUAddr  )
     SHORT       sError;
     SHORT       i;
 	RPTEJ       EJEdit = {0};
-    EJ_READ     EJRead, EJReadSave;
+    EJ_READ     EJRead = { 0 };
 
     /* Set Major Class and Print Control */
     EJEdit.uchMajorClass = CLASS_RPTEJ;
@@ -498,6 +498,8 @@ SHORT Rpt_EJEdit_Print( SHORT sType, UCHAR uchUAddr  )
 
     /* Print EJ Record from Second Record to Last Record */
     for ( ;; ) {
+        EJ_READ     EJReadSave;
+
         /* Check Abort Key */
         if (sType == RPT_EJ_READ) {
             /* check if abort key */
@@ -509,7 +511,7 @@ SHORT Rpt_EJEdit_Print( SHORT sType, UCHAR uchUAddr  )
         }
 
         /* copy previous read offset for retry */
-        memcpy(&EJReadSave, &EJRead, sizeof(EJ_READ));
+        EJReadSave = EJRead;
 
         /* Initialize Buffer */    
         memset(auchRBuff, '\0', sizeof(auchRBuff));
@@ -525,7 +527,7 @@ SHORT Rpt_EJEdit_Print( SHORT sType, UCHAR uchUAddr  )
             /* Check Error Status */
             sError = Rpt_EJConfirmation(sError, LDT_EJREAD_ADR);
             if (!sError) {  /* retry */
-                memcpy(&EJRead, &EJReadSave, sizeof(EJ_READ));  /* retry by previous offset */
+                EJRead = EJReadSave;  /* retry by previous offset */
                 continue;
             } else {
                 PrtChangeFont(PRT_FONT_A);      /* Change Number of Printer Column from 56 to 42 */ 
@@ -537,7 +539,7 @@ SHORT Rpt_EJEdit_Print( SHORT sType, UCHAR uchUAddr  )
         for (i = 0; i < sError; i++) {
             EJEdit.uchMinorClass = CLASS_RPTEJ_LINE;                    
             Rpt_EJChgNULL(auchRBuff[i], sizeof(auchRBuff[0]));          /* Check and Change NULL Data */
-            memset(EJEdit.aszLineData, '\0', EJ_REPORT_WIDE + 1);
+            memset(EJEdit.aszLineData, '\0', sizeof(EJEdit.aszLineData));
             _tcsncpy(EJEdit.aszLineData, auchRBuff[i], EJ_REPORT_WIDE);
             PrtPrintItem(NULL, &EJEdit);
 

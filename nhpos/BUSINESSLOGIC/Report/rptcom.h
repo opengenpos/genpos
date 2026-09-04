@@ -29,6 +29,10 @@
 *
 *   Oct-05-99   : 01.00.00 : M.Teraki    : Added #pragma(...)
 *
+** OpenGenPOS **
+* 
+*   Sep-02-26   : 02.04.00 : R.Chambers  : removed unused, deprecated define USRPTWAILENTTL
+* 
 *===========================================================================
 *    Georgia Southern University Research Services Foundation
 *    donated by NCR to the research foundation in 2002 and maintained here
@@ -84,13 +88,6 @@ extern    UCHAR   uchRptMldAbortStatus;  /* abort status by LCD R3.0 */
                                                 + sizeof(TtlCas.FromDate)\
                                                 + sizeof(TtlCas.ToDate)\
                                                 + sizeof(TtlCas.ulCashierNumber)))
-
-#define USRPTWAILENTTL  (sizeof(TTLWAITER) - (sizeof(TtlWai.uchMajorClass) + \
-                                               sizeof(TtlWai.uchMinorClass) + \
-                                               sizeof(TtlWai.uchResetStatus) + \
-                                               sizeof(TtlWai.FromDate) + \
-                                               sizeof(TtlWai.ToDate) + \
-                                               sizeof(TtlWai.ulWaiterNumber)))
 
 #define USRPTFINLENTTL  (sizeof(TTLREGFIN) - (sizeof(TtlData.uchMajorClass) + \
                                                sizeof(TtlData.uchMinorClass) + \
