@@ -134,10 +134,13 @@
 #define     TTL_FIN_TODATE      9   /* To Date Offset of Financial Total File */
 
 /* Hourly File */
-#define     TTL_HOUR_DAYCURR    (TTL_FIN_SIZE * 4)
-                                    /* Daily Current Hourly Total Offset */
-#define     TTL_HOUR_PTDCURR    (TTL_FIN_SIZE * 4) + (TTL_HOUR_SIZE * 2)
-                                    /* PTD Current Hourly Total Offset */
+// The Hourly Total file is not actually a file but rather an additional
+// data area added after the Financial totals in the base total file.
+// See the following defines which indicate offsets to the Hourly Totals:
+//   - TTL_HOUR_DAYCURR   daily totals (current and saved in two data blocks)
+//   - TTL_HOUR_PTDCURR   period to day totals (current and saved in two data blocks)
+#define     TTL_HOUR_DAYCURR    (TTL_FIN_SIZE * 4)                           /* Daily Current Hourly Total Offset */
+#define     TTL_HOUR_PTDCURR    (TTL_FIN_SIZE * 4) + (TTL_HOUR_SIZE * 2)     /* PTD Current Hourly Total Offset */
 #define     TTL_HOUR_FMDATE     1   /* From Date Offset of Hourly Total File */
 #define     TTL_HOUR_TODATE     9   /* To Date Offset of Hourly Total File */
 
