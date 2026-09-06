@@ -104,45 +104,15 @@ BOOL CTtlHourly::Read(
     str += CString( "...Minor#%d" );
     pcsample::TraceFunction( str, uchClassToRead );
 
-	TTLHOURLY  m_ttlWork;
+    TTLHOURLY  m_ttlWork = { 0 };
     BOOL    fSuccess = FALSE;
 	USHORT usCurReadPos = 0;
 	USHORT usPrevReadPos = 0;
-	USHORT usHrlyFilePosition = 0;		//file position in the Hourly File on NHPOS side
-
-	/*the file position read from in NHPOS will vary according to the 
-	minor class passed in. We need to know this positon to calcute the 
-	index postion to assign data to in the buffer below*/
-	switch(uchClassToRead)
-	{
-       case CLASS_TTLCURDAY:
-		   usHrlyFilePosition = TTL_HOUR_DAYCURR;
-           break;
-
-       case CLASS_TTLSAVDAY:
-		   usHrlyFilePosition = TTL_HOUR_DAYCURR + TTL_HOUR_SIZE;
-           break;
-
-       case CLASS_TTLCURPTD:
-		   usHrlyFilePosition = TTL_HOUR_PTDCURR;
-           break;
-
-       case CLASS_TTLSAVPTD:
-		   usHrlyFilePosition = TTL_HOUR_PTDCURR + TTL_HOUR_SIZE;
-           break;
-
-	   case CLASS_SAVED_TOTAL:
-		   usHrlyFilePosition = 0;
-
-	   default:		//if no valid class is passed in, return FALSE. ASSERT above should prevent this point from being hit
-		   return FALSE;
-	}
 
 	memset(&m_ttlHourly, 0, sizeof(TTLHOURLY));
 	m_ttlHourly.uchMajorClass = CLASS_TTLHOURLY;
     m_ttlHourly.uchMinorClass = uchClassToRead;
 
-	memset(&m_ttlWork, 0, sizeof(TTLHOURLY));
     m_ttlWork.uchMajorClass = CLASS_TTLHOURLY;
     m_ttlWork.uchMinorClass = uchClassToRead;
 	m_ttlWork.usBlockRead = 0;

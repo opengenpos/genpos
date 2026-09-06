@@ -336,12 +336,12 @@ typedef struct {
 typedef struct {
     UCHAR       uchMajorClass;      /* Major Class Data definition */
     UCHAR       uchMinorClass;      /* Minor Class Data definition */
+	USHORT		usBlockRead;		/* Which Block we want to read from NHPOS JHHJ 9-15-05*/
     UCHAR       uchResetStatus;     /* Reset Status */		
     DATE        FromDate;           /* Preiod From */
     DATE        ToDate;             /* Preiod To */
     TIME        StartTime;          /* Start Time */
     TIME        EndTime;            /* End Time */
-	USHORT		usBlockRead;		/* Which Block we want to read from NHPOS JHHJ 9-15-05*/
     HOURLY      Total[48];          /* Block Data of Hourly Activity Time 1 to 48, V3.3 */
 }TTLHOURLY;
 

@@ -347,6 +347,8 @@ typedef struct {
 	TOTAL_32    TtlIAmount[4];       // Item discounts for 3 through 6
 } TTLITEMDISC_32;
 
+// Following financial struct used for both Major Class CLASS_TTLREGFIN (Register financial)
+// and Major Class CLASS_TTLINDFIN (individual fin R3.1).
 typedef struct {
     UCHAR       uchMajorClass;      /* Major Class Data definition */
     UCHAR       uchMinorClass;      /* Minor Class Data definition */
@@ -493,24 +495,24 @@ typedef struct {
 typedef struct {
     UCHAR       uchMajorClass;              /* Major Class Data definition */
     UCHAR       uchMinorClass;              /* Minor Class Data definition */
+	USHORT		usBlockRead;		        /* Which Block we want to read from NHPOS JHHJ 9-15-05*/		
     UCHAR       uchResetStatus;             /* Reset Status, TTL_STAT_SIZE and TTLCSHOURLY starts here */
     N_DATE      FromDate;                   /* Period From */
     N_DATE        ToDate;                   /* Period To */
     N_TIME        StartTime;                /* Start Time */
     N_TIME        EndTime;                  /* End Time */
-	USHORT		usBlockRead;		        /* Which Block we want to read from NHPOS JHHJ 9-15-05*/		
     HOURLY      Total[STD_MAX_HOURBLK];     /* Block Data of Hourly Activity Time 1 to 48, V3.3 */
 }TTLHOURLY;
 
 typedef struct {
     UCHAR       uchMajorClass;              /* Major Class Data definition */
     UCHAR       uchMinorClass;              /* Minor Class Data definition */
+	USHORT		usBlockRead;		        /* Which Block we want to read from NHPOS JHHJ 9-15-05*/		
     UCHAR       uchResetStatus;             /* Reset Status, TTLCSHOURLY starts here */
     N_DATE      FromDate;                   /* Period From */
     N_DATE        ToDate;                   /* Period To */
     N_TIME        StartTime;                /* Start Time */
     N_TIME        EndTime;                  /* End Time */
-	USHORT		usBlockRead;		        /* Which Block we want to read from NHPOS JHHJ 9-15-05*/		
     HOURLY      Total[1];     /* Block Data of Hourly Activity Time 1 to 48, V3.3 */
 }TTLHOURLY_1;
 
@@ -804,8 +806,7 @@ typedef struct {
 typedef struct {
     UCHAR       uchMajorClass;      /* Major Class Data definition */
     UCHAR       uchMinorClass;      /* Minor Class Data definition */
-    ULONG       ulNumber;           /* Number (Dept,PLU,Cashier,Waiter) */
-    UCHAR       uchID;              /* ID (PLU - Adjective) */
+    ULONG       ulNumber;           /* Number (Dept,Coupon,PLU,Cashier,Terminal) */
 }TTLREPORT;
 
 /* -- Cashier File Total (only tender, saratoga, 07/21/00) -- */
