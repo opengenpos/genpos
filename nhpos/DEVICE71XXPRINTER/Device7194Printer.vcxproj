@@ -76,6 +76,7 @@
       <PrecompiledHeaderOutputFile>.\Device7194Printer\Release\Device7194Printer.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\Device7194Printer\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Device7194Printer\Release\</ProgramDataBaseFileName>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -123,6 +124,7 @@
       <ObjectFileName>.\Device7194Printer\Debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Device7194Printer\Debug\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
