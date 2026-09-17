@@ -672,15 +672,15 @@ SHORT   ItemMiscSaveInitializeEnv (CASIF  *pCasIf)
 	SHORT  sRetStatus = 0;
 
 	// Save Current Environment
-	if (TrnICPOpenFile() == TRN_SUCCESS) {
-		TRANGCFQUAL   *pGcfQualWork = TrnGetGCFQualPtr();
-		TRANMODEQUAL  *pModeQualRcvBuff = TrnGetModeQualPtr();   
-		TRANCURQUAL   CurQualWork = {0};
+    if (TrnICPOpenFile() == TRN_SUCCESS) {
+        TRANGCFQUAL* pGcfQualWork = TrnGetGCFQualPtr();
+        TRANMODEQUAL* pModeQualRcvBuff = TrnGetModeQualPtr();
+        TRANCURQUAL* pCurQualWork = TrnGetCurQualPtr();
 
-		/* initialize TranCurQual and modify the transaction state cashier id */
-		TrnPutCurQual(&CurQualWork);
+        /* initialize TranCurQual and modify the transaction state cashier id */
+        *pCurQualWork = (TRANCURQUAL){ 0 };
 		pModeQualRcvBuff->ulCashierID = pGcfQualWork->ulCashierID = pCasIf->ulCashierNo;
-		memcpy (pModeQualRcvBuff->aszCashierMnem, pCasIf->auchCashierName, sizeof (pModeQualRcvBuff->aszCashierMnem));
+		memcpy (pModeQualRcvBuff->aszCashierMnem, pCasIf->auchCashierName, sizeof (pModeQualRcvBuff->aszCashierMnem[0]) * STD_CASHIERNAME_LEN);
 
 		ItemCommonGetLocalPointer()->fbCommonStatus &= ~(COMMON_CONSNO | COMMON_VOID_EC);  // Clear the Connsecutive number flag to indicate it needs to be generated
 
