@@ -3027,7 +3027,7 @@ void CFrameworkWndText::DisplayPopupControlsBack (BOOL bShouldExist)
 {
 	CFrameworkWndItem   *pParentWndItem = NULL;
 	int                 iDialogId = CFrameworkWndButton::SPL_BTN_BACK;
-	UCHAR               uchTransAddress = TRN_BACK_OEP_ADR;
+	USTRNADRS           uchTransAddress = TRN_BACK_OEP_ADR;
 
 	pParentWndItem = (this->m_hWnd) ? (CFrameworkWndItem *)GetParent() : 0;
 	if (pParentWndItem == 0) {
@@ -3077,7 +3077,7 @@ void CFrameworkWndText::DisplayPopupControlsDone (BOOL bShouldExist)
 {
 	CFrameworkWndItem   *pParentWndItem = NULL;
 	int                 iDialogId = CFrameworkWndButton::SPL_BTN_DONE;
-	UCHAR               uchTransAddress = TRN_NONE_DONE_ADR;
+	USTRNADRS           uchTransAddress = TRN_NONE_DONE_ADR;
 
 	pParentWndItem = (this->m_hWnd) ? (CFrameworkWndItem *)GetParent() : 0;
 	if (pParentWndItem == 0) {
@@ -3128,7 +3128,7 @@ void CFrameworkWndText::DisplayPopupControlsMore (BOOL bShouldExist)
 {
 	CFrameworkWndItem   *pParentWndItem = NULL;
 	int                 iDialogId = CFrameworkWndButton::SPL_BTN_MORE;
-	UCHAR               uchTransAddress = TRN_CONTINUE_ADR;
+	USTRNADRS           uchTransAddress = TRN_CONTINUE_ADR;
 
 	pParentWndItem = (this->m_hWnd) ? (CFrameworkWndItem *)GetParent() : 0;
 	if (pParentWndItem == 0) {
