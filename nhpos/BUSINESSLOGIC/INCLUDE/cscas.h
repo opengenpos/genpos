@@ -195,8 +195,11 @@
 #define  CAS_UNMATCH_TRNO        (STUB_RETCODE+STUB_UNMATCH_TRNO)
 #define  CAS_DUR_INQUIRY         (STUB_RETCODE+STUB_DUR_INQUIRY)
 
-#define MAINT_DBON			0x01	  /* Delayed Balance flag for EOD JHHJ */
-#define MAINT_DBOFF			0x00
+// For Delayed Balance see Supervisor Mode AC275 and AC276.
+// See also function MaintDelayedBalance() and see function EJDelayBalanceUpdateFile().
+#define MAINT_DBON			0x01	  /* Delayed Balance flag on for EOD. See MaintDelayedBalance(). JHHJ */
+#define MAINT_DBOFF			0x00	  /* Delayed Balance flag off for EOD. See MaintDelayedBalance(). JHHJ */
+
 /*
 ===========================================================================
     TYPEDEF

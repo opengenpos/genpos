@@ -283,15 +283,24 @@ typedef    struct {
 }OPPLU_PARAENTRY;
 
 /* 2172 Flexible Dept to which PLUs are assigned, see AC114 Department Maintenance */
+/*  See function RptPLUByDEPT() for how the auchControlCode[] bits of a department map to
+ *  the auchContOther[] bits of a PLU.
+ */
 typedef  struct {
     UCHAR   uchMdept;             // Major department number, 1 - 30, this department assigned to. see P48 for mnemonics.
     UCHAR   auchControlCode[OP_DEPT_CONT_CODE_SIZE];  // see notes with function ItemSalesItemPluTypeInfo().
     UCHAR   auchHalo[OP_DEPT_HALO_SIZE];
     WCHAR   auchMnemonic[OP_DEPT_NAME_SIZE];
+//  WCHAR   auchAltDeptName[OP_DEPT_NAME_SIZE];     // future database change for PLU compatibility
     UCHAR   uchPrintPriority;
 	USHORT	usBonusIndex;
 	USHORT  usTareInformation;		
-	UCHAR   uchExtraRoom[8];      // extra space that can be used for added functionality
+//	UCHAR   uchColorPaletteCode;     // future database change for PLU compatibility
+//	UCHAR   uchRestrict;             // future database change for PLU compatibility
+//	UCHAR   uchTableNumber;          // future database change for PLU compatibility
+//	UCHAR   uchGroupNumber;          // future database change for PLU compatibility
+//	UCHAR   uchRept;                 // future database change for PLU compatibility
+    UCHAR   uchExtraRoom[8];      // extra space that can be used for added functionality
 }OPDEPT_PARAENTRY;
 
 /* coupon status ( uchCouponStatus[0] ) */
