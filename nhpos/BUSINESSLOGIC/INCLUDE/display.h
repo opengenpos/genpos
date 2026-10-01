@@ -168,6 +168,7 @@
 #define     CLASS_PARAPLU_DISPADD_DATA      9           /* Display Not Status Data */
 #define     CLASS_PARAPLU_DISPMNEMO_DATA    10          /* Display Not Status Data */
 
+#if defined(POSSIBLE_DEAD_CODE)
 /*--------------------------------------------------------------------------
 *       CLASS FOR WAITER NO. ASSIGNMENT 
 --------------------------------------------------------------------------*/
@@ -175,6 +176,7 @@
 #define CLASS_PARAWAITERNO_DISPWAI          1
 #define CLASS_PARAWAITERNO_DISPSTGC         2
 #define CLASS_PARAWAITERNO_DISPENDGC        3
+#endif
 
 /*
 *------------------------------------------------------------------------------

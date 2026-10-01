@@ -13,10 +13,6 @@
 * Category    : Maintenance, NCR 2170 US Hospitality Application Program        
 * Program Name: MATOPSTS.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Midium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract: The Provided Function Names are as Follows: 
 *                   
 *               MaintOpeStatus() : This Function Reads Operator/Guest Check Status Report.    
@@ -89,12 +85,11 @@ VOID MaintOpeStatus( VOID )
 {
 	extern    UCHAR   uchRptMldAbortStatus;  /* abort status by LCD R3.0 */
                     
-    SHORT           i,sNoofGC;
+    SHORT           sNoofGC;
 	union  {
 		ULONG     aulCashierNo[CAS_NUMBER_OF_MAX_CASHIER];
 		USHORT    ausGcfRcvBuff[GCF_MAX_GCF_NUMBER];
 	} auslRcvBuff;
-	PARAFLEXMEM     ParaFlexMem = { 0 };
 	MAINTTRANS      MaintTrans = { 0 };
 	MAINTOPESTATUS  MaintOpeSts = { 0 };
 
@@ -104,8 +99,10 @@ VOID MaintOpeStatus( VOID )
     /* Preset Each Parameter */
     MaintOpeSts.uchMajorClass = CLASS_MAINTOPESTATUS;
     MaintOpeSts.uchMinorClass = 0;
-    MaintTrans.uchMajorClass = CLASS_MAINTTRANS;
     MaintOpeSts.usPrintControl = ( PRT_JOURNAL | PRT_RECEIPT );
+
+    MaintTrans.uchMajorClass = CLASS_MAINTTRANS;
+    MaintTrans.uchMinorClass = 0;
     MaintTrans.usPrtControl = ( PRT_JOURNAL | PRT_RECEIPT );
 
     /* Output Data to Print Module */
@@ -124,9 +121,9 @@ VOID MaintOpeStatus( VOID )
 		}
         PrtPrintItem(NULL, &MaintTrans);
 
-		MaintOpeSts.uchMinorClass = 1;
+		MaintOpeSts.uchMinorClass = CLASS_PARAOPESTATUS_CASHIER;
 
-        for (i = 0; i < CAS_NUMBER_OF_MAX_CASHIER; i++) { /* V1.0.13 */
+        for (USHORT i = 0; i < CAS_NUMBER_OF_MAX_CASHIER; i++) { /* V1.0.13 */
             if ((MaintOpeSts.ulOperatorId = auslRcvBuff.aulCashierNo[i]) != 0L) { /* Opened Cashier Exist */ 
 				if (RptCheckReportOnMld()) {
 					uchRptMldAbortStatus = (UCHAR)MldDispItem(&MaintOpeSts, 0); /* display on LCD          */ 
@@ -142,13 +139,10 @@ VOID MaintOpeStatus( VOID )
 
     /* Get Locked GCF No. */
     if ((sNoofGC = SerGusReadAllLockedGCN(&(auslRcvBuff.ausGcfRcvBuff[0]), sizeof(auslRcvBuff))) > 0) {   /* Locked GC Exist */
+        USHORT  usSysType = RflGetSystemType();  // fetch the system type once for use in the loop below.
+
 		MaintFeed();
                                                                                         
-        /* Get Guest Check System Information */
-        ParaFlexMem.uchMajorClass = CLASS_PARAFLEXMEM;
-        ParaFlexMem.uchAddress = FLEX_GC_ADR;
-        CliParaRead(&ParaFlexMem);
-
         /* Print Transaction Mnemonics for GCF */
 		RflGetTranMnem(MaintTrans.aszTransMnemo, TRN_GCNO_ADR);
 		if (RptCheckReportOnMld()) {
@@ -157,12 +151,12 @@ VOID MaintOpeStatus( VOID )
 		}
         PrtPrintItem(NULL, &MaintTrans);
 
-		MaintOpeSts.uchMinorClass = 2;
-        for (i = 0; i < sNoofGC/2; i++) {
+		MaintOpeSts.uchMinorClass = CLASS_PARAOPESTATUS_GCNO;
+        for (SHORT i = 0; i < sNoofGC/2; i++) {
             MaintOpeSts.ulOperatorId = auslRcvBuff.ausGcfRcvBuff[i];
 
-            /* Check CDV System */
-            if (ParaFlexMem.uchPTDFlag != FLEX_STORE_RECALL && CliParaMDCCheck(MDC_GCNO_ADR, EVEN_MDC_BIT1)) {  /* CDV System */
+            /* Check CDV System. The ulOperatorID member contains a Guest Check number */
+            if (usSysType != FLEX_STORE_RECALL && CliParaMDCCheck(MDC_GCNO_ADR, EVEN_MDC_BIT1)) {  /* CDV System */
                 MaintOpeSts.ulOperatorId *= 100L;
                 MaintOpeSts.ulOperatorId += RflMakeCD(auslRcvBuff.ausGcfRcvBuff[i]);
             }

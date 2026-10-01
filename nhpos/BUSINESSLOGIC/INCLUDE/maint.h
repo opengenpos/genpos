@@ -664,7 +664,7 @@ typedef struct {
 
 typedef struct {
     UCHAR   uchMajorClass;          /* Major Data Class Definition */
-    UCHAR   uchMinorClass;          /* Minor Data Class Definition */
+    UCHAR   uchMinorClass;          /* Minor Data Class Definition, not used, set to zero */
     WCHAR   aszTransMnemo[PARA_TRANSMNEMO_LEN+1]; /* Transaction Mnemonics */
     UCHAR   uchStatus;              /* 0=with data, 1=without data */
     USHORT  usPrtControl;

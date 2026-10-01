@@ -692,7 +692,7 @@ SHORT MaintCashierReport( VOID )
 
             /* Print Cashier No. */
             MaintOpeStatus.uchMajorClass = CLASS_MAINTOPESTATUS;
-			MaintOpeStatus.uchMinorClass = 1;                       // indicate printing an Employee Id
+			MaintOpeStatus.uchMinorClass = CLASS_PARAOPESTATUS_CASHIER;     // indicate printing an Employee Id
             MaintOpeStatus.ulOperatorId = CasIf.ulCashierNo;
             MaintOpeStatus.usPrintControl = (PRT_JOURNAL | PRT_RECEIPT);   
             PrtPrintItem(NULL, &MaintOpeStatus);

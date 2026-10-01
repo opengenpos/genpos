@@ -68,7 +68,9 @@
 *
 ** Return:      Nothing
 *
-** Description: This function forms Server/GC No. print format.
+** Description: This function forms Server/GC No. print format. See also MldRptSupOpeStatus()
+*               for display version.
+* 
 *               MNEMONICS are formed in unique MNEMONIC format function .
 *                                           < PrtThrmSupTrans() >
 *
@@ -82,26 +84,42 @@
 
 VOID  PrtThrmSupOpeStatus( MAINTOPESTATUS *pData )
 {
-    static const TCHAR  auchPrtThrmSupOpeStatus[] = _T("                %8.8Mu");   /* define thermal print format for Operator/Waiter Id */
-    static const TCHAR  auchPrtThrmSupOpeStatus1[] = _T("               %4.4u");    /* define thermal print format for guest check Id */
-    static const TCHAR  auchPrtSupOpeStatus[] = _T("   %8.8Mu");                    /* define EJ print format for Operator/Waiter Id */
-    static const TCHAR  auchPrtSupOpeStatus1[] = _T("  %4.4u");                     /* define EJ print format for guest check Id */
 
     /* check print control */
     if (pData->usPrintControl & PRT_RECEIPT) {  /* THERMAL PRINTER */
-        /* print WAITER ID/GUEST CHECK No. */
-		if (pData->uchMinorClass == 1)
+        static const TCHAR  auchPrtThrmSupOpeStatus[] = _T("                %8.8Mu");   /* define thermal print format for Operator/Waiter Id */
+        static const TCHAR  auchPrtThrmSupOpeStatus1[] = _T("               %4.4u");    /* define thermal print format for guest check Id */
+
+        /* print Cashier ID or GUEST CHECK No. */
+        switch (pData->uchMinorClass) {
+        case CLASS_PARAOPESTATUS_CASHIER:
 			PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupOpeStatus, RflTruncateEmployeeNumber(pData->ulOperatorId));
-		else
-			PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupOpeStatus1, RflTruncateEmployeeNumber(pData->ulOperatorId));
+            break;
+        case CLASS_PARAOPESTATUS_GCNO:
+			PrtPrintf(PMG_PRT_RECEIPT, auchPrtThrmSupOpeStatus1, (USHORT)pData->ulOperatorId);
+            break;
+        default:
+            NHPOS_ASSERT_TEXT(0, "**ERROR: Unknown uchMinorClass in PrtThrmSupOpeStatus().");
+            break;
+        }
     } 
     
     if (pData->usPrintControl & PRT_JOURNAL) {  /* EJ */
-        /* print WAITER ID/GUEST CHECK No. */        
-		if (pData->uchMinorClass == 1)
-			PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupOpeStatus, pData->ulOperatorId);
-		else
-			PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupOpeStatus1, pData->ulOperatorId);
+        static const TCHAR  auchPrtSupOpeStatus[] = _T("   %8.8Mu");                    /* define EJ print format for Operator/Waiter Id */
+        static const TCHAR  auchPrtSupOpeStatus1[] = _T("  %4.4u");                     /* define EJ print format for guest check Id */
+
+        /* print Cashier ID or GUEST CHECK No. */        
+        switch (pData->uchMinorClass) {
+        case CLASS_PARAOPESTATUS_CASHIER:
+            PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupOpeStatus, pData->ulOperatorId);
+            break;
+        case CLASS_PARAOPESTATUS_GCNO:
+            PrtPrintf(PMG_PRT_JOURNAL, auchPrtSupOpeStatus1, (USHORT)pData->ulOperatorId);
+            break;
+        default:
+            NHPOS_ASSERT_TEXT(0, "**ERROR: Unknown uchMinorClass in PrtThrmSupOpeStatus().");
+            break;
+        }
     }
 }
 /***** End of Source *****/
