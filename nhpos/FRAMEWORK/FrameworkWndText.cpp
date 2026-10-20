@@ -3411,7 +3411,7 @@ void CFrameworkWndText::SelectItem(UINT nFlags, CPoint point)
 	int iHeightOfLine;
 	int iLineCount = 0, iMaxRow;
 	USHORT	usHandle;//vos window handle
-	USHORT	uchMldSystem;
+	BlFwMldSystemType  mldSystemType = BlFwIfCheckMldSystemStatus();
 
 	iHeightOfLine = (m_rectClient.bottom - m_rectClient.top  - GetMarginTop()  - GetMarginButtom())/m_nRowsInCtl;
 
@@ -3432,9 +3432,8 @@ void CFrameworkWndText::SelectItem(UINT nFlags, CPoint point)
 	//number of rows the terminal has. If the terminal is in the Store/Recall
 	//system and using the 3scroll display option, the screen only has 19 lines, 
 	//as opposed to 20 regularly.
-	uchMldSystem = BlFwIfCheckMldSystemStatus();
 
-	switch(uchMldSystem)
+	switch(mldSystemType.uchMldSystem)
 	{
 		case MLD_PRECHECK_SYSTEM:
 		case MLD_SUPER_MODE:

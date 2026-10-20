@@ -3152,9 +3152,9 @@ SHORT BlFwIfMDCCheck(SHORT usAddress, UCHAR uchMaskData)
 ** Description: This function checks MDC parameter on system RAM.
 *===========================================================================
 */
-USHORT BlFwIfCheckMldSystemStatus()
+BlFwMldSystemType BlFwIfCheckMldSystemStatus(VOID)
 {
-	return uchMldSystem;
+	return (BlFwMldSystemType) { .uchMldSystem = uchMldSystem, .uchMldSystem2=uchMldSystem2 };
 }
 
 

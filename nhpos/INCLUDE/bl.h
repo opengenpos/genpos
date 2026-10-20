@@ -399,6 +399,15 @@ typedef DWORD (CALLBACK* BTIMEOUT)(ULONG time, SHORT mode);
 typedef DWORD (CALLBACK* BMSGPROC)(VOID*);
 #endif
 
+// MLD Receipt Window provisioning.
+// This struct is used by function BlFwIfCheckMldSystemStatus()
+// to provide the system type that governs the displayed receipt window.
+// We need both of these from the MLD system to fully specify the
+// MLD display settings.
+typedef struct {
+	UCHAR  uchMldSystem;
+	UCHAR  uchMldSystem2;
+} BlFwMldSystemType;
 
 /* ====================================================================== *
  * Function prototype declarations
@@ -464,7 +473,7 @@ BUSINESSLOGIC_API USHORT _cdecl BlFwPmgCallBackCheckOposReceipt(ULONG dwErrorCod
 BUSINESSLOGIC_API SHORT	 _cdecl BlFwIfMDCCheck(SHORT usAddress, UCHAR uchMaskData);
 BUSINESSLOGIC_API UCHAR	 _cdecl BlFwIfReadMode(VOID);
 BUSINESSLOGIC_API VOID   _cdecl BlFwIfParaRead(VOID *pDATA);
-BUSINESSLOGIC_API USHORT _cdecl BlFwIfCheckMldSystemStatus(VOID);
+BUSINESSLOGIC_API BlFwMldSystemType _cdecl BlFwIfCheckMldSystemStatus(VOID);
 BUSINESSLOGIC_API WCHAR* _cdecl BlFwIfTerminalLayout(VOID *pTermInfo);
 BUSINESSLOGIC_API VOID*	 _cdecl BlFwIfSetFrameworkTouchWindow(VOID *pMainFramework);
 BUSINESSLOGIC_API VOID*	 _cdecl BlFwIfGetFrameworkTouchWindow(void);
