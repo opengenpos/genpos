@@ -83,7 +83,6 @@ SHORT MaintGuestNoWrite( PARAGUESTNO *pData )
     SHORT           sError;
 	MAINTERRORCODE  MaintErrCode = { 0 };
 	PARAGUESTNO     ParaGuestNo = { 0 };
-	PARAFLEXMEM     ParaFlexMem = { 0 };
 
     /* Check W/o Data */
     if (pData->uchStatus == MAINT_WITHOUT_DATA) {       /* W/o Data */
@@ -95,15 +94,9 @@ SHORT MaintGuestNoWrite( PARAGUESTNO *pData )
         return(LDT_KEYOVER_ADR);
     }
                                                         
-    /* Check System and Check Data */
-    /* Get Guest Check System Information */
-    ParaFlexMem.uchMajorClass = CLASS_PARAFLEXMEM;
-    ParaFlexMem.uchAddress = FLEX_GC_ADR;
-    CliParaRead(&ParaFlexMem);
-
     /* Check Guest Check System and Guest Check Id */
 
-    if (ParaFlexMem.uchPTDFlag == FLEX_STORE_RECALL) {                  /* Drive Through Type */
+    if (RflGetSystemType() == FLEX_STORE_RECALL) {                  /* Drive Through Type */
         if (pData->usGuestNumber > GCF_MAX_DRIVE_NUMBER) {              /* Out of Range */
             return(LDT_KEYOVER_ADR);
         }

@@ -13,10 +13,6 @@
 * Category    : Multiline Display, NCR 2170 US Hospitality Application Program
 * Program Name: MLDGCFT.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract: This function forms GUEST CHECK FILE print format.
 *
 *           The provided function names are as follows: 
@@ -92,14 +88,14 @@ SHORT MldRptSupGCF( RPTGUEST *pData )
 
     /* define display format */
 
-    static const TCHAR FARCONST auchMldRptSupGCF1[] = _T("%-8s %4u%02u\t%4s  %8.8Mu");
-    static const TCHAR FARCONST auchMldRptSupGCF2[] = _T("%-8s %4u\t%4s  %8.8Mu");
-    static const TCHAR FARCONST auchMldRptSupGCF3[] = _T("%-8s\t%2u:%02u");
-    static const TCHAR FARCONST auchMldRptSupGCF4[] = _T("%-8s\t%2u:%02u%s");
-    static const TCHAR FARCONST auchMldRptSupGCF5[] = _T("%-8s\t%3d");
-    static const TCHAR FARCONST auchMldRptSupGCF6[] = _T("%-8s\t%12l$");
-    static const TCHAR FARCONST auchMldRptSupGCF7[] = _T("%s");
-	static const TCHAR FARCONST auchMldRptSupGCF8[] = _T("%-8s %4u *** \t%4s  %8.8Mu");
+    static const TCHAR  auchMldRptSupGCF1[] = _T("%-8s %4u%02u\t%4s  %8.8Mu");
+    static const TCHAR  auchMldRptSupGCF2[] = _T("%-8s %4u\t%4s  %8.8Mu");
+    static const TCHAR  auchMldRptSupGCF3[] = _T("%-8s\t%2u:%02u");
+    static const TCHAR  auchMldRptSupGCF4[] = _T("%-8s\t%2u:%02u%s");
+    static const TCHAR  auchMldRptSupGCF5[] = _T("%-8s\t%3d");
+    static const TCHAR  auchMldRptSupGCF6[] = _T("%-8s\t%12l$");
+    static const TCHAR  auchMldRptSupGCF7[] = _T("%s");
+	static const TCHAR  auchMldRptSupGCF8[] = _T("%-8s %4u *** \t%4s  %8.8Mu");
 
     TCHAR  aszString[2 * (MLD_SUPER_MODE_CLM_LEN+1)];           /* buffer for formatted data */
     TCHAR  *pszString;
@@ -199,18 +195,27 @@ SHORT MldRptSupGCF( RPTGUEST *pData )
     return (MLD_SUCCESS);
 }
 
+// Operator status report to the display.
+// See also PrtThrmSupOpeStatus() for printed version.
 SHORT MldRptSupOpeStatus( MAINTOPESTATUS *pData )
 {
-    const TCHAR FARCONST *auchPrtSupOpeStatus = _T("   %8.8Mu");      /* define EJ print format for Operator/Waiter Id */
-    const TCHAR FARCONST *auchPrtSupOpeStatus1 = _T("  %4.4u");       /* define EJ print format for guest check Id */
+    const TCHAR  *auchPrtSupOpeStatus = _T("   %8.8Mu");      /* define EJ print format for Operator/Waiter Id */
+    const TCHAR  *auchPrtSupOpeStatus1 = _T("  %4.4u");       /* define EJ print format for guest check Id */
 
 	TCHAR  aszString[2 * (MLD_SUPER_MODE_CLM_LEN+1)] = {0};           /* buffer for formatted data */
 	USHORT usRow = 0;
 
-	if (pData->uchMinorClass == 1)
+    switch (pData->uchMinorClass) {
+    case CLASS_PARAOPESTATUS_CASHIER:
 		usRow = MldSPrintf(aszString, MLD_SUPER_MODE_CLM_LEN, auchPrtSupOpeStatus, pData->ulOperatorId);
-	else
+        break;
+    case CLASS_PARAOPESTATUS_GCNO:
 		usRow = MldSPrintf(aszString, MLD_SUPER_MODE_CLM_LEN, auchPrtSupOpeStatus1, pData->ulOperatorId);
+        break;
+    default:
+        NHPOS_ASSERT_TEXT(0, "**ERROR: Unknown uchMinorClass in MldRptSupOpeStatus().");
+        break;
+    }
 
     MldScroll1Buff.uchCurItem += (UCHAR)usRow;
     MldString(MLD_SCROLL_1, MLD_SCROLL_APPEND, aszString, MLD_SUPER_MODE_CLM_LEN);

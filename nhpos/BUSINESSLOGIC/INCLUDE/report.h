@@ -809,7 +809,7 @@ SHORT RptCpmTally( UCHAR uchType );
 SHORT RptEptTally( UCHAR uchType );
 
 /****** Coupon Report ******/
-SHORT  RptCpnRead(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchNumber);
+SHORT  RptCpnRead(UCHAR uchMinorClass, UCHAR uchType, USHORT usNumber);
 SHORT  RptCpnHeader(UCHAR uchMinorClass, UCHAR uchType);
 SHORT  RptCpnIndProc(UCHAR uchMinorClass, USHORT usCpnNumber, UCHAR uchType);
 SHORT  RptCpnAllProc(UCHAR uchMinorClass, UCHAR uchType);

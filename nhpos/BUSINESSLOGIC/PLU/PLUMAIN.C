@@ -1161,7 +1161,7 @@ USHORT PLUAPI PluUpdateRecord2(USHORT  usFile, PITEMNO pNumber, USHORT  usAdj,
 ;
 ;========================================================================
 **/
-USHORT PLUAPI	PluReadBlock(USHORT usHandle, UCHAR *pucBuffer, ULONG ulSize, ULONG *pulRead)
+USHORT PLUAPI	PluReadBlock(USHORT usHandle, VOID *pucBuffer, ULONG ulSize, ULONG *pulRead)
 {
 	USHORT	usStat;
 
@@ -1191,7 +1191,7 @@ USHORT PLUAPI	PluReadBlock(USHORT usHandle, UCHAR *pucBuffer, ULONG ulSize, ULON
 ;
 ;========================================================================
 **/
-USHORT PLUAPI	PluWriteBlock(USHORT usHf, UCHAR *pucData, USHORT usBytes, USHORT *pusWritten)
+USHORT PLUAPI	PluWriteBlock(USHORT usHf, VOID *pucData, USHORT usBytes, USHORT *pusWritten)
 {
 	USHORT	usStat;
 

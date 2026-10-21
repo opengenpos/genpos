@@ -495,7 +495,6 @@ SHORT MaintDEPTReport( VOID )
 {
     UCHAR           uchFeedChk = 0;
     SHORT           sReturn;
-	PARAFLEXMEM     ParaFlexMem = { 0 };
 	DEPTIF          DeptIf = { 0 };
 	MAINTERRORCODE  MaintErrorCode = { 0 };
 
@@ -518,11 +517,6 @@ SHORT MaintDEPTReport( VOID )
                         PRT_RECEIPT | PRT_JOURNAL);  /* print control */
         uchMaintOpeCo |= MAINT_ALREADYOPERATE;
     }
-
-    /* get the number of department */
-    ParaFlexMem.uchMajorClass = CLASS_PARAFLEXMEM;
-    ParaFlexMem.uchAddress = FLEX_DEPT_ADR;
-    CliParaRead(&ParaFlexMem);                                  /* call ParaFlexMemRead() */
 
     /* set print control */
     MaintWork.DEPT.usPrintControl = 0;

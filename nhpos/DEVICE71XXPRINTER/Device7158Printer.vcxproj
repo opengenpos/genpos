@@ -69,6 +69,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ObjectFileName>.\Device7158Printer\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Device7158Printer\Release\</ProgramDataBaseFileName>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -117,6 +118,7 @@
       <ProgramDataBaseFileName>.\Device7158Printer\Debug\</ProgramDataBaseFileName>
       <AdditionalOptions> /D </AdditionalOptions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>

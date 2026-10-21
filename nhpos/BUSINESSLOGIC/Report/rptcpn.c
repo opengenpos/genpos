@@ -99,17 +99,12 @@ LTOTAL   gTotalCpn;     /* Grand Total Calc Area */
 *       Read Daily or PTD Cpn report. 
 *===========================================================================
 */
-SHORT  RptCpnRead(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchNumber) 
+SHORT  RptCpnRead(UCHAR uchMinorClass, UCHAR uchType, USHORT usNumber) 
 {
-    
     SHORT           sReturn = SUCCESS;
-    PARAFLEXMEM      FlexMem;
 
     if(uchType == RPT_IND_READ){
-        FlexMem.uchMajorClass = CLASS_PARAFLEXMEM;                          /* Set Major for # of Record */
-        FlexMem.uchAddress = FLEX_CPN_ADR;                                 /* Set Address for # of Record */
-        CliParaRead(&FlexMem);                                              /* Get # of Record */
-        if ((uchNumber < 1) || (uchNumber > (UCHAR)FlexMem.ulRecordNumber)) {   /* Saratoga */
+        if ((usNumber < 1) || (usNumber > RflGetMaxRecordNumberByType(FLEX_CPN_ADR))) {   /* Saratoga */
             return(LDT_KEYOVER_ADR);            
         }
     }
@@ -119,7 +114,7 @@ SHORT  RptCpnRead(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchNumber)
 
     switch(uchType) {
     case RPT_IND_READ :                                 /* Individual read ? */
-        sReturn = RptCpnIndProc(uchMinorClass, uchNumber, uchType);
+        sReturn = RptCpnIndProc(uchMinorClass, usNumber, uchType);
         if (sReturn == RPT_ABORTED) {
             RptFeed(RPT_DEFALTFEED);                                /* line Feed  */
             MaintMakeAbortKey();                                    /* Print ABORTED   */
@@ -181,14 +176,14 @@ SHORT  RptCpnRead(UCHAR uchMinorClass, UCHAR uchType, UCHAR uchNumber)
 SHORT  RptCpnIndProc(UCHAR uchMinorClass, USHORT usCpnNumber, UCHAR uchType)
 {    
     SHORT    sReturn;
-    CPNIF    CpnIf;
-    RPTCPN   RptCpn;
-    TTLCPN   TtlCpn;
+    CPNIF    CpnIf = { 0 };
+    RPTCPN   RptCpn = { 0 };
+    TTLCPN   TtlCpn = { 0 };
 
     if (uchRptMldAbortStatus) {                         /* aborted by MLD */
         return (RPT_ABORTED);
     }
-    memset(&RptCpn, 0, sizeof(RptCpn));
+
     if(!(CliParaMDCCheck(MDC_PCTL_ADR, EVEN_MDC_BIT0))) {
         RptCpn.usPrintControl |=  PRT_JOURNAL;
     }
@@ -467,7 +462,7 @@ SHORT RptCpnHeader(UCHAR uchMinorClass, UCHAR uchType)
                uchRptType,
                uchTmpType,
                uchACNo;
-    TTLCPN    TtlCpn;
+    TTLCPN    TtlCpn = { 0 };
 	SHORT		sReturn;
 
     /* Check First Operation */
@@ -625,11 +620,9 @@ VOID RptCpnGrandTtlPrt(LTOTAL *pTotal, UCHAR uchType)
 */
 SHORT RptCpnReset(UCHAR uchMinorClass, UCHAR uchType)
 {
-    UCHAR   uchSpecReset,
-            uchSpecMnemo;
+    UCHAR   uchSpecReset,  uchSpecMnemo;
     SHORT   sReturn;
-/*    CPNIF   CpnIf; */
-    TTLCPN  TtlCpn;
+    TTLCPN  TtlCpn = { 0 };
 
     /*----- Reset All Coupon Total -----*/
 

@@ -622,10 +622,10 @@ typedef struct  {
 
 typedef struct  {
         UCHAR  uchMajorClass;         /* Major Class Data Definition */
-        UCHAR  uchMinorClass;         /* Minor Class Data Definition */
-        UCHAR  uchAddress;            /* Address */
-        ULONG  ulRecordNumber;        /* Number of Records or number of items */
-        UCHAR  uchPTDFlag;            /* PTD Provide Flag or System Type for FLEX_GC_ADR */
+        UCHAR  uchMinorClass;         /* Minor Class Data Definition indicating which data value */
+        UCHAR  uchAddress;            /* Address indicating which provisioning data file: FLEX_DEPT_ADR, FLEX_CAS_ADR, etc. */
+        ULONG  ulRecordNumber;        /* Number of Records or number of items, uchMinorClass=CLASS_PARAFLEXMEM_RECORD */
+        UCHAR  uchPTDFlag;            /* PTD Provide Flag or System Type for FLEX_GC_ADR, uchMinorClass=CLASS_PARAFLEXMEM_PTD  */
         UCHAR  uchStatus;             /* 0=with data, 1=without data */
         USHORT usPrintControl;        /* Print Control */
 }PARAFLEXMEM;

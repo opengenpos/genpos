@@ -293,6 +293,9 @@
 #define     CLASS_PARASUPLEVEL_SUP      3    /* Clear Secret Case */
 #define     CLASS_PARASUPLEVEL_SEC      4    /* Write Secret Case */
 
+/* for operator status and Guest Check Number with MAINTOPESTATUS - uchMajor=CLASS_MAINTOPESTATUS */
+#define     CLASS_PARAOPESTATUS_CASHIER   1
+#define     CLASS_PARAOPESTATUS_GCNO      2
 
 /* for DEPT/PLU Setting */
 
@@ -337,17 +340,8 @@
 
 /* for Flex Memory */
 
-#define     CLASS_PARAFLEXMEM_RECORD    14   /* Indicate Number of Record */
-#define     CLASS_PARAFLEXMEM_PTD       15   /* Indicate PTD Flag Data */
-
-/* for Waiter No Setting */
-
-#define     CLASS_PARAWAITERNO_MNEMO        16   /* Indicate Waiter Name Data */
-#define     CLASS_PARAWAITERNO_STSGC9       17   /* Indicate Start GC No. Data for A/C 9 */
-#define     CLASS_PARAWAITERNO_STSGC50      18   /* Indicate Start GC No. Data for A/C 50 */
-#define     CLASS_PARAWAITERNO_ENDGC        19   /* Indicate End GC No. Data */
-#define     CLASS_PARAWAITERNO_STSGC9_INT   20   /* Indicate Start GC No. Data for A/C 9 */
-#define     CLASS_PARAWAITERNO_STSGC50_INT  21   /* Indicate Start GC No. Data for A/C 50 */
+#define     CLASS_PARAFLEXMEM_RECORD    14   /* Indicate Number of Record. See also CLASS_PARAFLEXMEM_DISPRECORD */
+#define     CLASS_PARAFLEXMEM_PTD       15   /* Indicate PTD Flag Data. See also CLASS_PARAFLEXMEM_DISPFLAG  */
 
 /* for Rounding Table  */
 

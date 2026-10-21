@@ -1446,18 +1446,18 @@ public:
 	HRESULT  ExecLastMethod (void);
 
 public:
-	HRESULT  m_hrLastResult;
+	HRESULT  m_hrLastResult = S_OK;
 	ULONG    m_uReturn;
 
 private:
-	wchar_t  m_LastMethodName[256];
-	wchar_t  m_LastObjectPath[512];
-	IEnumWbemClassObject *m_pEnum;
-	IWbemClassObject *m_pclsObj;
-	IWbemServices *m_pSvc;
+	wchar_t  m_LastMethodName[256] = { 0 };
+	wchar_t  m_LastObjectPath[512] = { 0 };
+	IEnumWbemClassObject* m_pEnum = nullptr;
+	IWbemClassObject *m_pclsObj = nullptr;
+	IWbemServices *m_pSvc = nullptr;
 
-	IWbemClassObject *m_pMethodParmsIn;
-	IWbemClassObject *m_pMethodParmsOut;
+	IWbemClassObject *m_pMethodParmsIn = nullptr;
+	IWbemClassObject *m_pMethodParmsOut = nullptr;
 
 };
 
@@ -5939,7 +5939,7 @@ BOOL CDeviceEngine::DevicePrinterWrite (VOID *pvData, DWORD dwLength)
 			break;
 		}
 
-		for (int i = 0; i < pData->ulLength; i++) {
+		for (ULONG i = 0; i < pData->ulLength; i++) {
 			tempBuffer[i] = pData->ptchBuffer[i];
 		}
 		data.lpData = (LPBYTE)tempBuffer;

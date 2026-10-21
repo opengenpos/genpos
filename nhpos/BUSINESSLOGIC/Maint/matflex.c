@@ -13,10 +13,6 @@
 * Category    : Maintenance, NCR 2170 US Hospitality Application Program        
 * Program Name: MATFLEX.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Midium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract: This function assign the number of record & if each file has PTD or not. 
 *
 *           The provided function names are as follows: 
@@ -57,6 +53,7 @@
 #include <uie.h>
 #include <log.h>
 #include <pif.h>
+#include <rfl.h>
 #include <paraequ.h> 
 #include <para.h>
 #include <maint.h> 
@@ -147,10 +144,6 @@ SHORT MaintFlexMemRead( PARAFLEXMEM *pData )
 
 SHORT MaintFlexMemEdit( PARAFLEXMEM *pData )
 {
-
-    PARAFLEXMEM ParaFlex;
-
-
     /* check status */
 
     if (pData->uchStatus & MAINT_WITHOUT_DATA) {            /* without data */   
@@ -234,17 +227,12 @@ SHORT MaintFlexMemEdit( PARAFLEXMEM *pData )
                                                                     
             if ((pData->ulRecordNumber < FLEX_ITEMSTORAGE_MIN) ||   /* FLEX_ITEMSTORAGE_MIN=30 */
                 (pData->ulRecordNumber > FLEX_ITEMSTORAGE_MAX)) {   /* FLEX_ITEMSTORAGE_MAX=200 */
-            /* if ((pData->usRecordNumber < FLEX_ITEMSTORAGE_MIN) ||   / FLEX_ITEMSTORAGE_MIN=30 /
-                (pData->usRecordNumber > FLEX_ITEMSTORAGE_MAX)) {   / FLEX_ITEMSTORAGE_MAX=200 */
                 return(LDT_KEYOVER_ADR);                        /* wrong data */
             }
 
             if (MaintWork.FlexMem.uchAddress == FLEX_CONSSTORAGE_ADR) {
-                ParaFlex.uchMajorClass = CLASS_PARAFLEXMEM;
-                ParaFlex.uchAddress = FLEX_ITEMSTORAGE_ADR;
-                CliParaRead(&ParaFlex);
-                if (pData->ulRecordNumber < ParaFlex.ulRecordNumber) {
-                /* if (pData->usRecordNumber < ParaFlex.usRecordNumber) { */
+
+                if (pData->ulRecordNumber < RflGetMaxRecordNumberByType(FLEX_ITEMSTORAGE_ADR)){
                     return(LDT_PROHBT_ADR);                     /* wrong data */
                 }
             }
@@ -369,10 +357,8 @@ SHORT MaintFlexMemWrite( VOID )
     UCHAR           uchSaveAddr;
     SHORT           sReturn = 0;
     SHORT           sCnvErr; 
-    ULONG           ulRec, ulConsRec;
-    /* USHORT          usRec, usConsRec; */
-    MAINTERRORCODE  MaintErrorCode;
-    PARAFLEXMEM     ParaFlexMem, WorkPara;
+    MAINTERRORCODE  MaintErrorCode = { 0 };
+    PARAFLEXMEM     ParaFlexMem = { 0 };
 
     /* control header item */
     MaintHeaderCtl(PG_FLX_MEM, RPT_PRG_ADR);
@@ -389,10 +375,7 @@ SHORT MaintFlexMemWrite( VOID )
 
     do {
         /* create file */
-        if ((sReturn = CliCreateFile(MaintWork.FlexMem.uchAddress, 
-                                     MaintWork.FlexMem.ulRecordNumber, 
-                                     /* MaintWork.FlexMem.usRecordNumber, */
-                                     MaintWork.FlexMem.uchPTDFlag)) != OP_PERFORM) {
+        if ((sReturn = CliCreateFile(MaintWork.FlexMem.uchAddress, MaintWork.FlexMem.ulRecordNumber, MaintWork.FlexMem.uchPTDFlag)) != OP_PERFORM) {
             
             if (!(((MaintWork.FlexMem.uchAddress == FLEX_ITEMSTORAGE_ADR) ||
                 (MaintWork.FlexMem.uchAddress == FLEX_CONSSTORAGE_ADR)) &&
@@ -404,49 +387,32 @@ SHORT MaintFlexMemWrite( VOID )
                 SerChangeInqStat();
 
                 /* re-create file in old data */
-                if (CliCreateFile(MaintWork.FlexMem.uchAddress, 
-                              MaintWork.FlexMem.ulRecordNumber, 
-                              /* MaintWork.FlexMem.usRecordNumber, */
-                              MaintWork.FlexMem.uchPTDFlag) != OP_PERFORM) {
+                if (CliCreateFile(MaintWork.FlexMem.uchAddress, MaintWork.FlexMem.ulRecordNumber, MaintWork.FlexMem.uchPTDFlag) != OP_PERFORM) {
                     PifLog(MODULE_MAINT_LOG_ID, LOG_ERROR_MAT_CODE_01);
                     PifLog(MODULE_MAINT_LOG_ID, LOG_ERROR_MAT_NOTCREATE_FILE);
                 }
 
                 /*----- Re-Create Item Storage, R3.0 -----*/
                 if (MaintWork.FlexMem.uchAddress == FLEX_CONSSTORAGE_ADR) {
-                    WorkPara.uchMajorClass = CLASS_PARAFLEXMEM;   
-                    WorkPara.uchAddress = FLEX_ITEMSTORAGE_ADR;
-                    CliParaRead(&WorkPara);
-                    if (WorkPara.ulRecordNumber <= MaintWork.FlexMem.ulRecordNumber) {
-                        ulRec = WorkPara.ulRecordNumber;
-                        ulConsRec = MaintWork.FlexMem.ulRecordNumber;
-                        MaintWork.FlexMem.ulRecordNumber = ulRec;
+                    FLEXMEM  flexMem = RflGetFlexMemByType(FLEX_ITEMSTORAGE_ADR);
+                    ULONG    ulRec, ulConsRec;
+
+                    ulConsRec = MaintWork.FlexMem.ulRecordNumber;
+                    if (flexMem.ulRecordNumber <= MaintWork.FlexMem.ulRecordNumber) {
+                        ulRec = MaintWork.FlexMem.ulRecordNumber = flexMem.ulRecordNumber;
                     } else {
-                        ulConsRec = ulRec = MaintWork.FlexMem.ulRecordNumber;
+                        ulRec = MaintWork.FlexMem.ulRecordNumber;
                     }
-                    if (CliCreateFile(FLEX_ITEMSTORAGE_ADR,
-                              ulRec,
-                              MaintWork.FlexMem.uchPTDFlag) != OP_PERFORM) {
+                    if (CliCreateFile(FLEX_ITEMSTORAGE_ADR, ulRec, MaintWork.FlexMem.uchPTDFlag) != OP_PERFORM) {
 						PifLog(MODULE_MAINT_LOG_ID, LOG_ERROR_MAT_CODE_02);
                         PifLog(MODULE_MAINT_LOG_ID, LOG_ERROR_MAT_NOTCREATE_FILE);
-                    }                    /* if (WorkPara.usRecordNumber <= MaintWork.FlexMem.usRecordNumber) { 
-                        usRec = WorkPara.usRecordNumber;
-                        usConsRec = MaintWork.FlexMem.usRecordNumber;
-                        MaintWork.FlexMem.usRecordNumber = usRec;
-                    } else {
-                        usConsRec = usRec = MaintWork.FlexMem.usRecordNumber;
                     }
-                    if (CliCreateFile(FLEX_ITEMSTORAGE_ADR,
-                              usRec,
-                              MaintWork.FlexMem.uchPTDFlag) != OP_PERFORM) {
-                        PifLog(MODULE_MAINT_LOG_ID, LOG_ERROR_MAT_NOTCREATE_FILE);
-                    } */
-                    MaintWork.FlexMem.uchAddress = (UCHAR)FLEX_ITEMSTORAGE_ADR;
+
+                    MaintWork.FlexMem.uchAddress = FLEX_ITEMSTORAGE_ADR;
                     CliParaWrite(&MaintWork.FlexMem);
                     if (uchSaveAddr == FLEX_CONSSTORAGE_ADR) {
                         MaintWork.FlexMem.uchAddress++;
                         MaintWork.FlexMem.ulRecordNumber = ulConsRec;
-                        /* MaintWork.FlexMem.usRecordNumber = usConsRec; */
                     }
                 }
             }
@@ -512,7 +478,6 @@ SHORT MaintFlexMemWrite( VOID )
     }
     while ((MaintWork.FlexMem.uchAddress == FLEX_CONSSTORAGE_ADR) &&
            (MaintWork.FlexMem.ulRecordNumber > ParaFlexMem.ulRecordNumber));
-           /* (MaintWork.FlexMem.usRecordNumber > ParaFlexMem.usRecordNumber)); */
 
     /* check address */
     if (uchSaveAddr == FLEX_ITEMSTORAGE_ADR) {

@@ -650,9 +650,9 @@ PluUpdateRecord2(USHORT, PITEMNO, USHORT, PUPDINF, PUPDINF, VOID *, USHORT *);
 
 /* --- file access in block unit --- */
                                                 /* read from a file         */
-USHORT PLUAPI PluReadBlock(USHORT, UCHAR *, ULONG, ULONG *);
+USHORT PLUAPI PluReadBlock(USHORT, VOID *, ULONG, ULONG *);
                                                 /* write to a file          */
-USHORT PLUAPI PluWriteBlock(USHORT, UCHAR *, USHORT, USHORT *);
+USHORT PLUAPI PluWriteBlock(USHORT, VOID *, USHORT, USHORT *);
                                                 /* change file ptr.         */
 USHORT PLUAPI PluSeekBlock(USHORT, LONG, USHORT, ULONG *);
 

@@ -1549,23 +1549,18 @@ BOOL RptEODChkFileExist( UCHAR uchAddress )
 
 BOOL RptPTDChkFileExist( UCHAR uchAddress ) 
 {
-	PARAFLEXMEM     FlexMem = { 0 };
-
-    /* Read Record Size */
-    FlexMem.uchMajorClass = CLASS_PARAFLEXMEM;
-    FlexMem.uchAddress = uchAddress;
-    CliParaRead(&FlexMem);
+	FLEXMEM  flexMem = RflGetFlexMemByType(uchAddress);
 
     /* Check Service Time File (Only Store/Recall System) */
     if (uchAddress == FLEX_GC_ADR) {
-        if (FlexMem.uchPTDFlag == FLEX_STORE_RECALL) {
+        if (flexMem.uchPTDFlag == FLEX_STORE_RECALL) {
             return(RPT_FILE_EXIST);
         }
         return(RPT_FILE_NOTEXIST);
     }
 
     /* Check Record Size,   Saratoga */
-    if ((FlexMem.ulRecordNumber == 0) || (FlexMem.uchPTDFlag == FLEX_PRECHK_BUFFER)) {
+    if ((flexMem.ulRecordNumber == 0) || (flexMem.uchPTDFlag == FLEX_PRECHK_BUFFER)) {
         return(RPT_FILE_NOTEXIST);
     }
 
