@@ -392,7 +392,7 @@ SHORT   ItemOtherSlipFeed( UIFREGOTHER *ItemOther)
         TrnItemOther.lAmount = TranGCFQualPtr->uchSlipLine;    
     } else {
         /* check feedline */
-        if ( (long)(RflGetSlipMaxLines() - 2) < ItemOther->lAmount) {
+        if ( ((DCURRENCY)RflGetSlipMaxLines() - 2) < ItemOther->lAmount) {
             return(LDT_KEYOVER_ADR); 
         } 
         TrnItemOther.lAmount = ItemOther->lAmount;      
@@ -2523,7 +2523,7 @@ SHORT   ItemOtherTransfer(UIFREGOTHER *pRegOther)
                 if (pRegOther->lAmount == 0) {
                     ;
                 } else if (ItemSalesOnlyCalcPPI(&WorkSales.ItemSalesBuff) != ITM_SUCCESS) {
-                    WorkSales.ItemSalesBuff.lProduct = (DCURRENCY)(WorkSales.ItemSalesBuff.lUnitPrice * (LONG)sQty);
+                    WorkSales.ItemSalesBuff.lProduct = ((DCURRENCY)WorkSales.ItemSalesBuff.lUnitPrice * (LONG)sQty);
                 } else {    /* ppi sales price */
                     if (TranCurQualPtr->fsCurStatus & CURQUAL_PRESELECT_MASK) { /* preselect void trans. */
                         WorkSales.ItemSalesBuff.lProduct *= -1L;
@@ -2533,14 +2533,14 @@ SHORT   ItemOtherTransfer(UIFREGOTHER *pRegOther)
                 if (pRegOther->lAmount == 0) {
                     ;
                 } else if (ItemSalesOnlyCalcPM(&WorkSales.ItemSalesBuff) != ITM_SUCCESS) {
-                    WorkSales.ItemSalesBuff.lProduct = (DCURRENCY)(WorkSales.ItemSalesBuff.lUnitPrice * (LONG)sQty);
+                    WorkSales.ItemSalesBuff.lProduct = ((DCURRENCY)WorkSales.ItemSalesBuff.lUnitPrice * (LONG)sQty);
                 } else {    /* ppi sales price */
                     if (TranCurQualPtr->fsCurStatus & CURQUAL_PRESELECT_MASK) { /* preselect void trans. */
                         WorkSales.ItemSalesBuff.lProduct *= -1L;
                     }
                 }
             } else {
-                WorkSales.ItemSalesBuff.lProduct = (DCURRENCY)(WorkSales.ItemSalesBuff.lUnitPrice * (LONG)sQty);
+                WorkSales.ItemSalesBuff.lProduct = ((DCURRENCY)WorkSales.ItemSalesBuff.lUnitPrice * (LONG)sQty);
             }
         }
 
@@ -2802,7 +2802,7 @@ SHORT   ItemOtherTransfItem(UIFREGOTHER *pData)
                 if (pData->lAmount == 0) {
                     ;
                 } else if (ItemSalesOnlyCalcPPI(&ItemSales) != ITM_SUCCESS) {
-                    ItemSales.lProduct = (ItemSales.lUnitPrice * (LONG)sQty);
+                    ItemSales.lProduct = ((DCURRENCY)ItemSales.lUnitPrice * (LONG)sQty);
                 } else {    /* ppi sales price */
                     if (TranCurQualPtr->fsCurStatus & CURQUAL_PRESELECT_MASK) { /* preselect void trans. */
                         ItemSales.lProduct *= -1L;
@@ -2812,14 +2812,14 @@ SHORT   ItemOtherTransfItem(UIFREGOTHER *pData)
                 if (pData->lAmount == 0) {
                     ;
                 } else if (ItemSalesOnlyCalcPM(&ItemSales) != ITM_SUCCESS) {
-                    ItemSales.lProduct = (ItemSales.lUnitPrice * (LONG)sQty); 
+                    ItemSales.lProduct = ((DCURRENCY)ItemSales.lUnitPrice * (LONG)sQty);
                 } else {    /* ppi sales price */
                     if (TranCurQualPtr->fsCurStatus & CURQUAL_PRESELECT_MASK) { /* preselect void trans. */
                         ItemSales.lProduct *= -1L;
                     }
                 }
             } else {
-                ItemSales.lProduct = (ItemSales.lUnitPrice * (LONG)sQty);
+                ItemSales.lProduct = ((DCURRENCY)ItemSales.lUnitPrice * (LONG)sQty);
             }
         }
 
