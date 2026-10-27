@@ -230,13 +230,9 @@ SHORT   ItemSignIn(UIFREGOPEOPEN *pUifRegOpeOpen)
 
     /* open item, cons. post rec. file */
 	if (sReturnStatus == UIF_SUCCESS && TrnICPOpenFile() == TRN_SUCCESS) {
-		TRANCURQUAL     CurQualWork = {0};
-		ITEMMISC        ItemMisc = {0};
-		ITEMPRINT       ItemPrintData = {0};      
 		ITEMTRANSCLOSE  ItemTransClose = {0};
 
-		
-		TrnPutCurQual(&CurQualWork);    /* initialize memory resident database to zeros with prefilled CurQualWork */
+		TrnPutCurQual(NULL);    /* initialize memory resident database to zeros with prefilled CurQualWork */
 
 		{
 			ITEMCOMMONLOCAL *pItemCommonLocal = ItemCommonGetLocalPointer();
@@ -254,53 +250,64 @@ SHORT   ItemSignIn(UIFREGOPEOPEN *pUifRegOpeOpen)
 		/* start print service */
 		ItemPrintStart(TYPE_POSTCHECK);     /* store only item consoli. buffer */     
 
-		ItemMisc.ulEmployeeNo = ItemPrintData.ulID = ItemMisc.ulID = ItemOpeOpen.ulID;
-		_tcsncpy (ItemMisc.aszMnemonic, ItemOpeOpen.aszMnemonic, sizeof(ItemMisc.aszMnemonic)/sizeof(ItemMisc.aszMnemonic[0]) - 1);
+        {
+            ITEMMISC        ItemMisc = { 0 };
 
-		ItemPrintData.usConsNo = CurQualWork.usConsNo;
+            ItemMisc.ulEmployeeNo = ItemMisc.ulID = ItemOpeOpen.ulID;
+            _tcsncpy(ItemMisc.aszMnemonic, ItemOpeOpen.aszMnemonic, sizeof(ItemMisc.aszMnemonic) / sizeof(ItemMisc.aszMnemonic[0]) - 1);
 
-		{
-			DATE_TIME DateTime;          /* for TOD read */
+            {
+                DATE_TIME DateTime;          /* for TOD read */
 
-			PifGetDateTime(&DateTime);
-			ItemMisc.usYear  = DateTime.usYear;
-			ItemMisc.usMonth = DateTime.usMonth;
-			ItemMisc.usDay   = DateTime.usMDay;
-			ItemMisc.uchJobCode = 0;
-			ItemMisc.usTimeinTime = DateTime.usHour;
-			ItemMisc.usTimeinMinute = DateTime.usMin;
-			ItemMisc.usTimeOutTime   = 0;
-			ItemMisc.usTimeOutMinute = 0;
-		}
+                PifGetDateTime(&DateTime);
+                ItemMisc.usYear = DateTime.usYear;
+                ItemMisc.usMonth = DateTime.usMonth;
+                ItemMisc.usDay = DateTime.usMDay;
+                ItemMisc.uchJobCode = 0;
+                ItemMisc.usTimeinTime = DateTime.usHour;
+                ItemMisc.usTimeinMinute = DateTime.usMin;
+                ItemMisc.usTimeOutTime = 0;
+                ItemMisc.usTimeOutMinute = 0;
+            }
 
-		/* set class */
-		ItemMisc.uchMajorClass = CLASS_ITEMMISC;
-		ItemMisc.fbStorageStatus |= NOT_CONSOLI_STORAGE;
-		ItemMisc.uchMinorClass = CLASS_SIGNIN;
-		UifEmployeeSignTimeMethodString (pUifRegOpeOpen->ulStatusFlags, ItemMisc.aszNumber);
+            /* set class */
+            ItemMisc.uchMajorClass = CLASS_ITEMMISC;
+            ItemMisc.fbStorageStatus |= NOT_CONSOLI_STORAGE;
+            ItemMisc.uchMinorClass = CLASS_SIGNIN;
+            UifEmployeeSignTimeMethodString(pUifRegOpeOpen->ulStatusFlags, ItemMisc.aszNumber);
 
-		ItemMisc.fsPrintStatus = ( PRT_JOURNAL);    /* set R/J portion */
-		TrnItem(&ItemMisc);
+            ItemMisc.fsPrintStatus = (PRT_JOURNAL);    /* set R/J portion */
+            TrnItem(&ItemMisc);
+        }
 
-		/* print trailer (only receipt and journal) */
-		ItemPrintData.uchMajorClass = CLASS_ITEMPRINT;      
-		ItemPrintData.uchMinorClass = CLASS_TRAILER3;       
-		ItemPrintData.fsPrintStatus = (PRT_JOURNAL);
-	    
-		TrnGetCurQual(&CurQualWork);
-		ItemPrintData.ulStoreregNo = CurQualWork.ulStoreregNo;
-		ItemPrintData.fbStorageStatus |= NOT_CONSOLI_STORAGE;
+        {
+            ITEMPRINT       ItemPrintData = { 0 };
 
-		TrnItem(&ItemPrintData);
+            /* print trailer (only receipt and journal) */
+            ItemPrintData.uchMajorClass = CLASS_ITEMPRINT;
+            ItemPrintData.uchMinorClass = CLASS_TRAILER3;
+            ItemPrintData.fsPrintStatus = (PRT_JOURNAL);
+            ItemPrintData.ulID = ItemOpeOpen.ulID;
 
-		/* close transaction */
-		TrnGetCurQual( &CurQualWork );  
-		CurQualWork.uchPrintStorage = PRT_NOSTORAGE;        /* not print item/consoli. data */
-		if (  (CurQualWork.flPrintStatus & CURQUAL_GC_SYS_MASK ) != CURQUAL_PRE_UNBUFFER ) {
-			CurQualWork.uchPrintStorage = PRT_ITEMSTORAGE;
-		}
-		CurQualWork.uchKitchenStorage = PRT_NOSTORAGE;      /* not send kitchen */
-		TrnPutCurQual( &CurQualWork );
+            ItemPrintData.usConsNo = TranCurQualPtr->usConsNo;
+            ItemPrintData.ulStoreregNo = TranCurQualPtr->ulStoreregNo;
+            ItemPrintData.fbStorageStatus |= NOT_CONSOLI_STORAGE;
+
+            TrnItem(&ItemPrintData);
+        }
+
+        {
+            TRANCURQUAL     CurQualWork = { 0 };
+
+            /* close transaction */
+            TrnGetCurQual(&CurQualWork);
+            CurQualWork.uchPrintStorage = PRT_NOSTORAGE;        /* not print item/consoli. data */
+            if ((CurQualWork.flPrintStatus & CURQUAL_GC_SYS_MASK) != CURQUAL_PRE_UNBUFFER) {
+                CurQualWork.uchPrintStorage = PRT_ITEMSTORAGE;
+            }
+            CurQualWork.uchKitchenStorage = PRT_NOSTORAGE;      /* not send kitchen */
+            TrnPutCurQual(&CurQualWork);
+        }
 
 		ItemTransClose.uchMajorClass = CLASS_ITEMTRANSCLOSE;
         ItemTransClose.uchMinorClass = CLASS_CLSETK;
