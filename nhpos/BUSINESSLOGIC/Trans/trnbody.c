@@ -229,9 +229,22 @@ VOID    TrnGetModeQual( TRANMODEQUAL *pTranModeQual )
     *pTranModeQual = TrnInformation.TranModeQual;
 }
 
+/*
+ * TrnPutModeQual( CONST TRANMODEQUAL *pTranModeQual );
+ * Overwrite the existing data in TrnInformation.TranModeQual with
+ * the data pointed to by pTranModeQual.
+ * 
+ * If pTranModeQual is NULL then clear the data in TrnInformation.TranModeQual
+ * to zero with memset().
+ */
 VOID    TrnPutModeQual( CONST TRANMODEQUAL *pTranModeQual )
 {
-    TrnInformation.TranModeQual = *pTranModeQual;
+    if (pTranModeQual) {
+        TrnInformation.TranModeQual = *pTranModeQual;
+    }
+    else {
+        memset(&TrnInformation.TranModeQual, 0, sizeof(TrnInformation.TranModeQual));
+    }
 }
 
 
@@ -276,9 +289,22 @@ VOID    TrnGetGCFQual(TRANGCFQUAL **TranGCFQual)
     *TranGCFQual =  &TrnInformation.TranGCFQual;
 }
 
+/*
+ * TrnPutGCFQual(CONST TRANGCFQUAL *pTranGCFQual);
+ * Overwrite the existing data in TrnInformation.TranGCFQual with
+ * the data pointed to by pTranGCFQual.
+ *
+ * If pTranGCFQual is NULL then clear the data in TrnInformation.TranGCFQual
+ * to zero with memset().
+ */
 VOID    TrnPutGCFQual(CONST TRANGCFQUAL *pTranGCFQual)
 {
-   TrnInformation.TranGCFQual = *pTranGCFQual;
+    if (pTranGCFQual) {
+        TrnInformation.TranGCFQual = *pTranGCFQual;
+    }
+    else {
+        memset(&TrnInformation.TranGCFQual, 0, sizeof(TrnInformation.TranGCFQual));
+    }
 }
 
 /*==========================================================================
@@ -322,9 +348,22 @@ VOID    TrnGetCurQual( TRANCURQUAL *pTranCurQual )
     *pTranCurQual = TrnInformation.TranCurQual;
 }
 
+/*
+ * TrnPutCurQual( CONST TRANCURQUAL *pTranCurQual );
+ * Overwrite the existing data in TrnInformation.TranCurQual with
+ * the data pointed to by pTranCurQual.
+ *
+ * If pTranCurQual is NULL then clear the data in TrnInformation.TranCurQual
+ * to zero with memset().
+ */
 VOID    TrnPutCurQual( CONST TRANCURQUAL *pTranCurQual )
 {
-    TrnInformation.TranCurQual = *pTranCurQual;
+    if (pTranCurQual) {
+        TrnInformation.TranCurQual = *pTranCurQual;
+    } 
+    else {
+        memset(&TrnInformation.TranCurQual, 0, sizeof(TrnInformation.TranCurQual));
+    }
 }
 
 /*
@@ -421,15 +460,28 @@ TRANITEMIZERS  *TrnGetTIPtr (VOID)
 	return &TrnInformation.TranItemizers;
 }
 
-VOID    TrnGetTI(TRANITEMIZERS **pItem)
+VOID    TrnGetTI(TRANITEMIZERS **pTranItemizers)
 {
-    *pItem = &TrnInformation.TranItemizers;
+    *pTranItemizers = &TrnInformation.TranItemizers;
 }
 
 
-VOID    TrnPutTI(CONST TRANITEMIZERS *pItem)
+/*
+ * TrnPutTI(CONST TRANITEMIZERS *pTranItemizers);
+ * Overwrite the existing data in TrnInformation.TranItemizers with
+ * the data pointed to by pTranItemizers.
+ *
+ * If pTranItemizers is NULL then clear the data in TrnInformation.TranItemizers
+ * to zero with memset().
+ */
+VOID    TrnPutTI(CONST TRANITEMIZERS *pTranItemizers)
 {
-    TrnInformation.TranItemizers = *pItem;
+    if (pTranItemizers) {
+        TrnInformation.TranItemizers = *pTranItemizers;
+    }
+    else {
+        memset(&TrnInformation.TranItemizers, 0, sizeof(TrnInformation.TranItemizers));
+    }
 }
 
 

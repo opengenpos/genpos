@@ -79,7 +79,9 @@
 * 
 *         UIF_SUCESS      : Return when cashier interrupt sign-out performed sucessfully
 * 
-*         LDT_SEQERR_ADR : Return when key sequence error detected. 
+*         LDT_SEQERR_ADR   : Return when key sequence error detected. 
+* 
+*         LDT_DRAWCLSE_ADR : returned by cash drawer status check, ItemCommonCheckCashDrawerOpen()
 *
 *         sReturnStatus : Return when TrnClose() returns error. 
 *

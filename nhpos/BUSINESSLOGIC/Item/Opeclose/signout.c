@@ -45,6 +45,7 @@
 
 #include    <ecr.h>
 #include    <pif.h>
+#include    <rfl.h>
 #include    <log.h>
 #include    <uie.h>
 #include    <uireg.h>
@@ -115,12 +116,12 @@ SHORT   ItemSignOutWithTest(UIFREGOPECLOSE *pUifRegOpeClose)
 SHORT   ItemSignOut(UIFREGOPECLOSE *pUifRegOpeClose)
 {
     SHORT  sReturnStatus;
+	TCHAR  aszCashierMnem[STD_CASHIERNAME_LEN + 1] = { 0 };
 	ITEMOPECLOSE       ItemOpeClose = {0};
-	TRANMODEQUAL       myTranModeQual;
 
 	// Save the Operator Id and Mnemonic to be used for the EJ entry below.
 	// We get it here in order to have a copy before it has a chance to be cleared below.
-	TrnGetModeQual( &myTranModeQual );
+	tcharncpy(aszCashierMnem, TrnGetModeQualPtr()->aszCashierMnem, STD_CASHIERNAME_LEN);
 
     switch(pUifRegOpeClose->uchMinorClass) {
     case CLASS_UICASHIEROUT:
@@ -136,8 +137,7 @@ SHORT   ItemSignOut(UIFREGOPECLOSE *pUifRegOpeClose)
     case CLASS_UICASINTOUT:         /* R3.3 */
     case CLASS_UICASINTB_OUT:       /* R3.3 */
         sReturnStatus = ItemCasSignOut(pUifRegOpeClose, &ItemOpeClose);
-        if ((sReturnStatus != UIF_CAS_SIGNOUT) ||
-            (sReturnStatus != UIF_SUCCESS)) {
+        if ( ! (sReturnStatus == UIF_CAS_SIGNOUT || sReturnStatus == UIF_SUCCESS)) {
             return(sReturnStatus);
         }
         break;
@@ -173,23 +173,20 @@ SHORT   ItemSignOut(UIFREGOPECLOSE *pUifRegOpeClose)
         break;
 
     default:    /* not use */
+		return LDT_SEQERR_ADR;
         break;
     }
 
 	if (pUifRegOpeClose->uchMinorClass != CLASS_UIMODELOCK) {
 		if ((sReturnStatus == UIF_CAS_SIGNOUT || sReturnStatus == UIF_WAI_SIGNOUT) && TrnICPOpenFile() == TRN_SUCCESS) {
-			TRANCURQUAL     CurQualWork = {0};
-			ITEMMISC        ItemMisc = {0};
-			ITEMPRINT       ItemPrintData = {0};      
-			ITEMTRANSCLOSE  ItemTransClose = {0};
+			TRANCURQUAL* const pCurQualWork = TrnGetCurQualPtr();
 
 			/* initialize */
-			TrnPutCurQual(&CurQualWork);    // clear the CurQual area by setting to zero.
+			TrnPutCurQual(NULL);    // clear the CurQual area by setting to zero.
 
 			{
-				ITEMCOMMONLOCAL *pItemCommonLocal = 0;
+				ITEMCOMMONLOCAL* const pItemCommonLocal = ItemCommonGetLocalPointer();
 
-				ItemCommonGetLocal(&pItemCommonLocal);
 				pItemCommonLocal->fbCommonStatus &= ~(COMMON_CONSNO | COMMON_VOID_EC);  // Clear the Connsecutive number flag to indicate it needs to be generated
 			}
 			/* consecutive no. and current qualifier count up on */
@@ -200,78 +197,83 @@ SHORT   ItemSignOut(UIFREGOPECLOSE *pUifRegOpeClose)
 			ItemCurPrintStatus();
 
 			/* start print service */
-			ItemPrintStart(TYPE_POSTCHECK);     /* store only item consoli. buffer */     
-
-
-			/* close transaction */
-			TrnGetCurQual( &CurQualWork );  
-			CurQualWork.uchPrintStorage = PRT_NOSTORAGE;        /* not print item/consoli. data */
-			if (  (CurQualWork.flPrintStatus & CURQUAL_GC_SYS_MASK ) != CURQUAL_PRE_UNBUFFER ) {
-				CurQualWork.uchPrintStorage = PRT_ITEMSTORAGE;
-			}
-			CurQualWork.uchKitchenStorage = PRT_NOSTORAGE;      /* not send kitchen */
-			TrnPutCurQual( &CurQualWork );
-
-			ItemMisc.ulEmployeeNo = ItemPrintData.ulID = ItemMisc.ulID = ItemOpeClose.ulID;
-			_tcsncpy (ItemMisc.aszMnemonic, myTranModeQual.aszCashierMnem, STD_CASHIERNAME_LEN);
-			ItemPrintData.usConsNo = CurQualWork.usConsNo;
-
-			/* set class */
-			ItemMisc.uchMajorClass = CLASS_ITEMMISC;
-			ItemMisc.fbStorageStatus |= NOT_CONSOLI_STORAGE;
-			ItemMisc.uchMinorClass = CLASS_SIGNOUT;
-			UifEmployeeSignTimeMethodString (pUifRegOpeClose->ulStatusFlags, ItemMisc.aszNumber);
-
-			// Set the Sign-out Date/Time information
-			{
-				DATE_TIME DateTime;          /* for TOD read */
-
-				PifGetDateTime(&DateTime);
-				ItemMisc.usYear  = DateTime.usYear;
-				ItemMisc.usMonth = DateTime.usMonth;
-				ItemMisc.usDay   = DateTime.usMDay;
-				ItemMisc.uchJobCode = 0;
-				ItemMisc.usTimeinTime = 0;
-				ItemMisc.usTimeinMinute = 0;
-				ItemMisc.usTimeOutTime   = DateTime.usHour;
-				ItemMisc.usTimeOutMinute = DateTime.usMin;
-			}
-
-			ItemMisc.fsPrintStatus = ( PRT_JOURNAL);    /* Indicate we want Journal print only for Sign-out */
-			TrnItem(&ItemMisc);
-
-			/* print trailer (only receipt and journal) */
-			ItemPrintData.uchMajorClass = CLASS_ITEMPRINT;      
-			ItemPrintData.uchMinorClass = CLASS_TRAILER3;       
-			ItemPrintData.fsPrintStatus = (PRT_JOURNAL);
-		    
-			TrnGetCurQual(&CurQualWork);
-			ItemPrintData.ulStoreregNo = CurQualWork.ulStoreregNo;
-			ItemPrintData.fbStorageStatus |= NOT_CONSOLI_STORAGE;
-
-			TrnItem(&ItemPrintData);
+			ItemPrintStart(TYPE_POSTCHECK);     /* store only item consoli. buffer */
 
 			/* close transaction */
-			TrnGetCurQual( &CurQualWork );  
-			CurQualWork.uchPrintStorage = PRT_NOSTORAGE;        /* not print item/consoli. data */
-			if (  (CurQualWork.flPrintStatus & CURQUAL_GC_SYS_MASK ) != CURQUAL_PRE_UNBUFFER ) {
-				CurQualWork.uchPrintStorage = PRT_ITEMSTORAGE;
+			pCurQualWork->uchPrintStorage = PRT_NOSTORAGE;        /* not print item/consoli. data */
+			if ((pCurQualWork->flPrintStatus & CURQUAL_GC_SYS_MASK) != CURQUAL_PRE_UNBUFFER) {
+				pCurQualWork->uchPrintStorage = PRT_ITEMSTORAGE;
 			}
-			CurQualWork.uchKitchenStorage = PRT_NOSTORAGE;      /* not send kitchen */
-			TrnPutCurQual( &CurQualWork );
+			pCurQualWork->uchKitchenStorage = PRT_NOSTORAGE;      /* not send kitchen */
 
-			ItemTransClose.uchMajorClass = CLASS_ITEMTRANSCLOSE;
-			ItemTransClose.uchMinorClass = CLASS_CLSETK;
-#if 1
 			{
+				ITEMMISC        ItemMisc = { 0 };
+
+				ItemMisc.ulEmployeeNo = ItemMisc.ulID = ItemOpeClose.ulID;
+				tcharncpy(ItemMisc.aszMnemonic, aszCashierMnem, STD_CASHIERNAME_LEN);
+
+				/* set class */
+				ItemMisc.uchMajorClass = CLASS_ITEMMISC;
+				ItemMisc.fbStorageStatus |= NOT_CONSOLI_STORAGE;
+				ItemMisc.uchMinorClass = CLASS_SIGNOUT;
+				UifEmployeeSignTimeMethodString(pUifRegOpeClose->ulStatusFlags, ItemMisc.aszNumber);
+
+				// Set the Sign-out Date/Time information
+				{
+					DATE_TIME DateTime;          /* for TOD read */
+
+					PifGetDateTime(&DateTime);
+					ItemMisc.usYear = DateTime.usYear;
+					ItemMisc.usMonth = DateTime.usMonth;
+					ItemMisc.usDay = DateTime.usMDay;
+					ItemMisc.uchJobCode = 0;
+					ItemMisc.usTimeinTime = 0;
+					ItemMisc.usTimeinMinute = 0;
+					ItemMisc.usTimeOutTime = DateTime.usHour;
+					ItemMisc.usTimeOutMinute = DateTime.usMin;
+				}
+
+				ItemMisc.fsPrintStatus = (PRT_JOURNAL);    /* Indicate we want Journal print only for Sign-out */
+				TrnItem(&ItemMisc);
+			}
+
+			{
+				ITEMPRINT       ItemPrintData = { 0 };
+
+				/* print trailer (only receipt and journal) */
+				ItemPrintData.uchMajorClass = CLASS_ITEMPRINT;
+				ItemPrintData.uchMinorClass = CLASS_TRAILER3;
+				ItemPrintData.fsPrintStatus = (PRT_JOURNAL);
+				ItemPrintData.ulID = ItemOpeClose.ulID;
+				ItemPrintData.usConsNo = pCurQualWork->usConsNo;
+
+				ItemPrintData.ulStoreregNo = pCurQualWork->ulStoreregNo;
+				ItemPrintData.fbStorageStatus |= NOT_CONSOLI_STORAGE;
+
+				TrnItem(&ItemPrintData);
+			}
+
+			/* close transaction */
+			pCurQualWork->uchPrintStorage = PRT_NOSTORAGE;        /* not print item/consoli. data */
+			if ((pCurQualWork->flPrintStatus & CURQUAL_GC_SYS_MASK) != CURQUAL_PRE_UNBUFFER) {
+				pCurQualWork->uchPrintStorage = PRT_ITEMSTORAGE;
+			}
+			pCurQualWork->uchKitchenStorage = PRT_NOSTORAGE;      /* not send kitchen */
+
+			{
+				ITEMTRANSCLOSE  ItemTransClose = { 0 };
 				PrtPrintCompulMask xSave = PrtSetPrintCompulMask((PrtPrintCompulMask) { 0, ~PRT_SLIP });
+
+				ItemTransClose.uchMajorClass = CLASS_ITEMTRANSCLOSE;
+				ItemTransClose.uchMinorClass = CLASS_CLSETK;
+#if 1
 				TrnClose(&ItemTransClose);
 				PrtSetPrintCompulMask(xSave);
-			}
 #else
-			fsPrtCompul= 0;  // ensure that we only do an EJ print
-			TrnClose( &ItemTransClose );
+				fsPrtCompul = 0;  // ensure that we only do an EJ print
+				TrnClose(&ItemTransClose);
 #endif
+			}
 
 			{
 				TCHAR aszSapId[16];

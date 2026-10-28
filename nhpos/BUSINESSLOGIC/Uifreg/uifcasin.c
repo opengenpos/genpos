@@ -90,7 +90,6 @@ UISEQ FARCONST aszSeqRegCasIntSignIn[] = {FSC_CASINT, FSC_CASINT_B, 0};
 SHORT UifCashierSignIn(KEYMSG *pData)
 {
     SHORT   sRetStatus;
-	TRANMODEQUAL    WorkMode;
 
     switch (pData->uchMsg) {
     case UIM_INIT:
@@ -196,9 +195,7 @@ SHORT UifCashierSignIn(KEYMSG *pData)
 			// The following code is used to store the drawer status
 			// that is used in the regester mode pickup functionality
 			// ***PDINU
-			TrnGetModeQual( &WorkMode );     /* get mode qualifier data */
-			WorkMode.uchCashierDrawer = pData->SEL.INPUT.uchMajor;
-			TrnPutModeQual( &WorkMode );     /* put mode qualifier data */
+            TrnGetModeQualPtr()->uchCashierDrawer = pData->SEL.INPUT.uchMajor;
 
             UieEchoBack(UIE_ECHO_ROW0_REG, UIFREG_MAX_INPUT);  /* set echo back */
             UieAccept();                                /* send accepted to parent */
