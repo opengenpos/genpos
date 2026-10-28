@@ -1766,7 +1766,7 @@ VOID    TrnRegDiscTaxCanComn(ITEMDISC *ItemDisc, SHORT sType, LONG lSign)
         }
 
 		if ((ItemDisc->uchSeatNo == 0) || (ItemDisc->uchSeatNo == 'B')) {	/* Base Transaction */
-	        for (i = 0L; i < (STD_PLU_ITEMIZERS+2+3); i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+	        for (i = 0L; i < STD_PLU_ITEMIZERS_PLUS; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
     	        pTrnOut->Itemizers.TranCanadaItemizers.lVoidDiscTax[uchMinorClass][i] = 0;
         	}
         }

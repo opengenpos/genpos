@@ -1485,7 +1485,7 @@ VOID    TrnSplAddGC2GCItemizers(TRANITEMIZERS *pItem2)
         for (i = 0; i < STD_PLU_ITEMIZERS; i++) {
             pCan1->lTaxable[i] += pCan2->lTaxable[i];
         }
-        for (i = 0; i < STD_PLU_ITEMIZERS+2+3; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+        for (i = 0; i < STD_PLU_ITEMIZERS_PLUS; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
             pCan1->lDiscTax[i] += pCan2->lDiscTax[i];
         }
         for (i = 0; i < 5; i++) {
@@ -1497,7 +1497,7 @@ VOID    TrnSplAddGC2GCItemizers(TRANITEMIZERS *pItem2)
             pCan1->lPrtTax[i] += pCan2->lPrtTax[i];
         }
         for (i = 0; i < STD_DISC_ITEMIZERS_MAX; i++) {
-            for (j = 0; j < STD_PLU_ITEMIZERS+2+3; j++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+            for (j = 0; j < STD_PLU_ITEMIZERS_PLUS; j++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
                 pCan1->lDiscTaxable[i][j] += pCan2->lDiscTaxable[i][j];
             }
         }
@@ -1506,7 +1506,7 @@ VOID    TrnSplAddGC2GCItemizers(TRANITEMIZERS *pItem2)
 
 		/* TAR191625 */
 		for (i = 0; i < STD_DISC_ITEMIZERS_MAX; i++) {
-			for (j = 0; j < STD_PLU_ITEMIZERS+2+3; j++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+			for (j = 0; j < STD_PLU_ITEMIZERS_PLUS; j++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
    				pCan1->lVoidDiscTax[i][j] += pCan2->lVoidDiscTax[i][j];
 			}
         }

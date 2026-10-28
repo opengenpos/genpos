@@ -702,7 +702,7 @@ SHORT   TrnVoidSearchRegDisc(ITEMDISC *pData, SHORT sStorage)
             			pData->VoidDisc.USVoidDisc.lVoidDiscFSDiscTaxable[i] = pDiscStore->VoidDisc.USVoidDisc.lVoidDiscFSDiscTaxable[i];
 					}
 				} else if (TrnTaxSystem() == TRN_TAX_CANADA) {
-					for (i = 0; i < STD_PLU_ITEMIZERS+2+3; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+					for (i = 0; i < STD_PLU_ITEMIZERS_PLUS; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
                 		pData->VoidDisc.CanVoidDisc.lVoidDiscTax[i] = pDiscStore->VoidDisc.CanVoidDisc.lVoidDiscTax[i];
 					}
 				} else {

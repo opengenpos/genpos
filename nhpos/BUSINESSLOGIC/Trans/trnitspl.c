@@ -513,7 +513,7 @@ VOID    TrnItemAffectionSpl(ITEMAFFECTION *pItem, TrnStorageType sType)
                 pSpl->TranItemizers.Itemizers.TranCanadaItemizers.lTaxable[i] = 0L;
             }
             for (i = 0; i < 2; i++) {
-                for (j = 0; j < STD_PLU_ITEMIZERS+2+3; j++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+                for (j = 0; j < STD_PLU_ITEMIZERS_PLUS; j++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
                     pSpl->TranItemizers.Itemizers.TranCanadaItemizers.lDiscTaxable[i][j] = 0L;
                 }        
             }

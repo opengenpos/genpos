@@ -390,7 +390,7 @@ VOID    ItemTotalSEPreAffect(UIFREGTOTAL *UifRegTotal,
             for(i = 0; i < STD_PLU_ITEMIZERS; i++) {
                 WorkTI->Itemizers.TranCanadaItemizers.lTaxable[i] = 0L;
             }
-            for(i = 0; i < STD_PLU_ITEMIZERS+2+3; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+            for(i = 0; i < STD_PLU_ITEMIZERS_PLUS; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
                 WorkTI->Itemizers.TranCanadaItemizers.lDiscTax[i] = 0L;
             }
             WorkTI->Itemizers.TranCanadaItemizers.lMealLimitTaxable += WorkTax->lMealLimitTaxable;
@@ -412,7 +412,7 @@ VOID    ItemTotalSEPreAffect(UIFREGTOTAL *UifRegTotal,
 		    /* check pig rule counter */
 			if (fsBaked == FALSE) {
 				for (j=0; j<6; j++) {
-					for(i = STD_PLU_ITEMIZERS+2; i < STD_PLU_ITEMIZERS+2+3; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+					for(i = STD_PLU_ITEMIZERS+2; i < STD_PLU_ITEMIZERS_PLUS; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
 						WorkTI->Itemizers.TranCanadaItemizers.lVoidDiscTax[j][i] = 0L;
 					}
     	        }
@@ -773,7 +773,7 @@ VOID    ItemTotalSEPostAffectTax(ITEMTOTAL *Total,
             for(i = 0; i < STD_PLU_ITEMIZERS; i++) {
                 WorkTI->Itemizers.TranCanadaItemizers.lTaxable[i] = 0L;
             }
-            for(i = 0; i < STD_PLU_ITEMIZERS+2+3; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+            for(i = 0; i < STD_PLU_ITEMIZERS_PLUS; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
                 WorkTI->Itemizers.TranCanadaItemizers.lDiscTax[i] = 0L;
             }
             WorkTI->Itemizers.TranCanadaItemizers.lMealLimitTaxable += WorkTax->lMealLimitTaxable;
@@ -781,12 +781,12 @@ VOID    ItemTotalSEPostAffectTax(ITEMTOTAL *Total,
 
 		    /* check limitable status - should the index 9 be replaced by TRANCANADA_LIMITABLE? */
 			if (fsLimitable == TRUE) {
-				for (j=0; j<6; j++) {
+				for (j = 0; j < STD_DISC_ITEMIZERS_MAX; j++) {
 					WorkTI->Itemizers.TranCanadaItemizers.lVoidDiscTax[j][1] += WorkTI->Itemizers.TranCanadaItemizers.lVoidDiscTax[j][9];
 					WorkTI->Itemizers.TranCanadaItemizers.lVoidDiscTax[j][9] = 0;
 				}
 			} else {
-				for (j=0; j<6; j++) {
+				for (j = 0; j < STD_DISC_ITEMIZERS_MAX; j++) {
 					WorkTI->Itemizers.TranCanadaItemizers.lVoidDiscTax[j][2] += WorkTI->Itemizers.TranCanadaItemizers.lVoidDiscTax[j][9];
 					WorkTI->Itemizers.TranCanadaItemizers.lVoidDiscTax[j][9] = 0;
 				}
@@ -794,8 +794,8 @@ VOID    ItemTotalSEPostAffectTax(ITEMTOTAL *Total,
 
 		    /* check pig rule counter */
 			if (fsBaked == FALSE) {
-				for (j=0; j<6; j++) {
-					for(i = STD_PLU_ITEMIZERS+2; i < STD_PLU_ITEMIZERS+2+3; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
+				for (j = 0; j < STD_DISC_ITEMIZERS_MAX; j++) {
+					for(i = STD_PLU_ITEMIZERS+2; i < STD_PLU_ITEMIZERS_PLUS; i++) {    // should this be STD_PLU_ITEMIZERS+2+3 rather than 9+2+3?
 						WorkTI->Itemizers.TranCanadaItemizers.lVoidDiscTax[j][i] = 0L;
 					}
     	        }
@@ -888,8 +888,7 @@ VOID    ItemTotalSEPostAffectTax(ITEMTOTAL *Total,
                         WorkTI->Itemizers.TranUsItemizers.lPrintTaxExempt[i] += Affect->USCanVAT.USCanTax.lTaxExempt[i];
                     }
                 }
-                if (ItemTotalSysType(Total) == 2) {
-                    TrnPutTI(WorkTI);
+                if (ItemTotalSysType(Total) == 2) {  /* Postcheck system, total key is Buffering Print */
                     Affect->fsPrintStatus = PRT_SLIP | PRT_JOURNAL;
                     Affect->fbStorageStatus = NOT_ITEM_STORAGE;
                     TrnItem(Affect);
