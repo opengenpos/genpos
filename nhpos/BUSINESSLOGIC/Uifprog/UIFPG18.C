@@ -13,10 +13,6 @@
 * Category    : User Interface For Program, NCR 2170 US Hospitality Application
 * Program Name: UIFPG18.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Midium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract: The provided function names are as follows:  
 *
 *               UifPG18Function()   : Program No.18 Entry Mode
@@ -45,8 +41,9 @@
 ;=============================================================================
 */
 
-#include	<tchar.h>
+#include <tchar.h>
 #include <string.h>
+
 #include <ecr.h>
 #include <uie.h>
 #include <fsc.h>
@@ -57,6 +54,22 @@
 #include <uifpgequ.h>
 
 #include "uifpgex.h"                        /* Unique Extern Header for UI */
+
+
+
+/* Define Next Function at UIM_INIT */
+
+UIMENU CONST aChildPG18Init[] = {{UifPG18IssueRpt, CID_PG18ISSUERPT},
+                                    {UifPG18EnterAddr, CID_PG18ENTERADDR},
+                                    {UifPG18EnterData, CID_PG18ENTERDATA},
+                                    {NULL,             0                }};
+
+/* Define Next Function at UIM_ACCEPTED */
+
+UIMENU CONST aChildPG18Accept[] = {{UifPG18EnterAddr, CID_PG18ENTERADDR},
+                                      {UifPG18EnterData, CID_PG18ENTERDATA},
+                                      {NULL,             0                }};
+
 
 /*
 *=============================================================================
@@ -70,37 +83,18 @@
 **  Description: Program No.18 Entry Mode  
 *===============================================================================
 */
-
-
-/* Define Next Function at UIM_INIT */
-
-UIMENU FARCONST aChildPG18Init[] = {{UifPG18IssueRpt, CID_PG18ISSUERPT},
-                                    {UifPG18EnterAddr, CID_PG18ENTERADDR},
-                                    {UifPG18EnterData, CID_PG18ENTERDATA},
-                                    {NULL,             0                }};
-
-/* Define Next Function at UIM_ACCEPTED */
-
-UIMENU FARCONST aChildPG18Accept[] = {{UifPG18EnterAddr, CID_PG18ENTERADDR},
-                                      {UifPG18EnterData, CID_PG18ENTERDATA},
-                                      {NULL,             0                }};
-
-
 SHORT UifPG18Function(KEYMSG *pKeyMsg) 
 {
-    
-    PARASLIPFEEDCTL   SlipCtlData;
-
+    PARASLIPFEEDCTL   SlipCtlData = { 0 };
 
     switch (pKeyMsg->uchMsg) {
     case UIM_INIT:
         UieNextMenu(aChildPG18Init);                                    /* Open Next Function */
 
         /* Display Address 1 of This Function  */
-
-        SlipCtlData.uchStatus = 0;                                      /* Set W/ Amount Status */
-        SlipCtlData.uchAddress = 1;                                     /* Set Address 1 */
         SlipCtlData.uchMajorClass = CLASS_PARASLIPFEEDCTL;              /* Set Major Class */
+        SlipCtlData.uchStatus = 0;                                      /* Set W/ Amount Status */
+        SlipCtlData.uchAddress = 1;
 
         MaintSlipFeedCtlRead(&SlipCtlData);                             /* Execute Read Slip Feed Control Procedure */
         break;
@@ -129,9 +123,6 @@ SHORT UifPG18Function(KEYMSG *pKeyMsg)
 **  Description: Program No.18 Issue Report 
 *===============================================================================
 */
-    
-
-
 SHORT UifPG18IssueRpt(KEYMSG *pKeyMsg) 
 {
     
@@ -176,16 +167,10 @@ SHORT UifPG18IssueRpt(KEYMSG *pKeyMsg)
 **  Description: Program No.18 Enter Address Mode 
 *===============================================================================
 */
-    
-
-
 SHORT UifPG18EnterAddr(KEYMSG *pKeyMsg) 
 {
-    
     SHORT           sError;
-    PARASLIPFEEDCTL SlipCtlData;   
-                    
-
+    PARASLIPFEEDCTL SlipCtlData = { 0 };
 
     switch(pKeyMsg->uchMsg) {
     case UIM_INIT:
@@ -195,8 +180,6 @@ SHORT UifPG18EnterAddr(KEYMSG *pKeyMsg)
     case UIM_INPUT:
         switch (pKeyMsg->SEL.INPUT.uchMajor) {
         case FSC_P2:
-            /* Check Digit */
-
             if (pKeyMsg->SEL.INPUT.uchLen > UIF_DIGIT1) {       /* Over Digit */
                 return(LDT_KEYOVER_ADR);
             }
@@ -209,7 +192,6 @@ SHORT UifPG18EnterAddr(KEYMSG *pKeyMsg)
             }
 
             /* Execute Read Slip Feed Control Procedure */
-            
             SlipCtlData.uchMajorClass = CLASS_PARASLIPFEEDCTL;  /* Set Major Class */
 
             if ((sError = MaintSlipFeedCtlRead(&SlipCtlData)) == SUCCESS) {    
@@ -240,14 +222,10 @@ SHORT UifPG18EnterAddr(KEYMSG *pKeyMsg)
 **  Description: Program No.18 Enter Data Mode  
 *===============================================================================
 */
-    
-
 SHORT UifPG18EnterData(KEYMSG *pKeyMsg) 
 {
-    
     SHORT           sError;
-    PARASLIPFEEDCTL SlipCtlData;   
-                    
+    PARASLIPFEEDCTL SlipCtlData = { 0 };
 
     switch(pKeyMsg->uchMsg) {
     case UIM_INIT:
@@ -257,13 +235,11 @@ SHORT UifPG18EnterData(KEYMSG *pKeyMsg)
     case UIM_INPUT:
         switch (pKeyMsg->SEL.INPUT.uchMajor) {
         case FSC_P1:
-            /* Check Digit */
-
             if (pKeyMsg->SEL.INPUT.uchLen > UIF_DIGIT3) {       /* Over Digit */
                 return(LDT_KEYOVER_ADR);
             }
-            SlipCtlData.uchStatus = 0;                          /* Set W/ Amount Status */
 
+            SlipCtlData.uchStatus = 0;                          /* Set W/ Amount Status */
             if (!pKeyMsg->SEL.INPUT.uchLen) {                   /* W/o Amount Input Case */
                 SlipCtlData.uchStatus |= MAINT_WITHOUT_DATA;    /* Set W/o Amount Status */
             } else {                                            /* W/ Amount Input Case */
@@ -272,7 +248,7 @@ SHORT UifPG18EnterData(KEYMSG *pKeyMsg)
 
             /* Execute Write Slip Feed Control Procedure */
             
-            /* SlipCtlData.uchMajorClass = CLASS_PARASLIPFEEDCTL;   Set Major Class */
+            SlipCtlData.uchMajorClass = CLASS_PARASLIPFEEDCTL;   /* Set Major Class */
 
             if ((sError = MaintSlipFeedCtlWrite(&SlipCtlData)) == SUCCESS) {    
                 UieAccept();                                    /* Return to UifPG18Function() */
@@ -290,5 +266,4 @@ SHORT UifPG18EnterData(KEYMSG *pKeyMsg)
 }
 
 /****** End of Source ******/  
-    
     
