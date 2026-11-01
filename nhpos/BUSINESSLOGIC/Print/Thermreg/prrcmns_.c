@@ -2351,7 +2351,6 @@ USHORT PrtCheckLine(USHORT  usSPCurrLine, CONST TRANINFORMATION  *pTran)
     USHORT  usMsgNo;                 /* set error message address */       
     SHORT   sWidthType;
     USHORT  usPrevious;
-    PARASLIPFEEDCTL  FeedCtl = {0};
 
     /* --- determine current system uses unique transaction no.
         or not --- */
@@ -2364,10 +2363,7 @@ USHORT PrtCheckLine(USHORT  usSPCurrLine, CONST TRANINFORMATION  *pTran)
     }
         
     /* -- get max slip line -- */
-    FeedCtl.uchMajorClass = CLASS_PARASLIPFEEDCTL;
-    FeedCtl.uchAddress = SLIP_MAXLINE_ADR;   
-    CliParaRead(&FeedCtl);    
-    usMaxLine = (USHORT)FeedCtl.uchFeedCtl;
+    usMaxLine = RflGetSlipFeedCtl(SLIP_MAXLINE_ADR);
 
     /* -- get the number of printed lines  -- */
     usSPPrintedLine = usPrtSlipPageLine % PRT_SLIP_MAX_LINES;
@@ -2412,11 +2408,8 @@ USHORT PrtCheckLine(USHORT  usSPCurrLine, CONST TRANINFORMATION  *pTran)
       //      if ((fbStatus & PRT_STAT_FORM_IN) && (fbStatus & PRT_STAT_ERROR)) {
 
                 /* -- get the number of lines for pre-feed -- */  
-                FeedCtl.uchAddress = SLIP_NO1ST_ADR;   
-                CliParaRead(&FeedCtl);    
-
                 /* -- feed the lines for print before header line -- */
-                PrtFeed(PMG_PRT_SLIP, (USHORT)FeedCtl.uchFeedCtl);
+                PrtFeed(PMG_PRT_SLIP, RflGetSlipFeedCtl(SLIP_NO1ST_ADR));
                 break;
 
      //       } else {
@@ -2433,7 +2426,7 @@ USHORT PrtCheckLine(USHORT  usSPCurrLine, CONST TRANINFORMATION  *pTran)
     
     /* change page No. and line No. */
     usCurrPage = usPrtSlipPageLine / PRT_SLIP_MAX_LINES;     /* save the current page number */        
-    usPrtSlipPageLine = usCurrPage * PRT_SLIP_MAX_LINES + PRT_SLIP_MAX_LINES + (USHORT)FeedCtl.uchFeedCtl;        
+    usPrtSlipPageLine = usCurrPage * PRT_SLIP_MAX_LINES + PRT_SLIP_MAX_LINES + RflGetSlipFeedCtl(SLIP_NO1ST_ADR);
                                 /* usPrtSlipPageLine = new page No. & line */
     usSetLine = 0;
 

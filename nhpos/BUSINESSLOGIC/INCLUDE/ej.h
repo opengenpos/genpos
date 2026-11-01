@@ -234,11 +234,10 @@ extern USHORT        usIspEJState;            /* E/J read/reset state, V3.3 */
 ==================================================
 */
 SHORT	EJConsistencyCheck (VOID);
-SHORT   EJCreat(USHORT usNoOfBlock, UCHAR fchFlag);
-SHORT   EJCheckC(USHORT usNoOfBlock, UCHAR fchFlag);
-SHORT   EJCheckD(USHORT usNoOfBlock, UCHAR fchFlag);
-SHORT   EJWrite(EJT_HEADER FAR *pTHeader, USHORT usSize,
-            UCHAR FAR *pBuff, UCHAR uchType, UCHAR uchOption);  /* Chg R3.1 */
+SHORT   EJCreat(ULONG ulNoOfBlock, UCHAR fchFlag);
+SHORT   EJCheckC(ULONG ulNoOfBlock, UCHAR fchFlag);
+SHORT   EJCheckD(ULONG ulNoOfBlock, UCHAR fchFlag);
+SHORT   EJWrite(EJT_HEADER *pTHeader, USHORT usSize, UCHAR *pBuff, UCHAR uchType, UCHAR uchOption);  /* Chg R3.1 */
 SHORT   EJRead(EJ_READ *pEJRead, UCHAR *pBuff, UCHAR uchType);
 SHORT   EJReverse(EJ_READ *pEJRead, WCHAR *pBuff, UCHAR uchType);
 SHORT   EJClear(VOID);
@@ -246,22 +245,16 @@ UCHAR   EJGetFlag(VOID);
 USLDTERR  EJConvertError(SHORT sError);
 USHORT  EJGetStatus(VOID);
 SHORT   EJRead1Line(EJ_READ *pEJRead, UCHAR *pBuff, UCHAR uchType); /* Add R3.0 */
-SHORT   EJ_Write(EJT_HEADER FAR *pTHeader, USHORT usSize,
-            UCHAR FAR *pBuff, UCHAR uchType, UCHAR uchOption);  /* Chg R3.1 */
-SHORT    EJWriteDelayBalance(UCHAR uchStatus);
+SHORT   EJWriteDelayBalance(UCHAR uchStatus);
 /*-----------------------------------------------------
     Adds Enhance function to poll from PC
 -----------------------------------------------------*/
-SHORT   EJReadFile(ULONG ulOffset,  VOID  *pData,
-                   ULONG ulDataLen, ULONG *pulRetLen);
+SHORT   EJReadFile(ULONG ulOffset,  VOID  *pData, ULONG ulDataLen, ULONG *pulRetLen);
 SHORT   EJInit(VOID);
 SHORT   EJNoOfTrans(VOID);                                      /* R2.0GCA */
-SHORT   EJReadResetTransOver(ULONG *pulOffset,
-                   VOID *pData, ULONG ulDataLen, ULONG *pulRetLen);
-SHORT   EJReadResetTransStart(ULONG *pulOffset,
-                   VOID *pData, ULONG ulDataLen, ULONG *pulRetLen, USHORT *pusNumTrans);
-SHORT   EJReadResetTrans(ULONG *pulOffset, VOID *pData,
-                ULONG ulDataLen, ULONG *pulRetLen, USHORT *pusNumTrans);
+SHORT   EJReadResetTransOver(ULONG *pulOffset, VOID *pData, ULONG ulDataLen, ULONG *pulRetLen);
+SHORT   EJReadResetTransStart(ULONG *pulOffset, VOID *pData, ULONG ulDataLen, ULONG *pulRetLen, USHORT *pusNumTrans);
+SHORT   EJReadResetTrans(ULONG *pulOffset, VOID *pData, ULONG ulDataLen, ULONG *pulRetLen, USHORT *pusNumTrans);
 SHORT   EJReadResetTransEnd(USHORT usNumTrans);
 
 #if 1

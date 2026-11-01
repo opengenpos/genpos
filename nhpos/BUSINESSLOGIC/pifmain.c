@@ -4537,15 +4537,15 @@ ULONG  RflGetLimitFloor (USHORT usAddress)
 }
 
 
-SHORT  RflGetSlipMaxLines (VOID)
+USHORT  RflGetSlipFeedCtl(USHORT usAddress)
 {
 	PARASLIPFEEDCTL  FeedCtl = {0};
 
     FeedCtl.uchMajorClass = CLASS_PARASLIPFEEDCTL;    // retrieve data from P18 Printer Feed and EJ Control
-    FeedCtl.uchAddress = SLIP_MAXLINE_ADR;
+    FeedCtl.uchAddress = usAddress;
     ParaSlipFeedCtlRead (&FeedCtl);
 
-	return (SHORT)((USHORT)FeedCtl.uchFeedCtl);
+	return FeedCtl.uchFeedCtl;
 }
 
 /*
@@ -4864,6 +4864,69 @@ USTRNADRS  RflChkDiscAdr(CONST ITEMDISC *pItem)
     }
 
     return usAddress;
+}
+
+/*
+*===========================================================================
+** Synopsis:    USHORT     RflRecvTtlGetLen(UCHAR uchMajorClass);
+*     Input:    uchMajorClass  - Major Total Class No
+*     Output:   nothing
+*     InOut:    nothing
+*
+** Return:      sizeof() the appropriate struct for the Major Class
+*               0 if the specified Major Class is not found.
+*
+** Description:  Calculate a Total struct length based on Major Class.
+* 
+*                Replaces the duplicated old functions of IspRecvTtlGetLen()
+*                and CliRecvTtlGetLen(). Now there is a single place for any
+*                updates to the Major Class list for Totals and the necessary struct.
+*===========================================================================
+*/
+USHORT  RflRecvTtlGetLen(UCHAR uchMajorClass)
+{
+	USHORT       usRet = 0;
+
+	switch (uchMajorClass) {
+	case CLASS_TTLREGFIN:                      /* Register financial */
+	case CLASS_TTLINDFIN:                      /* individual fin R3.1 */
+		usRet = sizeof(TTLREGFIN);
+		break;
+
+	case CLASS_TTLHOURLY:                      /* Hourly activity    */
+		//When we are reading a total hourly length we are now
+		//only reading one hour at a time, and it is always placed in the
+		///0 index of the array.  there are 48 elements in the array, so 
+		//we only need to read the first one and not the other 47. JHHJ 
+		usRet = sizeof(TTLHOURLY_1);
+		break;
+
+	case CLASS_TTLDEPT:                        /* Department */
+		usRet = sizeof(TTLDEPT);
+		break;
+
+	case CLASS_TTLPLU:                         /* PLU */
+		usRet = sizeof(TTLPLU);
+		break;
+
+	case CLASS_TTLCASHIER:                     /* Cashier */
+		usRet = sizeof(TTLCASHIER);
+		break;
+
+	case CLASS_TTLCPN:                         /* Coupon R3.0 */
+		usRet = sizeof(TTLCPN);
+		break;
+
+	case CLASS_TTLSERVICE:                      /* service time R3.1 */
+		usRet = sizeof(TTLSERTIME);
+		break;
+
+	default:                                   /* Error  */
+		usRet = 0;
+		break;
+	}
+
+	return(usRet);
 }
 
 /*

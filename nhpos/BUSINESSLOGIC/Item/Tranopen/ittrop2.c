@@ -431,7 +431,6 @@ static VOID    ItemTransReorder( UIFREGTRANSOPEN *UifRegTransOpen, ITEMTRANSOPEN
 SHORT   ItemTransROKeyPB( ITEMTRANSOPEN *ItemTransOpen )
 {
 //    UCHAR   fbPrtStatus;
-    PARASLIPFEEDCTL WorkSlip;
 	REGDISPMSG      DispMsg = {0};
     UIFDIADATA      WorkUI = {0};
     USHORT          usSystemType = RflGetSystemType ();
@@ -459,10 +458,7 @@ SHORT   ItemTransROKeyPB( ITEMTRANSOPEN *ItemTransOpen )
             return( UIF_CANCEL );
         }
 
-        WorkSlip.uchMajorClass = CLASS_PARASLIPFEEDCTL;             /* SLIP PRINTER FEED CONTROL */      
-        WorkSlip.uchAddress = SLIP_MAXLINE_ADR;                     /* Max Line # for Slip Printer */ 
-        CliParaRead( &WorkSlip );
-        if ( ( UCHAR )( WorkSlip.uchFeedCtl - 2 ) < ( UCHAR )WorkUI.ulData ) {
+        if ( (SHORT)RflGetSlipFeedCtl(SLIP_MAXLINE_ADR) - 2 < (SHORT)WorkUI.ulData ) {  /* Max Line # for Slip Printer */ 
             return( LDT_KEYOVER_ADR );                              /* Over Limitation */
         }       
 

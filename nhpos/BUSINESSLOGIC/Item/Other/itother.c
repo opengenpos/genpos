@@ -392,7 +392,7 @@ SHORT   ItemOtherSlipFeed( UIFREGOTHER *ItemOther)
         TrnItemOther.lAmount = TranGCFQualPtr->uchSlipLine;    
     } else {
         /* check feedline */
-        if ( ((DCURRENCY)RflGetSlipMaxLines() - 2) < ItemOther->lAmount) {
+        if ( ((DCURRENCY)RflGetSlipFeedCtl(SLIP_MAXLINE_ADR) - 2) < ItemOther->lAmount) {
             return(LDT_KEYOVER_ADR); 
         } 
         TrnItemOther.lAmount = ItemOther->lAmount;      
@@ -3939,7 +3939,6 @@ static VOID    ItemOtherValPrint(ITEMDATASIZEUNION *pItem)
 SHORT   ItemOtherValidation(VOID)
 {
     ITEMDATASIZEUNION  WorkSales;
-	PARASLIPFEEDCTL    FeedCtl = {0};
 	TRANINFORMATION    const * const pTran = TrnGetTranInformationPointer();
 	ITEMCOMMONLOCAL    const * const WorkCommon = ItemCommonGetLocalPointer();
 	static int		   uchValCo = -2, itemNumber = 0;
@@ -3956,14 +3955,10 @@ SHORT   ItemOtherValidation(VOID)
 		return(LDT_PROHBT_ADR);							 //return sequence error
 	}
 
-	/*--- Get Max Validation Co. (P18 Address 3)---*/
-    FeedCtl.uchMajorClass = CLASS_PARASLIPFEEDCTL;
-    FeedCtl.uchAddress = SLIP_MAXVAL_ADR;
-    CliParaRead(&FeedCtl);
 
 	if( uchValCo == -2)									 //if it is a new item
 	{		
-		uchValCo = FeedCtl.uchFeedCtl;					 //the validation counter is equal to the number of times allowed
+		uchValCo = RflGetSlipFeedCtl(SLIP_MAXVAL_ADR);	 //the validation counter is equal to the number of times allowed
 		usGuestNo   = pTran->TranGCFQual.usGuestNo;		 //different orders should be taken into consideration also 
 	}
 		

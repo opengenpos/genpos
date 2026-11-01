@@ -115,6 +115,7 @@ static TCHAR CONST aszEJDBFileName[]  = _T("TOTALEJFDB");  /*File Name of EJ Del
 
 USHORT   usIspEJState = 0;            /* E/J read/reset state, V3.3 */
 
+static SHORT   EJ_Write(EJT_HEADER* pTHeader, USHORT usSize, VOID* pBuff, UCHAR uchType, UCHAR uchOption);  /* Chg R3.1 */
 
 struct {
 	CONST TCHAR	*aszFileName;             // pointer to file name
@@ -249,12 +250,11 @@ SHORT   EJInit(VOID)
 *                never exist.
 *==========================================================================
 */
-SHORT   EJCreat(USHORT usNoOfBlock, UCHAR fchFlag)
+SHORT   EJCreat(ULONG ulNoOfBlock, UCHAR fchFlag)
 {
     SHORT        sReturnST,sRet = EJ_PERFORM;
-	SHORT		 i;
 
-	for(i = 0; stEJFiles[i].aszFileName; i++)
+	for(SHORT i = 0; stEJFiles[i].aszFileName; i++)
 	{
 		ULONG        ulActSize;
 		ULONG        ulActMove;
@@ -263,7 +263,7 @@ SHORT   EJCreat(USHORT usNoOfBlock, UCHAR fchFlag)
 
 		EJ_ResetDesc();                         /* Delight EJ Full Descriptor */
 
-		if (0 == usNoOfBlock) {                 /* Size is zero, do nothing */
+		if (0 == ulNoOfBlock) {                 /* Size is zero, do nothing */
 			continue;
 		}
 
@@ -276,11 +276,11 @@ SHORT   EJCreat(USHORT usNoOfBlock, UCHAR fchFlag)
 		}
 
 		/* Check Number of Block */
-		if (usNoOfBlock < FLEX_EJ_MIN) {
-			usNoOfBlock = FLEX_EJ_MIN;
+		if (ulNoOfBlock < FLEX_EJ_MIN) {
+			ulNoOfBlock = FLEX_EJ_MIN;
 		}
 
-		ulActSize = EJ_BLOCKSIZE * (ULONG)usNoOfBlock;              /* Calculate File Size */
+		ulActSize = EJ_BLOCKSIZE * ulNoOfBlock;              /* Calculate File Size */
 		sReturnST = PifSeekFile(stEJFiles[i].phsHandle, ulActSize, &ulActMove);
 		if ((sReturnST < 0) || (ulActMove != ulActSize)) {          /* Can not make file */
 			EJ_CloseFile(stEJFiles[i].phsHandle);                   /* Close file then delete it */
@@ -326,11 +326,10 @@ SHORT   EJCreat(USHORT usNoOfBlock, UCHAR fchFlag)
 *                file size and status are unmatch case.
 *==========================================================================
 */
-SHORT   EJCheckD(USHORT usNoOfBlock, UCHAR fchFlag)
+SHORT   EJCheckD(ULONG ulNoOfBlock, UCHAR fchFlag)
 {
-	SHORT		 i;
 
-	for(i = 0; stEJFiles[i].aszFileName; i++)
+	for(SHORT i = 0; stEJFiles[i].aszFileName; i++)
 	{
 		ULONG	     ulActualBytesRead; //RPH 11-10-3 SR# 201
 		EJF_HEADER   EJFHeader;
@@ -345,7 +344,7 @@ SHORT   EJCheckD(USHORT usNoOfBlock, UCHAR fchFlag)
 		EJ_ReadFileA(EJ_TOP, &EJFHeader, sizeof(EJF_HEADER), &ulActualBytesRead);
 		EJ_CloseFile(hsEJFileHandle);                             /* Close file */
 
-		if ((EJFHeader.ulEJFSize != (EJ_BLOCKSIZE * (ULONG)usNoOfBlock)) || ((EJFHeader.fchEJFlag & EJFG_OVERRIDE) != fchFlag)) {
+		if ((EJFHeader.ulEJFSize != (EJ_BLOCKSIZE * ulNoOfBlock)) || ((EJFHeader.fchEJFlag & EJFG_OVERRIDE) != fchFlag)) {
 			PifDeleteFile(stEJFiles[i].aszFileName);           /* Delete Old file, if file is exist. */
 			EJ_ResetDesc();                           /* Delight EJ Full Descriptor */
 		}
@@ -372,12 +371,11 @@ SHORT   EJCheckD(USHORT usNoOfBlock, UCHAR fchFlag)
 *                never exist.
 *==========================================================================
 */
-SHORT   EJCheckC(USHORT usNoOfBlock, UCHAR fchFlag)
+SHORT   EJCheckC(ULONG ulNoOfBlock, UCHAR fchFlag)
 {
-	SHORT        i;
 	SHORT        sRet = EJ_PERFORM;
 
-	for(i = 0; stEJFiles[i].aszFileName; i++)
+	for(SHORT i = 0; stEJFiles[i].aszFileName; i++)
 	{
 		ULONG        ulActSize;
 		ULONG        ulActMove;
@@ -388,7 +386,7 @@ SHORT   EJCheckC(USHORT usNoOfBlock, UCHAR fchFlag)
 			continue;
 		}
 
-		if (0 == usNoOfBlock) {         /* if size is zero, do nothing */
+		if (0 == ulNoOfBlock) {         /* if size is zero, do nothing */
 			continue;
 		}
 
@@ -403,11 +401,11 @@ SHORT   EJCheckC(USHORT usNoOfBlock, UCHAR fchFlag)
 		EJ_ResetDesc();                           /* Delight EJ Full Descriptor */
 
 		/* Check Number of Block */
-		if (usNoOfBlock < FLEX_EJ_MIN) {
-			usNoOfBlock = FLEX_EJ_MIN;
+		if (ulNoOfBlock < FLEX_EJ_MIN) {
+			ulNoOfBlock = FLEX_EJ_MIN;
 		}
 
-		ulActSize = EJ_BLOCKSIZE * (ULONG)usNoOfBlock;      /* Calculate File Size */
+		ulActSize = EJ_BLOCKSIZE * ulNoOfBlock;      /* Calculate File Size */
 		sReturnST = PifSeekFile(stEJFiles[i].phsHandle, ulActSize, &ulActMove);
 		if ((sReturnST < 0) || (ulActMove != ulActSize)) {  /* Can not make file */
 			EJ_CloseFile(stEJFiles[i].phsHandle);                             /* Close file */
@@ -1547,22 +1545,18 @@ SHORT    EJ_ReadFileA(ULONG ulOffset, VOID *pData, ULONG ulSize, ULONG *pulActua
 */
 UCHAR    EJ_ReadPrtCtl(UCHAR    uchAddress)
 {
-    PARASLIPFEEDCTL    EJCtl;
-
-    EJCtl.uchMajorClass = CLASS_PARASLIPFEEDCTL;        /* Set Major Class */
-    EJCtl.uchAddress = uchAddress;                      /* Set Access ADR  */
-    CliParaRead(&EJCtl);                                /* Read Data */
+    USHORT usFeedCtl = RflGetSlipFeedCtl(uchAddress);
 
     /* Check 0 Data */
-    if ((uchAddress == SLIP_EJLEN_ADR) && (EJCtl.uchFeedCtl < EJ_EJLEN_MIN)) {    /* Length of E.J is 0 ~ 20 */
-        EJCtl.uchFeedCtl = SLIP_EJLEN_DEF;
+    if ((uchAddress == SLIP_EJLEN_ADR) && (usFeedCtl < EJ_EJLEN_MIN)) {    /* Length of E.J is 0 ~ 20 */
+        usFeedCtl = SLIP_EJLEN_DEF;
     }
 
-    if ((uchAddress == SLIP_REVJLEN_ADR) && (EJCtl.uchFeedCtl == 0)) {  /* Length of Reverse E.J is 0 */
-        EJCtl.uchFeedCtl = SLIP_REVJLEN_DEF;
+    if ((uchAddress == SLIP_REVJLEN_ADR) && (usFeedCtl == 0)) {  /* Length of Reverse E.J is 0 */
+        usFeedCtl = SLIP_REVJLEN_DEF;
     }
 
-    return(EJCtl.uchFeedCtl);                           /* Return with data */
+    return usFeedCtl;                           /* Return with data */
 }
 
 /*
@@ -2766,8 +2760,8 @@ USHORT EJDelayBalanceUpdateFile(VOID)
 *				without saving data.
 *==========================================================================
 */
-SHORT    EJ_Write(EJT_HEADER  *pCHeader, USHORT usWSize,
-                        UCHAR *pBuff, UCHAR uchType, UCHAR uchOption)
+static SHORT    EJ_Write(EJT_HEADER  *pCHeader, USHORT usWSize,
+                        VOID *pBuff, UCHAR uchType, UCHAR uchOption)
 {
     ULONG       ulRem;
     ULONG       ulSpace;

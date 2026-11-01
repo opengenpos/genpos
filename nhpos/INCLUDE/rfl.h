@@ -351,11 +351,15 @@ SHORT  RflRateCalcHuge3(D13DIGITS *phuModAmount, D13DIGITS *phuAmount, ULONG ulR
 SHORT  RflRateCalcHuge4(D13DIGITS *phuModAmount, D13DIGITS *phuAmount, ULONG ulRate, UCHAR uchType);  /* rate :RflRound.c */
 
 BOOL   RflIsSalesItemDisc( VOID *puchItem );
-int    RflDeptStatusToPluStatus(UCHAR auchContOther[OP_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE]);
-int    RflDeptStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE]);
+USHORT RflGetStorageItemLen (VOID *pSource, ULONG ulActualBytes);
+
+int    RflDeptStatusToPluStatusIfDeptCtl(UCHAR auchContOther[OP_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE]);
+int    RflDeptStatusToItemSalesStatusIfDeptCtl(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE]);
 int    RflDeptDataToPluData(OPPLU_PARAENTRY* ParaPlu, CONST OPDEPT_PARAENTRY* ParaDept);
 int    RflPluStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchContOther[OP_PLU_CONT_OTHER]);
-USHORT RflGetStorageItemLen (VOID *pSource, ULONG ulActualBytes);
+int    RflDeptStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE]);
+int    RflPluDataToItemSales(ITEMSALES* pItemSales, OPPLU_PARAENTRY* ParaPlu);
+int    RflDeptDataToItemSales(ITEMSALES* pItemSales, OPDEPT_PARAENTRY* ParaDept);
 
 #if 0
 SPIFRSLT RflReadFileFH_Debug(ULONG ulOffset, VOID* pData, ULONG ulSize, PifFileHandle hsFileHandle, ULONG* pulActualBytesRead, CONST char* aszFilePath, int nLineNo);
@@ -492,13 +496,14 @@ RflMoneyMnem    RflGetMoneyMnem(UCHAR uchTendMinor);
 TCHAR *RflGetPauseMsg(TCHAR *pszDest, USHORT usPauseMsgId);
 USHORT RflGetHaloData (USHORT usAddress);
 ULONG  RflGetLimitFloor (USHORT usAddress);
-SHORT  RflGetSlipMaxLines (VOID);
+USHORT RflGetSlipFeedCtl (USHORT usAddress);
 
 // following are VOID pointers to allow for compile.
 USTRNADRS  RflChkTtlStandardAdr(UCHAR uchMinorClass);
 USTRNADRS  RflChkTtlAdr(CONST ITEMTOTAL *pItem);       // ITEMTOTAL *pItem
 USTRNADRS  RflChkTendAdr(CONST ITEMTENDER *pItem);      // ITEMTENDER *pItem
 USTRNADRS  RflChkDiscAdr(CONST ITEMDISC *pItem);      // ITEMDISC *pItem
+USHORT     RflRecvTtlGetLen(UCHAR uchMajorClass);     // Calculate a Total struct length based on Major Class.
 
 VOID    RflUpdateDisplayDescriptorMaps (USHORT usMaps, ULONG  ulDescripToSetMap, ULONG  ulDescripToClearMap);
 VOID    RFLUpdateDisplayByMajorMinorClass (UCHAR uchMajorClass, UCHAR uchMinorClass, UCHAR fbSaveControl);

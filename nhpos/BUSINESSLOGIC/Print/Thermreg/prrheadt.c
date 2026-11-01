@@ -589,17 +589,13 @@ VOID   PrtChkCurSlip(CONST TRANINFORMATION  *pTran)
     }
 
     if ((pTran->TranGCFQual.uchPageNo == 0) && (pTran->TranGCFQual.uchSlipLine == 0)) {
-		PARASLIPFEEDCTL  FeedCtl = { 0 };
-
-        FeedCtl.uchMajorClass = CLASS_PARASLIPFEEDCTL;
-        FeedCtl.uchAddress = SLIP_NO1ST_ADR;   
-        CliParaRead(&FeedCtl);    
+        USHORT  usFeedCtl = RflGetSlipFeedCtl(SLIP_NO1ST_ADR);
         
         /* set the initial page No. and line No. */         
-        usPrtSlipPageLine = 0 * PRT_SLIP_MAX_LINES + FeedCtl.uchFeedCtl;    /* start from 0 page and pre-feeded line */
+        usPrtSlipPageLine = 0 * PRT_SLIP_MAX_LINES + usFeedCtl;    /* start from 0 page and pre-feeded line */
         
         /* feed before print start */        
-        PrtFeed(PMG_PRT_SLIP, (USHORT)FeedCtl.uchFeedCtl);
+        PrtFeed(PMG_PRT_SLIP, usFeedCtl);
     } else {
         /* set the current page No. and line No. */    
         usPrtSlipPageLine = pTran->TranGCFQual.uchPageNo * PRT_SLIP_MAX_LINES + pTran->TranGCFQual.uchSlipLine;        
