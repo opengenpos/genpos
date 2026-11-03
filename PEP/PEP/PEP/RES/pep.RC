@@ -3605,6 +3605,7 @@ BEGIN
     PUSHBUTTON      "Export",IDD_A68_EXPORT_PLU,5,360,38,20
     PUSHBUTTON      "&OK",IDOK,65,360,38,20
     PUSHBUTTON      "&Cancel",IDCANCEL,130,360,38,20
+    LTEXT           "NOTE:  PLU Building at Not in File with MDC 296 Bit B.",-1,5,390,170,22
     CONTROL         "AC111",IDD_A68_MODELESS_A111,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,449,1,40,10
     CONTROL         "AC114",IDD_A68_MODELESS_A114,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,489,1,40,10
     CONTROL         "AC116",IDD_A68_MODELESS_A116,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,529,1,40,10
@@ -4507,7 +4508,8 @@ BEGIN
     LTEXT           "Con&trol Codes",IDD_A114_CTLCODES,209,158,47,10
     LISTBOX         IDD_A114CTRL_LIST,202,170,174,72,WS_VSCROLL | WS_TABSTOP
     LTEXT           "",IDD_A114MAX,106,203,80,10
-    LTEXT           "",IDD_A114_CUR,106,216,80,10
+    LTEXT           "", IDD_A114_CUR,106,216,80,10
+    LTEXT           "NOTE:  Data used in PLU Building at Not in File.\n           See MDC 296 Bit B.",-1,5,230,170,22
     PUSHBUTTON      "&OK",IDOK,8,201,38,19
     PUSHBUTTON      "&Cancel",IDCANCEL,58,201,38,19
 END
@@ -11484,7 +11486,7 @@ BEGIN
     29313                   "Not Allow new price at price check operation."
     29314                   "Optional new price at price check operation."
     29315                   "Compulsory new price at price check operation."
-    29316                   "Allow PLU Building at Not in File."
+    29316                   "Allow PLU Building at Not in File using Dept. data."
     29317                   "Not Allow PLU Building at Not in File."
     29318                   "Not used."
     29319                   "Not used."
