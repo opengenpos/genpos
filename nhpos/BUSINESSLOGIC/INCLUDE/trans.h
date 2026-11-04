@@ -211,7 +211,7 @@
         UCHAR           uchRndType;             /*  random weight type, 2172 */
         UCHAR           uchPM;                  /*  price multiple, 2172     */
         USHORT          usLinkNo;               /* link plu no, 2172 */
-        USHORT          usFamilyCode;           /* family code, 2172 */
+        USHORT          usFamilyCode;           /* family code, 2172 See comments in function TrnStoIsUPCCouponItem() about family code. */
 		UCHAR			uchTableNumber;
 		UCHAR			uchDiscountSignifier;   //US Customs cwunn 5/1/03, signifies this item has had a discount applied.
 		USHORT			usFor;					/* @/FOR storage of package price (SR 143 cwunn)

@@ -1774,6 +1774,24 @@ SHORT TrnStoIsUPCCouponItem(ITEMSALES *pPLU, TCHAR *pauchCouponNo)
     }
 
     /* ----- check family code ----- */
+    // family code is a manufacturer-assigned number embedded in coupons
+    // to group related products together for discount validation.
+    //
+    // How Family Codes Work
+    //   - Product Grouping: Manufacturers assign a single family code to a specific
+    //     family or category of items.
+    //   - Checkout Validation: The POS terminal reads the coupon's family code to verify
+    //     if the customer bought an eligible item.
+    //   - Broad vs.Specific: Codes ending in zero(like 110) apply to an entire group,
+    //     while specific digits(like 111) target one exact item.
+    //   - Manufacturer Wide: A code of 000 typically allows a discount on any product
+    //     made by that manufacturer.
+    //
+    // Family Codes ending in ‘0’ are group-level codes and cause the POS system to allow all products within that group:
+    //   - If the coupon Family Code is 110, then all products with Family Codes 111 through 119 are valid.
+    //   - If the coupon Family Code is 200, then all products with Family Codes 211 through 299 are valid.
+    //   - Products without a Family Code will only accept coupons with a ‘000’ Family Code.
+
     if (usFamily == 0) {                        /* allow any item */
         return TRUE;
     }

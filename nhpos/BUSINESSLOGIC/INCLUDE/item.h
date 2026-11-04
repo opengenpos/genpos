@@ -71,6 +71,7 @@ extern DCURRENCY       couponAmount;
 *===========================================================================
 */
 
+#if defined(POSSIBLE_DEAD_CODE)
 // Bit map defines for consolidating various often checked PLU characteristics or options.
 // These bit map defines create patterns that can be used to simplify decision making code.
 // See function ItemSalesItemPluTypeInfo() for how these are used.
@@ -87,6 +88,7 @@ extern DCURRENCY       couponAmount;
 #define PLU_BM_ADJ_PROHIBIT_3  0x00000400    // indicates ParaPlu.ContPlu.auchContOther[4] & PLU_PROHIBIT_VAL3
 #define PLU_BM_ADJ_PROHIBIT_4  0x00000800    // indicates ParaPlu.ContPlu.auchContOther[4] & PLU_PROHIBIT_VAL4
 #define PLU_BM_ADJ_PROHIBIT_5  0x00001000    // indicates ParaPlu.ContPlu.auchContOther[4] & PLU_PROHIBIT_VAL5
+#endif
 
 /*----- Return of "ItemCommonTaxSystem()",  V3.3 -----*/
 // see also function PrtCheckTaxSystem() which does the same thing, returns same values, different defines. <sigh>

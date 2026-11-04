@@ -1957,7 +1957,7 @@ SHORT  TtlTotalReset(VOID *pTotal, USHORT usMDCBit)
         break;
     
     case CLASS_TTLCPN:               /* Reset Coupon Total File, R3.0 */
-        sRetvalue = TtlTresetCpn(pReport->Rpt.uchMinorClass, uchTmpBuff);
+        sRetvalue = TtlTresetCpn(pReport->Cpn.uchMinorClass, uchTmpBuff);
         TtlLog(MODULE_TTL_TFL_CPN, sRetvalue, pReport->Cpn.usCpnNumber);
         if (sRetvalue <= TTL_FILE_OPEN_ERR) {
             if (sRetvalue != TTL_FILE_HANDLE_ERR) {
@@ -1978,8 +1978,8 @@ SHORT  TtlTotalReset(VOID *pTotal, USHORT usMDCBit)
 
     /* ===== New Functions (Release 3.1) BEGIN ===== */
     case CLASS_TTLSERVICE:          /* Reset Service Time File */
-        sRetvalue = TtlTresetSerTime(pReport->Rpt.uchMinorClass, uchTmpBuff);
-        TtlLog(MODULE_TTL_TFL_SERTIME, sRetvalue, pReport->RegFin.usTerminalNumber);          /* Record Log */
+        sRetvalue = TtlTresetSerTime(pReport->SerTime.uchMinorClass, uchTmpBuff);
+        TtlLog(MODULE_TTL_TFL_SERTIME, sRetvalue, pReport->SerTime.uchMinorClass);          /* Record Log */
         if (sRetvalue <= TTL_FILE_OPEN_ERR) {
             if (sRetvalue != TTL_FILE_HANDLE_ERR) {
                 TtlAbort(MODULE_TTL_TFL_SERTIME, sRetvalue);

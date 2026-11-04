@@ -604,11 +604,14 @@ can assign PLUs to, and 165 is the max number of keys that can be assigned per p
 #define MAX_TERMINAL_NO         16          /* Max Number of Terminal, STD_NUM_OF_TERMINALS */
 
 #define PLU_MAX_DIGIT           STD_PLU_NUMBER_LEN      /* Maximum number of digits for PLU# */
-#define PLU_MAX_PRICE           9999999L    /* limitation for building */
-#define PLU_MAX_PM              99          /* limitation for building */
+#define PLU_MAX_PRICE           9999999L    /* limitation for PLU building up */
+#define PLU_MAX_PM              99          /* limitation for PLU building up */
 #define	MAX_PRINT_BUFFER		2048		/* Maximum number of characters available in print buffer */
-#define PLU_STANDARD_RPT_CODE   10          // Standard report code used with PLU building up ItemSalesPLUSetupBuilding()
-#define PLU_STANDARD_GROUP_NO   89          // Standard group number used with PLU building up ItemSalesPLUSetupBuilding() for Compass
+
+#define PLU_STANDARD_RPT_CODE   10          // ContPlu.uchRept - Standard report code used with PLU building up ItemSalesPLUSetupBuilding()
+#define PLU_STANDARD_GROUP_NO   89          // uchGroupNumber - Standard group number used with PLU building up ItemSalesPLUSetupBuilding() for Compass
+#define PLU_STANDARD_COLOR       0x00       // uchColorPaletteCode - Standard color palette number used with PLU building up. See MLD_ATTRIB_STD_VIDEO
+#define PLU_STANDARD_COLOR_VOID  0x02       // uchColorPaletteCode - Standard void color palette number used with PLU building up. See MLD_ATTRIB_REV_VIDEO
 
 #define PLU_MAX_TOUCH_PRESET    10          // max number of keyed PLU slots in menu page 10 for PLU buttons
 
@@ -2636,8 +2639,6 @@ typedef unsigned char  UCSPCADRS;       // variable contains address of special 
 #define ADJ_ADR_MAX        MAX_ADJM_NO       /* Max Address */
 
 
-
-#define ADJ_GP_MAX              4        /* Max Adjective Group # */
 #define ADJ_GRP_MAX             4        /* Max Adjective Group # */
 #define ADJ_VAL_MAX             5        /* Max Adjective Variation # */
 

@@ -31,6 +31,7 @@
 #include	<tchar.h>
 #include    <memory.h>
 #include    <string.h>
+
 #include    <ecr.h>
 #include    <rfl.h>
 #include    <pif.h>
@@ -45,10 +46,6 @@
 #include    <csop.h>
 #include    <csstbopr.h>
 #include    <appllog.h>
-#include    <csetk.h>
-#include    <csstbetk.h>
-#include    <cpm.h>
-#include    <eept.h>
 #include    "itmlocal.h"
 
 /*
@@ -70,23 +67,20 @@
 */
 SLDTITM  ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
 {
-	UCHAR  auchAdjData[2];
+    UCHAR  auchAdjData[2] = { 0 };
 	SHORT  sReturnStatus;
-	PLUIF  PLURecRcvBuffer;        /* PLU record receive buffer */    
 
     pItemSales->uchAdjective = pUifRegSales->uchAdjective;
 
     /*----- CHECK 0 AMOUNT ENTRY -----*/
-    if (ItemSalesLocal.fbSalesStatus & SALES_ZERO_AMT) { /* 0 amount entry for non open PLU */
+    if (ItemSalesLocalPtr->fbSalesStatus & SALES_ZERO_AMT) { /* 0 amount entry for non open PLU */
         return(LDT_SEQERR_ADR);
     }
 
     /*----- CHECK ADJ. VALIATION ENTRY -----*/
-    auchAdjData[0] = auchAdjData[1] = 0;
-    
     if (pItemSales->uchAdjective == 0) {    /* adjective valiation wasn't entered */
         if ((pItemSales->ControlCode.auchPluStatus[4] & PLU_IMP_ADJKEY_MASK) == PLU_COMP_ADJKEY) {
-            if (ItemSalesLocal.uchAdjCurShift == 0) {
+            if (ItemSalesLocalPtr->uchAdjCurShift == 0) {
                 return (LDT_SEQERR_ADR);   // RJC: 06-09-2025 was however that error code doesn't seem appropriate (ITM_COMP_ADJ);
             }
         }
@@ -95,8 +89,8 @@ SLDTITM  ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
         if (!CliParaMDCCheck(MDC_ADJ_ADR, EVEN_MDC_BIT0)) {
             /* read menu, key default adjective, at first */
             /* use menu adjective for all PLU */
-            if (ItemSalesLocal.uchAdjCurShift) {    /* if default is set by menu, kdy */
-                pItemSales->uchAdjective = ItemSalesLocal.uchAdjCurShift;
+            if (ItemSalesLocalPtr->uchAdjCurShift) {    /* if default is set by menu, kdy */
+                pItemSales->uchAdjective = ItemSalesLocalPtr->uchAdjCurShift;
                 ItemSalesGenerateAdj(pItemSales, auchAdjData);      /* generated extended FSC code are */
                                                                     /* saved into uchAdjective         */   
                 if (auchAdjData[0] == 0) { /* not hit group */
@@ -104,11 +98,11 @@ SLDTITM  ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
                 }
                 
                 /* generate adjective key code */
-                pItemSales->uchAdjective = (UCHAR)(auchAdjData[0]-1);
-                pItemSales->uchAdjective *= 5;
-                pItemSales->uchAdjective += ItemSalesLocal.uchAdjCurShift;
+                pItemSales->uchAdjective = (auchAdjData[0]-1);
+                pItemSales->uchAdjective *= ADJ_VAL_MAX;
+                pItemSales->uchAdjective += ItemSalesLocalPtr->uchAdjCurShift;
                 
-                auchAdjData[1] = ItemSalesLocal.uchAdjCurShift;
+                auchAdjData[1] = ItemSalesLocalPtr->uchAdjCurShift;
             } else {
                 ItemSalesGenerateAdj(pItemSales, auchAdjData);      /* generated extended FSC code are */
                                                                     /* saved into uchAdjective         */   
@@ -125,13 +119,13 @@ SLDTITM  ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
             }
 
             if (auchAdjData[1] == 0) { /* no defaut adjective */
-                if (ItemSalesLocal.uchAdjCurShift) {    /* if default is set by menu, kdy */
+                if (ItemSalesLocalPtr->uchAdjCurShift) {    /* if default is set by menu, kdy */
                     /* generate adjective key code */
-                    pItemSales->uchAdjective = (UCHAR)(auchAdjData[0]-1);
-                    pItemSales->uchAdjective *= 5;
-                    pItemSales->uchAdjective += ItemSalesLocal.uchAdjCurShift;
+                    pItemSales->uchAdjective = (auchAdjData[0]-1);
+                    pItemSales->uchAdjective *= ADJ_VAL_MAX;
+                    pItemSales->uchAdjective += ItemSalesLocalPtr->uchAdjCurShift;
                     
-                    auchAdjData[1] = ItemSalesLocal.uchAdjCurShift;
+                    auchAdjData[1] = ItemSalesLocalPtr->uchAdjCurShift;
                 } else {
                     return(LDT_PROHBT_ADR);
                 }
@@ -145,10 +139,11 @@ SLDTITM  ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
 
     if ((pItemSales->fsLabelStatus & ITM_CONTROL_NOTINFILE) == 0) {   /* not in file building, saratoga */
         /*----- get adjective price -----*/
-        if (((pUifRegSales->uchAdjective - 1) % 5 + 1) != auchAdjData[1]) {
-	        /* prepair PLU record receive buffer */
-    	    memset(&PLURecRcvBuffer, '\0', sizeof(PLUIF));
-        	_tcsncpy(PLURecRcvBuffer.auchPluNo, pItemSales->auchPLUNo, NUM_PLU_LEN);
+        if (((pUifRegSales->uchAdjective - 1) % ADJ_VAL_MAX + 1) != auchAdjData[1]) {
+            PLUIF  PLURecRcvBuffer = { 0 };        /* PLU record receive buffer */
+
+            /* prepair PLU record receive buffer */
+            AUCPLUNO(PLURecRcvBuffer.auchPluNo) = AUCPLUNO(pItemSales->auchPLUNo);
     	    PLURecRcvBuffer.uchPluAdj = auchAdjData[1];  /* adjective valiation */
 
 	        if ((sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0)) != OP_PERFORM) {
@@ -162,7 +157,7 @@ SLDTITM  ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
 
     /* set default adjective code for setmenu & link plu, 2172 */
     if (pUifRegSales->uchAdjective == 0) {
-        if (ItemSalesLocal.uchAdjCurShift) {
+        if (ItemSalesLocalPtr->uchAdjCurShift) {
             pUifRegSales->uchAdjective = pItemSales->uchAdjective;
         }
     }
@@ -191,14 +186,13 @@ SLDTITM  ItemSalesAdj(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
 */
 VOID   ItemSalesGenerateAdj(ITEMSALES *pItemSales, UCHAR *auchAdjWriteBuff)
 {
-	USHORT i;
-
 	auchAdjWriteBuff[0] = auchAdjWriteBuff[1] = 0;
 
     /*----- get assumed valiation -----*/
-    for (i = 0; i < ADJ_GRP_MAX; i++) {
+    COMPILE_CHECK(ADJ_GRP_MAX < 8);    // compile error if ADJ_GRP_MAX is larger than number of bits in UCHAR.
+    for (UCHAR i = 0; i < ADJ_GRP_MAX; i++) {
         if (pItemSales->ControlCode.auchPluStatus[3] & (PLU_USE_ADJG1 << i)) {
-            auchAdjWriteBuff[0] = (UCHAR) (i + 1);
+            auchAdjWriteBuff[0] = i + 1;
             break;
         }
     }    
@@ -237,10 +231,10 @@ VOID   ItemSalesGenerateAdj(ITEMSALES *pItemSales, UCHAR *auchAdjWriteBuff)
 *===========================================================================
 */
 
-SLDTITM  ItemSalesBreakDownAdj(ITEMSALES *pItemSales, UCHAR *auchAdjWriteBuff)
+SLDTITM  ItemSalesBreakDownAdj(CONST ITEMSALES *pItemSales, UCHAR *auchAdjWriteBuff)
 {
-    auchAdjWriteBuff[0] = (UCHAR) ((pItemSales->uchAdjective - 1) / 5 + 1); /* adj. group */
-    auchAdjWriteBuff[1] = (UCHAR) ((pItemSales->uchAdjective - 1) % 5 + 1); /* adj valiation */
+    auchAdjWriteBuff[0] = (UCHAR) ((pItemSales->uchAdjective - 1) / ADJ_VAL_MAX + 1); /* adj. group */
+    auchAdjWriteBuff[1] = (UCHAR) ((pItemSales->uchAdjective - 1) % ADJ_VAL_MAX + 1); /* adj. variation */
 
     if (!((pItemSales->ControlCode.auchPluStatus[3] & PLU_USE_ADJG_MASK) & (UCHAR) (PLU_USE_ADJG1 << (auchAdjWriteBuff[0] - 1)))) {
         return(LDT_PROHBT_ADR);

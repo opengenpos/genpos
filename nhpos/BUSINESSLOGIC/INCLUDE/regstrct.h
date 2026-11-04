@@ -1622,6 +1622,14 @@ typedef struct {
 #define     ITM_PRECEDENCE_REMOVE   (~ (ITM_PRECEDENCE_APPLIED) )  // remove the bitmask, must use &= operator
 #define     ITM_PPI_APPLIED         0x0002      // indicates that item is being processed has PPI applied to it.same as PRECEDENCEDATA_FLAG_PPI_APPLIED
 
+// NOTE: The data in the following is an edited copy of what is in the PLU data and the
+//       Departmental data.
+//       However the data structures are different in that some data items
+//       are not grouped in the same struct.
+//       See struct PLU_CONTROL and OPPLU_PARAENTRY.
+//       See struct OPDEPT_PARAENTRY.
+// NOTE: See also the comments about control code conversion between item, PLU,
+//       and Department in file csop.h above the definition for the struct PLU_CONTROL.
     typedef struct {
         UCHAR       uchItemType;                    /* item type, upper nibble PLU type, lower nibble Major Dept Number. See PLU_TYPE_MASK_REG 2172 */
         UCHAR       uchReportCode;                      /* 15-2:report code */
@@ -1635,7 +1643,7 @@ typedef struct {
         USHORT          usDeptNo;                   /* dept No, 2172 */
         UCHAR           uchPrintPriority;           /* print priority */
 		DUNITPRICE      lUnitPrice;                 /* 20-3:price */
-        UCHAR           uchAdjective;               /* 20-4:adjective */
+        UCHAR           uchAdjective;               /* 20-4:adjective number */
         TCHAR           aszMnemonic[NUM_DEPTPLU];   /* 20-6:mnemonic */
         TCHAR           aszMnemonicAlt[NUM_DEPTPLU];   /* alternate mnemonic used for kitchen printing */
         ITEMCONTCODE    ControlCode;                /* 15:dept, report code, status */
@@ -1678,7 +1686,7 @@ typedef struct {
 		USHORT			usUniqueID;
 		USHORT			usKdsLineNo;			    // line number on the KDS display
 		DUNITPRICE      lUnitPrice;                 /* unit price */
-        UCHAR           uchAdjective;               /* adjective mnemonic address (see ItemSalesBreakDownAdj()) or order declaration number (uchOrderDecNum) for CLASS_ITEMORDERDEC */
+        UCHAR           uchAdjective;               /* adjective number (see ItemSalesBreakDownAdj()) or order declaration number (uchOrderDecNum) for CLASS_ITEMORDERDEC */
         USHORT          fbModifier;                 /* void, tax modifier, ITEMSALES */
         UCHAR           fbModifier2;                /* price check, e-version, 2172, ITEMSALES */
         TCHAR           aszNumber[NUM_OF_NUMTYPE_ENT][NUM_NUMBER];//increased # of #/Type entries stored US Customs cwunn 4/10/03
@@ -1697,7 +1705,7 @@ typedef struct {
         UCHAR           uchRndType;                    /*  random weight type, 2172 */
         UCHAR           uchPM;                      /*  price multiple, 2172     */
         USHORT          usLinkNo;                   /* link plu no, 2172 */
-        USHORT          usFamilyCode;               /* family code, 2172 */
+        USHORT          usFamilyCode;               /* family code, 2172 See comments in function TrnStoIsUPCCouponItem() about family code. */
         UCHAR           uchGroupNumber;	/* this is not stored */
         UCHAR           uchTableNumber;	/* this is not stored */
 		UCHAR			uchDiscountSignifier; //US Customs cwunn 5/1/03, signifies this item has had a discount applied.

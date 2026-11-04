@@ -641,6 +641,11 @@ typedef signed short   STRNRSLT;      // result variable containing one of the T
 
 					// discount itemizers for each of the Canadian PLU tax types, TRANCANADA_MEAL through TRANCANADA_SPECL_BAKED,
 					// plus the limitable and Tax-On-Tax itemizers plus the GST and PST limitable and PST Tax-On-Tax itemizers.
+                    // 
+                    // WARNING: There are cases when only the last three tax buckets
+                    //          are modified or updated so there is an assummed order 
+                    //          in these arrays.
+                    //          See example in function ItemTotalSEPostAffectTax().
         DCURRENCY  lDiscTax[STD_PLU_ITEMIZERS_PLUS];        /* discountable/tax total itemizer - was 9+2+3 */
         DCURRENCY  lDiscTaxable[STD_DISC_ITEMIZERS_MAX][STD_PLU_ITEMIZERS_PLUS];  /* discountable/taxable itemizer by discount type 4/24/96 */// - was 9+2+3 Database Changes 3-29-04 JHHJ
         DCURRENCY  lVoidDiscTax[STD_DISC_ITEMIZERS_MAX][STD_PLU_ITEMIZERS_PLUS];  /* TAR191625 - was 9+2+3 */
@@ -891,11 +896,9 @@ typedef signed short   STRNRSLT;      // result variable containing one of the T
 
     SHORT   TrnCouponSearch( ITEMCOUPONSEARCH *pItemSearch, SHORT sStorageType);        /* coupon search */
     SHORT   TrnSingleCouponSearch( ITEMCOUPONSEARCH *pItemSearch, SHORT sStorageType);  /* single coupon search */
-	SHORT	TrnCouponSearchAll( ITEMCOUPONSEARCH *pItemSearch, SHORT sStorageType);
 
 	TRANINFORMATION  * TrnGetTranInformationPointer (VOID);
     VOID    TrnGetTranInformation(TRANINFORMATION **TranInfo);
-    VOID    TrnPutTranInformation(TRANINFORMATION *TranInfo);
 	TRANMODEQUAL *TrnGetModeQualPtr(VOID);                      // get pointer to the current mode data area
     VOID    TrnGetModeQual( TRANMODEQUAL *pData );              /* get mode qualifier */
     VOID    TrnPutModeQual( CONST TRANMODEQUAL *pData );        /* put mode qualifier */

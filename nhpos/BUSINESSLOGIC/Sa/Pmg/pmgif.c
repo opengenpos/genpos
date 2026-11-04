@@ -448,14 +448,11 @@ USHORT  PmgDblShrdPrint(USHORT usPrtType, TCHAR *pucBuff, USHORT usLen)
 {
 	USHORT usFunc = 0;
 	USHORT retCode;
-	TRANITEMIZERS       *WorkTI;
 
 	usFunc = BlFwIfGetPrintType();
 	if (usFunc && usFunc < MAX_PRINTER_TYPE && printerfuncs[usFunc].PmgPrint) {
 
-		TrnGetTI(&WorkTI);
-		WorkTI->blDblShrdPrinting = TRUE;
-		TrnPutTI(WorkTI);
+		TrnGetTIPtr()->blDblShrdPrinting = TRUE;
 
 		retCode = printerfuncs[usFunc].PmgPrint (usPrtType, pucBuff, usLen);
 
