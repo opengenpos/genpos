@@ -239,7 +239,7 @@ typedef struct {
 **/
 typedef  struct {
     USHORT  usDept;          /* for temporary */
-    UCHAR   uchItemType;
+    UCHAR   uchItemType;     /* item type, upper nibble PLU type, lower nibble Major Dept Number. See PLU_TYPE_MASK_REG 2172 */
     UCHAR   uchRept;
     UCHAR   auchContOther[OP_PLU_CONT_OTHER];   // see notes with function ItemSalesItemPluTypeInfo().
 	USHORT	usBonusIndex;
@@ -255,17 +255,17 @@ typedef  struct {
 typedef    struct {
     PLU_CONTROL    ContPlu;
     WCHAR   auchPluName[STD_PLU_MNEMONIC_LEN];
-    UCHAR   auchPrice[OP_PLU_PRICE_SIZE];
-    UCHAR   uchTableNumber;
-    UCHAR   uchGroupNumber;
+    UCHAR   auchPrice[OP_PLU_PRICE_SIZE];    // price as a compressed value. 
+    UCHAR   uchTableNumber;                  // OEP table row number to use for OEP processing and display.
+    UCHAR   uchGroupNumber;                  // OEP column group number value to use for OEP display.
     UCHAR   uchPrintPriority;
     /* === New Elements (Release 3.1) BEGIN === */
     USHORT   uchLinkPPI;         /* Link PPI Code,  ESMITH */
     /* === New Elements (Release 3.1) END === */
     UCHAR   uchPriceMulWeight;
-    UCHAR   uchRestrict;
+    UCHAR   uchRestrict;           // Sales restriction code or Sales Code
     USHORT  usLinkNo;
-    USHORT  usFamilyCode;   /* add 05/13/00 */
+    USHORT  usFamilyCode;   /* add 05/13/00. See comments in function TrnStoIsUPCCouponItem() about family code. */
 	// 2.1 Release Changes, SR167 - CSMALL
 	ULONG	ulVoidTotalCounter;				// Void Total/Counter for each PLU
 	ULONG	ulDiscountTotalCounter;			// Discount Total/Counter for each PLU
@@ -274,7 +274,7 @@ typedef    struct {
 	INV_TOTAL	futureTotals[10];			// basic inventory totals (on-hand, receipts/transfers, begin count,
 											//   reorder count, current cost, original cost, etc.)
 	WCHAR	auchAltPluName[STD_PLU_MNEMONIC_LEN + 1];	//	Multilanguage mnemonic for each PLU
-	UCHAR	uchColorPaletteCode;				// Color pallete code for PLU
+	UCHAR	uchColorPaletteCode;				// Color pallete code for PLU display/printing
 	UCHAR	auchStatus2[OP_PLU_STATUS_LEN];
 	USHORT  usExtraSpace;
 	USHORT  usTareInformation;
@@ -289,6 +289,7 @@ typedef    struct {
 typedef  struct {
     UCHAR   uchMdept;             // Major department number, 1 - 30, this department assigned to. see P48 for mnemonics.
     UCHAR   auchControlCode[OP_DEPT_CONT_CODE_SIZE];  // see notes with function ItemSalesItemPluTypeInfo().
+//  UCHAR   auchControlCode2[4];                      // adjective implied and prohibit bits of ParaPlu->ContPlu.auchContOther[4].
     UCHAR   auchHalo[OP_DEPT_HALO_SIZE];
     WCHAR   auchMnemonic[OP_DEPT_NAME_SIZE];
 //  WCHAR   auchAltDeptName[OP_DEPT_NAME_SIZE];     // future database change for PLU compatibility
@@ -300,6 +301,7 @@ typedef  struct {
 //	UCHAR   uchTableNumber;          // future database change for PLU compatibility
 //	UCHAR   uchGroupNumber;          // future database change for PLU compatibility
 //	UCHAR   uchRept;                 // future database change for PLU compatibility
+//  UCHAR   uchPriceMulWeight;       // future database change for PLU compatibility
     UCHAR   uchExtraRoom[8];      // extra space that can be used for added functionality
 }OPDEPT_PARAENTRY;
 
@@ -395,7 +397,7 @@ typedef struct {
 
 typedef    struct {
     WCHAR   auchPluNo[OP_PLU_LEN];      /* for temporary */
-    UCHAR   uchPluAdj;
+    UCHAR   uchPluAdj;                  // PLU adjective number range 0 - MAX_ADJM_NO. encodes both adjective variation and group.
     ULONG   ulCounter;                  // contains the iteration control counter, initialize to zero to start.
     USHORT  husHandle;  /* 2172 */
     USHORT  usAdjCo;    /* 2172 */
