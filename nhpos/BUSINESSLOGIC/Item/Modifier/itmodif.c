@@ -112,9 +112,14 @@ VOID   ItemModGetLocal(ITEMMODLOCAL *pItemGetLocal)
     *pItemGetLocal = ItemModLocal;
 }
 
-VOID   ItemModPutLocal(ITEMMODLOCAL *pItemPutLocal)
+VOID   ItemModPutLocal(CONST ITEMMODLOCAL * CONST pItemModLocal)
 {
-    ItemModLocal = *pItemPutLocal;
+    if (pItemModLocal) {
+        ItemModLocal = *pItemModLocal;
+    }
+    else {
+        memset(&ItemModLocal, 0, sizeof(ItemModLocal));
+    }
 }
 
 /*fhfh

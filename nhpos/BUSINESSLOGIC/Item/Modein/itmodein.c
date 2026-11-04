@@ -84,28 +84,21 @@
 
 SHORT   ItemModeIn(UIFREGMODEIN *pUifRegModeIn)
 {
-	 ITEMTRANSLOCAL     TransDataBuffer = {0};
-	 ITEMSALESLOCAL     SalesDataBuffer = {0};
-	 ITEMTOTALLOCAL     TotalDataBuffer = {0};
-	 ITEMTENDERLOCAL    TenderDataBuffer = {0};
-	 ITEMMODLOCAL       ModDataBuffer = {0};
-	 ITEMCOMMONLOCAL    CommonDataBuffer = {0};
 	 ITEMREGMODEIN      ItemRegModeIn = {0};
-	 PARACTLTBLMENU     MenuPage; 
+     PARACTLTBLMENU     MenuPage = { 0 };
 
-    /* clear local memory resident transaction data areas */
-    ItemTransPutLocal(&TransDataBuffer);     // zero out and clear memory resident data
-    ItemSalesPutLocal(&SalesDataBuffer);     // zero out and clear memory resident data
-    ItemTotalPutLocal(&TotalDataBuffer);     // zero out and clear memory resident data
-	TenderDataBuffer.usCheckTenderId = 1;    // initialize the tender id count
-    ItemTenderPutLocal(&TenderDataBuffer);   // zero out and clear memory resident data
-    ItemModPutLocal(&ModDataBuffer);         // zero out and clear memory resident data
+    /* clear local memory resident transaction data areas and
+    *  initialize the Unique Tender ID for split checks.
+    */
+    *ItemTransGetLocalPointer() = (ITEMTRANSLOCAL){ 0 };
+    *ItemSalesGetLocalPointer() = (ITEMSALESLOCAL){ 0 };
+    *ItemTotalGetLocalPointer() = (ITEMTOTALLOCAL){ 0 };
+    *ItemTenderGetLocalPointer() = (ITEMTENDERLOCAL){ .usCheckTenderId = 1 };
+    *ItemModGetLocalPtr() = (ITEMMODLOCAL){ 0 };
+
     /* initiaize other local data */
-	{
-		ITEMOTHERLOCAL      *pOtherLocalData = ItemOtherGetLocalPointer();         /* other module local data */
-		memset(pOtherLocalData, 0, sizeof(*pOtherLocalData));  /* initialize data structure */
-	}
-    ItemCommonPutLocal(&CommonDataBuffer);    // zero out and clear memory resident data
+    *ItemOtherGetLocalPointer() = (ITEMOTHERLOCAL) {0};
+    *ItemCommonGetLocalPointer() = (ITEMCOMMONLOCAL){ 0 };
 
     /*- build structure to make interface with transaction module -----*/
     ItemRegModeIn.uchMajorClass = CLASS_ITEMMODEIN; 
@@ -128,16 +121,14 @@ SHORT   ItemModeIn(UIFREGMODEIN *pUifRegModeIn)
     MenuPage.uchMajorClass = CLASS_PARACTLTBLMENU;                             
     MenuPage.uchAddress = CTLPG_STAND_ADR; 
     CliParaRead(&MenuPage);
-    ItemSalesGetLocal(&SalesDataBuffer);
 
     if (MenuPage.uchPageNumber < 1 || MenuPage.uchPageNumber > MAX_PAGE_NO) {  /* 5->9 11/29/96 */
-        SalesDataBuffer.uchMenuShift = 1; 
+        ItemSalesGetLocalPointer()->uchMenuShift = 1;
     } else {
-        SalesDataBuffer.uchMenuShift = MenuPage.uchPageNumber;                        
+        ItemSalesGetLocalPointer()->uchMenuShift = MenuPage.uchPageNumber;
     }
-    ItemSalesPutLocal(&SalesDataBuffer);
-    ItemCommonShiftPage(SalesDataBuffer.uchMenuShift);
-    uchDispCurrMenuPage = SalesDataBuffer.uchMenuShift; /* V3.3 */
+    ItemCommonShiftPage(ItemSalesLocalPtr->uchMenuShift);
+    uchDispCurrMenuPage = ItemSalesLocalPtr->uchMenuShift; /* V3.3 */
 
     return(ITM_SUCCESS);
 }

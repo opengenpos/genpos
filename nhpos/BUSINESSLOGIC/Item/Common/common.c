@@ -145,9 +145,14 @@ VOID   ItemCommonGetLocal(ITEMCOMMONLOCAL **pDataBuffer)
 	*pDataBuffer = &ItemCommonLocal;
 }
 
-VOID   ItemCommonPutLocal(ITEMCOMMONLOCAL *pDataBuffer) 
+VOID   ItemCommonPutLocal(CONST ITEMCOMMONLOCAL * CONST pItemCommonLocal)
 {
-    ItemCommonLocal = *pDataBuffer;     
+    if (pItemCommonLocal) {
+        ItemCommonLocal = *pItemCommonLocal;
+    }
+    else {
+        memset(&ItemCommonLocal, 0, sizeof(ItemCommonLocal));
+    }
 }
 
 /*

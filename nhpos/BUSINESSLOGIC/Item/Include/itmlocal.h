@@ -785,7 +785,7 @@ SHORT   ItemSalesSpvInt(CONST ITEMSALES *pData);
 SHORT   ItemSalesSpvIntForCond(ITEMSALES *pData);
 VOID    ItemSalesSetDefltPage( VOID );
 VOID    ItemSalesGenerateAdj(ITEMSALES *pData, UCHAR *auchWriteBuff);
-SLDTITM  ItemSalesBreakDownAdj(ITEMSALES *pData, UCHAR *auchWriteBuff);
+SLDTITM  ItemSalesBreakDownAdj(CONST ITEMSALES *pData, UCHAR *auchWriteBuff);
 VOID    ItemSalesDisplay(CONST UIFREGSALES *pData1, CONST ITEMSALES *pData2, REGDISPMSG *pDisplayData);
 SHORT   ItemSalesSalesAmtCalc(CONST ITEMSALES *pSalesData, DCURRENCY *plCalProduct);
 SHORT   ItemSalesModDiscCheck(CONST UIFREGSALES *pData1, ITEMSALES *pData2);
@@ -1500,26 +1500,27 @@ SUIFRSLT ItemSalesOEPAdjective(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
 */
 ITEMTRANSLOCAL *ItemTransGetLocalPointer (VOID);
 VOID   ItemTransGetLocal(ITEMTRANSLOCAL *pTransLocal);
-VOID   ItemTransPutLocal(ITEMTRANSLOCAL *pTransLocal);
+VOID   ItemTransPutLocal(CONST ITEMTRANSLOCAL * CONST pTransLocal);
 ITEMSALESLOCAL *ItemSalesGetLocalPointer (VOID);
 VOID   ItemSalesGetLocal(ITEMSALESLOCAL *pData);
-VOID   ItemSalesPutLocal(ITEMSALESLOCAL *pData);
+VOID   ItemSalesPutLocal(CONST ITEMSALESLOCAL * CONST pData);
 SHORT  ItemTenderGetSetTipReturn (SHORT bReturnTipState);
 ITEMTOTALLOCAL *ItemTotalGetLocalPointer (VOID);
 VOID   ItemTotalGetLocal(ITEMTOTALLOCAL *pData);
-VOID   ItemTotalPutLocal(ITEMTOTALLOCAL *pData);
+VOID   ItemTotalPutLocal(CONST ITEMTOTALLOCAL * CONST pData);
 ITEMTENDERLOCAL *ItemTenderGetLocalPointer (VOID);
 VOID   ItemTenderGetLocal(ITEMTENDERLOCAL *pData);
-VOID   ItemTenderPutLocal(ITEMTENDERLOCAL *pData);
+VOID   ItemTenderPutLocal(CONST ITEMTENDERLOCAL * CONST pData);
 ITEMMODLOCAL *ItemModGetLocalPtr(VOID);
 ITEMMODSCALE *ItemModGetLocalScaleDataPtr(VOID);
 VOID   ItemModGetLocal(ITEMMODLOCAL *pData);
-VOID   ItemModPutLocal(ITEMMODLOCAL *pData);
+VOID   ItemModPutLocal(CONST ITEMMODLOCAL * CONST pData);
+CONST volatile ITEMMODLOCAL* CONST ItemOtherLocalPtr;
 ITEMOTHERLOCAL *ItemOtherGetLocalPointer (VOID);
 ITEMCOMMONLOCAL *ItemCommonGetLocalPointer(VOID);
 VOID   *ItemCommonGetLocalItemUnionPointer(VOID);
 VOID   ItemCommonGetLocal(ITEMCOMMONLOCAL **pData);
-VOID   ItemCommonPutLocal(ITEMCOMMONLOCAL *pData);
+VOID   ItemCommonPutLocal(CONST ITEMCOMMONLOCAL * CONST pData);
 
 SHORT  ItemComonCheckReturnCardLabel (TCHAR *aszCardLabel);
 

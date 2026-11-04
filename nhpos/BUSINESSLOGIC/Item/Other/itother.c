@@ -107,7 +107,7 @@ mhmh*/
 
 ITEMOTHERLOCAL ItemOtherLocal;
 
-static VOID (PIFENTRY *pPifSaveFarData)(VOID) = PifSaveFarData; /* saratoga */
+CONST volatile ITEMMODLOCAL* CONST ItemOtherLocalPtr = &ItemOtherLocal;
 
 /*fhfh
 *===========================================================================
@@ -129,6 +129,8 @@ ITEMOTHERLOCAL *ItemOtherGetLocalPointer (VOID)
 	return &ItemOtherLocal;
 }
 
+
+static VOID (PIFENTRY *pPifSaveFarData)(VOID) = PifSaveFarData; /* saratoga */
 
 
 /*fhfh
