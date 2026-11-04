@@ -98,9 +98,14 @@ VOID    ItemTotalGetLocal( ITEMTOTALLOCAL *pData )
     *pData = ItemTotalLocal;
 }
 
-VOID    ItemTotalPutLocal( ITEMTOTALLOCAL *pData )
+VOID    ItemTotalPutLocal( CONST ITEMTOTALLOCAL * CONST pItemTotalLocal)
 {
-	ItemTotalLocal = *pData;
+	if (pItemTotalLocal) {
+		ItemTotalLocal = *pItemTotalLocal;
+	}
+	else {
+		memset(&ItemTotalLocal, 0, sizeof(ItemTotalLocal));
+	}
 }
 
 // The following is to work around a field issue seen on some Amtrak trains in which

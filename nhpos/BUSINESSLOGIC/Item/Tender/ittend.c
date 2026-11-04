@@ -108,9 +108,14 @@ VOID    ItemTenderGetLocal( ITEMTENDERLOCAL *pData )
     *pData = ItemTenderLocal;
 }
 
-VOID    ItemTenderPutLocal( ITEMTENDERLOCAL *pData )
+VOID    ItemTenderPutLocal( CONST ITEMTENDERLOCAL * CONST pItemTenderLocal)
 {
-    ItemTenderLocal = *pData;
+    if (pItemTenderLocal) {
+        ItemTenderLocal = *pItemTenderLocal;
+    }
+    else {
+        memset(&ItemTenderLocal, 0, sizeof(ItemTenderLocal));
+    }
 }
 
 

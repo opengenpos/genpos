@@ -108,9 +108,14 @@ VOID    ItemTransGetLocal( ITEMTRANSLOCAL *pTransLocal )
 }
 
 
-VOID    ItemTransPutLocal( ITEMTRANSLOCAL *pTransLocal )
+VOID    ItemTransPutLocal( CONST ITEMTRANSLOCAL * CONST pTransLocal )
 {
-    ItemTransLocal = *pTransLocal;
+    if (pTransLocal) {
+        ItemTransLocal = *pTransLocal;
+    }
+    else {
+        memset(&ItemTransLocal, 0, sizeof(ItemTransLocal));
+    }
 }
 
 /*==========================================================================
