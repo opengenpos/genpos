@@ -431,6 +431,27 @@ USHORT RflGetStorageItem(VOID *pDest, CONST VOID *pSource, SHORT sType);      /*
 USHORT RflGetStorageItemRequire(UCHAR uchMajorClass, VOID *pDest, CONST VOID *pSource, SHORT sType);
 TCHAR *RflD13ToDecimalStr(D13DIGITS *, TCHAR *);
 
+FORCE_INLINE static UCHAR RflAdjVariation(UCHAR uchAdj)
+{
+    // There are four groups of adjectives. Each group has five variations.
+    // For instance a soft drink group with small, medium, large, biggie, party variations
+    // (UCHAR) ((pItemSales->uchAdjective - 1) % ADJ_VAL_MAX + 1); /* adj. variation */
+    static const UCHAR uchAdjVar[32] = { 0,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,0 };
+    USHORT is_valid = (uchAdj <= 20);  // MAX_ADJM_NO
+    USHORT safe_uchAdj = is_valid ? (uchAdj & 0x1F) : 0;
+    return uchAdjVar[safe_uchAdj];
+}
+
+FORCE_INLINE static UCHAR RflAdjGroup(UCHAR uchAdj)
+{
+    // (UCHAR)((pItemSales->uchAdjective - 1) / ADJ_VAL_MAX + 1); /* adj. group */
+    static const UCHAR uchAdjGroup[32] = { 0,1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,0 };
+    USHORT is_valid = (uchAdj <= 20);  // MAX_ADJM_NO
+    USHORT safe_uchAdj = is_valid ? (uchAdj & 0x1F) : 0;
+    return uchAdjGroup[safe_uchAdj];
+}
+
+
 /* RflCalc.asm */
 #if defined(USE_2170_ORIGINAL)
 VOID   RflMul32by32(HUGEINT *, LONG, LONG);
