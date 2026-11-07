@@ -7,6 +7,10 @@
 *  Developemnt with NCR 7448 then ported to Windows XP and generic x86 hardware
 *  along with touch screen support.
 *
+*  GenPOS, converted to Open Source by Georgia Southern University, December, 2020.
+*  OpenGenPOS GitHub repository, https://github.com/opengenpos/genpos created after
+*  removal of proprietary components from Datacap Corporation for Electronic Payment.
+*
 *---------------------------------------------------------------------------
 
 		NeighborhoodPOS Software Product Development Project
@@ -90,6 +94,15 @@
 //#define USE_PLU_TOTALS_LOCALDB                  // the standard LocalDB embedded version of SQL Server Express database engine
 //#define USE_PLU_TOTALS_JET                    // the Jet Access database engine, Microsoft.Jet.OLEDB.4.0
 //#define USE_PLU_TOTALS_SQLSERVER_EMBEDDED     // the SQL Server localDB embedded database engine
+
+
+// Following defines allow specific types of asserts to be enabled or disabled.
+// Do a search on the first part of the define such as NHPOS_ASSERT_01 or
+// NHPOS_NONASSERT_01 to find usage areas.
+// NHPOS_ASSERT will generate a "**ERROR: " type of log
+// NHPOS_NONASSERT will generate a "==LOG: " type of log
+#define NHPOS_ASSERT_01_ENABLE 0
+#define NHPOS_NONASSERT_01_ENABLE 1
 
 #ifdef __cplusplus
 extern "C"{
@@ -222,7 +235,7 @@ extern "C"{
 #define PERIPHERAL_DEVICE_SCALE               /* See also SCF_TYPE_SCALE. */
 #define PERIPHERAL_DEVICE_MSR                 /* See also SCF_TYPE_MSR, SCF_TYPE_MSR1, and SCF_TYPE_MSR2. */
 #define PERIPHERAL_DEVICE_VIRTUALKEY          /* See also SCF_TYPE_SCANNER. */
-#define PERIPHERAL_DEVICE_WAITER_LOCK         /* See also SCF_TYPE_SCANNER. */
+//#define PERIPHERAL_DEVICE_WAITER_LOCK         /* See also SCF_TYPE_SCANNER. */
 #define PERIPHERAL_DEVICE_OTHER     7
 
 // Defines for standard ASCII character codes used with communication messages for older or legacy devices.
@@ -287,6 +300,7 @@ extern "C"{
 
 #define	 STD_PLU_ITEMIZERS		10		// Number of PLU Canadian tax Itemizers for CANTAX. See list of Canadian tax itemizers below.
 #define	 STD_PLU_ITEMIZERS_MOD	 (STD_PLU_ITEMIZERS - 1)    // zero based count of STD_PLU_ITEMIZERS, range of PLU data - see PLU_AFFECT_TAX1, used in several places for max PLU itemizer for Canada tax.
+#define  STD_PLU_ITEMIZERS_GSTPST (STD_PLU_ITEMIZERS+2)     // offset to GST/PST1 for start of loops using GST/PST1 limitable/PST1 tax-on-tax
 #define  STD_PLU_ITEMIZERS_PLUS  (STD_PLU_ITEMIZERS+2+3)    // Number of PLU Itemizers plus limitable/Tax-On-Tax and GST/PST. see TRANCANADA_LIMITABLE and TRANCANADA_PST1TOT
 
 /*
@@ -382,18 +396,24 @@ extern "C"{
 // WARNING: There appear to be a number of assummed dependencies on this defined
 //          constant that may not be obvious. For instance in the Guest Check
 //          functionality the Guest Check is saved in blocks of size GCF_DATA_BLOCK_SIZE
-//          and so this value should be large enough for at least one Guest Check data block.
+//          and so this value should be large enough for at least one Guest Check data block
+//          as the data portion and enough space for the command portion of a response message.
 //          See also define for TRN_STOSIZE_BLOCK.
 
-// sized for a GCF_DATA_BLOCK_SIZE Guest Check data block with room for header information.
-// this needs at least as large as PIF_LEN_UDATA, the size of an XGRAM?
-#define     SERISP_MAX_TMPBUF      (CONSOLIMAXSIZE + 256)
+// Sized for a GCF_DATA_BLOCK_SIZE Guest Check data block with room for header information.
+// This constant is used to size the temporary buffer in which a response message is constructed.
+// A response message has both a response description or command part followed by an optional data part.
+#define     SERISP_MAX_TMPBUF      (256 + CONSOLIMAXSIZE)
 
 
-// SERISP_MAX_LEN(s) calculates the maximum space in the data part of an XGRAM. s is sizeof(struct), e.g. sizeof(CLIRESGCF).
+// SERISP_MAX_LEN(s) calculates the maximum space in the data part of a Server or ISP temporary buffer.
+// The temporary buffer contains the response that is contructed there before sending out. Messages that
+// are sent between devices contain two parts: (1) command part and (2) a data part. Since this temporary
+// buffer is normally used to construct a response the struct argument, s, is some sort of response command. 
+// s is sizeof(struct), e.g. sizeof(CLIRESGCF).
 // we also subtract the sizeof CLIREQDATA.usDataLen  See also type TrnVliOffset.
-#define SERISP_MAX_LEN(s) (SERISP_MAX_TMPBUF - (s) - 2)
-#define SERISP_ARG_MAX_LEN(x,s) ((x) - (s) - 2)
+#define SERISP_MAX_LEN(s) (SERISP_MAX_TMPBUF - (s) - sizeof(USHORT))
+#define SERISP_ARG_MAX_LEN(x,s) ((x) - (s) - sizeof(USHORT))
 
 //  The following constants are used to mark the number of
 //  characters that a particular kind of mnemonic string may
@@ -423,7 +443,6 @@ extern "C"{
 #define  STD_CPRSPCO_EPT_LEN    10    // charge posting response text
 #define  STD_DEPTPLUNAME_LEN    20    // dept/PLU name  PARA_DEPT_LEN and PARA_PLU_LEN
 #define  STD_EPTNUMBER_LEN      19    // number field as used for EPT transactions
-#define  STD_ETK_NAME_LEN       20    // Employee Time Keeping Name
 #define  STD_EXPIRATION_LEN      4    // credit card expiration (MMYY)
 #define  STD_GUESTCHKID_LEN      6    // guest check transaction number
 #define  STD_HEADERMNEMO_LEN    24    // receipt header mnemonic from UNINIRAM and pararead ()
@@ -779,6 +798,15 @@ extern "C"{
 #define  OP_BACKUP_WORK_SIZE     450
 #define  OP_BROADCAST_SIZE       450
 
+// define a macro to require the compiler to inline a function.
+
+#if defined(_MSC_VER)
+#define FORCE_INLINE static __forceinline 
+#elif defined(__GNUC__) || defined(__clang__)
+#define FORCE_INLINE static inline __attribute__((always_inline))
+#else
+#define FORCE_INLINE inline
+#endif
 
 #ifndef _WINDEF_
 typedef int				BOOL;
@@ -888,6 +916,25 @@ extern UCHAR CONST  auchOLD_FILE_READ_WRITE_SAVTTL[];
 typedef WCHAR AucPluNo[STD_PLU_NUMBER_LEN];              // use this for PLU number function arguments
 typedef struct { AucPluNo aucPluNumber; } AucPluNumber;  // use this for PLU number assignment *(AucPluNumber *)x.aucPluNumber
 #define AUCPLUNO(x)  *(AucPluNumber *)(x)    // use like AUCPLUNO(plu.aucPluNumber) = AUCPLUNO(x->aucPluNumber);
+
+// The PLU adjective number is typically stored as a UCHAR which encodes both the
+// adjective variation and the adjective group as a single number.
+//   - range of adjective variation is 1 - ADJ_VAL_MAX
+//   - range of adjective group (containing the adjective variation) is 1 - ADJ_GRP_MAX
+//   - range of adjective number (encodes both variation and group) is 1 - MAX_ADJM_NO
+// An adjective number of zero (0) indicates no adjective.
+// 
+// The adjective number is used as the index into the array of adjective mnemonics
+// in the memory resident database, ParaAdjMnemo[MAX_ADJM_NO][PARA_ADJMNEMO_LEN].
+// The array is organized as a table that contains ADJ_GRP_MAX groups of adjective variations.
+// The first group is in ParaAdjMnemo[0] through ParaAdjMnemo[ADJ_VAL_MAX-1].
+// The second group is in ParaAdjMnemo[ADJ_VAL_MAX] through ParaAdjMnemo[ADJ_VAL_MAX * 2 - 1].
+//
+// NOTE: use the following inline functions instead of these macros:
+//         - FORCE_INLINE UCHAR RflAdjVariation(UCHAR uchAdj)
+//         - FORCE_INLINE UCHAR RflAdjGroup(UCHAR uchAdj)
+//#define AUCADJVAR(x) (UCHAR)(((x) - 1) % ADJ_VAL_MAX + 1)     // calculates the adjective variation within a PLU's adjective group.
+//#define AUCADJGRP(x) (UCHAR)(((x) - 1) / ADJ_VAL_MAX + 1)     // calculates the adjective group from the adjective value.
 
 typedef short       D4DIGITS;
 typedef long        D9DIGITS;
@@ -1069,6 +1116,8 @@ OutputDebugStringW(
 //  ==ACTION     -> these logs indicate an event involving an action such as a Cashier Sign-in
 //  ==STATE      -> these logs indicate some kind of a state change
 //  ==WARNING    -> these logs indicate an unexpected result which may indicate a problem
+//  ==PROCEDURE  -> these logs indicate an operator procedural error such as a key sequence error
+//  ==LOG:       -> a runtime log that may be enabled or disabled for testing
 //  **ERROR      -> these logs indicate an error condition that has been discovered
 //
 // Also there are some, rarely needed logs that have been #ifdefed out. The source for these logs is surrounded
@@ -1077,6 +1126,26 @@ OutputDebugStringW(
 #if !defined(NHPOS_ASSERT)
 #define NHPOS_ASSERT(x) if (!(x)) { PifLogAbort( (UCHAR *) #x , (UCHAR *)  __FILE__ , (UCHAR *)  "**ERROR: ASSERT FAIL" , __LINE__ );}
 #endif
+
+#if !defined(NHPOS_ASSERT_01)
+// enable or disable 
+#if defined(NHPOS_ASSERT_01_ENABLE) && (NHPOS_ASSERT_01_ENABLE==1)
+#define NHPOS_ASSERT_01(x) if (!(x)) { PifLogAbort( (UCHAR *) #x , (UCHAR *)  __FILE__ , (UCHAR *)  "**ERROR: ASSERT_01 FAIL" , __LINE__ );}
+#else
+#define NHPOS_ASSERT_01(x)
+#endif
+#endif
+
+#if !defined(NHPOS_NONASSERT_01)
+// enable or disable 
+#if defined(NHPOS_NONASSERT_01_ENABLE) && (NHPOS_NONASSERT_01_ENABLE==1)
+#define NHPOS_NONASSERT_01(txt) PifLogNoAbort( (UCHAR *)"" , (UCHAR *)__FILE__ , (UCHAR *) txt , __LINE__ )
+#else;
+#define NHPOS_NONASSERT_01(x)
+#endif
+#endif
+
+
 #if !defined(NHPOS_ASSERT_TEXT)
 #define NHPOS_ASSERT_TEXT(x, txt) if (!(x)) { PifLogAbort( (UCHAR *)  #x , (UCHAR *)  __FILE__ , (UCHAR *) txt , __LINE__ );}
 #endif
