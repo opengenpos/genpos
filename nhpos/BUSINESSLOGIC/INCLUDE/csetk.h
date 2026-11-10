@@ -113,7 +113,6 @@
 *************************************
 */
 
-#define ETK_MAX_EMPLOYEE        250      /* Max Employee records, should be same as FLEX_ETK_MAX */
 #define ETK_MAX_FIELD            15      /* Number of Field (MAX) */
 #define ETK_JOBCODE_RECORD_SIZE   3      /* ALLOWANCE JOB CODE RECORD SIZE */
 #define ETK_TIME_NOT_IN         0x2a2a   /* ** Id is time not in a etk file */
@@ -197,7 +196,7 @@ SHORT   EtkStatCheckCreateFirstEmployee (ULONG  ulEmployeeNo);
 SHORT   EtkDelete(ULONG ulEmployeeNo);
 SHORT   EtkIndJobRead(ULONG ulEmployeeNo, ETK_JOB  *pEtkJob, WCHAR* puchEmployeeName);
 SHORT   EtkCurAllIdRead(USHORT usRcvBufferSize, ULONG *aulRcvBuffer);
-SHORT   EtkCurAllIdReadIncr(USHORT usRcvBufferSize, ULONG *aulRcvBuffer, USHORT usEmpNo);
+SHORT   EtkCurAllIdReadIncr(USHORT usRcvBufferSize, ULONG *aulRcvBuffer, USHORT usStartIndxNo);
 SHORT   EtkSavAllIdRead(USHORT usRcvBufferSize, ULONG *aulRcvBuffer);
 SHORT   EtkCurIndRead(ULONG ulEmployeeNo, USHORT *pusFieldNo, ETK_FIELD  *pEtkField, ETK_TIME *pEtkTime);
 SHORT   EtkCurAllLoggedInRead(USHORT usRcvArraySize, ETK_DETAILS *Etk_Details);

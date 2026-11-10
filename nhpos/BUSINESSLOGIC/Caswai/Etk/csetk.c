@@ -813,7 +813,7 @@ SHORT   EtkIndJobRead(ULONG    ulEmployeeNo,
     }
 
     /* Make Output Condition */
-    *pEtkJob = EtkIndex.EtkJob;
+    if (pEtkJob) *pEtkJob = EtkIndex.EtkJob;
 
 	// up to the max number of characters in an employee name. it is up to the caller to make the
 	// buffer large enough and to make sure that puchEmployeeName will be zero terminated if the full
@@ -865,10 +865,11 @@ SHORT  EtkCurAllIdRead(USHORT usRcvBufferSize, ULONG *aulRcvBuffer)
           (cusi < EtkFileHead.usNumberOfEtk);
          cusi++) {
         Etk_ReadFile(hsEtkParaFile, sizeof(ETK_PARAHEAD) + (cusi * sizeof(ETK_PARAINDEX)), &EtkIndexEntry, sizeof(ETK_PARAINDEX));
-        *aulRcvBuffer++ = EtkIndexEntry.ulEmployeeNo;
+        if (aulRcvBuffer) *aulRcvBuffer++ = EtkIndexEntry.ulEmployeeNo;
     }
 
     Etk_CloseIndFileReleaseSem(hsEtkParaFile);      /* close file and release semaphore */
+    hsEtkParaFile = -1;
     return(cusi);
 }
 
@@ -876,24 +877,28 @@ SHORT  EtkCurAllIdRead(USHORT usRcvBufferSize, ULONG *aulRcvBuffer)
 /*
 *==========================================================================
 **    Synopsis:   SHORT  EtkCurAllIdRead(USHORT usRcvBufferSize,
-*                                                 ULONG  *aulRcvBuffer)
-*
-*       Input:    USHORT usRcvBufferSize
+*                                                 ULONG  *aulRcvBuffer,
+*                                                 USHORT usStartIndxNo)
+* 
+*       Input:    USHORT usRcvBufferSize sizeof(aulRcvBuffer) in bytes
+*                 USHORT usStartIndxNo   starting index number.
 *      Output:    
 *       InOut:    USHORT *aulRcvBuffer
 *
 **  Return    :
-*           Number of Etk          < 0
-*           NOT_IN_FILE            = 0
-*           ETK_FILE_NOT_FOUND     > 0
+*           if >= 0 then Number of Etk Ids returned
+*           if < 0 then an error code.
+*             ETK_FILE_NOT_FOUND - unable to open file
 *
 **  Description:
-*                Read all Etk No. in this file.
+*                Read all Etk No. in this file starting with usStartIndxNo
+*                until either the buffer is full or  max number of existing
+*                records are read.
 *==========================================================================
 */
-SHORT  EtkCurAllIdReadIncr(USHORT usRcvBufferSize, ULONG *aulRcvBuffer,USHORT usEmpNo)
+SHORT  EtkCurAllIdReadIncr(USHORT usRcvBufferSize, ULONG *aulRcvBuffer, USHORT usStartIndxNo)
 {
-    USHORT  cusi, usReadRecords = 0;                                                
+    USHORT  usReadRecords = 0;                                                
 	ETK_PARAHEAD   EtkFileHead = {0};       /* file header */
     ETK_PARAINDEX  EtkIndexEntry = {0};     /* index table entry */ 
 
@@ -909,16 +914,17 @@ SHORT  EtkCurAllIdReadIncr(USHORT usRcvBufferSize, ULONG *aulRcvBuffer,USHORT us
     Etk_ReadFile(hsEtkParaFile, ETK_FILE_HED_POSITION, &EtkFileHead, sizeof(ETK_PARAHEAD));
 
     /* Count inputed ETK no in index table */
-    for (cusi = usEmpNo;
+    for (USHORT cusi = usStartIndxNo;
          ((usReadRecords * sizeof(EtkIndexEntry.ulEmployeeNo)) < usRcvBufferSize) &&
           (cusi < EtkFileHead.usNumberOfEtk);
          cusi++) {
         Etk_ReadFile(hsEtkParaFile, sizeof(ETK_PARAHEAD) + (cusi * sizeof(ETK_PARAINDEX)), &EtkIndexEntry, sizeof(ETK_PARAINDEX));
-        *aulRcvBuffer++ = EtkIndexEntry.ulEmployeeNo;
+        if (aulRcvBuffer) *aulRcvBuffer++ = EtkIndexEntry.ulEmployeeNo;
 		usReadRecords++;
     }
 
     Etk_CloseIndFileReleaseSem(hsEtkParaFile);      /* close file and release semaphore */
+    hsEtkParaFile = -1;     // indicate file is closed.
     return(usReadRecords);
 }
                                                                                                                                                
@@ -963,10 +969,11 @@ SHORT  EtkSavAllIdRead(USHORT usRcvBufferSize, ULONG *aulRcvBuffer)
           (cusi < EtkFileHead.EtkSav.usNumberOfEtk);
          cusi++) {
         Etk_ReadFile(hsEtkTotalFile, EtkFileHead.EtkSav.ulOffsetOfIndex + (cusi * sizeof(ETK_TOTALINDEX)), &EtkIndexEntry, sizeof(ETK_TOTALINDEX));
-        *aulRcvBuffer++ = EtkIndexEntry.ulEmployeeNo;
+        if (aulRcvBuffer) *aulRcvBuffer++ = EtkIndexEntry.ulEmployeeNo;
     }
 
     Etk_CloseIndFileReleaseSem(hsEtkTotalFile);      /* close file and release semaphore */
+    hsEtkTotalFile = -1;
     return(cusi);
 }
 /*
@@ -1039,7 +1046,7 @@ SHORT   EtkCurIndRead(ULONG ulEmployeeNo,
     /* Search inputed ETK no in Index table */
     if (Etk_Index(&EtkFileHead.EtkCur, ETK_SEARCH_ONLY, ulEmployeeNo, &EtkIndex, &usParaBlockNo, &ulIndexPos) == ETK_RESIDENT) {
         /* Read Paramater */
-        uchFieldNo = (UCHAR)(EtkIndex.uchStatus & ETK_MASK_FIELD_POINTER);
+        uchFieldNo = (EtkIndex.uchStatus & ETK_MASK_FIELD_POINTER);
         if (EtkIndex.uchStatus & ETK_TIME_IN) {
             uchFieldNo++;
         }
@@ -1050,8 +1057,7 @@ SHORT   EtkCurIndRead(ULONG ulEmployeeNo,
             sErrorStatus = ETK_NOT_IN_FIELD;
         } else {
             EtkIndexWork.uchStatus = *(UCHAR *)pusFieldNo;
-            Etk_TimeFieldRead(&EtkFileHead.EtkCur, &EtkIndexWork,
-                              usParaBlockNo, &EtkFieldInFile);
+            Etk_TimeFieldRead(&EtkFileHead.EtkCur, &EtkIndexWork, usParaBlockNo, &EtkFieldInFile);
             PifGetDateTime(&DateTime);                          /* Jan/16/2001  TAR#160538 */
             pEtkField->usYear  =         DateTime.usYear;       /* Jan/16/2001  TAR#160538 */
             pEtkField->usMonth =         EtkFieldInFile.usMonth;
@@ -1071,8 +1077,9 @@ SHORT   EtkCurIndRead(ULONG ulEmployeeNo,
     } else {
         sErrorStatus = ETK_NOT_IN_FILE;
     }
-    *pEtkTime = EtkFileHead.EtkTime;     /* copy structure */
+    if (pEtkTime) *pEtkTime = EtkFileHead.EtkTime;     /* copy structure */
     Etk_CloseIndFileReleaseSem(hsEtkTotalFile);   /* close file and release semaphore */
+    hsEtkTotalFile = -1;
     return(sErrorStatus);
 }
 
@@ -1151,7 +1158,7 @@ SHORT   EtkCurAllLoggedInRead(USHORT usRcvArraySize, ETK_DETAILS *Etk_Details)
 	}
 
 	{
-		USHORT         cusi, usReadRecords = 0;                                                
+		USHORT         usReadRecords = 0;                                                
 		ETK_PARAHEAD   EtkFileHead = {0};        /* file header */
 		ETK_PARAINDEX  EtkIndexEntry = {0};      /* index table entry */ 
 
@@ -1159,7 +1166,7 @@ SHORT   EtkCurAllLoggedInRead(USHORT usRcvArraySize, ETK_DETAILS *Etk_Details)
 		Etk_ReadFile(hsEtkParaFile, ETK_FILE_HED_POSITION, &EtkFileHead, sizeof(ETK_PARAHEAD));
 
 		/* Count inputed ETK no in index table */
-		for (cusi = 0; (usReadRecords < sErrorStatus) && (cusi < EtkFileHead.usNumberOfEtk); cusi++) {
+		for (USHORT cusi = 0; (usReadRecords < sErrorStatus) && (cusi < EtkFileHead.usNumberOfEtk); cusi++) {
 			Etk_ReadFile(hsEtkParaFile, sizeof(ETK_PARAHEAD) + (cusi * sizeof(ETK_PARAINDEX)), &EtkIndexEntry, sizeof(ETK_PARAINDEX));
 			if (EtkIndexEntry.ulEmployeeNo == Etk_Details[usReadRecords].ulEmployeeNo) {
 				Etk_Details[usReadRecords].EtkJob = EtkIndexEntry.EtkJob;
@@ -1282,8 +1289,9 @@ SHORT   EtkSavIndRead(ULONG    ulEmployeeNo,
     } else {
         sErrorStatus = ETK_NOT_IN_FILE;
     }
-    *pEtkTime = EtkFileHead.EtkTime;     /* copy structure */
+    if (pEtkTime) *pEtkTime = EtkFileHead.EtkTime;     /* copy structure */
     Etk_CloseIndFileReleaseSem(hsEtkTotalFile);    /* close file and release semaphore */
+    hsEtkTotalFile = -1;
     return(sErrorStatus);
 }
 /*
@@ -1409,6 +1417,7 @@ SHORT   EtkAllReset(VOID)
     Etk_WriteFile(hsEtkTotalFile, ETK_FILE_HED_POSITION, &EtkFileHead, sizeof(ETK_TOTALHEAD));
 
     Etk_CloseIndFileReleaseSem(hsEtkTotalFile);
+    hsEtkTotalFile = -1;
     return(ETK_SUCCESS);
 }
 /*
@@ -1446,6 +1455,7 @@ SHORT   EtkAllLock(VOID)
         sErrorStatus = ETK_SUCCESS;
     }
     Etk_CloseIndFileReleaseSem(hsEtkParaFile);      /* close file and release semaphore */
+    hsEtkParaFile = -1;
     return(sErrorStatus);
 }
 
@@ -1512,6 +1522,7 @@ SHORT   EtkIssuedCheck(VOID)
     }
 
     Etk_CloseIndFileReleaseSem(hsEtkTotalFile);      /* close file and release semaphore */
+    hsEtkTotalFile = -1;
     return(sErrorStatus);
 }
 
@@ -1552,6 +1563,7 @@ SHORT   EtkIssuedSet(VOID)
     /* write file header to total file */
     Etk_WriteFile(hsEtkTotalFile, ETK_FILE_HED_POSITION, &EtkFileHead, sizeof(ETK_TOTALHEAD));
     Etk_CloseIndFileReleaseSem(hsEtkTotalFile);      /* close file and release semaphore */
+    hsEtkTotalFile = -1;
     return(ETK_SUCCESS);
 }
 
@@ -1793,6 +1805,7 @@ SHORT    EtkAllDataCheck(UCHAR uchMinor)
     }
 
     Etk_CloseIndFileReleaseSem(hsEtkTotalFile);          /* close file and release semaphore */
+    hsEtkTotalFile = -1;
     return(sStatus);
 }
 /*
@@ -1881,6 +1894,7 @@ SHORT   EtkCurIndWrite(ULONG       ulEmployeeNo,
     }
 
     Etk_CloseIndFileReleaseSem(hsEtkTotalFile);          /* close file and release semaphore */
+    hsEtkTotalFile = -1;
     return(sErrorStatus);
 }
 
@@ -1888,7 +1902,7 @@ SHORT   EtkCurIndWrite(ULONG       ulEmployeeNo,
 SHORT  EtkStatCheckEmployeesLoggedIn (ULONG ulEmployeIdCheck, ULONG  *ulEmployeeNoList, int nMax)
 {
 	ETK_PARA_TOTAL  etkList[50];
-	SHORT  sR, i;
+	SHORT  sR;
 	SHORT  sCount = 0;
 
     PifRequestSem(husEtkSem);   /* request employee time keeping data samaphore */
@@ -1901,7 +1915,7 @@ SHORT  EtkStatCheckEmployeesLoggedIn (ULONG ulEmployeIdCheck, ULONG  *ulEmployee
 	sR = Etk_GetParaTotalBlocks (etkList, 50);
 	Etk_CloseAllFileReleaseSem();    /* close file and release employee time keeping semaphore */
 
-	for (i = 0; i < sR; i++) {
+	for (SHORT i = 0; i < sR; i++) {
 		if (sCount < nMax && (etkList[i].uchStatus & ETK_TIME_IN)) {
 			*ulEmployeeNoList = etkList[i].paraData.ulEmployeeNo;
 			ulEmployeeNoList++; sCount++;
@@ -1992,7 +2006,7 @@ SHORT  EtkStatCheckCreateFirstEmployee (ULONG  ulEmployeeNo)
 //			CasIf.fbCashierStatus[2] |= CAS_PIN_REQIRED_FOR_SIGNIN;          // Amtrak requested this option to be turned off by default
 //			CasIf.fbCashierStatus[3] |= CAS_PIN_REQIRED_FOR_SUPR;            // Amtrak requested this option to be turned off by default
 //			CasIf.fbCashierStatus[CAS_CASHIERSTATUS_2] = (CAS_OPEN_CASH_DRAWER_SIGN_IN);  // Amtrak requested this option to be turned off by default, then changed their minds
-			_tcscpy (CasIf.auchCashierName, aszEmployeeName);
+			_tcsncpy (CasIf.auchCashierName, aszEmployeeName, STD_CASHIERNAME_LEN);
 
 			SerCasAssign(&CasIf);
 		}
@@ -2058,28 +2072,28 @@ SHORT   EtkStatRead(ULONG  ulEmployeeNo,
 
     /* check ETK assgin */
     if ((sStatus = Etk_Index(&EtkFileHead.EtkCur, ETK_SEARCH_ONLY, ulEmployeeNo, &EtkIndex, &usParaBlockNo, &ulIndexPos)) == ETK_NOT_IN_FILE) {
-        *psTimeIOStat = ETK_NOT_TIME_IN;
-        *pEtkJob = EtkParaIndex.EtkJob;
-        *pusMaxFieldNo = 0;
+        if (psTimeIOStat) *psTimeIOStat = ETK_NOT_TIME_IN;
+        if (pEtkJob) *pEtkJob = EtkParaIndex.EtkJob;
+        if (pusMaxFieldNo ) *pusMaxFieldNo = 0;
         Etk_CloseAllFileReleaseSem();                                /* close file and release semaphore */
         return(ETK_SUCCESS);        
     }
 
     /* Set Time in/Out Flag  */
     if (EtkIndex.uchStatus & ETK_TIME_IN) {
-        *psTimeIOStat = ETK_NOT_TIME_OUT;
+        if (psTimeIOStat) *psTimeIOStat = ETK_NOT_TIME_OUT;
     } else {
-        *psTimeIOStat = ETK_NOT_TIME_IN;
+        if (psTimeIOStat) *psTimeIOStat = ETK_NOT_TIME_IN;
     }        
 
     /* Set Max Field No */
-    *pusMaxFieldNo = EtkIndex.uchStatus & ETK_MASK_FIELD_POINTER;
+    if (pusMaxFieldNo) *pusMaxFieldNo = EtkIndex.uchStatus & ETK_MASK_FIELD_POINTER;
     if (EtkIndex.uchStatus & ETK_TIME_IN) {
-        (*pusMaxFieldNo)++;
+        if (pusMaxFieldNo) (*pusMaxFieldNo)++;
     }
 
     /* Make Output Condition */
-    *pEtkJob = EtkParaIndex.EtkJob;
+    if (pEtkJob) *pEtkJob = EtkParaIndex.EtkJob;
 
     Etk_CloseAllFileReleaseSem();                                /* close file and release semaphore */
     return(ETK_SUCCESS);
