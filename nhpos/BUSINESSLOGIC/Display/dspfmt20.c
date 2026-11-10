@@ -618,8 +618,8 @@ USHORT DispRegLowFmt( REGDISPMSG *pData )
 */
 VOID DispRegGetQty( REGDISPQTY *pData )
 {
-    if (pData->ulQTY % 1000L == 0L) {  /* no need of decimal point */
-        pData->ulQTY /= 1000L;
+    if (pData->ulQTY % PLU_BASE_UNIT == 0L) {  /* no need of decimal point */
+        pData->ulQTY /= PLU_BASE_UNIT;
         pData->usQtyType = NO_DEC_POINT;        
 
     } else {                    /* need decimal point */
@@ -1506,18 +1506,18 @@ VOID    DispRegFoodStamp(REGDISPMSG *pData, USHORT fusC_Disp)
     /* TAR 111547 */
 //    UiePrintf(UIE_OPER, 0, 0, format20, pData->lQTY/100L, pData->lAmount,
 //                        pData->aszMnemonic2, pData->aszMnemonic, uchDispRegShift);
-    UiePrintf(UIE_OPER, 0, 0, format20, pData->lQTY/1000L, pData->lAmount, pData->aszMnemonic, (USHORT)uchDispCurrMenuPage);    /* for operator display */
+    UiePrintf(UIE_OPER, 0, 0, format20, pData->lQTY / PLU_BASE_UNIT, pData->lAmount, pData->aszMnemonic, (USHORT)uchDispCurrMenuPage);    /* for operator display */
 
 	/* for customer display */
     if ((C_DISP_MASK & fusC_Disp) == C_DISP) {
         if ((PifSysConfig()->uchCustType == DISP_2X20) || (PifSysConfig()->uchCustType == DISP_4X20)) {   /* 2172 */
             if (pData->aszStringData[0]) {    /* if special mnemonic is setted */
-                UiePrintf(UIE_CUST, 0, 0, format10_CU, pData->lQTY/1000L, pData->lAmount);    /* for customer display */
+                UiePrintf(UIE_CUST, 0, 0, format10_CU, pData->lQTY / PLU_BASE_UNIT, pData->lAmount);    /* for customer display */
             } else {
-                UiePrintf(UIE_CUST, 0, 0, format20, pData->lQTY/1000L, pData->lAmount, pData->aszMnemonic, DISPPAGESPACE);      /* for customer display */         
+                UiePrintf(UIE_CUST, 0, 0, format20, pData->lQTY / PLU_BASE_UNIT, pData->lAmount, pData->aszMnemonic, DISPPAGESPACE);      /* for customer display */
             }
         } else if (PifSysConfig()->uchCustType == DISP_10N10D) {
-            UiePrintf(UIE_CUST, 0, 0, format10_CU, pData->lQTY/1000L, pData->lAmount);        /* for customer display */
+            UiePrintf(UIE_CUST, 0, 0, format10_CU, pData->lQTY / PLU_BASE_UNIT, pData->lAmount);        /* for customer display */
 		} else if (PifSysConfig()->uchCustType != DISP_NONE) {
 			NHPOS_ASSERT_TEXT(PifSysConfig()->uchCustType == DISP_2X20, "**ERROR: PifSysConfig()->uchCustType invalid value.");
 		}
