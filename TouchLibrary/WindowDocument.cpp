@@ -235,7 +235,7 @@ BOOL CWindowDocument::ToggleWindow (CWindowControl *pParent, UINT nId)
 					// We base the decision to PopupWindow() or PopdownWindow() the entire Window Group
 					// based on the state of the window that is the target of the ToggleWindow().
 					int iActiveWnd = SearchForGroupActiveWindowId(pw->windowAttributes.GroupNum);
-					int iPopDown = (pc->IsWindowVisible ()) ? 1 : 0;
+					int iPopDown = (pc->m_hWnd && pc->IsWindowVisible ()) ? 1 : 0;   // test if there is a valid window handle
 					CList <CWindowControl *, CWindowControl *> tempList;
 					int iCount = SearchForItemByGroupNo (pw->windowAttributes.GroupNum, tempList);
 					if (iActiveWnd && iCount > 1 && iActiveWnd == pw->controlAttributes.m_myId) {
@@ -262,7 +262,7 @@ BOOL CWindowDocument::ToggleWindow (CWindowControl *pParent, UINT nId)
 						return 1;
 					}
 				}
-				if (pc == pcTopWin && pc->IsWindowVisible ()) {
+				if (pc == pcTopWin && (pc->m_hWnd && pc->IsWindowVisible ())) {
 					return pc->PopdownWindow ();
 				}
 				else {
