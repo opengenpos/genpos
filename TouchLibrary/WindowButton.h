@@ -155,6 +155,7 @@ public:
 	} ButtonActionType;
 
 #define BUTTONACTIONTYPEGROUP_PRIORITY    0x0001    // flag in data.group_table.usOptionFlags indicating to use priority
+#define BUTTONACTIONTYPEGROUP_INS_ADJKEY  0x0002    // flag in data.group_table.usOptionFlags indicating to insert Adjective Key
 
 	// WARNING: Be careful about changes to this struct to preserve backward compatibility!!!
 	typedef 	struct   tagActionStruct {

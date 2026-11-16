@@ -70,7 +70,8 @@
 #define SpecWinEventScript_Indic       0x02    //Indicates control is used with scripts and can be changed through scripts
 
 #define SpecWinIndex_FILTER_Conditions  5        //Index to the SpecWin array member for Connection Engine related settings
-#define SpecWinFilter_ValueMask        0x0f     // lower nibble is used for the filter value
+#define SpecWinFilter_ValueMask        0x07     // lower nibble is used for the filter value
+#define SpecWinFilter_AdjValuePassThruOff  0x08     // Turn off Pass through the PLU alone into BusinessLogic with no adjective key insert.
 #define SpecWinFilter_Adj              0x10     // filter using the ajective index in the value mask area.
 #define SpecWinFilter_AdjNonZero       0x20     // filter using the price to display only non-zero priced PLU varients.
 #define SpecWinFilter_AdjValueLogic    0xC0     // equal to (0), less than (0x40), greater than (0x80) adjective index value for PLU variants.
