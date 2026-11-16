@@ -435,9 +435,14 @@ FORCE_INLINE UCHAR RflAdjVariation(UCHAR uchAdj)
 {
     // There are four groups of adjectives. Each group has five variations.
     // For instance a soft drink group with small, medium, large, biggie, party variations
+    //
+    // The price in a PLU record is stored in an array that has an element for each Adjective Variation.
+    // If the PLU is a Preset PLU then the price for the Preset PLU is stored in the first
+    // array element where the price of the first Adjective Variation would also be stored.
+    //
     // (UCHAR) ((pItemSales->uchAdjective - 1) % 5 + 1); /* adj. variation */
-    //   - MAX_ADJM_NO is max number of all adjective variations in all adjective groups
-    //   - ADJ_VAL_MAX is number of adjective variations per adjective group
+    //   - MAX_ADJM_NO is max number of all Adjective Variations in all Adjective Groups
+    //   - ADJ_VAL_MAX is number of Adjective Variations per Adjective Group
     return (uchAdj > 0 && uchAdj <= MAX_ADJM_NO) * ((uchAdj - 1) % ADJ_VAL_MAX + 1);
 }
 

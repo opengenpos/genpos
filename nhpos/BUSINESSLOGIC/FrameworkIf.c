@@ -207,24 +207,32 @@ static SHORT FindOepPluItem (BL_PLU_INFO  *pPluPara)
 			// if we are doing filtering on the adjective value then check to make sure that this cached PLU data is for the
 			// correct PLU variation.  Previously we may have used a different adjective of this PLU and it will be in the cache
 			// however we do not want to use a cached PLU varient that does not match the window filter.
-			if (pPluPara->ulFilterOptions & BL_PLU_INFO_FILTER_ADJ) {
-				if ((pPluPara->ulFilterOptions & BL_PLU_INFO_FILTER_ADJ_LOGIC_LT)&& PluOepIndexArray[i].PluPara.uchPluAdj >= pPluPara->usFilterValue) {
-					continue;
+			if ((pPluPara->ulFilterOptions & BL_PLU_INFO_FILTER_ADJ_IMPLIED) == 0) {
+				if (pPluPara->ulFilterOptions & BL_PLU_INFO_FILTER_ADJ) {
+					if ((pPluPara->ulFilterOptions & BL_PLU_INFO_FILTER_ADJ_LOGIC_LT)&& PluOepIndexArray[i].PluPara.uchPluAdj >= pPluPara->usFilterValue) {
+						continue;
+					}
+					if ((pPluPara->ulFilterOptions & BL_PLU_INFO_FILTER_ADJ_LOGIC_GT)&& PluOepIndexArray[i].PluPara.uchPluAdj <= pPluPara->usFilterValue) {
+						continue;
+					}
+					if ((pPluPara->ulFilterOptions & (BL_PLU_INFO_FILTER_ADJ_LOGIC_LT | BL_PLU_INFO_FILTER_ADJ_LOGIC_GT)) == 0 && pPluPara->usFilterValue != PluOepIndexArray[i].PluPara.uchPluAdj) {
+						continue;
+					}
 				}
-				if ((pPluPara->ulFilterOptions & BL_PLU_INFO_FILTER_ADJ_LOGIC_GT)&& PluOepIndexArray[i].PluPara.uchPluAdj <= pPluPara->usFilterValue) {
-					continue;
-				}
-				if ((pPluPara->ulFilterOptions & (BL_PLU_INFO_FILTER_ADJ_LOGIC_LT | BL_PLU_INFO_FILTER_ADJ_LOGIC_GT)) == 0 && pPluPara->usFilterValue != PluOepIndexArray[i].PluPara.uchPluAdj) {
-					continue;
-				}
-			}
-			// if we are doing filtering on keeping only PLU varients that have a non-zero price
-			if ((pPluPara->ulFilterOptions & BL_PLU_INFO_FILTER_ADJNONZERO) && pPluPara->usFilterValue == PluOepIndexArray[i].PluPara.uchPluAdj) {
-				int  iAdj = ((pPluPara->usFilterValue < 6) ? pPluPara->usFilterValue : 0);
 
-				if (PluOepIndexArray[i].PluPara.ulUnitPrice[iAdj] < 1)
-					continue;
+
+				// if we are doing filtering on keeping only PLU varients that have a non-zero price
+				if ((pPluPara->ulFilterOptions & BL_PLU_INFO_FILTER_ADJNONZERO) && pPluPara->usFilterValue == PluOepIndexArray[i].PluPara.uchPluAdj) {
+					int  iAdj = ((pPluPara->usFilterValue < 6) ? pPluPara->usFilterValue : 0);
+
+					if (PluOepIndexArray[i].PluPara.ulUnitPrice[iAdj] < 1)
+						continue;
+				}
 			}
+			else if (pPluPara->usFilterValue != PluOepIndexArray[i].PluPara.uchPluAdj) {
+				continue;
+			}
+
 			ulCounter = pPluPara->ulCounter;
 			ulInternalCounter = pPluPara->ulInternalCounter;
 			*pPluPara = PluOepIndexArray[i].PluPara;
@@ -1738,7 +1746,7 @@ int BlFwIfIntrnlGetGroupPluInformationNext(BL_PLU_INFO *pPluInfo)
     SHORT            sReadStat = OP_NOT_IN_FILE;
 	UCHAR            uchNoOrderPmt = 1;
 	PARAADJMNEMO     Adj = {0};
-	OPPLUOEPIF       PluOepIf;
+	OPPLUOEPIF       PluOepIf = { 0 };
 
 	pIndex = (PLUIF_OEP_VARY *) alloca (sizeof(PLUIF_OEP_VARY) + sizeof(PLU_PARA) * (uchNoOrderPmt + 1));
 	NHPOS_ASSERT(pIndex);
@@ -1798,6 +1806,11 @@ int BlFwIfIntrnlGetGroupPluInformationNext(BL_PLU_INFO *pPluInfo)
 			return 2;
 		}
 
+		// Remember PLU type to allow flexibility for the three types of PLUs:
+		//   - Open PLU that does not have a price
+		//   - Adjective PLU that does have a price as well as Adjective Variations
+		//   - Non-Adjective PLU that does have a price and no Adjective Variations
+		Plu.ParaPlu.ContPlu.uchItemType = PluOepIf.PluName.uchItemType[0];
 		if ((PluOepIf.PluName.uchItemType[0]  & PLU_TYPE_MASK_REG) != PLU_ADJ_TYP)
 		{
 			// not an adjective PLU so no need to do any adjective related processing.
@@ -1808,15 +1821,48 @@ int BlFwIfIntrnlGetGroupPluInformationNext(BL_PLU_INFO *pPluInfo)
 		// for further processing. In the case of missing information that needs to be added, there
 		// may be a need for modification of function OpPluOepRead() which reads the physical PLU record
 		// and then puts the data into the struct that is returned.
-    	_tcsncpy(Plu.auchPluNo, pIndex->PluPara20[0].auchPluNo, NUM_PLU_LEN);
+#define PROVIDE_BIT_MAP_VALUES 1
+#if PROVIDE_BIT_MAP_VALUES
+		// Following tables are to make it easy to locate the bit masks for the various control settings and to
+		// show the differences between Department, PLU, and Item Sales data structs.
+		//    auchContOther            [0]          [1]             [2]          [3]             [4]               [5]             [6]                [7]
+		UCHAR  mapDeptValues[] = { PLU_MINUS, PLU_AFFECT_TAX1, PLU_SCALABLE, PLU_NOT_BONUS, PLU_SND_KITCH5 };
+		UCHAR  mapPluValues[] =  { PLU_MINUS, PLU_AFFECT_TAX1, PLU_SCALABLE, PLU_NOT_BONUS, PLU_PROHIBIT_VAL1, PLU_SND_KITCH5, PLU_ALLOW_0_TEND };
+		UCHAR  mapItemValues[] = { PLU_MINUS, PLU_AFFECT_TAX1, PLU_SCALABLE, PLU_NOT_BONUS, PLU_PROHIBIT_VAL1, ITM_SALES_HOURLY, PLU_SND_KITCH5, PLU_ALLOW_0_TEND };
+#endif
+		_tcsncpy(Plu.auchPluNo, pIndex->PluPara20[0].auchPluNo, NUM_PLU_LEN);
 		Plu.uchPluAdj = pIndex->PluPara20[0].uchPluAdj;
-		Plu.ParaPlu.ContPlu.uchItemType = PluOepIf.PluName.uchItemType[0];
     	Plu.ParaPlu.ContPlu.auchContOther[2] = PluOepIf.PluName.auchContOther[0][0];
     	Plu.ParaPlu.ContPlu.auchContOther[3] = PluOepIf.PluName.auchContOther[1][0];
     	Plu.ParaPlu.ContPlu.auchContOther[4] = PluOepIf.PluName.auchContOther[2][0];  //SR 336 Transfer the control information for
 																	                  //prohibited adjectives being displayed JHHJ
+		if (pPluInfo->ulFilterOptions & BL_PLU_INFO_FILTER_ADJ_IMPLIED) {
+			// Override the filter and select just the Implied Adjective Variation if
+			// there is one or require Adjective Key if Compulsory. This is primarily to
+			// create a single button with the correct Adjective Mnemonic and allow the user
+			// to override if desired.
+			// This allows us to flow through to BusinessLogic Adjective PLU processing to
+			// interpret the Adjective PLU along with any Adjective Key override used.
+			UCHAR pluImpliedAdj = Plu.ParaPlu.ContPlu.auchContOther[4] & PLU_IMP_ADJKEY_MASK;  // use the Implied Adjective
+			pluImpliedAdj = RflAdjVariation(pluImpliedAdj);
+			if (pluImpliedAdj && pluImpliedAdj != Plu.uchPluAdj) {
+				// There is an Implied Adjective and this Adjective Variation isn't it.
+				// So we'll skip this one.
+				pPluInfo->ulCounter = pIndex->culCounter;
+				return 100;
+			}
+			else if (pluImpliedAdj == 0 && Plu.uchPluAdj > 1) {
+				// This is a Compulsory Adjective which requires the Adjective Key.
+				// So we'll pass the first one through and skip any remaining Variations.
+				// BusinessLogic will object if the Adjective Key isn't pressed to specify
+				// a Variation. We depend on the button mnemonic code to make the right
+				// decision about the mnemonic.
+				pPluInfo->ulCounter = pIndex->culCounter;
+				return 100;
+			}
+		}
 
-		// if this PLU is a condiment then just go ahead and use it.
+		// if this Adjective PLU is a condiment then just go ahead and use it.
 		// However if it is not a condiment then we need to check to see if it has an
 		// adjective.  If it doesn't then just go ahead and use it.
 		// If it is a PLU with various types (uses adjectives such as Large or Small) then

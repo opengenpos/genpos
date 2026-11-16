@@ -257,18 +257,28 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 			// a specific size.  for instance if a PLU is Soft Drink with Small, Medium, and Large we
 			// can specify that a window is only for displaying the Large size.
 			while (pclListNext && (bp = ButtonItemList.GetNext (pclListNext))) {
-				ULONG  ulPluAdjectiveFilter = 0;
-				USHORT  usPluAdjectiveValue = (controlAttributes.SpecWin[SpecWinIndex_FILTER_Conditions] & SpecWinFilter_ValueMask);
-
-				ulPluAdjectiveFilter |= (usAdjectiveFilter & SpecWinFilter_Adj) ? BL_PLU_INFO_FILTER_ADJ : 0;
-				ulPluAdjectiveFilter |= (usAdjectiveFilter & SpecWinFilter_AdjNonZero) ? BL_PLU_INFO_FILTER_ADJNONZERO : 0;
-				ulPluAdjectiveFilter |= (usAdjectiveFilter & SpecWinFilter_AdjValueLogicLT) ? BL_PLU_INFO_FILTER_ADJ_LOGIC_LT : 0;
-				ulPluAdjectiveFilter |= (usAdjectiveFilter & SpecWinFilter_AdjValueLogicGT) ? BL_PLU_INFO_FILTER_ADJ_LOGIC_GT : 0;
 
 				CFrameworkWndButton *button = CFrameworkWndButton::TranslateCWindowControl (bp);
 
 				if (button)
 				{
+					ULONG  ulPluAdjectiveFilter = 0;
+					USHORT  usPluAdjectiveValue = (controlAttributes.SpecWin[SpecWinIndex_FILTER_Conditions] & SpecWinFilter_ValueMask);
+
+					button->btnAttributes.m_myActionUnion.data.group_table.usOptionFlags &= ~BUTTONACTIONTYPEGROUP_INS_ADJKEY;
+//					if ((controlAttributes.SpecWin[SpecWinIndex_FILTER_Conditions] & SpecWinFilter_Adj)) {
+						ulPluAdjectiveFilter |= (usAdjectiveFilter & SpecWinFilter_Adj) ? BL_PLU_INFO_FILTER_ADJ : 0;
+						ulPluAdjectiveFilter |= (usAdjectiveFilter & SpecWinFilter_AdjNonZero) ? BL_PLU_INFO_FILTER_ADJNONZERO : 0;
+						ulPluAdjectiveFilter |= (usAdjectiveFilter & SpecWinFilter_AdjValueLogicLT) ? BL_PLU_INFO_FILTER_ADJ_LOGIC_LT : 0;
+						ulPluAdjectiveFilter |= (usAdjectiveFilter & SpecWinFilter_AdjValueLogicGT) ? BL_PLU_INFO_FILTER_ADJ_LOGIC_GT : 0;
+						if (ulPluAdjectiveFilter) {
+							button->btnAttributes.m_myActionUnion.data.group_table.usOptionFlags |= BUTTONACTIONTYPEGROUP_INS_ADJKEY;
+						}
+						else {
+							usPluAdjectiveValue = 0;
+						}
+//					}
+
 					button->auchPluNo[0] = 0;
 					if (button->btnAttributes.m_myActionUnion.type == CWindowButton::BATypePLU_Group ||
 						button->btnAttributes.m_myActionUnion.type == CWindowButton::BATypePLU_GroupTable)
@@ -298,11 +308,16 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 							// PLU information on them.
 							if ((fsComStatus & (BLI_STS_M_UPDATE | BLI_STS_BM_UPDATE | BLI_STS_M_REACHABLE)) != 0)
 							{
+								USHORT  usOptionFlags = button->btnAttributes.m_myActionUnion.data.group_table.usOptionFlags & BUTTONACTIONTYPEGROUP_INS_ADJKEY;
 								do {
 									for (nPluInfoIndex = 0;
 										PluInfoArray[nPluInfoIndex].usGroupNo && nPluInfoIndex < sizeof(PluInfoArray) / sizeof(PluInfoArray[0]);
 										nPluInfoIndex++)
 									{
+										if (usOptionFlags == 0) {
+											PluInfoArray[nPluInfoIndex].ulFilterOptions |= BL_PLU_INFO_FILTER_ADJ_IMPLIED;
+											PluInfoArray[nPluInfoIndex].usFilterValue = 0;
+										}
 										if (PluInfoArray[nPluInfoIndex].usTableNo == sTableNumber && PluInfoArray[nPluInfoIndex].usGroupNo == sGroupNumber && PluInfoArray[nPluInfoIndex].usFilePart == usFilePart)
 										{
 											nRetStat = BlFwIfGetGroupPluInformationNext(&PluInfoArray[nPluInfoIndex]);
@@ -311,6 +326,10 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 									}
 									if (nPluInfoIndex < sizeof(PluInfoArray) / sizeof(PluInfoArray[0]) && PluInfoArray[nPluInfoIndex].usGroupNo == 0)
 									{
+										if (usOptionFlags == 0) {
+											PluInfoArray[nPluInfoIndex].ulFilterOptions |= BL_PLU_INFO_FILTER_ADJ_IMPLIED;
+											PluInfoArray[nPluInfoIndex].usFilterValue = 0;
+										}
 										nRetStat = BlFwIfGetGroupPluInformationFirst(sTableNumber, sGroupNumber, usFilePart, ulPluAdjectiveFilter, usPluAdjectiveValue, &PluInfoArray[nPluInfoIndex]);
 									}
 								} while (nRetStat >= 100);
@@ -422,7 +441,7 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 						// If the button type is Regular Discount (Transaction Discount) and the button caption starts with special characters
 						// then we will auto populate the button caption with the Transaction Discount Key mnemonic.
 						if (CheckCaptionForMnemonicReplacement (button->myCaption)) {
-							USHORT  usTranAddressTable[] = {
+							static const USHORT  usTranAddressTable[] = {
 								TRN_RDISC1_ADR,       // table is indexed by one not zero so just duplicate first entry
 								TRN_RDISC1_ADR,
 								TRN_RDISC2_ADR,
@@ -445,7 +464,7 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 						// If the button type is Item Discount Key and the button caption starts with special characters
 						// then we will auto populate the button caption with the Item Discount Key mnemonic.
 						if (CheckCaptionForMnemonicReplacement (button->myCaption)) {
-							USHORT  usTranAddressTable[] = {
+							static const USHORT  usTranAddressTable[] = {
 								TRN_ITMDISC_ADR,       // table is indexed by one not zero so just duplicate first entry
 								TRN_ITMDISC_ADR,
 								TRN_MODID_ADR,
@@ -468,7 +487,7 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 						// If the button type is Tender Key and the button caption starts with special characters
 						// then we will auto populate the button caption with the Tender Key mnemonic.
 						if (CheckCaptionForMnemonicReplacement (button->myCaption)) {
-							USHORT  usTranAddressTable[] = {
+							static const USHORT  usTranAddressTable[] = {
 								TRN_TEND1_ADR,       // table is indexed by one not zero so just duplicate first entry
 								TRN_TEND1_ADR,
 								TRN_TEND2_ADR,
@@ -505,7 +524,7 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 						// If the button type is Tender Key and the button caption starts with special characters
 						// then we will auto populate the button caption with the Tender Key mnemonic.
 						if (CheckCaptionForMnemonicReplacement (button->myCaption)) {
-							USHORT  usTranAddressTable[] = {
+							static const USHORT  usTranAddressTable[] = {
 								TRN_FT1_ADR,       // table is indexed by one not zero so just duplicate first entry
 								TRN_FT1_ADR,
 								TRN_FT2_ADR,
@@ -541,7 +560,7 @@ BOOL CFrameworkWndItem::WindowRefreshOEPGroup ()
 						// If the button type is Total Key and the button caption starts with special characters
 						// then we will auto populate the button caption with the Total Key mnemonic.
 						if (CheckCaptionForMnemonicReplacement (button->myCaption)) {
-							USHORT  usTranAddressTable[] = {
+							static const USHORT  usTranAddressTable[] = {
 								TRN_TTL1_ADR,       // table is indexed by one not zero so just duplicate first entry
 								TRN_TTL1_ADR,
 								TRN_TTL2_ADR,

@@ -2209,7 +2209,14 @@ void CFrameworkWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 				if (BlGetKeyboardLockPosition() == PIF_NCRKLOCK_MODE_REG &&
 					uchPluAdjMod > 0 && 
 					uchPluAdjMod < sizeof(ButtonScan_Adj)/sizeof(ButtonScan_Adj[0]))
-				{
+				if ((btnAttributes.m_myActionUnion.data.group_table.usOptionFlags & BUTTONACTIONTYPEGROUP_INS_ADJKEY)) {
+					// Using original Layout Manager PLU Group button in which an Adjective PLU generates a buttone for
+					// each Adjective Variation that is not prohibited. If we are using new method then we do not
+					// perform this action of stuffing a PLU Group button adjective modifier ahead of the PLU.
+					// This allows the user to use an Adjective Key to select a particular Adjective Variation or
+					// to use the builtin legacy Adjective PLU BusinessLogic code to select the default Adjective Variation
+					// if the Adjective Key is not compulsory.
+					//     Richard Chambers, Nov-12-2026
 					CharData.uchASCII = FSC_QTY_GUARD_ASCII;
 					CharData.uchScan = FSC_QTY_GUARD_SCAN;
 					sendButtonMessageToBL(&CharData);
@@ -2265,7 +2272,7 @@ void CFrameworkWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 								if (BlGetKeyboardLockPosition() == PIF_NCRKLOCK_MODE_REG &&
 									xPluInfo.uchPluAdjMod > 0 && 
 									xPluInfo.uchPluAdjMod < sizeof(ButtonScan_Adj)/sizeof(ButtonScan_Adj[0]))
-								{
+								if (btnAttributes.m_myActionUnion.data.group_table.usOptionFlags & BUTTONACTIONTYPEGROUP_INS_ADJKEY) {
 									CharData.uchASCII = FSC_QTY_GUARD_ASCII;
 									CharData.uchScan = FSC_QTY_GUARD_SCAN;
 									sendButtonMessageToBL(&CharData);
@@ -2317,8 +2324,8 @@ void CFrameworkWndButton::OnLButtonUp(UINT nFlags, CPoint point)
 					}
 				}
 				
-				pWndItem->DestroyWindow ();
 				TRACE3("%S(%d): CFrameworkWndButton::OnLButtonUp() Destroying Window named '%s'\n", __FILE__, __LINE__, pWndItem->myName);
+				pWndItem->DestroyWindow ();
 			}
 		}
 		break;

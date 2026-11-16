@@ -132,6 +132,7 @@ typedef struct {
 #define BL_PLU_INFO_FILTER_ADJ_LOGIC_EQ  0x00000000       // equal to (0), less than (1), greater than (2) for adjective filter value, SpecWinFilter_AdjValueLogic
 #define BL_PLU_INFO_FILTER_ADJ_LOGIC_LT  0x00000004       // equal to (0), less than (1), greater than (2) for adjective filter value, SpecWinFilter_AdjValueLogic
 #define BL_PLU_INFO_FILTER_ADJ_LOGIC_GT  0x00000008       // equal to (0), less than (1), greater than (2) for adjective filter value, SpecWinFilter_AdjValueLogic
+#define BL_PLU_INFO_FILTER_ADJ_IMPLIED   0x00000010       // adjective filter, override with Adjective Key or Implied Adjective, SpecWinFilter_Adj
 
 typedef struct _tagBL_PLU_INFO {
 	struct _tagBL_PLU_INFO  *pNext;
