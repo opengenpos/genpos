@@ -1201,23 +1201,7 @@ SHORT ProgRpt_PluFindPlu( PLUIF     *pPluIf,
         sReturn = CliOpDeptIndRead( &DeptIf, 0 );
 
         if (sReturn == OP_PERFORM) {
-            if ( pPluIf->ParaPlu.ContPlu.auchContOther[ 2 ] & PLU_USE_DEPTCTL ) {
-#if 0
-                RflDeptStatusToPluStatus(pPluIf->ParaPlu.ContPlu.auchContOther, DeptIf.ParaDept.auchControlCode);
-#else
-                pPluIf->ParaPlu.ContPlu.auchContOther[0] = DeptIf.ParaDept.auchControlCode[0];
-                pPluIf->ParaPlu.ContPlu.auchContOther[1] = DeptIf.ParaDept.auchControlCode[1];
-                pPluIf->ParaPlu.ContPlu.auchContOther[2] = DeptIf.ParaDept.auchControlCode[2];
-                pPluIf->ParaPlu.ContPlu.auchContOther[3] = DeptIf.ParaDept.auchControlCode[3];
-                pPluIf->ParaPlu.ContPlu.auchContOther[5] = DeptIf.ParaDept.auchControlCode[4];
-            } else {
-                if ( DeptIf.ParaDept.auchControlCode[2] & PLU_HASH ) {
-                    pPluIf->ParaPlu.ContPlu.auchContOther[2] |= PLU_HASH;
-                } else {
-                    pPluIf->ParaPlu.ContPlu.auchContOther[2] &= ~PLU_HASH;
-                }
-#endif
-            }
+            RflDeptStatusToPluStatusIfDeptCtl(pPluIf->ParaPlu.ContPlu.auchContOther, DeptIf.ParaDept.auchControlCode);
         }
     }
 

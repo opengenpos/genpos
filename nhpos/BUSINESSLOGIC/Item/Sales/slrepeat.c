@@ -643,12 +643,12 @@ SHORT   ItemSalesRepeatChkPriceChange(CONST ITEMSALES *pItemSales)
 {
     if (RflIsSpecialPlu(pItemSales->auchPLUNo, MLD_NO_DISP_PLU_DUMMY) != 0) {  /* plu sales */
 		LONG    lOrgUnitPrice;
-		PLUIF   PluIf;        /* PLU record receive buffer */
+        PLUIF   PluIf = { 0 };        /* PLU record receive buffer */
 
-        _tcsncpy(PluIf.auchPluNo, pItemSales->auchPLUNo, NUM_PLU_LEN);
+        AUCPLUNO(PluIf.auchPluNo) = AUCPLUNO(pItemSales->auchPLUNo);
         PluIf.uchPluAdj = (UCHAR)(pItemSales->uchAdjective ? pItemSales->uchAdjective : 1);
-        while(PluIf.uchPluAdj > 5) {
-            PluIf.uchPluAdj -= 5;
+        while(PluIf.uchPluAdj > ADJ_VAL_MAX) {
+            PluIf.uchPluAdj -= ADJ_VAL_MAX;
         }
         if (CliOpPluIndRead(&PluIf, 0) != OP_PERFORM) {
             return(LDT_PROHBT_ADR);

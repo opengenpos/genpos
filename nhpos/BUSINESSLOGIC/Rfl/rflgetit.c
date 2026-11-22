@@ -486,7 +486,7 @@ static VOID RflGetSalesItem( VOID *puchDest, CONST UCHAR *puchRead, SHORT sType,
 
 	/* --  formats structure ITEMSALES -- */
 	pItemSales->lUnitPrice   = stsale.lUnitPrice;
-	pItemSales->uchAdjective = stsale.uchAdjective;  
+	pItemSales->uchAdjective = stsale.uchAdjective;    // Adjective number. See RflAdjVariation().
 	pItemSales->fbModifier   = stsale.fbModifier;    
 	pItemSales->fbModifier2   = stsale.fbModifier2;    
 	memcpy( pItemSales->aszNumber, stsale.aszNumber, sizeof(stsale.aszNumber));
@@ -494,8 +494,9 @@ static VOID RflGetSalesItem( VOID *puchDest, CONST UCHAR *puchRead, SHORT sType,
 	pItemSales->ControlCode = stsale.ControlCode;
 	pItemSales->uchPM = stsale.uchPM;                 /* price multiple, 2172 */
 	pItemSales->usLinkNo = stsale.usLinkNo;           /* link no. 2172 */
-	pItemSales->usFamilyCode = stsale.usFamilyCode;   /* family code 2172 */
-	pItemSales->uchTableNumber = stsale.uchTableNumber;
+	pItemSales->usFamilyCode = stsale.usFamilyCode;   /* family code 2172 See comments in function TrnStoIsUPCCouponItem() about family code. */
+	pItemSales->uchGroupNumber = 0;                   /* OEP Group number is not stored. */
+	pItemSales->uchTableNumber = stsale.uchTableNumber;         // OEP table row number
 	pItemSales->uchDiscountSignifier = stsale.uchDiscountSignifier;
 	pItemSales->usFor = stsale.usFor;
 	pItemSales->usForQty = stsale.usForQty;
@@ -801,6 +802,52 @@ BOOL RflIsSalesItemDisc( VOID *puchItem )
 
 
 /*
+ * Description: The PLU and Department records contain data that is both similar between the
+ *              the two as well as unique to one or the other. Item Sales records contain most of
+ *              the data contained in the PLU record as well as some additional data.
+ * 
+ *              Basically a Department record is a subset of a PLU record and a PLU record is
+ *              a subset of an Item Sales record.
+ *
+ *              There are several PLU and Department characteristics or control codes that are
+ *              contained in both records of these two entities. These characteristics are also
+ *              copied to an Item Sales when it is created from either PLU data or Department data.
+ *              The format for the array containing the bit map for the control codes varies between
+ *              the three record types making conversion from one record to another complex.
+ * 
+ *              The actual data items such as Print Priority or Tare Information that each of the
+ *              three records may or may not have may have slightly different variable names
+ *              in the different structs. For Item Sales there is also the corresponding transaction
+ *              file storage record which must also be considered when doing maintenance.
+ * 
+ *              The following functions are intended to be used to replace duplicated/cloned code
+ *              that transforms/converts/moves data from a PLU record or a Department record to
+ *              an Item record. There are also functions to convert/move data from a Department record
+ *              to a PLU record.
+ * 
+ *              What complicates these transformations/conversions/moves is:
+ *                - some data items in PLU and Item records is not in Department records
+ *                - differences in control bits between PLU and Item records
+ *                - differences in naming of member variables and struct layout differences
+ *
+ *  WARNING: It appears that only array elements 0 through 3 have the same bit map and representation
+ *           between PLU_CONTROL and OPDEPT_PARAENTRY.  See function RptPLUByDEPT().
+ *
+ *  WARNING: It appears that only array elements 0 through 4 have the same bit map and representation
+ *           between PLU_CONTROL and ITEMCONTCODE (ITEMSALES). See function ItemSalesSetMenu().
+*/
+
+#define PROVIDE_BIT_MAP_VALUES 0
+#if PROVIDE_BIT_MAP_VALUES
+	// Following tables are to make it easy to locate the bit masks for the various control settings and to
+	// show the differences between Department, PLU, and Item Sales data structs.
+	//    auchContOther            [0]          [1]             [2]          [3]             [4]               [5]             [6]                [7]
+static	UCHAR  mapDeptValues[] = { PLU_MINUS, PLU_AFFECT_TAX1, PLU_SCALABLE, PLU_NOT_BONUS, PLU_SND_KITCH5 };
+static	UCHAR  mapPluValues[] =  { PLU_MINUS, PLU_AFFECT_TAX1, PLU_SCALABLE, PLU_NOT_BONUS, PLU_PROHIBIT_VAL1, PLU_SND_KITCH5, PLU_ALLOW_0_TEND };
+static	UCHAR  mapItemValues[] = { PLU_MINUS, PLU_AFFECT_TAX1, PLU_SCALABLE, PLU_NOT_BONUS, PLU_PROHIBIT_VAL1, ITM_SALES_HOURLY, PLU_SND_KITCH5, PLU_ALLOW_0_TEND };
+#endif
+
+/*
 *===========================================================================
 ** Format   : int RflDeptStatusToPluStatus( UCHAR *puchItem )
 *
@@ -815,6 +862,12 @@ BOOL RflIsSalesItemDisc( VOID *puchItem )
 *             used for initializing a PLU with Department status codes
 *             when the Use Department Settings status bit is set for the PLU.
 * 
+*   NOTE:     The Use Department Settings checkbox in the PEP PLU Control Settings
+*             governs only the control settings and not other PLU data that can also
+*             be specified for a Department. Other Department data is used by PLU building up.
+*             The PLU building up functionality is an option that is enabled with MDC 296 Bit B.
+*             See function ItemSalesPLUBuilding().
+* 
 *   WARNING: This function is for copying Department Status Bits array into a PLU Status
 *            Bits array. The ITEMSALES struct has PLU Status bits however some of those
 *            are in different members of the Status Bits array than they are in the PLU
@@ -824,7 +877,7 @@ BOOL RflIsSalesItemDisc( VOID *puchItem )
 *              - pPluIf->ParaPlu.ContPlu.auchContOther[5] = pDeptIf->ParaDept.auchControlCode[4]
 *===========================================================================
 */
-int RflDeptStatusToPluStatus(UCHAR auchContOther[OP_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE])
+int RflDeptStatusToPluStatusIfDeptCtl(UCHAR auchContOther[OP_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE])
 {
 	int iRet;
 
@@ -837,6 +890,7 @@ int RflDeptStatusToPluStatus(UCHAR auchContOther[OP_PLU_CONT_OTHER], CONST UCHAR
 		auchContOther[1] = auchControlCode[1];    /* Copy Bit Status 1, See PLU_AFFECT_TAX1 etc. */
 		auchContOther[2] = auchControlCode[2];    /* Copy Bit Status 2, See PLU_SCALABLE etc. */
 		auchContOther[3] = auchControlCode[3];    /* Copy Bit Status 3, See PLU_NOT_BONUS etc. */
+		// auchContOther[4] contains the bits for Adjective prohibitions in PLU and not in Dept. See PLU_PROHIBIT_VAL1, etc.
 		/* --- increase control code at R3.1 --- */
 		auchContOther[5] = auchControlCode[4];    /* Copy Bit Status 5, CRT No5 - No 8, sales restriction, See PLU_SND_KITCH5 */
 		iRet = 0;
@@ -851,7 +905,7 @@ int RflDeptStatusToPluStatus(UCHAR auchContOther[OP_PLU_CONT_OTHER], CONST UCHAR
 	return iRet;
 }
 
-int RflDeptStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE])
+int RflDeptStatusToItemSalesStatusIfDeptCtl(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchControlCode[OP_DEPT_CONT_CODE_SIZE])
 {
 	int iRet;
 
@@ -865,13 +919,15 @@ int RflDeptStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONS
 		auchPluStatus[1] = auchControlCode[1];    /* Copy Bit Status 1, See PLU_AFFECT_TAX1 etc. */
 		auchPluStatus[2] = auchControlCode[2];    /* Copy Bit Status 2, See PLU_SCALABLE etc. */
 		auchPluStatus[3] = auchControlCode[3];    /* Copy Bit Status 3, See PLU_NOT_BONUS etc. */
+		// auchPluStatus[4] contains the bits for Adjective prohibitions in PLU and not in Dept. See PLU_PROHIBIT_VAL1, etc.
+		// auchPluStatus[5] -> copy of certain MDC control data
 		/* --- increase control code at R3.1 --- */
 		auchPluStatus[PLU_CONTROLCODE_ADR_6] = auchControlCode[4];    /* Copy Bit Status 6, CRT No5 - No 8, sales restriction, See PLU_SND_KITCH5 */
 		iRet = 0;
 	}
 	else {
 		/* FOR HASH DEPT/ PLU. See the comments titled What is a Hash Department in rptdept.c */
-		 // set the PLU_HASH status bit in the ITEMSALES PLU data according to what the Department setting is.
+		// set the PLU_HASH status bit in the ITEMSALES PLU data according to what the Department setting is.
 		auchPluStatus[2] = (auchPluStatus[2] & ~PLU_HASH) | (auchControlCode[2] & PLU_HASH);
 		iRet = 1;
 	}
@@ -883,14 +939,45 @@ int RflPluStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST
 {
 	// See comments preceeding definition for the struct PLU_CONTROL for a discussion
 	// on the differences in the control code and status bits of ITEMSALES, OPPLU_PARAENTRY, and OPDEPT_PARAENTRY.
-	memcpy(auchPluStatus, auchContOther, OP_PLU_PLU_SHARED_STATUS_LEN);      //  bytes [0] thru [4]
+	// copy the control codes/status codes that are common, OP_PLU_SHARED_STATUS_LEN
+	auchPluStatus[0] = auchContOther[0];    /* Copy Bit Status 0, See PLU_MINUS etc. */
+	auchPluStatus[1] = auchContOther[1];    /* Copy Bit Status 1, See PLU_AFFECT_TAX1 etc. */
+	auchPluStatus[2] = auchContOther[2];    /* Copy Bit Status 2, See PLU_SCALABLE etc. */
+	auchPluStatus[3] = auchContOther[3];    /* Copy Bit Status 3, See PLU_NOT_BONUS etc. */
+	auchPluStatus[4] = auchContOther[4];    /* bits for Adjective prohibitions in PLU and not in Dept. See PLU_PROHIBIT_VAL1, etc.
+	// auchPluStatus[5] -> copy of certain MDC control data
 	/* copy control code - remember ITEMSALES ControlCode.auchPluStatus[5] used for ItemSales status info */
-	memcpy(auchPluStatus + 6, auchContOther + 5, OP_PLU_OPTIONS_STATUS_LEN);
+	memcpy(auchPluStatus + 6, auchContOther + OP_PLU_ITEM_SHARED_STATUS_LEN, OP_PLU_OPTIONS_STATUS_LEN);
 
 	return 0;
 }
 
+int RflDeptStatusToItemSalesStatus(UCHAR auchPluStatus[ITM_PLU_CONT_OTHER], CONST UCHAR auchContOther[OP_DEPT_CONT_CODE_SIZE])
+{
+	// See comments preceeding definition for the struct PLU_CONTROL for a discussion
+	// on the differences in the control code and status bits of ITEMSALES, OPPLU_PARAENTRY, and OPDEPT_PARAENTRY.
+	// OP_DEPT_ITEM_SHARED_STATUS_LEN      //  bytes [0] thru [3]
+	auchPluStatus[0] = auchContOther[0];    /* Copy Bit Status 0, See PLU_MINUS etc. */
+	auchPluStatus[1] = auchContOther[1];    /* Copy Bit Status 1, See PLU_AFFECT_TAX1 etc. */
+	auchPluStatus[2] = auchContOther[2];    /* Copy Bit Status 2, See PLU_SCALABLE etc. */
+	auchPluStatus[3] = auchContOther[3];    /* Copy Bit Status 3, See PLU_NOT_BONUS etc. */
+	// auchPluStatus[4] -> adjective control data such as PLU_IMP_ADJKEY_VAL1, etc.
+	// auchPluStatus[5] -> copy of certain MDC control data
+	auchPluStatus[6] = auchContOther[4];  /* CRT No5 - No 8 see ItemSendKdsSetCRTNo() */
+	// auchPluStatus[7] -> Gift card and other quantity constraints
 
+	return 0;
+}
+
+/*
+*  RflDeptDataToPluData() copies not only the Control Code bits from Department to PLU,
+*  it also initializes the PLU data using the Department data.
+* 
+*  NOTE: It appears this should only be used by PLU building up functionality. PLU building up
+*        allows for a new PLU number to be created on the fly when a PLU number is used that
+*        is not in the PLU database. The PLU building up functionality is an option that
+*        is enabled with MDC 296 Bit B. See function ItemSalesPLUBuilding().
+*/
 int RflDeptDataToPluData(OPPLU_PARAENTRY *ParaPlu, CONST OPDEPT_PARAENTRY  *ParaDept)
 {
 	int iRet = 0;  // indicate we have changed the PLU data.
@@ -903,18 +990,17 @@ int RflDeptDataToPluData(OPPLU_PARAENTRY *ParaPlu, CONST OPDEPT_PARAENTRY  *Para
 	ParaPlu->ContPlu.auchContOther[1] = ParaDept->auchControlCode[1];    /* Copy Bit Status 1, See PLU_AFFECT_TAX1 etc. */
 	ParaPlu->ContPlu.auchContOther[2] = ParaDept->auchControlCode[2];    /* Copy Bit Status 2, See PLU_SCALABLE etc. */
 	ParaPlu->ContPlu.auchContOther[3] = ParaDept->auchControlCode[3];    /* Copy Bit Status 3, See PLU_NOT_BONUS etc. */
+	// ParaPlu->ContPlu.auchContOther[4] =                               /* copy Bit Status 4, See PLU_IMP_ADJKEY_VAL1, etc. */
 	/* --- increase control code at R3.1 --- */
 	ParaPlu->ContPlu.auchContOther[5] = ParaDept->auchControlCode[4];    /* Copy Bit Status 5, CRT No5 - No 8, sales restriction, See PLU_SND_KITCH5 */
 		
-	// PLU is to be populated with Departmental data. Continue doing so.
-	ParaPlu->uchPrintPriority = ParaDept->uchPrintPriority;
-	ParaPlu->ContPlu.usBonusIndex = ParaDept->usBonusIndex;
-
 	/* copy dept's mnemonics to pItemSales*/
 	_tcsncpy(ParaPlu->auchPluName, ParaDept->auchMnemonic, OP_DEPT_NAME_SIZE);
 	memset(ParaPlu->auchAltPluName, 0, sizeof(ParaPlu->auchAltPluName));
 
-
+	// PLU is to be populated with Departmental data. Continue doing so.
+	ParaPlu->uchPrintPriority = ParaDept->uchPrintPriority;
+	ParaPlu->ContPlu.usBonusIndex = ParaDept->usBonusIndex;
 	ParaPlu->usTareInformation = ParaDept->usTareInformation;
 
 	/*
@@ -923,16 +1009,84 @@ int RflDeptDataToPluData(OPPLU_PARAENTRY *ParaPlu, CONST OPDEPT_PARAENTRY  *Para
 	 */
 	ParaPlu->ContPlu.uchRept = PLU_STANDARD_RPT_CODE;
 	ParaPlu->uchGroupNumber = PLU_STANDARD_GROUP_NO;
+	ParaPlu->uchColorPaletteCode = PLU_STANDARD_COLOR;
 
 	// Department data extensions for the future.
 //	ParaPlu->uchColorPaletteCode = ParaDept->uchColorPaletteCode;
 //	ParaPlu->uchRestrict = ParaDept->uchRestrict;
 //	ParaPlu->uchTableNumber = ParaDept->uchTableNumber;
 //	ParaPlu->uchGroupNumber = ParaDept->uchGroupNumber;
+//	ParaPlu->uchPriceMulWeight = ParaDept->uchPriceMulWeight;
 //	ParaPlu->ContPlu.uchRept = ParaDept->uchRept;
 
 	return iRet;
 }
+
+int  RflPluDataToItemSales(ITEMSALES* pItemSales, OPPLU_PARAENTRY* ParaPlu)
+{
+	int iRet = 0;  // indicate we have changed the PLU data.
+
+	/* move dept No. into pItemSales->uchDeptNo */
+	pItemSales->usDeptNo = ParaPlu->ContPlu.usDept;
+
+	_tcsncpy(pItemSales->aszMnemonic, ParaPlu->auchPluName, STD_PLU_MNEMONIC_LEN);
+	_tcsncpy(pItemSales->aszMnemonicAlt, ParaPlu->auchAltPluName, STD_PLU_MNEMONIC_LEN);
+
+	pItemSales->ControlCode.uchItemType = ParaPlu->ContPlu.uchItemType;  /* set PLU type */
+	pItemSales->ControlCode.usBonusIndex = ParaPlu->ContPlu.usBonusIndex;
+	pItemSales->ControlCode.uchPPICode = ParaPlu->uchLinkPPI;
+	pItemSales->ControlCode.uchReportCode = ParaPlu->ContPlu.uchRept;
+
+	/* Print Priority, R3.0 */
+	pItemSales->uchPrintPriority = ParaPlu->uchPrintPriority;
+	pItemSales->uchColorPaletteCode = ParaPlu->uchColorPaletteCode;
+	pItemSales->usTareInformation = ParaPlu->usTareInformation;
+
+	pItemSales->usLinkNo = ParaPlu->usLinkNo;
+	pItemSales->usFamilyCode = ParaPlu->usFamilyCode;
+	pItemSales->uchGroupNumber = ParaPlu->uchGroupNumber;
+	pItemSales->uchTableNumber = ParaPlu->uchTableNumber;
+
+	/* price multiple, 2172 */
+	pItemSales->uchPM = ParaPlu->uchPriceMulWeight;
+
+	RflPluStatusToItemSalesStatus(pItemSales->ControlCode.auchPluStatus, ParaPlu->ContPlu.auchContOther);
+
+	return iRet;
+}
+
+int  RflDeptDataToItemSales(ITEMSALES* pItemSales, OPDEPT_PARAENTRY* ParaDept)
+{
+	int iRet = 0;  // indicate we have changed the PLU data.
+
+	RflDeptStatusToItemSalesStatus(pItemSales->ControlCode.auchPluStatus, ParaDept->auchControlCode);
+
+	_tcsncpy(pItemSales->aszMnemonic, ParaDept->auchMnemonic, OP_DEPT_NAME_SIZE);
+	memset(pItemSales->aszMnemonicAlt, 0, sizeof(pItemSales->aszMnemonicAlt));
+	pItemSales->usTareInformation = ParaDept->usTareInformation;
+
+	/* Print Priority, R3.0 */
+	pItemSales->uchPrintPriority = ParaDept->uchPrintPriority;
+	pItemSales->ControlCode.usBonusIndex = ParaDept->usBonusIndex;
+
+	/*
+		set building group number, V2.0.4 for Compass dynamic PLU screens
+	 */
+	pItemSales->ControlCode.uchReportCode = PLU_STANDARD_RPT_CODE;
+	pItemSales->uchGroupNumber = PLU_STANDARD_GROUP_NO;
+	pItemSales->uchColorPaletteCode = PLU_STANDARD_COLOR;
+
+	// Department data extensions for the future.
+//	_tcsncpy(pItemSales->aszMnemonicAlt, ParaDept->auchAltDeptName, OP_DEPT_NAME_SIZE);
+//	pItemSales->uchColorPaletteCode = ParaDept->uchColorPaletteCode;
+//	pItemSales->uchTableNumber = ParaDept->uchTableNumber;
+//	pItemSales->uchGroupNumber = ParaDept->uchGroupNumber;
+//	pItemSales->ControlCode.uchReportCode = ParaDept->uchRept;
+//	pItemSales->uchPM = ParaDept->uchPriceMulWeight;
+
+	return iRet;
+}
+
 
 /*
 *===========================================================================

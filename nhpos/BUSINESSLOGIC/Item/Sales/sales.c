@@ -173,7 +173,7 @@ USHORT ItemClassIsOneOf (UCHAR uchMajorMinorClass, ...)
  *  WARNING: It appears that only array elements 0 through 3 have the same bit map and representation
  *           between PLU_CONTROL and OPDEPT_PARAENTRY.  See function RptPLUByDEPT().
  *
- *  WARNING: It appears that only array elements 0 through 5 have the same bit map and representation
+ *  WARNING: It appears that only array elements 0 through 4 have the same bit map and representation
  *           between PLU_CONTROL and ITEMCONTCODE (ITEMSALES). See function ItemSalesSetMenu().
 */
 ULONG  ItemSalesItemPluTypeInfo (UCHAR *auchContOther)
@@ -1080,9 +1080,9 @@ SHORT ItemSalesAdjModify(UIFREGSALES *pUifRegSales)
 	}
 
 	//update PRICE!!!!
-     _tcsncpy(PLURecRcvBuffer.auchPluNo, ItemSales.auchPLUNo, NUM_PLU_LEN);
-    if ((pUifRegSales->uchAdjective - 1) % 5 + 1) {
-	    PLURecRcvBuffer.uchPluAdj = (pUifRegSales->uchAdjective - 1) % 5 + 1;
+	AUCPLUNO(PLURecRcvBuffer.auchPluNo) = AUCPLUNO(ItemSales.auchPLUNo);
+	if (RflAdjVariation(pUifRegSales->uchAdjective)) {
+		PLURecRcvBuffer.uchPluAdj = RflAdjVariation(pUifRegSales->uchAdjective);
 	} else {
 	    PLURecRcvBuffer.uchPluAdj = 1;      /* dummy adjective valiation */
 	}
@@ -1090,7 +1090,7 @@ SHORT ItemSalesAdjModify(UIFREGSALES *pUifRegSales)
     sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0);
 	RflConv3bto4b(&ulUnitPrice,PLURecRcvBuffer.ParaPlu.auchPrice);
 	ItemSales.lUnitPrice = ulUnitPrice;
-	ItemSales.lProduct = (DCURRENCY)ItemSales.lUnitPrice * ((LONG)ItemSales.lQTY / 1000L);
+	ItemSales.lProduct = (DCURRENCY)ItemSales.lUnitPrice * (ItemSales.lQTY / PLU_BASE_UNIT);
 
 	{
 		UCHAR  uchMajorClassSave = ItemSales.uchMajorClass;  // save major class to change it temporarily below.

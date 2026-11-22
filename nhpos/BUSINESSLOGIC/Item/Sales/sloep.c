@@ -1016,7 +1016,7 @@ STATIC SHORT ItemSalesOEPMakeMenu(UCHAR uchGroupNo, UCHAR uchNounAdj,
     	                continue;               /* next ...                   */
         	        }
 
-            	    if (((uchNounAdj - 1) % 5 + 1) != Plu.uchPluAdj) {
+            	    if (RflAdjVariation(uchNounAdj) != Plu.uchPluAdj) {
                 	    continue;               /* next ...                   */
                 	}
                 	
@@ -1415,8 +1415,8 @@ SHORT ItemSalesOEPMakeNewClass(UIFREGSALES *pUifRegSales,
 			ITEMCOMMONLOCAL    *pCommonLocalRcvBuff = ItemCommonGetLocalPointer();
 
 			//if (pItem->uchAdj )
-    		if (pItem->uchAdj != ((pCommonLocalRcvBuff->ItemSales.uchAdjective - 1) % 5 + 1)) {
-				if (pItem->uchAdj == ((pCommonLocalRcvBuff->CondimentEdit.uchAdjective - 1) % 5 + 1)) {
+    		if (pItem->uchAdj != RflAdjVariation(pCommonLocalRcvBuff->ItemSales.uchAdjective)) {
+				if (pItem->uchAdj == RflAdjVariation(pCommonLocalRcvBuff->CondimentEdit.uchAdjective)) {
 					WorkReg.uchAdjective =0;
 					WorkItem.uchAdjective = pCommonLocalRcvBuff->CondimentEdit.uchAdjective;	
 				}else if((pCommonLocalRcvBuff->CondimentEdit.uchAdjective == 0) && (pCommonLocalRcvBuff->ItemSales.uchAdjective == 0)){

@@ -1348,7 +1348,7 @@ SLDTITM  ItemSalesCalcPM(ITEMSALES *pItemSales)
 
     /* ----- search previous qty/price data from sales buffer ---- */
 
-    uchAdjective = (UCHAR) ((pItemSales->uchAdjective - 1) % 5 + 1); /* adj valiation */
+    uchAdjective = RflAdjVariation(pItemSales->uchAdjective); /* adj valiation */
 
     for (i=0; i<SALES_MAX_PM; i++) {
         if (RflIsSpecialPlu(ItemSalesPM.PMData[i].auchPLUNo, MLD_NO_DISP_PLU_DUMMY) == 0) {
@@ -1485,7 +1485,7 @@ SHORT   ItemSalesCalcPMEC(ITEMSALES *pItemSales)
     }
     /* ----- search previous qty/price data from sales buffer ---- */
 
-    uchAdjective = (UCHAR) ((pItemSales->uchAdjective - 1) % 5 + 1); /* adj valiation */
+    uchAdjective = RflAdjVariation(pItemSales->uchAdjective); /* adj valiation */
 
     for (i=0; i<SALES_MAX_PM; i++) {
         if (_tcsncmp(ItemSalesPM.PMData[i].auchPLUNo, pItemSales->auchPLUNo, NUM_PLU_LEN) == 0) {
@@ -1539,7 +1539,7 @@ SHORT   ItemSalesOnlyCalcPM(ITEMSALES *pItemSales)
     }
 
     /* ----- search previous qty/price data from sales buffer ---- */
-    uchAdjective = (UCHAR) ((pItemSales->uchAdjective - 1) % 5 + 1); /* adj valiation */
+    uchAdjective = RflAdjVariation(pItemSales->uchAdjective); /* adj valiation */
 
     for (i=0; i<SALES_MAX_PM; i++) {
         if (RflIsSpecialPlu(ItemSalesPM.PMData[i].auchPLUNo, MLD_NO_DISP_PLU_DUMMY) == 0) {

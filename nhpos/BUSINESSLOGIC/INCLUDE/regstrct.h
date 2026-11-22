@@ -1214,7 +1214,7 @@
 // measure in one thousandths. For non-scalable items. pItemSales->lQTY / PLU_BASE_UNIT gives actual quantity.
 // See also usage of define ITM_SL_QTY.
 //    Richard Chambers, Sep-28-2017
-#define PLU_BASE_UNIT           1000L  /* item quantity base unit value to convert non-scalable item quantity to weight in thousandths. Same as ITM_SL_QTY  */
+#define PLU_BASE_UNIT           1000L  /* item quantity base unit value to convert between non-scalable item quantity to weight in thousandths. Same as ITM_SL_QTY  */
 
 /*--------------------------------------------------------------------------
 *       ITEM MODULE interface data
@@ -1633,7 +1633,7 @@ typedef struct {
     typedef struct {
         UCHAR       uchItemType;                    /* item type, upper nibble PLU type, lower nibble Major Dept Number. See PLU_TYPE_MASK_REG 2172 */
         UCHAR       uchReportCode;                      /* 15-2:report code */
-        UCHAR       auchPluStatus[ITM_PLU_CONT_OTHER];  /* 15-3:control status[5], see notes with function ItemSalesItemPluTypeInfo(). */
+        UCHAR       auchPluStatus[ITM_PLU_CONT_OTHER];  /* 15-3:control status[5], see notes with function ItemSalesItemPluTypeInfo(). See define PROVIDE_BIT_MAP_VALUES  */
 		USHORT		usBonusIndex;
 		USHORT		uchPPICode;                    /* condiment's PPI code from the condiment's PLU record */
     }ITEMCONTCODE;
@@ -1663,6 +1663,9 @@ typedef struct {
 	//           must be reflected in the compression function, TrnStoSalesComp() as
 	//           well as in the uncompression function RflGetStorageItem().
 	//
+    //           NOTE: See function RflGetSalesItem() which shows the conversion from a stored
+    //                  transaction, TRANSITEMSALES, and an item rung upand being processed, ITEMSALES.
+    //
 	//           WARNING: Post Guest Check System with seat number requires that the first
 	//           three struct items for ITEMSALES, ITEMDISC, and ITEMCOUPON be the
 	//           major class, minor class, and seat number since Post Guest Check allows
@@ -1706,8 +1709,8 @@ typedef struct {
         UCHAR           uchPM;                      /*  price multiple, 2172     */
         USHORT          usLinkNo;                   /* link plu no, 2172 */
         USHORT          usFamilyCode;               /* family code, 2172 See comments in function TrnStoIsUPCCouponItem() about family code. */
-        UCHAR           uchGroupNumber;	/* this is not stored */
-        UCHAR           uchTableNumber;	/* this is not stored */
+        UCHAR           uchGroupNumber;	            /* OEP table Group number. this is not stored in the transaction file */
+        UCHAR           uchTableNumber;	            // OEP table row number. used to select row in the OEP table for OEP processing.
 		UCHAR			uchDiscountSignifier; //US Customs cwunn 5/1/03, signifies this item has had a discount applied.
 		USHORT			usFor;					/* @/FOR storage of package price (SR 143 cwunn)
 												Ex: If pricing is 3 for $1.00, the package price is $1.00 */

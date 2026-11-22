@@ -69,7 +69,8 @@
 #define    OP_PLU_CONT_OTHER        MAX_PLUSTS_SIZE    // changed 05/13/00, Saratoga same as MAX_PLUSTS_SIZE
 #define    OP_DEPT_CONT_CODE_SIZE    5    // size of Departmental settings
 #define    OP_PLU_SHARED_STATUS_LEN  4    // Number of bytes of shared PLU status provisioning data
-#define    OP_PLU_PLU_SHARED_STATUS_LEN  5    // Number of bytes of shared PLU status provisioning and print data
+#define    OP_PLU_ITEM_SHARED_STATUS_LEN  5    // Number of bytes of shared PLU status provisioning and print data
+#define    OP_DEPT_ITEM_SHARED_STATUS_LEN  4    // Number of bytes of shared Dept status provisioning and print data
 #define    OP_PLU_OPTIONS_STATUS_LEN     4    // additional options from PLU status provisioning
 
 #define    OP_DEPT_NAME_SIZE       20   /* 2172 */
@@ -241,7 +242,7 @@ typedef  struct {
     USHORT  usDept;          /* for temporary */
     UCHAR   uchItemType;     /* item type, upper nibble PLU type, lower nibble Major Dept Number. See PLU_TYPE_MASK_REG 2172 */
     UCHAR   uchRept;
-    UCHAR   auchContOther[OP_PLU_CONT_OTHER];   // see notes with function ItemSalesItemPluTypeInfo().
+    UCHAR   auchContOther[OP_PLU_CONT_OTHER];   // see notes with function ItemSalesItemPluTypeInfo(). See define PROVIDE_BIT_MAP_VALUES
 	USHORT	usBonusIndex;
 	// 2.1 Release Changes, SR167 - CSMALL
 	UCHAR	auchContOther2[20]; //New Status Fields[20]:
@@ -288,7 +289,7 @@ typedef    struct {
  */
 typedef  struct {
     UCHAR   uchMdept;             // Major department number, 1 - 30, this department assigned to. see P48 for mnemonics.
-    UCHAR   auchControlCode[OP_DEPT_CONT_CODE_SIZE];  // see notes with function ItemSalesItemPluTypeInfo().
+    UCHAR   auchControlCode[OP_DEPT_CONT_CODE_SIZE];  // see notes with function ItemSalesItemPluTypeInfo() and define PROVIDE_BIT_MAP_VALUES.
 //  UCHAR   auchControlCode2[4];                      // adjective implied and prohibit bits of ParaPlu->ContPlu.auchContOther[4].
     UCHAR   auchHalo[OP_DEPT_HALO_SIZE];
     WCHAR   auchMnemonic[OP_DEPT_NAME_SIZE];

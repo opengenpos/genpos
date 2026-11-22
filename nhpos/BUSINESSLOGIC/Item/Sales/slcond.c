@@ -13,10 +13,6 @@
 * Category    : Item Module, NCR 2170 US Hospitality Model Application         
 * Program Name: SLCOND.C
 * --------------------------------------------------------------------------
-* Compiler    : MS-C Ver. 6.00A by Microsoft Corp.                         
-* Memory Model: Medium Model                                               
-* Options     : /c /AM /W4 /G1s /Os /Za /Zp                                 
-* --------------------------------------------------------------------------
 * Abstract: ItemSalesCondiment()   
 *
 * --------------------------------------------------------------------------
@@ -171,15 +167,18 @@ SHORT   ItemSalesCondiment(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
         (pCommonLocalRcvBuff->ItemSales.ControlCode.uchItemType & PLU_TYPE_MASK_REG)) {
 
         if ((pItemSales->ControlCode.uchItemType & PLU_TYPE_MASK_REG) == PLU_ADJ_TYP) {
+            // prohibit condiment if it's an Adjective Type but the item it is being added
+            // to is not an Adjective Type.
+            NHPOS_NONASSERT_NOTE("==PROVISIONING", "==PROVISIONING: Condiment uchItemType incompatible with Item.")
             return(LDT_PROHBT_ADR);
         }
     }
         
     /*----- ONE ADJECTIVE CONDIMENT PROCESS -----*/
-    if (pItemSales->ControlCode.uchItemType & ADJ_PLU) {
+    if ((pItemSales->ControlCode.uchItemType & PLU_TYPE_MASK_REG) == PLU_ADJ_TYP) {
 		UCHAR  auchAdjDataBuff[2] = {0};
         
-        /*----- CHECK ADJ. ASSUMED VALIATION OF NOUN -----*/
+        /*----- CHECK ADJ. ASSUMED VARIATION OF NOUN -----*/
         /* inherit adjective of noun */
         if (pItemSales->uchAdjective != pCommonLocalRcvBuff->ItemSales.uchAdjective) {
 			PLUIF   PLURecRcvBuffer = {0};        /* PLU record receive buffer */
@@ -191,7 +190,7 @@ SHORT   ItemSalesCondiment(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
 
     	    /*----- get adjective price -----*/
         	/* prepair PLU record receive buffer */
-    	    _tcsncpy(PLURecRcvBuffer.auchPluNo, pItemSales->auchPLUNo, NUM_PLU_LEN);
+            AUCPLUNO(PLURecRcvBuffer.auchPluNo) = AUCPLUNO(pItemSales->auchPLUNo);
 	        PLURecRcvBuffer.uchPluAdj = auchAdjDataBuff[1];  /* adjective valiation */
 
     	    if ((sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0)) != OP_PERFORM) {

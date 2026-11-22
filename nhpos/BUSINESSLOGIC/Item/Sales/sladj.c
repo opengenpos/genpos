@@ -233,8 +233,8 @@ VOID   ItemSalesGenerateAdj(ITEMSALES *pItemSales, UCHAR *auchAdjWriteBuff)
 
 SLDTITM  ItemSalesBreakDownAdj(CONST ITEMSALES *pItemSales, UCHAR *auchAdjWriteBuff)
 {
-    auchAdjWriteBuff[0] = (UCHAR) ((pItemSales->uchAdjective - 1) / ADJ_VAL_MAX + 1); /* adj. group */
-    auchAdjWriteBuff[1] = (UCHAR) ((pItemSales->uchAdjective - 1) % ADJ_VAL_MAX + 1); /* adj. variation */
+    auchAdjWriteBuff[0] = RflAdjGroup(pItemSales->uchAdjective); /* adj. group */
+    auchAdjWriteBuff[1] = RflAdjVariation(pItemSales->uchAdjective); /* adj. variation */
 
     if (!((pItemSales->ControlCode.auchPluStatus[3] & PLU_USE_ADJG_MASK) & (UCHAR) (PLU_USE_ADJG1 << (auchAdjWriteBuff[0] - 1)))) {
         return(LDT_PROHBT_ADR);

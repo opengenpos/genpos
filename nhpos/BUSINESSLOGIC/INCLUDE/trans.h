@@ -191,6 +191,9 @@
 *       WARNING:  Any changes made to the TRANSTORAGESALES and ITEMSALES struct
 *       must be reflected in the compression function, TrnStoSalesComp() as
 *       well as in the uncompression function RflGetStorageItem().
+* 
+*       NOTE: See function RflGetSalesItem() which shows the conversion from a stored
+*              transaction, TRANSITEMSALES, and an item rung up and being processed, ITEMSALES.
 */
     typedef struct {
 		DUNITPRICE      lUnitPrice;             /* unit price */
@@ -212,7 +215,7 @@
         UCHAR           uchPM;                  /*  price multiple, 2172     */
         USHORT          usLinkNo;               /* link plu no, 2172 */
         USHORT          usFamilyCode;           /* family code, 2172 See comments in function TrnStoIsUPCCouponItem() about family code. */
-		UCHAR			uchTableNumber;
+		UCHAR			uchTableNumber;         // OEP table row number. used to select row in the OEP table for OEP processing.
 		UCHAR			uchDiscountSignifier;   //US Customs cwunn 5/1/03, signifies this item has had a discount applied.
 		USHORT			usFor;					/* @/FOR storage of package price (SR 143 cwunn)
 												Ex: If pricing is 3 for $1.00, the package price is $1.00 */

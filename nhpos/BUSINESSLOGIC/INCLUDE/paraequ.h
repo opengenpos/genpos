@@ -3749,14 +3749,19 @@ typedef unsigned char  UCSPCADRS;       // variable contains address of special 
 \*------------------------------------------------------------------------*/
 
 /* PLU Type by Reg */
-
-#define PLU_OPEN_TYP            0x40        /* Open PLU */
-#define PLU_NON_ADJ_TYP         0x80        /* Non Adjective */
-#define PLU_ADJ_TYP             0xc0        /* One Adjective */
+// The three bits of ParaPlu.ContPlu.uchItemType are used to indicate
+// one of the three types of PLUs indicated by a value of 1, 2, or 3
+// using the three bits (isolating them with uchItemType & PLU_TYPE_MASK_REG):
+//   - PLU_OPEN_TYP Open PLU does not have a specified price
+//   - PLU_NON_ADJ_TYP Non Adjective or Preset PLU has a single Adjective Variation
+//   - PLU_ADJ_TYP Adjective PLU has multiple Adjective Variations (see ADJ_VAL_MAX)
+//
+#define PLU_OPEN_TYP            0x40        /* Open PLU with no price set in PLU provisioning */
+#define PLU_NON_ADJ_TYP         0x80        /* Non Adjective or Preset PLU reusing Adjective Variation 1 for price */
+#define PLU_ADJ_TYP             0xc0        /* One Adjective. The Adjective Number is converted to the Adjective Variation */
 #define PLU_TYPE_MASK_REG       0xc0        /* PLU type mask data */
 
-#define ADJ_PLU                 PLU_OPEN_TYP    /* Open PLU */
-#define PRESET_PLU              PLU_NON_ADJ_TYP /* Non Adjective */
+#define PRESET_PLU              0x80        /* not an Open PLU (PLU_OPEN_TYP or 0x40) if bit is set */
 
 /* PLU Type by Super/Program */
 

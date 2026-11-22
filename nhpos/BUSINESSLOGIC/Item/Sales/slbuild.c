@@ -36,6 +36,7 @@
 #include	<tchar.h>
 #include    <memory.h>
 #include    <string.h>
+#include    <stdio.h>
 
 #include    "ecr.h"
 #include    "uie.h"
@@ -133,11 +134,12 @@ static SHORT ItemSalesPLUSetupBuilding(CONST UIFREGSALES *pUifRegSales, CONST IT
     /* setup plu parameter from dept parameter */
     pPluIf->ParaPlu.ContPlu.usDept = pDeptIf->usDeptNo;
     if (pUifRegSales->uchAdjective) {
-        uchAdj = pUifRegSales->uchAdjective;
-        uchAdj = (UCHAR)((uchAdj - 1) / 5 + 1); /* adj. group */
-        if (!((pDeptIf->ParaDept.auchControlCode[3] & PLU_USE_ADJG_MASK) & 
-                (UCHAR) (PLU_USE_ADJG1 << (uchAdj - 1)))) {
-            return(LDT_PROHBT_ADR);
+        // check that the adjective entered by the user is allowed by the
+        // Department provisioning.
+        uchAdj = RflAdjGroup(pUifRegSales->uchAdjective);
+        if (!((pDeptIf->ParaDept.auchControlCode[3] & PLU_USE_ADJG_MASK) & (UCHAR) (PLU_USE_ADJG1 << (uchAdj - 1)))) {
+            NHPOS_NONASSERT_NOTE("==PROVISIONING", "==PROVISIONING: No match between entered adjective and Dept. Group provisioning.");
+            return(LDT_KEYOVER_ADR);
         }
 
         uchAdj = pUifRegSales->uchAdjective;
@@ -150,10 +152,11 @@ static SHORT ItemSalesPLUSetupBuilding(CONST UIFREGSALES *pUifRegSales, CONST IT
     pPluIf->uchPluAdj = uchAdj;
 
     if (CliParaMDCCheckField (MDC_PLU2_ADR, MDC_PARAM_BIT_C)) {
-        /* assume as quaintity */
+        /* assume quaintity is as price multiple if not scalable */
         if ((pItemSales->ControlCode.auchPluStatus[2] & PLU_SCALABLE) == 0) {
-            pPluIf->ParaPlu.uchPriceMulWeight = (UCHAR)(pItemSales->lQTY/1000L);
+            pPluIf->ParaPlu.uchPriceMulWeight = (UCHAR)(pItemSales->lQTY / PLU_BASE_UNIT);
             if (pPluIf->ParaPlu.uchPriceMulWeight > PLU_MAX_PM) {
+                NHPOS_ASSERT_TEXT(pPluIf->ParaPlu.uchPriceMulWeight <= PLU_MAX_PM, "NOTE: MDC 295 Bit C and Item Qty > PLU_MAX_PM.");
                 return (LDT_KEYOVER_ADR);
             }
         }
@@ -164,29 +167,12 @@ static SHORT ItemSalesPLUSetupBuilding(CONST UIFREGSALES *pUifRegSales, CONST IT
         lUnitPrice *= -1L;
     }
     if (lUnitPrice > STD_PLU_MAX_PRICE) {
-
         return (LDT_KEYOVER_ADR);
     }
     RflConv4bto3b(pPluIf->ParaPlu.auchPrice, lUnitPrice);
 
-    /* COPY CONTROL CODE INTO ITEMSALES */
-    memcpy(pPluIf->ParaPlu.ContPlu.auchContOther, pDeptIf->ParaDept.auchControlCode, OP_PLU_SHARED_STATUS_LEN);
-    pPluIf->ParaPlu.ContPlu.auchContOther[5] = pDeptIf->ParaDept.auchControlCode[4];  /* CRT No5 - No 8 see ItemSendKdsSetCRTNo() */
-
-    /* Print Priority, R3.0 */
-    pPluIf->ParaPlu.uchPrintPriority = pDeptIf->ParaDept.uchPrintPriority;
-                                            /* set major dept No. */
-    /* copy dept's mnemonics to pItemSales*/
-    _tcsncpy(pPluIf->ParaPlu.auchPluName, pDeptIf->ParaDept.auchMnemonic, OP_DEPT_NAME_SIZE);
-    memset (pPluIf->ParaPlu.auchAltPluName, 0, sizeof(pPluIf->ParaPlu.auchAltPluName));
-
-    /*
-		set building report code, V1.0.04
-		set building group number, V2.0.4 for Compass dynamic PLU screens
-	 */
-    pPluIf->ParaPlu.ContPlu.uchRept = PLU_STANDARD_RPT_CODE;
-	pPluIf->ParaPlu.ContPlu.usBonusIndex = pDeptIf->ParaDept.usBonusIndex;
-	pPluIf->ParaPlu.uchGroupNumber = PLU_STANDARD_GROUP_NO;
+    //**  Begin populating the PLU with the Department data.
+    RflDeptDataToPluData(&pPluIf->ParaPlu, &pDeptIf->ParaDept);
 
     return (ITM_SUCCESS);
 }
@@ -224,10 +210,8 @@ static SHORT ItemSalesPLUSetupBuilding(CONST UIFREGSALES *pUifRegSales, CONST IT
 *
 *===========================================================================
 */
-SHORT ItemSalesPLUBuilding(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales, PLUIF *pData)
-/* SHORT ItemSalesPLUBuilding(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales, PLUIF *pPluIf) */
+SHORT ItemSalesPLUBuilding(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales, PLUIF * pPluIf)
 {
-    PLUIF       *pPluIf = pData;
     ULONG       ulPrice;
     USHORT      usDeptNo;
     SHORT       sReturnStatus;
@@ -294,13 +278,18 @@ SHORT ItemSalesPLUBuilding(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pItemSale
     memset(&DeptIf, 0, sizeof(DeptIf));
     DeptIf.usDeptNo = usDeptNo;
     if ((sReturnStatus = CliOpDeptIndRead(&DeptIf, 0)) != OP_PERFORM) {
+        char xBuff[128] = { 0 };
+        USLDTERR  usError = OpConvertError(sReturnStatus);
         UieNotonFile(usControl);                      /* enable scanner */
-        return(OpConvertError(sReturnStatus));
+        sprintf(xBuff, "==PROVISIONING: usDeptNo %d  CliOpDeptIndRead() -> %d -> %d.", usDeptNo, sReturnStatus, usError);
+        NHPOS_ASSERT_TEXT(sReturnStatus == OP_PERFORM, xBuff);
+        return usError;
     }
     
     /* velify unit price vs HALO amount */
-    if (RflHALO(ulPrice, *DeptIf.ParaDept.auchHalo) != RFL_SUCCESS) {
+    if ((sReturnStatus = RflHALO(ulPrice, *DeptIf.ParaDept.auchHalo)) != RFL_SUCCESS) {
         UieNotonFile(usControl);                      /* enable scanner */
+        NHPOS_ASSERT_TEXT(sReturnStatus == RFL_SUCCESS, "==NOTE: Dept. HALO check failed. LDT_KEYOVER_ADR");
         return(LDT_KEYOVER_ADR);        /* return sequence error */
     }
 
@@ -375,16 +364,20 @@ SHORT ItemSalesPLUCreatBuilding(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pIte
     DEPTIF DeptIf = {0};
 	PLUIF  PluIf = {0};
     SHORT  sReturn;
-    UCHAR  uchAdjMax, uchAdj, i;
+    UCHAR  uchAdjMax, uchAdj;
     LONG   lUnitPrice;
     
     /*----- GET DEPT. RECORD -----*/
     DeptIf.usDeptNo = pItemSales->usDeptNo;
     if ((sReturn = CliOpDeptIndRead(&DeptIf, 0)) != OP_PERFORM) {
-        return(OpConvertError(sReturn));
+        char xBuff[128] = { 0 };
+        USLDTERR  usError = OpConvertError(sReturn);
+        sprintf(xBuff, "==PROVISIONING: usDeptNo %d  CliOpDeptIndRead() -> %d -> %d.", pItemSales->usDeptNo, sReturn, usError);
+        NHPOS_ASSERT_TEXT(sReturn == OP_PERFORM, xBuff);
+        return usError;
     }
 
-    _tcsncpy(PluIf.auchPluNo, pItemSales->auchPLUNo, NUM_PLU_LEN);
+    AUCPLUNO(PluIf.auchPluNo) = AUCPLUNO(pItemSales->auchPLUNo);
 
     if ((sReturn = ItemSalesPLUSetupBuilding(pUifRegSales, pItemSales, &PluIf, &DeptIf)) != ITM_SUCCESS) {
         return(sReturn);
@@ -402,7 +395,7 @@ SHORT ItemSalesPLUCreatBuilding(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pIte
         uchAdjMax = 5;
     }
     uchAdj = PluIf.uchPluAdj;
-    for (i = 1; i <= uchAdjMax; i++) {
+    for (UCHAR i = 1; i <= uchAdjMax; i++) {
         PluIf.uchPluAdj = i;
         if (i == uchAdj) {
             RflConv4bto3b(PluIf.ParaPlu.auchPrice, lUnitPrice);
@@ -411,7 +404,8 @@ SHORT ItemSalesPLUCreatBuilding(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pIte
         }
         sReturn = CliOpPluAssign(&PluIf, 0);
         if (sReturn == OP_PLU_FULL) {
-            for (i -= 1; i > 0; i--) {
+            // count backwards deleting adjectives.
+            for ( ; i-- > 0; ) {
                 PluIf.uchPluAdj = i;
                 CliOpPluDelete(&PluIf, 0);
             }
