@@ -143,11 +143,11 @@ SHORT   ItemSalesSetMenu(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
                 return(LDT_PROHBT_ADR);
             }
 
-	        if (((pItemSales->uchAdjective - 1) % 5 + 1) != auchAdjData[1]) {
+	        if (RflAdjVariation(pItemSales->uchAdjective) != auchAdjData[1]) {
 				PLUIF    PLURecRcvBuffer = {0};
 
 	            /* Re-read PLU adjective price */
-    	        _tcsncpy(PLURecRcvBuffer.auchPluNo, pItemSales->auchPLUNo, NUM_PLU_LEN);
+                AUCPLUNO(PLURecRcvBuffer.auchPluNo) = AUCPLUNO(pItemSales->auchPLUNo);
             	PLURecRcvBuffer.uchPluAdj = SetMenuRcvBuff.SetPLU[PARENT_PLU].uchAdjective;  
 
 	            if ((sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0)) != OP_PERFORM) {
@@ -178,10 +178,10 @@ SHORT   ItemSalesSetMenu(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
                 (PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther[PLU_CONTROLCODE_ADR_2] & PLU_HASH) ) {
                 return(LDT_PROHBT_ADR);
             }
+
 			/* copy control code - remember ControlCode.auchStatus[5] used for ItemSales status info */
-            memcpy(ChildPLU.ControlCode.auchPluStatus, PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther, OP_PLU_PLU_SHARED_STATUS_LEN);
-            memcpy(ChildPLU.ControlCode.auchPluStatus + 6, PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther + 5, OP_PLU_OPTIONS_STATUS_LEN);
-            
+            RflPluStatusToItemSalesStatus(ChildPLU.ControlCode.auchPluStatus, PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther);
+
             if ((PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType & PLU_TYPE_MASK_REG) == PLU_ADJ_TYP) {
 				UCHAR  auchAdjData[2] = {0};     /* [0] : adjective group, [1] : adj. valiation */
 				UCHAR  uchWork = ChildPLU.ControlCode.auchPluStatus[PLU_CONTROLCODE_ADR_4];
@@ -219,6 +219,7 @@ SHORT   ItemSalesSetMenu(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
             /* get dept record */
             DeptRecRcvBuffer.usDeptNo = PLURecRcvBuffer.ParaPlu.ContPlu.usDept;
             if (DeptRecRcvBuffer.usDeptNo == 0) {
+                NHPOS_ASSERT_TEXT(DeptRecRcvBuffer.usDeptNo != 0, "==PROVISIONING: PLU has Zero Dept No.");
                 return(LDT_PROHBT_ADR);
             }
 
@@ -237,13 +238,13 @@ SHORT   ItemSalesSetMenu(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales)
 			// attached.
 			//
             _tcsncpy(pItemSales->Condiment[j].auchPLUNo, SetMenuRcvBuff.SetPLU[i].aszPLUNumber, NUM_PLU_LEN);
+            AUCPLUNO(pItemSales->Condiment[j].auchPLUNo) = AUCPLUNO(PLURecRcvBuffer.auchPluNo);
             pItemSales->Condiment[j].usDeptNo = PLURecRcvBuffer.ParaPlu.ContPlu.usDept;    
             pItemSales->Condiment[j].uchAdjective = ChildPLU.uchAdjective;     
 
             _tcsncpy(pItemSales->Condiment[j].aszMnemonic, PLURecRcvBuffer.ParaPlu.auchPluName, STD_PLU_MNEMONIC_LEN);
             _tcsncpy(pItemSales->Condiment[j].aszMnemonicAlt, PLURecRcvBuffer.ParaPlu.auchAltPluName, STD_PLU_MNEMONIC_LEN);
             
-//           pItemSales->Condiment[j].ControlCode.uchItemType = (UCHAR) (PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType & PLU_TYPE_MASK_REG);  
             pItemSales->Condiment[j].ControlCode.uchItemType = PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType;
             pItemSales->Condiment[j].ControlCode.uchReportCode = PLURecRcvBuffer.ParaPlu.ContPlu.uchRept;
 			pItemSales->Condiment[j].ControlCode.usBonusIndex = PLURecRcvBuffer.ParaPlu.ContPlu.usBonusIndex;

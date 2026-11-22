@@ -255,122 +255,126 @@ SHORT   ItemSalesLinkPLU(ITEMSALES *pItemSales, USHORT fsCheck)
 SHORT   ItemSalesLinkPrepare(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales, UCHAR *puchRestrict)
 {
     SHORT    sReturnStatus;
-	DEPTIF   DeptRecRcvBuffer = {0};       /* dept record receive buffer */
-	PLUIF    PLURecRcvBuffer = {0};        /* PLU record receive buffer */
 
     /*----- PLU PREPARATION ----- */
-    /*----- GET PLU RECORD with pItemSales->usPLUNo as key -----*/
-    /* prepair PLU record receive buffer */
+    {
+        /*----- GET PLU RECORD with pItemSales->usPLUNo as key -----*/
+        /* prepair PLU record receive buffer */
+        PLUIF    PLURecRcvBuffer = { 0 };        /* PLU record receive buffer */
 
-    _tcsncpy(PLURecRcvBuffer.auchPluNo, pItemSales->auchPLUNo, NUM_PLU_LEN);
+        AUCPLUNO(PLURecRcvBuffer.auchPluNo) = AUCPLUNO(pItemSales->auchPLUNo);
 
-	//SR 543, we no longer just assign adjective 1 to the structure, because
-	//we are trying to find the price of a certain price level, so we do the
-	//manipulation below to find which adjective price to read from. JHHJ
-    PLURecRcvBuffer.uchPluAdj = ((pUifRegSales->uchAdjective - 1) % 5 + 1);
+        //SR 543, we no longer just assign adjective 1 to the structure, because
+        //we are trying to find the price of a certain price level, so we do the
+        //manipulation below to find which adjective price to read from. JHHJ
+        PLURecRcvBuffer.uchPluAdj = RflAdjVariation (pUifRegSales->uchAdjective);
 
-	//if we are still at 0, that means there is no certain price level, assign to 1
-	if(PLURecRcvBuffer.uchPluAdj == 0)
-	{
-		PLURecRcvBuffer.uchPluAdj = 1;
-	}
+        // If we are still at 0, that means there is no certain price level, assign to 1.
+        // 
+        // The price in a PLU is stored in an array that has an element for each Adjective Variation.
+        // If the PLU is a Preset PLU then the price for the Preset PLU is stored in the first
+        // array element where the price of the first Adjective Variation would also be stored.
+        // 
+        // Check to see if the PLU is a preset and if it is then changes the
+        // adjective to 1 to get the correct price for the linked PLU.  SS
+        if (PLURecRcvBuffer.uchPluAdj == 0 || (PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType & PLU_NON_ADJ_TYP))
+        {
+            PLURecRcvBuffer.uchPluAdj = 1;
+        }
 
-    if ((sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0)) != OP_PERFORM) {
-        return(OpConvertError(sReturnStatus));
-    } 
+        if ((sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0)) != OP_PERFORM) {
+            return(OpConvertError(sReturnStatus));
+        }
 
-	//checks to see if the PLU is a preset and if it is then changes the
-	//adjective to 1 to get the correct price for the linked PLU.  SS
-	if(PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType & PRESET_PLU )
-	{
-		PLURecRcvBuffer.uchPluAdj = 1;
-		
-		if ((sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0)) != OP_PERFORM) {
-			 return(OpConvertError(sReturnStatus));
-		} 
-	}
+        if (PLURecRcvBuffer.ParaPlu.ContPlu.usDept == 0) {
+            NHPOS_ASSERT_TEXT(0, "==PROVISIONING: PLU has Zero Dept No.");
+            return(LDT_PROHBT_ADR);         /* error if dept isn't preset */
+        }
 
-    /* move dept No. into pItemSales->uchDeptNo */
-    pItemSales->usDeptNo = PLURecRcvBuffer.ParaPlu.ContPlu.usDept;
-    pItemSales->ControlCode.uchItemType = PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType;  /* set PLU type */
-    if (pItemSales->usDeptNo == 0) {
-        return(LDT_PROHBT_ADR);         /* error if dept isn't preset */
-    }
-        
-    /* copy report code */
-    pItemSales->ControlCode.uchReportCode = (UCHAR) (PLURecRcvBuffer.ParaPlu.ContPlu.uchRept);
-    pItemSales->uchPrintPriority = PLURecRcvBuffer.ParaPlu.uchPrintPriority;  /* R3.0 */
-    _tcsncpy(pItemSales->aszMnemonic, PLURecRcvBuffer.ParaPlu.auchPluName, STD_PLU_MNEMONIC_LEN);
+        if ((PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType & PLU_TYPE_MASK_REG) == 0) {
+            /* type 0 is regarded as open PLU */
+            NHPOS_ASSERT_TEXT(0, "==PROVISIONING: PLU has Zero Item Type.");
+            return(LDT_PROHBT_ADR);         /* error if dept isn't preset */
+        }
+        if (PLURecRcvBuffer.ParaPlu.uchPriceMulWeight > 1) {
+            NHPOS_ASSERT_TEXT(0, "==PROVISIONING: PLU has Price Multiple Weight > 1.");
+            return(LDT_PROHBT_ADR);
+        }
+        if (PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther[2] & PLU_SCALABLE) {
+            NHPOS_ASSERT_TEXT(0, "==PROVISIONING: Scalable PLU not allowed.");
+            return(LDT_PROHBT_ADR);
+        }
+        /*
+        if (PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther[2] & PLU_CONDIMENT) {
+            return(LDT_PROHBT_ADR);
 
-    /* Print Priority, R3.0 */
-    pItemSales->uchPrintPriority = PLURecRcvBuffer.ParaPlu.uchPrintPriority; 
+        } */
 
-	/* copy control code - remember ControlCode.auchStatus[5] used for ItemSales status info */
-    memcpy(pItemSales->ControlCode.auchPluStatus, PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther, OP_PLU_PLU_SHARED_STATUS_LEN);
-    memcpy(pItemSales->ControlCode.auchPluStatus + 6, PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther + 5, OP_PLU_OPTIONS_STATUS_LEN);
 
-    if ((pItemSales->ControlCode.uchItemType & PLU_TYPE_MASK_REG) == 0) {
-    /* type 0 is regarded as open PLU */
-        return(LDT_PROHBT_ADR);         /* error if dept isn't preset */
-    }                                   
-    /*
-    if (pItemSales->ControlCode.auchStatus[2] & PLU_CONDIMENT) {
-        return(LDT_PROHBT_ADR);
-            
-    } */                                  
-        
-    /* price multiple, 2172 */
-    pItemSales->uchPM = PLURecRcvBuffer.ParaPlu.uchPriceMulWeight;
-    if (pItemSales->uchPM > 1) {
-        return(LDT_PROHBT_ADR);
-    }
+        //**  Begin populating the ITEMSALES with the PLU data.
+        //    After doing PLU data, we will override control codes with
+        //    the control codes from the Department if indicated.
 
-    if (pItemSales->ControlCode.auchPluStatus[2] & PLU_SCALABLE) {
-        return(LDT_PROHBT_ADR);
+        //  Can we replace the following with RflPluDataToItemSales(pItemSales, &PLURecRcvBuffer.ParaPlu);?
+
+#if 1
+        RflPluDataToItemSales(pItemSales, &PLURecRcvBuffer.ParaPlu);
+#else
+        /* move dept No. into pItemSales->uchDeptNo */
+        pItemSales->usDeptNo = PLURecRcvBuffer.ParaPlu.ContPlu.usDept;
+        pItemSales->ControlCode.uchItemType = PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType;  /* set PLU type */
+
+        /* copy report code */
+        pItemSales->ControlCode.uchReportCode = PLURecRcvBuffer.ParaPlu.ContPlu.uchRept;
+        _tcsncpy(pItemSales->aszMnemonic, PLURecRcvBuffer.ParaPlu.auchPluName, STD_PLU_MNEMONIC_LEN);
+
+        /* Print Priority, R3.0 */
+        pItemSales->uchPrintPriority = PLURecRcvBuffer.ParaPlu.uchPrintPriority;
+
+        RflPluStatusToItemSalesStatus(pItemSales->ControlCode.auchPluStatus, PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther);
+
+        /* price multiple, 2172 */
+        pItemSales->uchPM = PLURecRcvBuffer.ParaPlu.uchPriceMulWeight;
+#endif
+
+        if (pItemSales->ControlCode.uchItemType & PLU_NON_ADJ_TYP) {
+            /* if not open PLU then set the PLU price */
+            RflConv3bto4b(&pItemSales->lUnitPrice, PLURecRcvBuffer.ParaPlu.auchPrice);
+        }
+        if (puchRestrict) *puchRestrict = PLURecRcvBuffer.ParaPlu.uchRestrict;
     }
         
     /* set QTY and unit price */
     pItemSales->lQTY = pUifRegSales->lQTY;
 
-    if (pItemSales->ControlCode.uchItemType & PRESET_PLU) {
-                                            /* if not open PLU */
-        /* set record into pItemSales */
-        RflConv3bto4b(&pItemSales->lUnitPrice , PLURecRcvBuffer.ParaPlu.auchPrice);
-    }
-        
     /*----- INHERIT DEPT'S CONTROL STATUS -----*/
-    /* get dept record */
-    DeptRecRcvBuffer.usDeptNo = pItemSales->usDeptNo;
-    if ((sReturnStatus = CliOpDeptIndRead(&DeptRecRcvBuffer, 0)) != OP_PERFORM) {
-		char  xBuff[128];
+    {
+        DEPTIF   DeptRecRcvBuffer = { 0 };       /* dept record receive buffer */
 
-		sprintf (xBuff, "==PROVISION: Link PLU Dept read error %d dept %d.", sReturnStatus, pItemSales->usDeptNo);
-		NHPOS_ASSERT_TEXT((sReturnStatus == OP_PERFORM), xBuff);
-        return(OpConvertError(sReturnStatus));
-    }
-            
-    /* Print Priority, R3.0 */
-    if (CliParaMDCCheck(MDC_PRINTPRI_ADR, EVEN_MDC_BIT1)) {
-        pItemSales->uchPrintPriority = DeptRecRcvBuffer.ParaDept.uchPrintPriority;
-    }
+        /* get dept record */
+        DeptRecRcvBuffer.usDeptNo = pItemSales->usDeptNo;
+        if ((sReturnStatus = CliOpDeptIndRead(&DeptRecRcvBuffer, 0)) != OP_PERFORM) {
+            char  xBuff[128];
 
-    ItemSalesSetupStatus(DeptRecRcvBuffer.ParaDept.auchControlCode);
-                                            /* setup dept's control status */
-    /* turn on Hash bit for PLU */
-    pItemSales->ControlCode.auchPluStatus[2] &= ~PLU_HASH;               /* turn off flag set by maintemance */
-    if (pItemSales->ControlCode.auchPluStatus[2] & PLU_USE_DEPTCTL) {    /* use dept's control code */
-        /* copy dept's control code into pItemSales */
-        memcpy(pItemSales->ControlCode.auchPluStatus, DeptRecRcvBuffer.ParaDept.auchControlCode, OP_PLU_SHARED_STATUS_LEN);
-        pItemSales->ControlCode.auchPluStatus[PLU_CONTROLCODE_ADR_6] = DeptRecRcvBuffer.ParaDept.auchControlCode[4];   /* CRT No5 - No 8 see ItemSendKdsSetCRTNo() */
-    } else {                            /* turn on hash bit if need */
-        if (DeptRecRcvBuffer.ParaDept.auchControlCode[2] & PLU_HASH) {
-            pItemSales->ControlCode.auchPluStatus[2] |= PLU_HASH;
+            sprintf(xBuff, "==PROVISION: Link PLU Dept read error %d dept %d.", sReturnStatus, pItemSales->usDeptNo);
+            NHPOS_ASSERT_TEXT((sReturnStatus == OP_PERFORM), xBuff);
+            return(OpConvertError(sReturnStatus));
         }
+
+        /* Print Priority, R3.0 */
+        if (CliParaMDCCheck(MDC_PRINTPRI_ADR, EVEN_MDC_BIT1)) {
+            pItemSales->uchPrintPriority = DeptRecRcvBuffer.ParaDept.uchPrintPriority;
+        }
+
+        /* setup dept's control status */
+        ItemSalesSetupStatus(DeptRecRcvBuffer.ParaDept.auchControlCode);
+        RflDeptStatusToItemSalesStatusIfDeptCtl(pItemSales->ControlCode.auchPluStatus, DeptRecRcvBuffer.ParaDept.auchControlCode);
+
+        /* pItemSales->ControlCode.uchDeptNo |= DeptRecRcvBuffer.ParaDept.uchMdept; */
+                                            /* set dept's major dept No. */
     }
 
     pItemSales->ControlCode.uchItemType &= PLU_TYPE_MASK_REG;     /* clear dept No. "0xc0" */
-    /* pItemSales->ControlCode.uchDeptNo |= DeptRecRcvBuffer.ParaDept.uchMdept; */
-                                            /* set dept's major dept No. */
 
     /*----- SET UP PLU STATUS -----*/
     if (!(pItemSales->ControlCode.uchItemType & PRESET_PLU)) {
@@ -378,9 +382,8 @@ SHORT   ItemSalesLinkPrepare(CONST UIFREGSALES *pUifRegSales, ITEMSALES *pItemSa
     } else if (pItemSales->ControlCode.auchPluStatus[2] & PLU_CONDIMENT) {
         pItemSales->ControlCode.auchPluStatus[2] &= ~ PLU_SCALABLE;   /* turn off scalable status bit */ 
     }
-    pItemSales->usLinkNo = 0;
 
-    *puchRestrict = PLURecRcvBuffer.ParaPlu.uchRestrict;
+    pItemSales->usLinkNo = 0;
 
     return(ITM_SUCCESS);
 }

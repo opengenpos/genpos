@@ -85,14 +85,17 @@ SHORT   ItemSalesPrepare(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
                          UCHAR *puchRestrict, USHORT *pusLinkNo, UCHAR *puchTable)
 {
     SHORT  sReturnStatus;
-	DEPTIF     DeptRecRcvBuffer = {0};       /* dept record receive buffer */
-    PLUIF      PLURecRcvBuffer = {0};        /* PLU record receive buffer */    
 
     /*----- BRANCH OUT DEPT AND PLU CORRESPOND WITH MINOR CLASS -----*/
     switch (pItemSales->uchMinorClass) {
 	case CLASS_ITEMORDERDEC:
 			RflGetTranMnem (pItemSales->aszMnemonic, (TRN_ORDER_DEC_OFFSET + pUifRegSales->uchFsc));
-			break;
+            /* --- Decrease No. of Communication in case of OEP,    Dec/13/2000 --- */
+            if (puchRestrict) *puchRestrict = 0;
+            if (pusLinkNo) *pusLinkNo = 0;
+            if (puchTable) *puchTable = 0;
+            break;
+
     case CLASS_DEPT:
     case CLASS_DEPTMODDISC:                 /* modefied discounted dept */
         if (pUifRegSales->usDeptNo == 0) {   /* keyed Dept entry */
@@ -130,167 +133,213 @@ SHORT   ItemSalesPrepare(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
         }
         pItemSales->lUnitPrice = pUifRegSales->lUnitPrice;
         pItemSales->lQTY = pUifRegSales->lQTY;
-        DeptRecRcvBuffer.usDeptNo = pItemSales->usDeptNo;
 
-        /*----- GET DEPT. RECORD -----*/
-        if ((sReturnStatus = CliOpDeptIndRead(&DeptRecRcvBuffer, 0)) != OP_PERFORM) {
-			char  xBuff[128];
+        {
+            DEPTIF     DeptRecRcvBuffer = { 0 };       /* dept record receive buffer */
 
-			sprintf (xBuff, "==PROVISION: PLU Dept read error %d dept %d.", sReturnStatus, pItemSales->usDeptNo);
-			NHPOS_ASSERT_TEXT((sReturnStatus == OP_PERFORM), xBuff);
-            return(OpConvertError(sReturnStatus));
+            DeptRecRcvBuffer.usDeptNo = pItemSales->usDeptNo;
+
+            /*----- GET DEPT. RECORD -----*/
+            if ((sReturnStatus = CliOpDeptIndRead(&DeptRecRcvBuffer, 0)) != OP_PERFORM) {
+                char  xBuff[128];
+
+                sprintf(xBuff, "==PROVISION: PLU Dept read error %d dept %d.", sReturnStatus, pItemSales->usDeptNo);
+                NHPOS_ASSERT_TEXT((sReturnStatus == OP_PERFORM), xBuff);
+                return(OpConvertError(sReturnStatus));
+            }
+
+            /* COPY CONTROL CODE INTO ITEMSALES */
+            RflDeptStatusToItemSalesStatus(pItemSales->ControlCode.auchPluStatus, DeptRecRcvBuffer.ParaDept.auchControlCode);
+
+            pItemSales->ControlCode.usBonusIndex = DeptRecRcvBuffer.ParaDept.usBonusIndex;
+
+            /* pItemSales->ControlCode.uchDeptNo = (UCHAR) (DeptRecRcvBuffer.ParaDept.uchMdept & 0x0f);  */
+
+            /* Print Priority, R3.0 */
+            pItemSales->uchPrintPriority = DeptRecRcvBuffer.ParaDept.uchPrintPriority;
+            /* set major dept No. */
+            /* copy dept's mnemonics to pItemSales*/
+            _tcsncpy(pItemSales->aszMnemonic, DeptRecRcvBuffer.ParaDept.auchMnemonic, OP_DEPT_NAME_SIZE);
+//            _tcsncpy(pItemSales->aszMnemonicAlt, DeptRecRcvBuffer.ParaDept.auchAltDeptName, OP_DEPT_NAME_SIZE);
+            pItemSales->usTareInformation = DeptRecRcvBuffer.ParaDept.usTareInformation;
+            pItemSales->usLinkNo = 0;
+            pItemSales->uchTableNumber = PLU_STANDARD_GROUP_NO;
         }
 
-        /* COPY CONTROL CODE INTO ITEMSALES */
-        memcpy(pItemSales->ControlCode.auchPluStatus, DeptRecRcvBuffer.ParaDept.auchControlCode, OP_PLU_SHARED_STATUS_LEN);
-        pItemSales->ControlCode.auchPluStatus[PLU_CONTROLCODE_ADR_6] = DeptRecRcvBuffer.ParaDept.auchControlCode[4]; /* CRT No5 - No 8 see ItemSendKdsSetCRTNo() */
-
-		pItemSales->ControlCode.usBonusIndex = DeptRecRcvBuffer.ParaDept.usBonusIndex;
-        
-        /* pItemSales->ControlCode.uchDeptNo = (UCHAR) (DeptRecRcvBuffer.ParaDept.uchMdept & 0x0f);  */
-
-        /* Print Priority, R3.0 */
-        pItemSales->uchPrintPriority = DeptRecRcvBuffer.ParaDept.uchPrintPriority;
-                                            /* set major dept No. */
-        /* copy dept's mnemonics to pItemSales*/
-        _tcsncpy(pItemSales->aszMnemonic, DeptRecRcvBuffer.ParaDept.auchMnemonic, OP_DEPT_NAME_SIZE);
-		pItemSales->usTareInformation = DeptRecRcvBuffer.ParaDept.usTareInformation;
-        
         /*--- TURN OFF STATUS NOT USED ---*/
         pItemSales->ControlCode.auchPluStatus[2] &= ~PLU_CONDIMENT;    /* turn off condiment status */
         pItemSales->ControlCode.auchPluStatus[3] &= ~(PLU_USE_ADJG1 | PLU_USE_ADJG2 | PLU_USE_ADJG3 | PLU_USE_ADJG4);   /* turn off adjective status */
 
-        *puchRestrict = 0;
-        *pusLinkNo = 0;
+        /* --- Decrease No. of Communication in case of OEP,    Dec/13/2000 --- */
+        if (puchRestrict) *puchRestrict = 0;
+        if (pusLinkNo) *pusLinkNo = pItemSales->usLinkNo;
+        if (puchTable) *puchTable = pItemSales->uchTableNumber;
+
+        /*----- SET UP COMMON STATUS -----*/
+        ItemSalesSetupStatus(pItemSales->ControlCode.auchPluStatus);
         break;
 
     case CLASS_PLU:
     case CLASS_PLUMODDISC:                  /* modified discounted PLU */
         /*----- PLU PREPARATION ----- */
-        /*----- GET PLU RECORD with pItemSales->usPLUNo as key -----*/
-        /* prepair PLU record receive buffer */
+        {
+            PLUIF      PLURecRcvBuffer = { 0 };        /* PLU record receive buffer */
 
-        _tcsncpy(PLURecRcvBuffer.auchPluNo, pItemSales->auchPLUNo, NUM_PLU_LEN);
-        if ((pUifRegSales->uchAdjective - 1) % 5 + 1) {
-	        PLURecRcvBuffer.uchPluAdj = (pUifRegSales->uchAdjective - 1) % 5 + 1;
-	    } else {
-	        PLURecRcvBuffer.uchPluAdj = 1;      /* dummy adjective valiation */
-	    }
-                                           
-        if ((sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0)) != OP_PERFORM) {
-            if (sReturnStatus == OP_NOT_IN_FILE) {
+            /*----- GET PLU RECORD with pItemSales->usPLUNo as key -----*/
+            /* prepair PLU record receive buffer */
 
-                sReturnStatus = ItemSalesPLUBuilding(pUifRegSales, pItemSales, &PLURecRcvBuffer);
-
-                if (sReturnStatus != ITM_SUCCESS) {
-                    if (sReturnStatus == ITM_CANCEL) {
-                        ItemOtherClear();
-                        return (UIF_CANCEL);
-                    } else {
-						USHORT    usControl;
-						
-						/* cyclic tone at not on file, 02/19/01 */
-	    
-					    if (CliParaMDCCheck(MDC_PLU4_ADR, ODD_MDC_BIT1)) {
-							STANZA          Stanza[10];
-
-							PifPlayStanza(ItemSalesMakeStanza(Stanza)); /* make a pulse tone */
-						} else {
-							PifBeep(ITM_BEEP);                   /* make an error tone */
-						}
-    					usControl = UieNotonFile(UIE_ENABLE);                   /* disable using scanner */
-						UieErrorMsg(LDT_NTINFL_ADR, UIE_WITHOUT|UIE_EM_TONE);
-		                ItemOtherClear();
-				        UieNotonFile(usControl);                      /* enable scanner */
-
-						return (UIF_CANCEL);
-					}
-                }
-            } else {
-                return(OpConvertError(sReturnStatus));
+            AUCPLUNO(PLURecRcvBuffer.auchPluNo) = AUCPLUNO(pItemSales->auchPLUNo);
+            if (RflAdjVariation(pUifRegSales->uchAdjective)) {
+                PLURecRcvBuffer.uchPluAdj = RflAdjVariation(pUifRegSales->uchAdjective);
             }
-        } 
+            else {
+                PLURecRcvBuffer.uchPluAdj = 1;      /* dummy adjective valiation */
+            }
 
-        /* move dept No. into pItemSales->uchDeptNo */
-        pItemSales->usDeptNo = PLURecRcvBuffer.ParaPlu.ContPlu.usDept;
-        /* pItemSales->uchDeptNo = (UCHAR) (PLURecRcvBuffer.ParaPlu.ContPlu.uchDept & ~PLU_TYPE_MASK_REG); */
-        pItemSales->ControlCode.uchItemType = PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType; 
-        /* pItemSales->ControlCode.uchDeptNo = PLURecRcvBuffer.ParaPlu.ContPlu.uchDept;  */
-                                            /* set PLU type */
-        /* --- Decrease No. of Communication in case of OEP,    Dec/13/2000 --- */
-        *puchTable = PLURecRcvBuffer.ParaPlu.uchTableNumber;
+            if ((sReturnStatus = CliOpPluIndRead(&PLURecRcvBuffer, 0)) != OP_PERFORM) {
+                if (sReturnStatus == OP_NOT_IN_FILE) {
 
-        if (pItemSales->usDeptNo == 0) {
-            return(LDT_PROHBT_ADR);         /* error if dept isn't preset */
-        }
-        
-        /* copy report code */
-        pItemSales->ControlCode.uchReportCode = (UCHAR) (PLURecRcvBuffer.ParaPlu.ContPlu.uchRept);
-        pItemSales->uchPrintPriority = PLURecRcvBuffer.ParaPlu.uchPrintPriority;  /* R3.0 */
-        _tcsncpy(pItemSales->aszMnemonic, PLURecRcvBuffer.ParaPlu.auchPluName, STD_PLU_MNEMONIC_LEN);
-        _tcsncpy(pItemSales->aszMnemonicAlt, PLURecRcvBuffer.ParaPlu.auchAltPluName, STD_PLU_MNEMONIC_LEN);
-		pItemSales->ControlCode.usBonusIndex = PLURecRcvBuffer.ParaPlu.ContPlu.usBonusIndex;
-		pItemSales->ControlCode.uchPPICode = PLURecRcvBuffer.ParaPlu.uchLinkPPI;
+                    sReturnStatus = ItemSalesPLUBuilding(pUifRegSales, pItemSales, &PLURecRcvBuffer);
 
-        /* Print Priority, R3.0 */
-        pItemSales->uchPrintPriority = PLURecRcvBuffer.ParaPlu.uchPrintPriority; 
-		pItemSales->uchColorPaletteCode = PLURecRcvBuffer.ParaPlu.uchColorPaletteCode;
-		pItemSales->usTareInformation = PLURecRcvBuffer.ParaPlu.usTareInformation;
+                    if (sReturnStatus != ITM_SUCCESS) {
+                        if (sReturnStatus == ITM_CANCEL) {
+                            ItemOtherClear();
+                            return (UIF_CANCEL);
+                        }
+                        else {
+                            USHORT    usControl;
 
-		// if this is a voided item, color should be VOIDED ITEM color, instead of the PLU color
-		if (pUifRegSales->fbModifier & VOID_MODIFIER) // colorpalette-changes-voided_items
-		{
-			pItemSales->uchColorPaletteCode = 0x02;
-		}
+                            /* cyclic tone at not on file, 02/19/01 */
 
-		/* copy control code - remember ControlCode.auchStatus[5] used for ItemSales status info */
-        memcpy(pItemSales->ControlCode.auchPluStatus, PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther, OP_PLU_PLU_SHARED_STATUS_LEN);
-        memcpy(pItemSales->ControlCode.auchPluStatus + 6, PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther + 5, OP_PLU_OPTIONS_STATUS_LEN);
+                            if (CliParaMDCCheck(MDC_PLU4_ADR, ODD_MDC_BIT1)) {
+                                STANZA          Stanza[10];
 
-        if ((pItemSales->ControlCode.uchItemType & PLU_TYPE_MASK_REG) == 0) {
-            pItemSales->ControlCode.uchItemType |= PLU_OPEN_TYP;
-			pItemSales->fsLabelStatus |= ITM_CONTROL_NO_CONSOL;
-        }                                   /* type 0 is regarded as open PLU */
-        /***
-        if ((pItemSales->ControlCode.uchDeptNo & PLU_TYPE_MASK_REG) == 0) {
-            pItemSales->ControlCode.uchDeptNo |= PLU_OPEN_TYP;
-        }                                   / type 0 is regarded as open PLU */
-        
-        /* set QTY and unit price */
-        pItemSales->lQTY = pUifRegSales->lQTY;
-        pItemSales->lUnitPrice = pUifRegSales->lUnitPrice;
-        /* not adjust at random weight label */
-        if ((pItemSales->uchRndType & (ITM_TYPE_PRICE|ITM_TYPE_QTY | ITM_TYPE_WEIGHT)) == 0) {
-            if ((pUifRegSales->lUnitPrice != 0) || (ItemSalesLocal.fbSalesStatus & SALES_ZERO_AMT)) {
-                                            /* amount entered */
-                if (pItemSales->ControlCode.uchItemType & PRESET_PLU) { 
-                /* if (pItemSales->ControlCode.uchSalesType & PRESET_PLU) {  */
-                                            /* if not open PLU */
-                    if (pItemSales->lQTY != 0) {    /* amount entered */
-                        return(LDT_SEQERR_ADR); 
-                                                /* because of price entry for preset PLU */
-                    }                           /* ulUnitPrice is QTY without D.P */
+                                PifPlayStanza(ItemSalesMakeStanza(Stanza)); /* make a pulse tone */
+                            }
+                            else {
+                                PifBeep(ITM_BEEP);                   /* make an error tone */
+                            }
+                            usControl = UieNotonFile(UIE_ENABLE);                   /* disable using scanner */
+                            UieErrorMsg(LDT_NTINFL_ADR, UIE_WITHOUT | UIE_EM_TONE);
+                            ItemOtherClear();
+                            UieNotonFile(usControl);                      /* enable scanner */
 
-                    if (pUifRegSales->lUnitPrice == 0L) {
-                        return(LDT_KEYOVER_ADR);/* return illegal data error */
-                    }  
-                
-                    /* entered from PLU No. key or Scanner */
-                    if (pUifRegSales->uchFsc == 0) {
-                        return(LDT_SEQERR_ADR); 
+                            return (UIF_CANCEL);
+                        }
                     }
-                    pItemSales->lQTY = pUifRegSales->lUnitPrice * 1000L;
-                } 
+                }
+                else {
+                    return(OpConvertError(sReturnStatus));
+                }
             }
-        }
-        if (pItemSales->uchMinorClass == CLASS_UIDISPENSER) {
-            pItemSales->lQTY = 1000L;   /* set 1 qty, if beverage dispenser sales */
-        }
 
-        if (pItemSales->ControlCode.uchItemType & PRESET_PLU) {
-                                            /* if not open PLU */
-            /* set record into pItemSales */
-            RflConv3bto4b(&pItemSales->lUnitPrice , PLURecRcvBuffer.ParaPlu.auchPrice);
+            if (PLURecRcvBuffer.ParaPlu.ContPlu.usDept == 0) {
+                NHPOS_ASSERT_TEXT(0, "==PROVISIONING: PLU has Zero Dept No.");
+                return(LDT_PROHBT_ADR);         /* error if dept isn't preset */
+            }
+
+
+            //**  Begin populating the ITEMSALES with the PLU data.
+
+            //  Can we replace the following with RflPluDataToItemSales(pItemSales, &PLURecRcvBuffer.ParaPlu);?
+
+            /* move dept No. into pItemSales->uchDeptNo */
+            pItemSales->usDeptNo = PLURecRcvBuffer.ParaPlu.ContPlu.usDept;
+
+            /* copy control code - remember ControlCode.auchStatus[5] used for ItemSales status info */
+            RflPluStatusToItemSalesStatus(pItemSales->ControlCode.auchPluStatus, PLURecRcvBuffer.ParaPlu.ContPlu.auchContOther);
+
+            _tcsncpy(pItemSales->aszMnemonic, PLURecRcvBuffer.ParaPlu.auchPluName, STD_PLU_MNEMONIC_LEN);
+            _tcsncpy(pItemSales->aszMnemonicAlt, PLURecRcvBuffer.ParaPlu.auchAltPluName, STD_PLU_MNEMONIC_LEN);
+            pItemSales->ControlCode.uchReportCode = PLURecRcvBuffer.ParaPlu.ContPlu.uchRept;
+            pItemSales->ControlCode.usBonusIndex = PLURecRcvBuffer.ParaPlu.ContPlu.usBonusIndex;
+            pItemSales->ControlCode.uchPPICode = PLURecRcvBuffer.ParaPlu.uchLinkPPI;
+            pItemSales->ControlCode.uchItemType = PLURecRcvBuffer.ParaPlu.ContPlu.uchItemType;  /* set PLU type */
+
+            pItemSales->usLinkNo = PLURecRcvBuffer.ParaPlu.usLinkNo;
+            pItemSales->usFamilyCode = PLURecRcvBuffer.ParaPlu.usFamilyCode;
+            pItemSales->uchGroupNumber = PLURecRcvBuffer.ParaPlu.uchGroupNumber;
+            pItemSales->uchTableNumber = PLURecRcvBuffer.ParaPlu.uchTableNumber;
+
+            /* Print Priority, R3.0 */
+            pItemSales->uchPrintPriority = PLURecRcvBuffer.ParaPlu.uchPrintPriority;
+            pItemSales->usTareInformation = PLURecRcvBuffer.ParaPlu.usTareInformation;
+
+            pItemSales->uchColorPaletteCode = PLURecRcvBuffer.ParaPlu.uchColorPaletteCode;
+
+            // if this is a voided item, color should be VOIDED ITEM color, instead of the PLU color
+            if (pUifRegSales->fbModifier & VOID_MODIFIER) // colorpalette-changes-voided_items
+            {
+                pItemSales->uchColorPaletteCode = PLU_STANDARD_COLOR_VOID;
+            }
+
+            if ((pItemSales->ControlCode.uchItemType & PLU_TYPE_MASK_REG) == 0) {
+                pItemSales->ControlCode.uchItemType |= PLU_OPEN_TYP;
+                pItemSales->fsLabelStatus |= ITM_CONTROL_NO_CONSOL;
+            }                                   /* type 0 is regarded as open PLU */
+            /***
+            if ((pItemSales->ControlCode.uchDeptNo & PLU_TYPE_MASK_REG) == 0) {
+                pItemSales->ControlCode.uchDeptNo |= PLU_OPEN_TYP;
+            }                                   / type 0 is regarded as open PLU */
+
+            /* set QTY and unit price */
+            pItemSales->lQTY = pUifRegSales->lQTY;
+            pItemSales->lUnitPrice = pUifRegSales->lUnitPrice;
+            /* not adjust at random weight label */
+            if ((pItemSales->uchRndType & (ITM_TYPE_PRICE | ITM_TYPE_QTY | ITM_TYPE_WEIGHT)) == 0) {
+                if ((pUifRegSales->lUnitPrice != 0) || (ItemSalesLocal.fbSalesStatus & SALES_ZERO_AMT)) {
+                    /* amount entered */
+                    if (pItemSales->ControlCode.uchItemType & PRESET_PLU) {
+                        /* if (pItemSales->ControlCode.uchSalesType & PRESET_PLU) {  */
+                                                    /* if not open PLU */
+                        if (pItemSales->lQTY != 0) {    /* amount entered */
+                            return(LDT_SEQERR_ADR);
+                            /* because of price entry for preset PLU */
+                        }                           /* ulUnitPrice is QTY without D.P */
+
+                        if (pUifRegSales->lUnitPrice == 0L) {
+                            return(LDT_KEYOVER_ADR);/* return illegal data error */
+                        }
+
+                        /* entered from PLU No. key or Scanner */
+                        if (pUifRegSales->uchFsc == 0) {
+                            return(LDT_SEQERR_ADR);
+                        }
+                        pItemSales->lQTY = pUifRegSales->lUnitPrice * PLU_BASE_UNIT;
+                    }
+                }
+            }
+
+            if (pItemSales->uchMinorClass == CLASS_UIDISPENSER) {
+                pItemSales->lQTY = PLU_BASE_UNIT;   /* set 1 qty, if beverage dispenser sales */
+            }
+
+            if (pItemSales->ControlCode.uchItemType & PRESET_PLU) {
+                /* if not open PLU */
+                RflConv3bto4b(&pItemSales->lUnitPrice, PLURecRcvBuffer.ParaPlu.auchPrice);
+            }
+
+            /* price multiple, 2172 */
+            pItemSales->uchPM = PLURecRcvBuffer.ParaPlu.uchPriceMulWeight;
+            if (pItemSales->uchPM == 1) {
+                pItemSales->uchPM = 0;
+            }
+
+            /*----- SET UP PPI CODE R3.1 -----*/
+            if (pItemSales->uchMinorClass == CLASS_PLU) {
+                if (pItemSales->ControlCode.uchItemType & PRESET_PLU) {
+                    if (!(pItemSales->ControlCode.auchPluStatus[0] & PLU_MINUS)) {
+                        if (!(pItemSales->ControlCode.auchPluStatus[2] & (PLU_CONDIMENT | PLU_SCALABLE))) {
+                            pItemSales->uchPPICode = PLURecRcvBuffer.ParaPlu.uchLinkPPI;
+                        }
+                    }
+                }
+            }
+
+            /* --- Decrease No. of Communication in case of OEP,    Dec/13/2000 --- */
+            if (puchRestrict) *puchRestrict = PLURecRcvBuffer.ParaPlu.uchRestrict;
+            if (pusLinkNo) *pusLinkNo = pItemSales->usLinkNo;
+            if (puchTable) *puchTable = pItemSales->uchTableNumber;
         }
 
         /* ramdom weight label, saratoga */
@@ -302,58 +351,61 @@ SHORT   ItemSalesPrepare(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
             pItemSales->lQTY = pUifRegSales->lQTY;
         }
 
-        /* price multiple, 2172 */
-        pItemSales->uchPM = PLURecRcvBuffer.ParaPlu.uchPriceMulWeight;
-        if (pItemSales->uchPM == 1) {
-            pItemSales->uchPM = 0;
-        }
-
-			//SR 603, removed scalable out of the statement
-			//SCALABLE items should be able to be price multiplied
+        //SR 603, removed scalable out of the statement
+        //SCALABLE items should be able to be price multiplied
         if (pItemSales->ControlCode.auchPluStatus[2] & (PLU_CONDIMENT/*|PLU_SCALABLE*/)) {
             pItemSales->uchPM = 0;
         }
-        if (CliParaMDCCheck(MDC_PLU2_ADR,ODD_MDC_BIT1)) {
+        if (CliParaMDCCheck(MDC_PLU2_ADR, ODD_MDC_BIT1)) {
             /* assume as QTY, 2172 */
             if (pItemSales->uchPM) {
                 if (pItemSales->lQTY == 0L) {    /* if not entered qty */
-                    pItemSales->lQTY = (LONG)(pItemSales->uchPM * 1000L);
+                    pItemSales->lQTY = (pItemSales->uchPM * PLU_BASE_UNIT);
                 }
             }
         }
         
         /*----- INHERIT DEPT'S CONTROL STATUS -----*/
-        /* get dept record */
-        DeptRecRcvBuffer.usDeptNo = pItemSales->usDeptNo;
-        if ((sReturnStatus = CliOpDeptIndRead(&DeptRecRcvBuffer, 0)) != OP_PERFORM) {
-			char  xBuff[128];
+        {
+            DEPTIF     DeptRecRcvBuffer = { 0 };       /* dept record receive buffer */
 
-			sprintf (xBuff, "==PROVISION: PLU Dept read error %d dept %d.", sReturnStatus, pItemSales->usDeptNo);
-			NHPOS_ASSERT_TEXT((sReturnStatus == OP_PERFORM), xBuff);
-            return(OpConvertError(sReturnStatus));
-        }
-            
-        /* Print Priority, R3.0 */
-        if (CliParaMDCCheck(MDC_PRINTPRI_ADR, EVEN_MDC_BIT1)) {
-            pItemSales->uchPrintPriority = DeptRecRcvBuffer.ParaDept.uchPrintPriority;
-        }
+            /* get dept record */
+            DeptRecRcvBuffer.usDeptNo = pItemSales->usDeptNo;
+            if ((sReturnStatus = CliOpDeptIndRead(&DeptRecRcvBuffer, 0)) != OP_PERFORM) {
+                char  xBuff[128];
 
-        ItemSalesSetupStatus(DeptRecRcvBuffer.ParaDept.auchControlCode);   /* setup dept's control status */
-        /* turn on Hash bit for PLU */
-        pItemSales->ControlCode.auchPluStatus[2] &= ~PLU_HASH;             /* turn off flag set by maintemance */
-        if (pItemSales->ControlCode.auchPluStatus[2] & PLU_USE_DEPTCTL) {  /* use dept's control code */
-            /* copy dept's control code into pItemSales */
-            memcpy(pItemSales->ControlCode.auchPluStatus, DeptRecRcvBuffer.ParaDept.auchControlCode, OP_PLU_SHARED_STATUS_LEN);
-            pItemSales->ControlCode.auchPluStatus[PLU_CONTROLCODE_ADR_6] = DeptRecRcvBuffer.ParaDept.auchControlCode[4]; /* CRT No5 - No 8 see ItemSendKdsSetCRTNo()*/
-        } else {                            /* turn on hash bit if need */
-            if (DeptRecRcvBuffer.ParaDept.auchControlCode[2] & PLU_HASH) {
-                pItemSales->ControlCode.auchPluStatus[2] |= PLU_HASH;
+                sprintf(xBuff, "==PROVISION: PLU Dept read error %d dept %d.", sReturnStatus, pItemSales->usDeptNo);
+                NHPOS_ASSERT_TEXT((sReturnStatus == OP_PERFORM), xBuff);
+                return(OpConvertError(sReturnStatus));
+            }
+
+            /* Print Priority, R3.0 */
+            if (CliParaMDCCheck(MDC_PRINTPRI_ADR, EVEN_MDC_BIT1)) {
+                pItemSales->uchPrintPriority = DeptRecRcvBuffer.ParaDept.uchPrintPriority;
+            }
+
+            ItemSalesSetupStatus(DeptRecRcvBuffer.ParaDept.auchControlCode);   /* setup dept's control status */
+            RflDeptStatusToItemSalesStatusIfDeptCtl(pItemSales->ControlCode.auchPluStatus, DeptRecRcvBuffer.ParaDept.auchControlCode);
+
+            pItemSales->ControlCode.uchItemType &= PLU_TYPE_MASK_REG;    /* clear dept No. "0xc0" */
+            /* pItemSales->ControlCode.uchDeptNo |= DeptRecRcvBuffer.ParaDept.uchMdept; */
+                                                /* set dept's major dept No. */
+ 
+            /*----- SET UP COMMON STATUS -----*/
+            ItemSalesSetupStatus(pItemSales->ControlCode.auchPluStatus);
+
+            if (!(pItemSales->ControlCode.auchPluStatus[2] & PLU_SCALABLE) && (DeptRecRcvBuffer.ParaDept.auchControlCode[2] & PLU_SCALABLE)) {
+                /* not identical */
+                /*  PLU       DEPT
+                    none     scalable -> prohibit operation
+                */
+                return(LDT_PROHBT_ADR);
+            }
+            /* set scalable flag for affection */
+            if (DeptRecRcvBuffer.ParaDept.auchControlCode[2] & PLU_SCALABLE) {
+                pItemSales->ControlCode.auchPluStatus[5] |= ITM_PLU_LINK_SCALE_DEPT;
             }
         }
-
-        pItemSales->ControlCode.uchItemType &= PLU_TYPE_MASK_REG;    /* clear dept No. "0xc0" */
-        /* pItemSales->ControlCode.uchDeptNo |= DeptRecRcvBuffer.ParaDept.uchMdept; */
-                                            /* set dept's major dept No. */
 
         /*----- SET UP PLU STATUS -----*/
         if (!(pItemSales->ControlCode.uchItemType & PRESET_PLU)) {
@@ -361,9 +413,6 @@ SHORT   ItemSalesPrepare(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
         } else if (pItemSales->ControlCode.auchPluStatus[2] & PLU_CONDIMENT) {
             pItemSales->ControlCode.auchPluStatus[2] &=~ PLU_SCALABLE;  /* turn off scalable status bit if condiment */ 
         }
-        pItemSales->usLinkNo = PLURecRcvBuffer.ParaPlu.usLinkNo;
-
-        pItemSales->usFamilyCode = PLURecRcvBuffer.ParaPlu.usFamilyCode;
 
 
         /*----- SET UP PLU STATUS for Label PLU-----*/
@@ -379,46 +428,17 @@ SHORT   ItemSalesPrepare(UIFREGSALES *pUifRegSales, ITEMSALES *pItemSales,
             }
         }
 #endif
-        *puchRestrict = PLURecRcvBuffer.ParaPlu.uchRestrict;
-        *pusLinkNo = PLURecRcvBuffer.ParaPlu.usLinkNo;
-
-        pItemSales->uchGroupNumber = PLURecRcvBuffer.ParaPlu.uchGroupNumber;
-        pItemSales->uchTableNumber = PLURecRcvBuffer.ParaPlu.uchTableNumber;
 
         break;
     
     default:
+        /*----- SET UP COMMON STATUS -----*/
+        ItemSalesSetupStatus(pItemSales->ControlCode.auchPluStatus);
+        if (puchRestrict) *puchRestrict = 0;
+        if (pusLinkNo) *pusLinkNo = 0;
+        if (puchTable) *puchTable = 0;
         break;
     }    
-
-    /*----- SET UP COMMON STATUS -----*/
-    ItemSalesSetupStatus(pItemSales->ControlCode.auchPluStatus);
-
-    if ((pItemSales->uchMinorClass == CLASS_PLU) || (pItemSales->uchMinorClass == CLASS_PLUMODDISC)) {
-        if (!(pItemSales->ControlCode.auchPluStatus[2] & PLU_SCALABLE) && (DeptRecRcvBuffer.ParaDept.auchControlCode[2] & PLU_SCALABLE)) { 
-                                            /* not identical */
-            return(LDT_PROHBT_ADR); /*  PLU       DEPT
-                                        none     scalable -> prohibit operation
-                                    */
-        }
-
-        /* set scalable flag for affection */
-        if (DeptRecRcvBuffer.ParaDept.auchControlCode[2] & PLU_SCALABLE) {
-            pItemSales->ControlCode.auchPluStatus[5] |= ITM_PLU_LINK_SCALE_DEPT;
-        }
-    }
-
-    /*----- SET UP PPI CODE R3.1 -----*/
-    if (pItemSales->uchMinorClass == CLASS_PLU) {
-        if (pItemSales->ControlCode.uchItemType & PRESET_PLU) {
-        /* if (pItemSales->ControlCode.uchDeptNo & PRESET_PLU) { */
-            if (!(pItemSales->ControlCode.auchPluStatus[0] & PLU_MINUS)) {
-                if (!(pItemSales->ControlCode.auchPluStatus[2] & (PLU_CONDIMENT | PLU_SCALABLE))) {
-                    pItemSales->uchPPICode = PLURecRcvBuffer.ParaPlu.uchLinkPPI;
-                }
-            }
-        }
-    }
 
     /* ---- SET UP BEVERAGE DISPENSER SALES STATUS R3.1 ---- */
     if (pUifRegSales->uchMinorClass == CLASS_UIDISPENSER) {
@@ -451,6 +471,11 @@ VOID   ItemSalesSetupStatus(UCHAR  *pauchStatus)
     /* FOR HASH DEPT/ PLU. See the comments titled What is a Hash Department in rptdept.c */
     if (pauchStatus[2] & PLU_HASH) {
         pauchStatus[0] &= ~(PLU_COMP_MODKEY | PLU_COMP_CODKEY);
+
+        // NOTE: There are several places in the source where a check is made
+        //       for both PLU_MINUS and PLU_HASH status bits along with the
+        //       settings of MDC Address 27 to determine if the Hash Department
+        //       should affect totals or not.
 
 /*** not reset PLU_MINUS status, V3.3 **
 //        pauchStatus[0] &= ~(PLU_MINUS | PLU_COMP_MODKEY | PLU_COMP_CODKEY);
